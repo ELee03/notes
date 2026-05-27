@@ -75,6 +75,203 @@ books:
     clusters: [embedded]
     annotation: The standard reference for PCB EMC — ground planes, return current paths, filtering, and layout for emissions and immunity.
 
+  - id: chen-linsys
+    title: Linear System Theory and Design
+    authors: [Chi-Tsong Chen]
+    edition: 3rd
+    publisher: Oxford University Press
+    year: 1999
+    clusters: [control]
+    annotation: Mathematically rigorous state-space treatment. Key reference for ECE 557 — controllability, observability, state feedback, observers, and the separation principle.
+
+  - id: astrom-murray
+    title: "Feedback Systems: An Introduction for Scientists and Engineers"
+    authors: [Karl J. Astrom, Richard M. Murray]
+    edition: 2nd
+    publisher: Princeton University Press
+    year: 2020
+    clusters: [control]
+    annotation: Freely available online. Emphasizes physical intuition and modern perspectives on feedback. Good companion to classical texts.
+    url: https://www.cds.caltech.edu/~murray/amwiki/
+
+  - id: khoo-physio-control
+    title: "Physiological Control Systems: Analysis, Simulation, and Estimation"
+    authors: [Michael C. K. Khoo]
+    edition: 2nd
+    publisher: IEEE Press / Wiley
+    year: 2018
+    clusters: [control, bioelectricity]
+    annotation: Primary textbook for BME 331. Applies linear control theory to physiological systems — endocrine, cardiovascular, and neuromuscular control. Bridges engineering and biology.
+
+  - id: broucke-adaptive-rl
+    title: A First Course on Adaptive Control and Reinforcement Learning
+    authors: [Mireille E. Broucke]
+    publisher: University of Toronto (course notes)
+    year: 2024
+    clusters: [control, rl]
+    annotation: UofT course notes bridging classical adaptive control and modern RL. Covers LQR, adaptive control, policy gradients, and Q-learning within a unified control-theoretic framework.
+    source: source/textbooks/control/ece411_text.pdf
+
+  # ── Signals & Systems ─────────────────────────────────────────────────────
+
+  - id: oppenheim-signals
+    title: "Signals and Systems"
+    authors: [Alan V. Oppenheim, Alan S. Willsky, S. Hamid Nawab]
+    edition: 2nd
+    publisher: Prentice-Hall
+    year: 1996
+    clusters: [signals]
+    annotation: The definitive signals and systems text. Covers CTFT, DTFT, Laplace, Z-transform, convolution, sampling, and modulation. Primary textbook for ECE 355.
+
+  - id: lathi-signals
+    title: Linear Systems and Signals
+    authors: [B. P. Lathi, Roger Green]
+    edition: 3rd
+    publisher: Oxford University Press
+    year: 2017
+    clusters: [signals]
+    annotation: Alternative signals text used as an ECE 355 reference. Clear exposition and good problem sets.
+
+  # ── Circuits & Electronics ────────────────────────────────────────────────
+
+  - id: sadiku-circuits
+    title: "Fundamentals of Electric Circuits"
+    authors: [Charles K. Alexander, Matthew N. O. Sadiku]
+    edition: 7th
+    publisher: McGraw-Hill
+    year: 2021
+    clusters: [circuits]
+    annotation: Primary circuits textbook for ECE 159. Covers KVL/KCL, phasors, Thevenin/Norton, op-amps, and AC steady-state analysis. Standard introductory circuits reference.
+    source: source/textbooks/circuits/Sadiku-Fundamentals-Electric-Circuits-7th.pdf
+
+  - id: sedra-smith
+    title: Microelectronic Circuits
+    authors: [Adel S. Sedra, Kenneth C. Smith, Tony C. Carusone, Vincent Gaudet]
+    edition: 8th
+    publisher: Oxford University Press
+    year: 2020
+    clusters: [circuits, analog]
+    annotation: Primary textbook for ECE 354. Covers BJT and MOSFET amplifiers, differential pairs, frequency response, feedback, and op-amp design. The standard microelectronics reference.
+
+  # ── Analog IC Design ──────────────────────────────────────────────────────
+
+  - id: carusone-analog-ic
+    title: Analog Integrated Circuit Design
+    authors: [Tony C. Carusone, David A. Johns, Kenneth W. Martin]
+    edition: 2nd
+    publisher: Wiley
+    year: 2012
+    clusters: [analog]
+    annotation: Primary reference for ECE 430. Covers CMOS op-amp design, noise, frequency compensation, folded-cascode topologies, and fully differential amplifiers.
+    source: source/textbooks/analog/Analog-Integrated-Circuit-Design.pdf
+
+  # ── Statistics & Probability ──────────────────────────────────────────────
+
+  - id: walpole-stats
+    title: "Probability & Statistics for Engineers and Scientists"
+    authors: [Ronald E. Walpole, Raymond H. Myers, Sharon L. Myers, Keying Ye]
+    edition: 9th
+    publisher: Pearson
+    year: 2011
+    clusters: [statistics]
+    annotation: Primary textbook for ECE 286. Covers probability distributions, joint distributions, CLT, point and interval estimation, hypothesis testing, and regression analysis.
+
+  # ── Quantum Mechanics ─────────────────────────────────────────────────────
+
+  - id: griffiths-qm
+    title: Introduction to Quantum Mechanics
+    authors: [David J. Griffiths, Darrell F. Schroeter]
+    edition: 3rd
+    publisher: Cambridge University Press
+    year: 2018
+    clusters: [quantum]
+    annotation: The standard undergraduate quantum mechanics text. Clear pedagogical style, covers wave functions, Schrodinger equation, infinite square well, harmonic oscillator, hydrogen atom, and perturbation theory.
+    source: source/textbooks/quantum/Griffiths-Introduction-to-Quantum-Mechanics.pdf
+
+  - id: taylor-modern-physics
+    title: Modern Physics for Scientists and Engineers
+    authors: [John R. Taylor, Chris D. Zafiratos, Michael A. Dubson]
+    edition: 2nd
+    publisher: University Science Books
+    year: 2003
+    clusters: [quantum, physics]
+    annotation: Textbook for PHY 294 Part 1. Accessible introduction to special relativity, quantum mechanics, and atomic/nuclear physics. Good bridge from classical to quantum.
+
+  - id: schroeder-thermal
+    title: An Introduction to Thermal Physics
+    authors: [Daniel V. Schroeder]
+    publisher: Addison-Wesley
+    year: 2000
+    clusters: [physics]
+    annotation: Textbook for PHY 294 Part 2 (thermal physics). Intuitive coverage of thermodynamics, statistical mechanics, and entropy. Unusually clear for a physics textbook.
+
+  # ── Neuroscience ──────────────────────────────────────────────────────────
+
+  - id: kandel-neuroscience
+    title: Principles of Neural Science
+    authors: [Eric R. Kandel, James H. Schwartz, Thomas M. Jessell, Steven A. Siegelbaum, A. J. Hudspeth]
+    edition: 5th
+    publisher: McGraw-Hill
+    year: 2013
+    clusters: [neuroscience, bioelectricity]
+    annotation: The authoritative neuroscience reference. Comprehensive coverage from ion channels and synaptic transmission to motor systems, cognition, and disorders.
+    source: source/textbooks/neuroscience/Kandel-Principles-of-Neural-Science-5th.pdf
+
+  - id: bear-neuroscience
+    title: "Neuroscience: Exploring the Brain"
+    authors: [Mark F. Bear, Barry W. Connors, Michael A. Paradiso]
+    edition: 4th
+    publisher: Wolters Kluwer
+    year: 2015
+    clusters: [neuroscience]
+    annotation: Accessible undergraduate neuroscience text. Strong on cellular and systems-level neuroscience without requiring a graduate background.
+    source: source/textbooks/neuroscience/Bear-Neuroscience-Exploring-the-Brain.pdf
+
+  - id: buzsaki-rhythms
+    title: Rhythms of the Brain
+    authors: [Gyorgy Buzsaki]
+    publisher: Oxford University Press
+    year: 2006
+    clusters: [neuroscience]
+    annotation: Explores neural oscillations and brain rhythms — theta, gamma, sharp-wave ripples. Essential background for anyone thinking about neural signals and brain dynamics.
+    source: source/textbooks/neuroscience/Buzsaki-Rhythms-of-the-Brain.pdf
+
+  # ── Neural Engineering / Bioelectricity ───────────────────────────────────
+
+  - id: he-neural-engineering
+    title: Neural Engineering
+    authors: [Bin He]
+    edition: 3rd
+    publisher: Springer
+    year: 2020
+    clusters: [bioelectricity]
+    annotation: Primary textbook for ECE 441. Covers neural recording, stimulation, signal processing, brain-computer interfaces, EEG/fMRI, and neuromodulation applications.
+    source: source/textbooks/bioelectricity/Neural-Engineering.pdf
+
+  # ── Reinforcement Learning ────────────────────────────────────────────────
+
+  - id: sutton-barto
+    title: "Reinforcement Learning: An Introduction"
+    authors: [Richard S. Sutton, Andrew G. Barto]
+    edition: 2nd
+    publisher: MIT Press
+    year: 2018
+    clusters: [rl]
+    annotation: The foundational RL textbook. Covers MDPs, dynamic programming, Monte Carlo methods, TD-learning, Q-learning, policy gradient methods, and deep RL connections.
+    source: source/textbooks/rl/Sutton-Barto-Reinforcement-Learning.pdf
+
+  # ── Mathematics ───────────────────────────────────────────────────────────
+
+  - id: strogatz-nonlinear
+    title: Nonlinear Dynamics and Chaos
+    authors: [Steven H. Strogatz]
+    edition: 2nd
+    publisher: Westview Press
+    year: 2015
+    clusters: [mathematics, physics]
+    annotation: Exceptionally readable introduction to nonlinear dynamics — bifurcations, phase portraits, limit cycles, and chaos. Builds intuition through physical examples before formalism.
+    source: source/textbooks/mathematics/Strogatz-Nonlinear-Dynamics-and-Chaos.pdf
+
   # ── Food Science ──────────────────────────────────────────────────────────
 
   - id: mcgee-food
