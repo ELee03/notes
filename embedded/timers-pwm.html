@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Timers &amp; PWM — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Architecture &amp; Internals</div>
+        <a href="mcu-architecture.html" class="nav-item">1 · MCU Architecture</a>
+        <a href="memory-clocks.html" class="nav-item">2 · Memory &amp; Clock Systems</a>
+        <a href="interrupts-nvic.html" class="nav-item">3 · Interrupts &amp; the NVIC</a>
+        <a href="dma.html" class="nav-item">4 · DMA</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Peripherals</div>
+        <a href="gpio.html" class="nav-item">5 · GPIO</a>
+        <a href="timers-pwm.html" class="nav-item active">6 · Timers &amp; PWM</a>
+        <span class="nav-item planned">7 · ADC &amp; DAC</span>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Protocols</div>
+        <span class="nav-item planned">8 · UART</span>
+        <span class="nav-item planned">9 · SPI</span>
+        <span class="nav-item planned">10 · I2C</span>
+        <span class="nav-item planned">11 · CAN Bus</span>
+        <span class="nav-item planned">12 · USB Fundamentals</span>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Firmware</div>
+        <span class="nav-item planned">13 · Bare-Metal Patterns</span>
+        <span class="nav-item planned">14 · RTOS Concepts</span>
+        <span class="nav-item planned">15 · Debugging &amp; Test</span>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">PCB Design</div>
+        <span class="nav-item planned">16 · Layout Fundamentals</span>
+        <span class="nav-item planned">17 · Mixed-Signal Layout</span>
+        <span class="nav-item planned">18 · Power &amp; Thermal</span>
+        <span class="nav-item planned">19 · High-Speed &amp; RF</span>
+      </div>
+
+      <hr class="sidebar-rule">
+
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#counter-modes" class="nav-item">Counter modes</a>
+        <a href="#cc-channels" class="nav-item">CC channels</a>
+        <a href="#pwm" class="nav-item">PWM generation</a>
+        <a href="#capture" class="nav-item">Input capture</a>
+        <a href="#efr32-api" class="nav-item">EFR32 TIMER API</a>
+        <a href="#dead-time" class="nav-item">Dead-time insertion</a>
+        <a href="#letimer" class="nav-item">LETIMER (low-energy)</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Embedded Systems</a>
+        <span class="sep">›</span>
+        <span>6 · Timers &amp; PWM</span>
+      </div>
+
+      <div class="lesson-title">6 · Timers &amp; PWM</div>
+      <div class="lesson-meta">Counter Modes · Compare/Capture · PWM · Dead-Time · LETIMER</div>
+
+      <div class="prose">
+        A hardware timer is a counter clocked from the peripheral bus (or a prescaled
+        fraction of it) that can trigger events when it reaches programmed values,
+        generate precisely timed output waveforms, and latch the current count when
+        an external edge arrives. Timers are used everywhere in embedded systems:
+        scheduling periodic tasks, generating PWM for motors and LEDs, measuring
+        pulse widths from sensors, creating audio tones, and synchronising ADC
+        acquisition to a sample clock.
+      </div>
+
+      <div class="prose">
+        The EFR32 family has several timer peripherals: <code>TIMER0–TIMER3</code>
+        (16-bit, full-featured, clocked from HFPERCLK), <code>WTIMER0–WTIMER1</code>
+        (32-bit versions on some variants), and <code>LETIMER0</code> (16-bit,
+        low-energy, clocked from the 32 kHz LFXO/LFRCO and able to run in EM2).
+        The full-featured TIMERs are the right choice for PWM and fast measurement;
+        LETIMER is the right choice for periodic low-power wakeup.
+      </div>
+
+      <!-- ── Counter modes ─────────────────────────────────────── -->
+      <div class="section-head" id="counter-modes">Counter modes</div>
+
+      <div class="prose">
+        At its heart a timer is a counter register <code>CNT</code> that increments
+        (or decrements) on each tick of the timer clock. The <code>TOP</code> register
+        sets the ceiling. When <code>CNT</code> reaches <code>TOP</code> an overflow
+        event fires, an interrupt can be raised, and the counter resets.
+      </div>
+
+      <!-- SVG: three counter mode waveforms -->
+      <svg viewBox="0 0 820 280" style="width:100%;max-width:820px;display:block;margin:24px auto 8px;" role="img" aria-label="Three timer counter modes: up-count, up-down (centre-aligned), and down-count">
+
+        <defs>
+          <marker id="arr2" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <polygon points="0 0,6 3,0 6" fill="#3a6a8a"/>
+          </marker>
+        </defs>
+
+        <!-- ── Up-counter ── -->
+        <text x="135" y="16" font-family="IBM Plex Sans,sans-serif" font-size="12" fill="#1a2840" text-anchor="middle" font-weight="600">Up-counter</text>
+        <!-- Axes -->
+        <line x1="30" y1="20" x2="30" y2="100" stroke="#c0cdd6" stroke-width="1.5"/>
+        <line x1="30" y1="100" x2="250" y2="100" stroke="#c0cdd6" stroke-width="1.5"/>
+        <!-- TOP line -->
+        <line x1="30" y1="32" x2="250" y2="32" stroke="#7ab8d4" stroke-width="1" stroke-dasharray="4,3"/>
+        <text x="26" y="36" font-family="IBM Plex Mono,monospace" font-size="9" fill="#3a6a8a" text-anchor="end">TOP</text>
+        <text x="26" y="102" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a6a7a" text-anchor="end">0</text>
+        <!-- Sawtooth waveform -->
+        <polyline points="30,100 90,32 90,100 150,32 150,100 210,32 210,100 250,32"
+                  stroke="#3a6a8a" stroke-width="2" fill="none"/>
+        <!-- Overflow markers -->
+        <line x1="90" y1="90" x2="90" y2="108" stroke="#9aabb8" stroke-width="1" stroke-dasharray="3,2"/>
+        <line x1="150" y1="90" x2="150" y2="108" stroke="#9aabb8" stroke-width="1" stroke-dasharray="3,2"/>
+        <line x1="210" y1="90" x2="210" y2="108" stroke="#9aabb8" stroke-width="1" stroke-dasharray="3,2"/>
+        <text x="110" y="115" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#5a6a7a">overflow</text>
+        <text x="170" y="115" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#5a6a7a">overflow</text>
+
+        <!-- ── Centre-aligned (up-down) ── -->
+        <text x="450" y="16" font-family="IBM Plex Sans,sans-serif" font-size="12" fill="#1a2840" text-anchor="middle" font-weight="600">Centre-aligned (up-down)</text>
+        <line x1="300" y1="20" x2="300" y2="100" stroke="#c0cdd6" stroke-width="1.5"/>
+        <line x1="300" y1="100" x2="600" y2="100" stroke="#c0cdd6" stroke-width="1.5"/>
+        <line x1="300" y1="32" x2="600" y2="32" stroke="#7ab8d4" stroke-width="1" stroke-dasharray="4,3"/>
+        <text x="296" y="36" font-family="IBM Plex Mono,monospace" font-size="9" fill="#3a6a8a" text-anchor="end">TOP</text>
+        <text x="296" y="102" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a6a7a" text-anchor="end">0</text>
+        <!-- Triangle waveform -->
+        <polyline points="300,100 370,32 440,100 510,32 580,100 600,78"
+                  stroke="#3a6a8a" stroke-width="2" fill="none"/>
+        <!-- Peak markers -->
+        <line x1="370" y1="32" x2="370" y2="108" stroke="#7ab8d4" stroke-width="1" stroke-dasharray="3,2"/>
+        <line x1="510" y1="32" x2="510" y2="108" stroke="#7ab8d4" stroke-width="1" stroke-dasharray="3,2"/>
+        <text x="370" y="115" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#3a6a8a" text-anchor="middle">peak</text>
+        <text x="510" y="115" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#3a6a8a" text-anchor="middle">peak</text>
+        <!-- Zero markers -->
+        <line x1="440" y1="90" x2="440" y2="108" stroke="#9aabb8" stroke-width="1" stroke-dasharray="3,2"/>
+        <line x1="580" y1="90" x2="580" y2="108" stroke="#9aabb8" stroke-width="1" stroke-dasharray="3,2"/>
+        <text x="440" y="115" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#5a6a7a" text-anchor="middle">zero</text>
+
+        <!-- ── PWM polarity comparison annotation ── -->
+        <text x="135" y="135" font-family="IBM Plex Sans,sans-serif" font-size="10.5" fill="#5a6a7a" text-anchor="middle">Period = TOP + 1 ticks</text>
+        <text x="135" y="150" font-family="IBM Plex Sans,sans-serif" font-size="10.5" fill="#5a6a7a" text-anchor="middle">All edges at same phase</text>
+        <text x="135" y="165" font-family="IBM Plex Sans,sans-serif" font-size="10.5" fill="#5a6a7a" text-anchor="middle">(edge-aligned)</text>
+
+        <text x="450" y="135" font-family="IBM Plex Sans,sans-serif" font-size="10.5" fill="#5a6a7a" text-anchor="middle">Period = 2 × TOP ticks</text>
+        <text x="450" y="150" font-family="IBM Plex Sans,sans-serif" font-size="10.5" fill="#5a6a7a" text-anchor="middle">PWM edges symmetric around peak</text>
+        <text x="450" y="165" font-family="IBM Plex Sans,sans-serif" font-size="10.5" fill="#5a6a7a" text-anchor="middle">→ less common-mode EMI in motor drives</text>
+
+        <!-- ── Prescaler annotation ── -->
+        <rect x="20" y="188" width="780" height="72" rx="4" fill="#f0f4f8" stroke="#c0cdd6" stroke-width="1"/>
+        <text x="40" y="207" font-family="IBM Plex Sans,sans-serif" font-size="12" fill="#1a2840" font-weight="600">Timer frequency and prescaler</text>
+        <text x="40" y="226" font-family="IBM Plex Sans,sans-serif" font-size="12" fill="#2a3040">f_timer = f_PCLK / prescaler      →     f_PWM = f_timer / (TOP + 1)    [up-counter]</text>
+        <text x="40" y="246" font-family="IBM Plex Sans,sans-serif" font-size="12" fill="#2a3040">f_PWM = f_timer / (2 × TOP)     [centre-aligned: period = 2 × TOP ticks]</text>
+        <text x="40" y="263" font-family="IBM Plex Mono,monospace" font-size="11" fill="#3a6a8a">Example: 38.4 MHz, prescale=1, TOP=383 → 38.4M / 384 = 100 kHz PWM</text>
+
+      </svg>
+      <div style="text-align:center;font-size:12px;color:#9aabb8;margin-bottom:24px;">Left: up-counter (sawtooth). Right: up-down counter (triangle) used for centre-aligned PWM.</div>
+
+      <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:24px;">
+        <thead>
+          <tr style="background:#eef4f8;">
+            <th style="padding:7px 10px;border:1px solid #d0dae0;font-weight:600;">Mode</th>
+            <th style="padding:7px 10px;border:1px solid #d0dae0;font-weight:600;">EFR32 constant</th>
+            <th style="padding:7px 10px;border:1px solid #d0dae0;font-weight:600;">Behaviour</th>
+            <th style="padding:7px 10px;border:1px solid #d0dae0;font-weight:600;">Period</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td style="padding:6px 10px;border:1px solid #e0e8ed;">Up-count</td><td style="padding:6px 10px;border:1px solid #e0e8ed;font-family:'IBM Plex Mono',monospace;font-size:12px;">timerModeUp</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">0 → TOP → reset</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">(TOP + 1) ticks</td></tr>
+          <tr style="background:#f8f9fb;"><td style="padding:6px 10px;border:1px solid #e0e8ed;">Down-count</td><td style="padding:6px 10px;border:1px solid #e0e8ed;font-family:'IBM Plex Mono',monospace;font-size:12px;">timerModeDown</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">TOP → 0 → reload</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">(TOP + 1) ticks</td></tr>
+          <tr><td style="padding:6px 10px;border:1px solid #e0e8ed;">Up-down</td><td style="padding:6px 10px;border:1px solid #e0e8ed;font-family:'IBM Plex Mono',monospace;font-size:12px;">timerModeUpDown</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">0 → TOP → 0 → … </td><td style="padding:6px 10px;border:1px solid #e0e8ed;">2 × TOP ticks</td></tr>
+        </tbody>
+      </table>
+
+      <!-- ── CC channels ───────────────────────────────────────── -->
+      <div class="section-head" id="cc-channels">Compare/Capture channels</div>
+
+      <div class="prose">
+        Full-featured timers expose several <strong>Compare/Capture (CC) channels</strong>
+        — each is an independent sub-unit with its own value register and output pin.
+        The same hardware block does two different things depending on the mode:
+      </div>
+
+      <ul class="prose" style="margin-top:0;padding-left:1.4em;">
+        <li style="margin-bottom:8px;"><strong>Output compare (OC):</strong> the CNT register is compared to the CC
+          value every tick. On a match, the channel performs a configurable action —
+          toggle the output pin, set it high, set it low, or generate an interrupt.
+          Used for PWM output and precise timing events.</li>
+        <li style="margin-bottom:8px;"><strong>Input capture (IC):</strong> the CC pin is an input. On a configured
+          edge (rising, falling, or both), the current <code>CNT</code> value is copied
+          into the CC value register and an interrupt fires. Used to measure pulse
+          widths, periods, and phase differences.</li>
+      </ul>
+
+      <!-- ── PWM generation ────────────────────────────────────── -->
+      <div class="section-head" id="pwm">PWM generation</div>
+
+      <div class="prose">
+        <strong>Pulse-Width Modulation</strong> (PWM) uses a fixed-frequency switching
+        waveform with a variable duty cycle to encode an analogue value in a digital
+        signal. Average power into a load — an LED, a motor winding, a speaker coil —
+        is proportional to duty cycle. At high enough switching frequency the inductance
+        or persistence-of-vision of the load integrates the PWM into a smooth average.
+      </div>
+
+      <!-- SVG: PWM waveform with counter -->
+      <svg viewBox="0 0 780 220" style="width:100%;max-width:780px;display:block;margin:24px auto 8px;" role="img" aria-label="PWM generation: counter ramp with compare value, and resulting PWM output signal">
+
+        <!-- Counter ramp (top half) -->
+        <text x="15" y="22" font-family="IBM Plex Sans,sans-serif" font-size="11" fill="#5a6a7a">CNT</text>
+        <line x1="40" y1="10" x2="40" y2="90" stroke="#c0cdd6" stroke-width="1.5"/>
+        <line x1="40" y1="90" x2="740" y2="90" stroke="#c0cdd6" stroke-width="1.5"/>
+
+        <!-- TOP dashed line -->
+        <line x1="40" y1="18" x2="740" y2="18" stroke="#7ab8d4" stroke-width="1" stroke-dasharray="5,4"/>
+        <text x="36" y="21" font-family="IBM Plex Mono,monospace" font-size="9" fill="#3a6a8a" text-anchor="end">TOP</text>
+
+        <!-- CC compare value dashed line -->
+        <line x1="40" y1="46" x2="740" y2="46" stroke="#e08040" stroke-width="1" stroke-dasharray="5,4"/>
+        <text x="36" y="49" font-family="IBM Plex Mono,monospace" font-size="9" fill="#e08040" text-anchor="end">CC</text>
+        <text x="36" y="91" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a6a7a" text-anchor="end">0</text>
+
+        <!-- Counter sawtooth: 4 periods -->
+        <polyline points="40,90 155,18 155,90 270,18 270,90 385,18 385,90 500,18 500,90 615,18 615,90 730,18"
+                  stroke="#3a6a8a" stroke-width="2" fill="none"/>
+
+        <!-- CC crossing markers (where CNT crosses CC on rise) -->
+        <!-- CC is at ~39% of TOP, so ~39% of the period width -->
+        <!-- Period width: 155-40 = 115px. CC at 46/90=51% from bottom → 51% of 72px span above 0 -->
+        <!-- Actually let's say CC is at y=46, TOP at y=18, 0 at y=90. Range = 72px. -->
+        <!-- CC fraction from 0: (90-46)/72 = 44/72 ≈ 0.61. So CNT hits CC at 61% of period. -->
+        <!-- Period=115px wide. Cross at 115*0.61≈70px into period. So x = 40+70=110 -->
+        <line x1="110" y1="80" x2="110" y2="46" stroke="#e08040" stroke-width="1" stroke-dasharray="3,2"/>
+        <line x1="225" y1="80" x2="225" y2="46" stroke="#e08040" stroke-width="1" stroke-dasharray="3,2"/>
+        <line x1="340" y1="80" x2="340" y2="46" stroke="#e08040" stroke-width="1" stroke-dasharray="3,2"/>
+        <line x1="455" y1="80" x2="455" y2="46" stroke="#e08040" stroke-width="1" stroke-dasharray="3,2"/>
+        <line x1="570" y1="80" x2="570" y2="46" stroke="#e08040" stroke-width="1" stroke-dasharray="3,2"/>
+        <line x1="685" y1="80" x2="685" y2="46" stroke="#e08040" stroke-width="1" stroke-dasharray="3,2"/>
+
+        <!-- PWM output (bottom half) -->
+        <text x="15" y="135" font-family="IBM Plex Sans,sans-serif" font-size="11" fill="#5a6a7a">PWM</text>
+        <line x1="40" y1="108" x2="40" y2="188" stroke="#c0cdd6" stroke-width="1.5"/>
+        <line x1="40" y1="188" x2="740" y2="188" stroke="#c0cdd6" stroke-width="1.5"/>
+        <text x="36" y="118" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a6a7a" text-anchor="end">1</text>
+        <text x="36" y="190" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a6a7a" text-anchor="end">0</text>
+
+        <!-- PWM waveform: HIGH from 0 to CC, LOW from CC to TOP -->
+        <!-- High periods: 40→110, 155→225, 270→340, 385→455, 500→570, 615→685 -->
+        <polyline points="40,118 110,118 110,188 155,188 155,118 225,118 225,188 270,188 270,118 340,118 340,188 385,188 385,118 455,118 455,188 500,188 500,118 570,118 570,188 615,188 615,118 685,118 685,188 730,188"
+                  stroke="#1a2840" stroke-width="2" fill="none"/>
+
+        <!-- Duty cycle annotation -->
+        <line x1="40" y1="203" x2="110" y2="203" stroke="#e08040" stroke-width="1.5"/>
+        <line x1="40" y1="199" x2="40" y2="207" stroke="#e08040" stroke-width="1.5"/>
+        <line x1="110" y1="199" x2="110" y2="207" stroke="#e08040" stroke-width="1.5"/>
+        <text x="75" y="216" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#e08040" text-anchor="middle">HIGH</text>
+
+        <line x1="110" y1="203" x2="155" y2="203" stroke="#9aabb8" stroke-width="1.5"/>
+        <line x1="155" y1="199" x2="155" y2="207" stroke="#9aabb8" stroke-width="1.5"/>
+        <text x="132" y="216" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#9aabb8" text-anchor="middle">LOW</text>
+
+        <!-- Period annotation -->
+        <line x1="40" y1="220" x2="155" y2="220" stroke="#3a6a8a" stroke-width="1.5"/>
+        <line x1="40" y1="216" x2="40" y2="224" stroke="#3a6a8a" stroke-width="1.5"/>
+        <line x1="155" y1="216" x2="155" y2="224" stroke="#3a6a8a" stroke-width="1.5"/>
+        <text x="97" y="234" font-family="IBM Plex Sans,sans-serif" font-size="9" fill="#3a6a8a" text-anchor="middle">one period</text>
+
+        <!-- Duty cycle label -->
+        <text x="580" y="130" font-family="IBM Plex Sans,sans-serif" font-size="11" fill="#1a2840">Duty cycle = CC / (TOP + 1)</text>
+        <text x="580" y="148" font-family="IBM Plex Sans,sans-serif" font-size="11" fill="#5a6a7a">Here: ~61%</text>
+
+      </svg>
+      <div style="text-align:center;font-size:12px;color:#9aabb8;margin-bottom:24px;">The output is HIGH while CNT &lt; CC (compare value), LOW while CNT ≥ CC. Duty cycle = CC / (TOP + 1).</div>
+
+      <div class="prose">
+        The formula for PWM frequency from an up-counting timer:
+      </div>
+      <div class="math-block" style="font-family:'IBM Plex Mono',monospace;font-size:14px;padding:12px 20px;background:#f0f4f8;border-left:3px solid #7ab8d4;border-radius:3px;margin:0 0 16px 0;color:#1a2840;">
+        f<sub>PWM</sub> = f<sub>PCLK</sub> / (prescaler × (TOP + 1))
+        &nbsp;&nbsp;&nbsp;
+        duty = CC / (TOP + 1) × 100%
+      </div>
+
+      <div class="callout">
+        <strong>Choosing TOP for a target frequency.</strong>
+        Rearrange: TOP = f_PCLK / (prescaler × f_PWM) − 1.
+        At 38.4 MHz with prescale=1, a 10 kHz PWM requires TOP = 38400000/10000 − 1 = 3839.
+        Resolution is then log₂(3840) ≈ 11.9 bits. Lowering f_PWM improves resolution;
+        raising it reduces it. For 16-bit timers, the hard limit is TOP ≤ 65535.
+        Use a prescaler to bring very low frequencies into range without sacrificing resolution.
+      </div>
+
+      <!-- ── Input capture ─────────────────────────────────────── -->
+      <div class="section-head" id="capture">Input capture — measuring time</div>
+
+      <div class="prose">
+        Input capture is the timer in reverse: instead of producing events at programmed
+        counter values, it records the counter value at the moment an external edge
+        arrives. Two captures on successive edges of the same signal give you period or
+        pulse width with the resolution of the timer clock.
+      </div>
+
+      <pre class="code-block"><code>// Period measurement using CC0 in capture mode
+// Capture on every rising edge; period = difference between successive captures
+
+static volatile uint32_t last_capture = 0;
+static volatile uint32_t period_ticks = 0;
+
+void TIMER0_CC0_IRQHandler(void) {
+    uint32_t now = TIMER_CaptureGet(TIMER0, 0);
+    TIMER_IntClear(TIMER0, TIMER_IF_CC0);
+
+    if (last_capture > 0) {
+        // Handle 16-bit overflow if last > now
+        period_ticks = (now >= last_capture)
+                     ? (now - last_capture)
+                     : (0xFFFF - last_capture + now + 1);
+    }
+    last_capture = now;
+}
+
+// Period in seconds = period_ticks / f_timer
+// Frequency = f_timer / period_ticks</code></pre>
+
+      <!-- ── EFR32 TIMER API ────────────────────────────────────── -->
+      <div class="section-head" id="efr32-api">EFR32 TIMER API</div>
+
+      <div class="prose">
+        The EMLIB TIMER driver centers on two init structures:
+        <code>TIMER_Init_TypeDef</code> for the counter itself (mode, prescaler,
+        enable-on-init) and <code>TIMER_InitCC_TypeDef</code> for each CC channel
+        (compare/capture/PWM mode, output polarity, edge sensitivity).
+      </div>
+
+      <pre class="code-block"><code>#include "em_timer.h"
+#include "em_cmu.h"
+#include "em_gpio.h"
+
+#define PWM_FREQ_HZ  10000ul   // 10 kHz
+
+void timer_pwm_init(void) {
+    CMU_ClockEnable(cmuClock_TIMER0, true);
+    CMU_ClockEnable(cmuClock_GPIO,   true);
+
+    // ── 1. Configure the counter ───────────────────────────────
+    TIMER_Init_TypeDef init = TIMER_INIT_DEFAULT;
+    init.prescale = timerPrescale1;    // divide by 1 (full 38.4 MHz)
+    init.mode     = timerModeUp;
+    init.enable   = false;             // don't start yet
+    TIMER_Init(TIMER0, &init);
+
+    // Set TOP for the desired PWM frequency
+    uint32_t f_timer = CMU_ClockFreqGet(cmuClock_TIMER0);
+    uint32_t top = (f_timer / PWM_FREQ_HZ) - 1;  // e.g. 3839 for 10 kHz
+    TIMER_TopSet(TIMER0, top);
+
+    // ── 2. Configure CC0 for PWM output ────────────────────────
+    TIMER_InitCC_TypeDef cc = TIMER_INITCC_DEFAULT;
+    cc.mode = timerCCModePWM;
+    cc.cmoa = timerOutputActionNone;   // not used in PWM mode
+    TIMER_InitCC(TIMER0, 0, &cc);
+
+    // Start at 50% duty cycle
+    TIMER_CompareSet(TIMER0, 0, top / 2);
+
+    // ── 3. Route CC0 output to a GPIO pin ─────────────────────
+    GPIO_PinModeSet(gpioPortA, 0, gpioModePushPull, 0);
+    TIMER0->ROUTELOC0 = TIMER_ROUTELOC0_CC0LOC_LOC0;
+    TIMER0->ROUTEPEN  = TIMER_ROUTEPEN_CC0PEN;
+
+    // ── 4. Start the timer ─────────────────────────────────────
+    TIMER_Enable(TIMER0, true);
+}
+
+// Adjust duty cycle at runtime (0–100%)
+void pwm_set_duty_pct(uint8_t pct) {
+    uint32_t top = TIMER_TopGet(TIMER0);
+    // Clamp to valid range
+    if (pct > 100) pct = 100;
+    TIMER_CompareSet(TIMER0, 0, (uint32_t)(top + 1) * pct / 100);
+}</code></pre>
+
+      <div class="callout">
+        <strong>Series 2 routing.</strong> On EFR32 Series 2, timer output routing
+        uses the GPIO peripheral's route registers instead of <code>TIMER→ROUTELOC0</code>:
+        <br><br>
+        <code>GPIO-&gt;TIMERROUTE[0].CC0ROUTE = (gpioPortA &lt;&lt; 16) | 0;</code><br>
+        <code>GPIO-&gt;TIMERROUTE[0].ROUTEEN = GPIO_TIMER_ROUTEEN_CC0PEN;</code>
+      </div>
+
+      <!-- ── Dead-time insertion ───────────────────────────────── -->
+      <div class="section-head" id="dead-time">Dead-time insertion</div>
+
+      <div class="prose">
+        Motor drives and switching power supplies use complementary pairs of MOSFETs
+        — a high-side switch and a low-side switch in a half-bridge. If both switches
+        are on at the same time, the supply rail is shorted to GND: this is called
+        <em>shoot-through</em>, and it destroys FETs immediately. Even with
+        theoretically complementary gate signals, real FETs have finite turn-on and
+        turn-off delays, so you must insert a dead time — a short window where both
+        switches are off — during every switching transition.
+      </div>
+
+      <!-- SVG: dead-time waveforms -->
+      <svg viewBox="0 0 780 200" style="width:100%;max-width:780px;display:block;margin:24px auto 8px;" role="img" aria-label="Dead-time insertion: CC output and complementary DTI output with dead-time gaps">
+
+        <!-- CC output (top) -->
+        <text x="30" y="26" font-family="IBM Plex Sans,sans-serif" font-size="11" fill="#5a6a7a">CC0</text>
+        <text x="30" y="40" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a6a7a">(HS)</text>
+        <line x1="60" y1="15" x2="60" y2="60" stroke="#c0cdd6" stroke-width="1.5"/>
+        <line x1="60" y1="60" x2="740" y2="60" stroke="#c0cdd6" stroke-width="1.5"/>
+
+        <!-- CC waveform: HIGH→LOW transitions -->
+        <polyline points="60,22 280,22 280,60 480,60 480,22 680,22 680,60 740,60"
+                  stroke="#3a6a8a" stroke-width="2.5" fill="none"/>
+
+        <!-- Dead-time annot on falling edge of CC0 -->
+        <line x1="280" y1="10" x2="280" y2="100" stroke="#e04040" stroke-width="1" stroke-dasharray="3,2"/>
+        <line x1="296" y1="10" x2="296" y2="100" stroke="#e04040" stroke-width="1" stroke-dasharray="3,2"/>
+        <rect x="280" y="62" width="16" height="14" fill="#e04040" opacity="0.15" rx="1"/>
+        <text x="288" y="72" font-family="IBM Plex Mono,monospace" font-size="7.5" fill="#e04040" text-anchor="middle">dt</text>
+
+        <line x1="480" y1="10" x2="480" y2="100" stroke="#e04040" stroke-width="1" stroke-dasharray="3,2"/>
+        <line x1="496" y1="10" x2="496" y2="100" stroke="#e04040" stroke-width="1" stroke-dasharray="3,2"/>
+        <rect x="480" y="62" width="16" height="14" fill="#e04040" opacity="0.15" rx="1"/>
+        <text x="488" y="72" font-family="IBM Plex Mono,monospace" font-size="7.5" fill="#e04040" text-anchor="middle">dt</text>
+
+        <line x1="680" y1="10" x2="680" y2="100" stroke="#e04040" stroke-width="1" stroke-dasharray="3,2"/>
+        <line x1="696" y1="10" x2="696" y2="100" stroke="#e04040" stroke-width="1" stroke-dasharray="3,2"/>
+        <rect x="680" y="62" width="16" height="14" fill="#e04040" opacity="0.15" rx="1"/>
+        <text x="688" y="72" font-family="IBM Plex Mono,monospace" font-size="7.5" fill="#e04040" text-anchor="middle">dt</text>
+
+        <!-- CDTI output (complementary, bottom) -->
+        <text x="30" y="116" font-family="IBM Plex Sans,sans-serif" font-size="11" fill="#5a6a7a">CDTI0</text>
+        <text x="30" y="130" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a6a7a">(LS)</text>
+        <line x1="60" y1="105" x2="60" y2="155" stroke="#c0cdd6" stroke-width="1.5"/>
+        <line x1="60" y1="155" x2="740" y2="155" stroke="#c0cdd6" stroke-width="1.5"/>
+
+        <!-- CDTI: inverse of CC0 but with dead-time gaps on both transitions -->
+        <!-- Dead time = 16px wide. CC transitions at 280, 480, 680. -->
+        <!-- CDTI: LOW during [60..280], dead[280..296], HIGH during [296..480], dead[480..496], LOW during [496..680], dead[680..696], HIGH... -->
+        <polyline points="60,155 280,155 280,155 296,155 296,112 480,112 480,155 496,155 496,112 680,112 680,155 696,155 696,112 740,112"
+                  stroke="#7ab8d4" stroke-width="2.5" fill="none"/>
+
+        <!-- Shade the dead-time windows on CDTI -->
+        <rect x="280" y="105" width="16" height="50" fill="#e04040" opacity="0.1" rx="1"/>
+        <rect x="480" y="105" width="16" height="50" fill="#e04040" opacity="0.1" rx="1"/>
+        <rect x="680" y="105" width="16" height="50" fill="#e04040" opacity="0.1" rx="1"/>
+
+        <!-- Annotations -->
+        <text x="170" y="180" font-family="IBM Plex Sans,sans-serif" font-size="10.5" fill="#5a6a7a" text-anchor="middle">HS on, LS off</text>
+        <text x="388" y="180" font-family="IBM Plex Sans,sans-serif" font-size="10.5" fill="#5a6a7a" text-anchor="middle">HS off, LS on</text>
+        <text x="288" y="180" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#e04040" text-anchor="middle">both off</text>
+        <text x="488" y="180" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#e04040" text-anchor="middle">both off</text>
+        <text x="688" y="180" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#e04040" text-anchor="middle">both off</text>
+
+      </svg>
+      <div style="text-align:center;font-size:12px;color:#9aabb8;margin-bottom:24px;">Red windows: both high-side and low-side off simultaneously. Prevents shoot-through during switching transitions.</div>
+
+      <div class="prose">
+        The EFR32 TIMER has a built-in Dead-Time Insertion (DTI) unit that automatically
+        generates the complementary output (CDTI) with configurable dead-time rise and
+        fall periods. You do not need to manage the dead time in software.
+      </div>
+
+      <pre class="code-block"><code>// ── Dead-Time Insertion for half-bridge motor drive ──────────
+TIMER_InitDTI_TypeDef dti = TIMER_INITDTI_DEFAULT;
+dti.enable              = true;
+dti.activeLowOut        = false;   // active-high outputs
+dti.invertComplementaryOut = true; // CDTI = NOT CC by default; DTI adds the gap
+dti.prescale            = timerDtiPrescale1;
+dti.riseTime            = 4;       // dead-time ticks before LS turns on
+dti.fallTime            = 4;       // dead-time ticks before HS turns on
+// At 38.4 MHz: 4 ticks = 104 ns dead time
+TIMER_InitDTI(TIMER0, &dti);
+
+// Enable CDTI0 output pin
+GPIO_PinModeSet(gpioPortA, 1, gpioModePushPull, 0); // CDTI0 pin
+TIMER0->ROUTEPEN  |= TIMER_ROUTEPEN_CDTI0PEN;
+TIMER0->ROUTELOC2  = TIMER_ROUTELOC2_CDTI0LOC_LOC0;</code></pre>
+
+      <div class="callout">
+        <strong>Dead time must exceed FET turn-off time.</strong> Check the FET datasheet
+        for t<sub>off</sub> (turn-off delay + fall time). The dead-time setting must be at
+        least this value plus margin. Too little dead time → shoot-through; too much dead
+        time → distorted output waveform (matters more for audio than motor control).
+        Typical power FETs need 50–200 ns; SiC/GaN devices can be &lt;20 ns.
+      </div>
+
+      <!-- ── LETIMER ───────────────────────────────────────────── -->
+      <div class="section-head" id="letimer">LETIMER — low-energy periodic timer</div>
+
+      <div class="prose">
+        The full-featured TIMERs run from HFPERCLK, which requires EM0 (active mode).
+        For periodic tasks in a battery-powered device — a sensor poll every 100 ms,
+        a heartbeat LED blink every second, a watchdog kick every 500 ms — you want
+        a timer that runs in EM2 (deep sleep). That is <code>LETIMER0</code>.
+      </div>
+
+      <div class="prose">
+        LETIMER runs from the 32.768 kHz LFXO (or the ULFRCO at ~1 kHz for even
+        lower power). It is 16-bit and counts down from COMP0 to 0, then reloads —
+        generating an interrupt at each underflow. Its only job is to wake the CPU at
+        regular intervals.
+      </div>
+
+      <pre class="code-block"><code>#include "em_letimer.h"
+#include "em_cmu.h"
+
+#define WAKEUP_HZ  10  // 10 Hz = 100 ms period
+
+void letimer_init(void) {
+    // LETIMER runs from LFXO (must be enabled in CMU)
+    CMU_OscillatorEnable(cmuOsc_LFXO, true, true);
+    CMU_ClockSelectSet(cmuClock_LFA, cmuSelect_LFXO);
+    CMU_ClockEnable(cmuClock_LETIMER0, true);
+
+    LETIMER_Init_TypeDef init = LETIMER_INIT_DEFAULT;
+    init.enable   = false;
+    init.comp0Top = true;   // counter reloads from COMP0 on underflow
+    LETIMER_Init(LETIMER0, &init);
+
+    // Period = LFXO / WAKEUP_HZ = 32768 / 10 = 3277 ticks
+    uint32_t comp0 = CMU_ClockFreqGet(cmuClock_LETIMER0) / WAKEUP_HZ;
+    LETIMER_CompareSet(LETIMER0, 0, comp0);
+
+    // Interrupt on COMP0 match (counts down to 0, reloads comp0)
+    LETIMER_IntEnable(LETIMER0, LETIMER_IF_COMP0);
+    NVIC_ClearPendingIRQ(LETIMER0_IRQn);
+    NVIC_EnableIRQ(LETIMER0_IRQn);
+
+    LETIMER_Enable(LETIMER0, true);
+}
+
+void LETIMER0_IRQHandler(void) {
+    LETIMER_IntClear(LETIMER0, LETIMER_IF_COMP0);
+    // Runs every 100 ms, even from EM2 deep sleep
+    periodic_task();
+}</code></pre>
+
+      <div class="prose">
+        The typical pattern for a BLE sensor device: the system enters EM2 in the main
+        loop. LETIMER fires every N milliseconds, the NVIC wakes the CPU back to EM0
+        for the IRQ handler, the peripheral task runs (read sensor, update BLE
+        advertisement), and the CPU returns to EM2. Total active time might be &lt;1 ms
+        per 100 ms period — 99% duty cycle in EM2.
+      </div>
+
+      <hr class="lesson-rule">
+
+      <div class="section-head">References</div>
+      <ul class="prose" style="padding-left:1.4em;font-size:13.5px;color:#5a6a7a;">
+        <li style="margin-bottom:6px;">Silicon Labs, <em>EFR32xG12 Reference Manual</em> — TIMER and LETIMER chapters: counter modes, CC configuration, DTI, routing.</li>
+        <li style="margin-bottom:6px;">Silicon Labs, <em>EMLIB API Reference — em_timer.h / em_letimer.h</em> — init structures, compare/capture functions.</li>
+        <li style="margin-bottom:6px;">J. Yiu, <em>The Definitive Guide to ARM Cortex-M3 and Cortex-M4 Processors</em> (3rd ed.) — SysTick and general timer usage patterns.</li>
+        <li style="margin-bottom:6px;">M. White, <em>Making Embedded Systems</em> (2nd ed.) — Chapter on timers, PWM, and the tradeoffs between polling, interrupts, and timer-triggered DMA.</li>
+      </ul>
+
+      <!-- ── Nav ───────────────────────────────────────────────── -->
+      <div class="lesson-nav">
+        <a href="gpio.html" class="lesson-nav-btn">← Lesson 5: GPIO</a>
+        <a href="index.html" class="lesson-nav-btn">Back to Embedded Systems</a>
+        <a href="#" class="lesson-nav-btn disabled">Next → (coming soon)</a>
+      </div>
+
+    </div><!-- /main -->
+
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+</body>
+</html>
