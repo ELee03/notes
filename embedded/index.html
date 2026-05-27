@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Embedded Systems — Subject Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Architecture &amp; Internals</div>
+        <span class="nav-item planned">1 · MCU Architecture</span>
+        <span class="nav-item planned">2 · Memory &amp; Clock Systems</span>
+        <span class="nav-item planned">3 · Interrupts &amp; the NVIC</span>
+        <span class="nav-item planned">4 · DMA</span>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Peripherals</div>
+        <span class="nav-item planned">5 · GPIO</span>
+        <span class="nav-item planned">6 · Timers &amp; PWM</span>
+        <span class="nav-item planned">7 · ADC &amp; DAC</span>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Protocols</div>
+        <span class="nav-item planned">8 · UART</span>
+        <span class="nav-item planned">9 · SPI</span>
+        <span class="nav-item planned">10 · I2C</span>
+        <span class="nav-item planned">11 · CAN Bus</span>
+        <span class="nav-item planned">12 · USB Fundamentals</span>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Firmware</div>
+        <span class="nav-item planned">13 · Bare-Metal Patterns</span>
+        <span class="nav-item planned">14 · RTOS Concepts</span>
+        <span class="nav-item planned">15 · Debugging &amp; Test</span>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">PCB Design</div>
+        <span class="nav-item planned">16 · Layout Fundamentals</span>
+        <span class="nav-item planned">17 · Mixed-Signal Layout</span>
+        <span class="nav-item planned">18 · Power &amp; Thermal</span>
+        <span class="nav-item planned">19 · High-Speed &amp; RF</span>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Subject Notes</a>
+        <span class="sep">›</span>
+        <span>Embedded Systems</span>
+      </div>
+
+      <div class="lesson-title">Embedded Systems</div>
+      <div class="lesson-meta">MCU Architecture · Protocols · Firmware · PCB Design</div>
+
+      <div class="prose">
+        How hardware and software meet. These notes cover the full stack from silicon
+        peripherals and communication protocols up through firmware architecture and
+        PCB layout — with emphasis on understanding what's actually happening at the
+        register and signal level, not just how to use a HAL.
+      </div>
+
+      <hr class="lesson-rule">
+
+      <!-- ── Architecture & Internals ──────────────────────── -->
+      <div class="section-head">Architecture &amp; Internals</div>
+
+      <div class="course-block">
+        <div class="course-block-code">Lessons 1–4</div>
+        <div class="course-block-name">MCU Architecture, Memory, Clocks, Interrupts, DMA</div>
+        <div class="course-block-desc">
+          The CPU core (ARM Cortex-M pipeline, register file, modes), memory map layout
+          (flash, SRAM, peripheral address space), clock trees and PLLs, the reset
+          sequence, the NVIC interrupt controller (priorities, preemption, tail-chaining),
+          and DMA — why it exists, how transfer descriptors work, and the circular buffer
+          pattern used in audio and ADC streaming.
+        </div>
+      </div>
+
+      <!-- ── Peripherals ────────────────────────────────────── -->
+      <div class="section-head">Peripherals</div>
+
+      <div class="course-block">
+        <div class="course-block-code">Lessons 5–7</div>
+        <div class="course-block-name">GPIO, Timers &amp; PWM, ADC &amp; DAC</div>
+        <div class="course-block-desc">
+          GPIO configuration registers, alternate function mapping, open-drain vs
+          push-pull, input pull-ups and Schmitt triggers. Timer modes (up-counter,
+          capture/compare, centre-aligned), PWM generation and dead-time insertion.
+          SAR ADC operation, sampling rate, reference voltage, antialiasing, and
+          DMA-driven ADC acquisition for biosignals.
+        </div>
+      </div>
+
+      <!-- ── Communication Protocols ───────────────────────── -->
+      <div class="section-head">Communication Protocols</div>
+
+      <div class="course-block">
+        <div class="course-block-code">Lesson 8 · UART</div>
+        <div class="course-block-name">Universal Asynchronous Receiver-Transmitter</div>
+        <div class="course-block-desc">
+          Frame format (start bit, data bits, parity, stop bits), baud rate generation
+          and clock error tolerance, RS-232 vs TTL levels, flow control (RTS/CTS),
+          and common failure modes (framing errors, overrun).
+        </div>
+      </div>
+
+      <div class="course-block">
+        <div class="course-block-code">Lesson 9 · SPI</div>
+        <div class="course-block-name">Serial Peripheral Interface</div>
+        <div class="course-block-desc">
+          The four CPOL/CPHA mode combinations and why they matter, full-duplex
+          shift-register operation, chip select management (hardware vs software NSS),
+          multi-device bus topologies, and maximum clock frequency constraints from
+          trace capacitance.
+        </div>
+      </div>
+
+      <div class="course-block">
+        <div class="course-block-code">Lesson 10 · I2C</div>
+        <div class="course-block-name">Inter-Integrated Circuit</div>
+        <div class="course-block-desc">
+          Open-drain bus topology and pull-up resistor sizing, START/STOP conditions,
+          7-bit and 10-bit addressing, ACK/NAK arbitration, clock stretching, repeated
+          START for register reads, and common issues (bus lockup, address conflicts).
+        </div>
+      </div>
+
+      <div class="course-block">
+        <div class="course-block-code">Lesson 11 · CAN Bus</div>
+        <div class="course-block-name">Controller Area Network</div>
+        <div class="course-block-desc">
+          Differential signalling (CAN-H/CAN-L), dominant/recessive bit encoding,
+          non-destructive arbitration by message ID, frame format (standard and
+          extended), bit stuffing, error detection and the error confinement state
+          machine (active/passive/bus-off), and termination resistor placement.
+        </div>
+      </div>
+
+      <div class="course-block">
+        <div class="course-block-code">Lesson 12 · USB Fundamentals</div>
+        <div class="course-block-name">Universal Serial Bus</div>
+        <div class="course-block-desc">
+          Device enumeration, descriptor hierarchy (device → configuration → interface →
+          endpoint), the four transfer types (control, bulk, interrupt, isochronous),
+          USB-FS vs USB-HS electrical requirements, and CDC-ACM as a practical
+          virtual serial port example.
+        </div>
+      </div>
+
+      <!-- ── Firmware ───────────────────────────────────────── -->
+      <div class="section-head">Firmware Practices</div>
+
+      <div class="course-block">
+        <div class="course-block-code">Lessons 13–15</div>
+        <div class="course-block-name">Bare-Metal Patterns, RTOS, Debugging</div>
+        <div class="course-block-desc">
+          Bare-metal startup sequence (vector table, stack setup, C runtime init),
+          state machine design, ring buffers and interrupt-safe data structures,
+          peripheral driver layering. RTOS scheduling (preemptive vs cooperative),
+          task priorities, mutexes and binary semaphores, common RTOS pitfalls
+          (priority inversion, stack overflow). Hardware debugging with SWD/JTAG,
+          OpenOCD and GDB, logic analyzer and oscilloscope techniques for protocol
+          decoding.
+        </div>
+      </div>
+
+      <!-- ── PCB Design ─────────────────────────────────────── -->
+      <div class="section-head">PCB Design</div>
+
+      <div class="course-block">
+        <div class="course-block-code">Lesson 16 · Layout Fundamentals</div>
+        <div class="course-block-name">Stackup, Ground Planes, Decoupling</div>
+        <div class="course-block-desc">
+          Layer stackup choices (2-layer vs 4-layer), continuous ground plane and
+          why return current path matters, bulk and local decoupling capacitor
+          placement and value selection, via stitching, and mechanical design rules
+          (clearance, creepage, board edge keepouts).
+        </div>
+      </div>
+
+      <div class="course-block">
+        <div class="course-block-code">Lesson 17 · Mixed-Signal Layout</div>
+        <div class="course-block-name">Analog/Digital Partitioning</div>
+        <div class="course-block-desc">
+          Separating analog and digital domains, ADC and DAC layout (AVDD/DVDD
+          isolation, reference bypass, input filtering), instrumentation amplifier
+          placement for biosensor front-ends, guarding high-impedance nodes, and
+          managing digital noise coupling into analog circuitry.
+        </div>
+      </div>
+
+      <div class="course-block">
+        <div class="course-block-code">Lesson 18 · Power &amp; Thermal</div>
+        <div class="course-block-name">Switching Regulators, Power Delivery, Heat</div>
+        <div class="course-block-desc">
+          Buck and boost converter layout (tight switching loop, input capacitor
+          placement), power delivery network (PDN) design, thermal relief in
+          solder pads vs thermal resistance, copper pours for heat spreading,
+          and estimating junction temperature from power dissipation.
+        </div>
+      </div>
+
+      <div class="course-block">
+        <div class="course-block-code">Lesson 19 · High-Speed &amp; RF</div>
+        <div class="course-block-name">Impedance Control, Differential Pairs, Antennas</div>
+        <div class="course-block-desc">
+          Controlled impedance traces (microstrip and stripline), differential pair
+          routing and length matching, USB and Ethernet layout rules, PCB antenna
+          design (inverted-F, chip antenna placement), RF keepouts, and
+          matching network placement.
+        </div>
+      </div>
+
+      <hr class="lesson-rule">
+
+      <div class="section-head">References</div>
+
+      <div class="prose" style="font-size:13.5px; color:#5a6a7a; margin-bottom:16px;">
+        These notes draw on a mix of sources. The most useful references for
+        embedded work are vendor documentation — TRMs and datasheets are
+        the ground truth for any specific peripheral.
+      </div>
+
+      <div class="section-head" style="margin-top:16px;">Textbooks</div>
+      <ul class="textbook-list">
+        <li><span class="bk-code">White — Making Embedded Systems (2nd ed., O'Reilly)</span><br>Practical patterns for firmware architecture. Best entry point.</li>
+        <li><span class="bk-code">Yiu — The Definitive Guide to ARM Cortex-M (4th ed.)</span><br>Authoritative reference for the Cortex-M architecture, NVIC, memory model.</li>
+        <li><span class="bk-code">Barr &amp; Massa — Programming Embedded Systems (O'Reilly)</span><br>Solid coverage of bare-metal C patterns and peripheral drivers.</li>
+        <li><span class="bk-code">Horowitz &amp; Hill — The Art of Electronics (3rd ed.)</span><br>Chapters on op-amps, ADCs, and noise are essential for mixed-signal work.</li>
+        <li><span class="bk-code">Ott — Electromagnetic Compatibility Engineering</span><br>The standard reference for PCB EMC, ground planes, and filtering.</li>
+      </ul>
+
+      <div class="section-head" style="margin-top:16px;">Vendor documentation</div>
+      <div class="prose" style="font-size:13px; color:#7a8a9a;">
+        Technical Reference Manuals (TRMs) and datasheets for specific MCU families
+        are referenced where relevant to individual lessons. These are the primary
+        source for register-level detail — no textbook substitutes for the actual TRM
+        of the part you're using.
+      </div>
+
+    </div><!-- /main -->
+
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+</body>
+</html>
