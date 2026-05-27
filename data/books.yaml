@@ -1,0 +1,87 @@
+books:
+
+  # ── Control Theory ────────────────────────────────────────────────────────
+
+  - id: ogata-mce
+    title: Modern Control Engineering
+    authors: [Katsuhiko Ogata]
+    edition: 5th
+    publisher: Pearson
+    year: 2010
+    clusters: [control]
+    annotation: The standard undergraduate reference. Dense but comprehensive — transfer functions, root locus, frequency response, and state-space.
+
+  - id: franklin-feedback
+    title: Feedback Control of Dynamic Systems
+    authors: [Gene F. Franklin, J. David Powell, Abbas Emami-Naeini]
+    edition: 8th
+    publisher: Pearson
+    year: 2019
+    clusters: [control]
+    annotation: Strong on physical intuition and worked examples. Good for frequency-domain methods and digital control.
+
+  - id: dorf-bishop
+    title: Modern Control Systems
+    authors: [Richard C. Dorf, Robert H. Bishop]
+    edition: 13th
+    publisher: Pearson
+    year: 2017
+    clusters: [control]
+    annotation: Broad coverage of classical and modern control. Useful for root locus, PID tuning, and quick reference.
+
+  # ── Embedded Systems ──────────────────────────────────────────────────────
+
+  - id: white-mes
+    title: Making Embedded Systems
+    authors: [Elecia White]
+    edition: 2nd
+    publisher: O'Reilly
+    year: 2024
+    clusters: [embedded]
+    annotation: Practical patterns for firmware architecture. Best entry point for embedded software design — state machines, driver layering, RTOS concepts.
+
+  - id: yiu-arm
+    title: The Definitive Guide to ARM Cortex-M3 and Cortex-M4 Processors
+    authors: [Joseph Yiu]
+    edition: 4th
+    publisher: Newnes
+    year: 2013
+    clusters: [embedded]
+    annotation: Authoritative reference for the Cortex-M architecture, NVIC, memory model, and fault handling. The ground truth for ARM-core specifics.
+
+  - id: barr-massa
+    title: Programming Embedded Systems
+    authors: [Michael Barr, Anthony Massa]
+    edition: 2nd
+    publisher: O'Reilly
+    year: 2006
+    clusters: [embedded]
+    annotation: Solid coverage of bare-metal C patterns and peripheral driver design. Practical and hardware-focused.
+
+  - id: horowitz-aoe
+    title: The Art of Electronics
+    authors: [Paul Horowitz, Winfield Hill]
+    edition: 3rd
+    publisher: Cambridge University Press
+    year: 2015
+    clusters: [embedded, circuits, analog]
+    annotation: The definitive practical electronics reference. Chapters on op-amps, ADCs, noise, and mixed-signal design are essential reading for any embedded hardware work.
+
+  - id: ott-emc
+    title: Electromagnetic Compatibility Engineering
+    authors: [Henry W. Ott]
+    publisher: Wiley
+    year: 2009
+    clusters: [embedded]
+    annotation: The standard reference for PCB EMC — ground planes, return current paths, filtering, and layout for emissions and immunity.
+
+  # ── Food Science ──────────────────────────────────────────────────────────
+
+  - id: mcgee-food
+    title: "On Food and Cooking: The Science and Lore of the Kitchen"
+    authors: [Harold McGee]
+    edition: Revised
+    publisher: Scribner
+    year: 2004
+    clusters: [food-science, chemistry, biochemistry]
+    annotation: The foundational reference for applied food science. Covers the chemistry of cooking — Maillard reactions, protein denaturation, emulsification, fermentation, and why techniques work.

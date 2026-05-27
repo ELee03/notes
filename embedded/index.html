@@ -15,6 +15,8 @@
   <div class="topbar-inner">
     <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
     <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
     <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
   </div>
 </div>
@@ -244,13 +246,7 @@
       </div>
 
       <div class="section-head" style="margin-top:16px;">Textbooks</div>
-      <ul class="textbook-list">
-        <li><span class="bk-code">White — Making Embedded Systems (2nd ed., O'Reilly)</span><br>Practical patterns for firmware architecture. Best entry point.</li>
-        <li><span class="bk-code">Yiu — The Definitive Guide to ARM Cortex-M (4th ed.)</span><br>Authoritative reference for the Cortex-M architecture, NVIC, memory model.</li>
-        <li><span class="bk-code">Barr &amp; Massa — Programming Embedded Systems (O'Reilly)</span><br>Solid coverage of bare-metal C patterns and peripheral drivers.</li>
-        <li><span class="bk-code">Horowitz &amp; Hill — The Art of Electronics (3rd ed.)</span><br>Chapters on op-amps, ADCs, and noise are essential for mixed-signal work.</li>
-        <li><span class="bk-code">Ott — Electromagnetic Compatibility Engineering</span><br>The standard reference for PCB EMC, ground planes, and filtering.</li>
-      </ul>
+      <ul class="book-list" id="cluster-refs"></ul>
 
       <div class="section-head" style="margin-top:16px;">Vendor documentation</div>
       <div class="prose" style="font-size:13px; color:#7a8a9a;">
@@ -259,6 +255,9 @@
         source for register-level detail — no textbook substitutes for the actual TRM
         of the part you're using.
       </div>
+
+      <script src="../books-render.js"></script>
+      <script>renderBooks({ containerId: 'cluster-refs', clusterId: 'embedded', jsonPath: '../books.json' });</script>
 
     </div><!-- /main -->
 

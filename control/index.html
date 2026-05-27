@@ -15,6 +15,8 @@
   <div class="topbar-inner">
     <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
     <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
     <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
   </div>
 </div>
@@ -101,11 +103,7 @@
       </div>
 
       <div class="section-head" style="margin-top:16px;">Textbooks</div>
-      <ul class="textbook-list">
-        <li><span class="bk-code">Ogata — Modern Control Engineering (5th ed.)</span><br>The standard undergraduate reference. Dense but comprehensive.</li>
-        <li><span class="bk-code">Franklin, Powell &amp; Emami-Naeini — Feedback Control of Dynamic Systems (8th ed.)</span><br>Strong on physical intuition and worked examples.</li>
-        <li><span class="bk-code">Dorf &amp; Bishop — Modern Control Systems (13th ed.)</span><br>Broad coverage; useful for quick reference.</li>
-      </ul>
+      <ul class="book-list" id="cluster-refs"></ul>
 
       <div class="section-head" style="margin-top:16px;">Related courses</div>
       <div class="prose" style="font-size:13px; color:#7a8a9a;">
@@ -113,6 +111,9 @@
         cover this material across two terms. Some course notes from those offerings
         are referenced where relevant.
       </div>
+
+      <script src="../books-render.js"></script>
+      <script>renderBooks({ containerId: 'cluster-refs', clusterId: 'control', jsonPath: '../books.json' });</script>
 
     </div><!-- /main -->
 

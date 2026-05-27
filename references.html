@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Library — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="references.html" class="topbar-link topbar-link-active">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Filter by cluster</div>
+        <button class="filter-btn filter-active" data-cluster="all">All books</button>
+        <button class="filter-btn" data-cluster="control">Control Theory</button>
+        <button class="filter-btn" data-cluster="embedded">Embedded Systems</button>
+        <button class="filter-btn" data-cluster="circuits">Circuits &amp; Analog</button>
+        <button class="filter-btn" data-cluster="food-science">Food Science</button>
+        <button class="filter-btn" data-cluster="chemistry">Chemistry</button>
+        <button class="filter-btn" data-cluster="biochemistry">Biochemistry</button>
+      </div>
+
+      <div class="nav-section">
+        <div class="sidebar-text" style="font-size:12px; color:#8a9aaa; line-height:1.6;">
+          Books are listed once here and referenced from cluster pages by ID — no duplication.
+          New entries go in <span style="font-family:'IBM Plex Mono',monospace; font-size:11px;">data/books.yaml</span>.
+        </div>
+      </div>
+    </div><!-- /sidebar -->
+
+    <div class="main">
+
+      <div class="lesson-title">Library</div>
+      <div class="lesson-meta">Textbooks &amp; references across all clusters</div>
+
+      <div class="prose" style="margin-bottom: 24px;">
+        Every textbook and primary reference used across Field Notes, in one place.
+        Use the filter to see what's relevant to a particular cluster.
+        Vendor documentation (datasheets, TRMs) and course notes are listed
+        inside individual cluster pages where relevant.
+      </div>
+
+      <ul class="book-list" id="all-refs"></ul>
+
+    </div><!-- /main -->
+
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+<script src="books-render.js"></script>
+<script>
+  initLibrary({ containerId: 'all-refs', jsonPath: 'books.json' });
+</script>
+
+</body>
+</html>
