@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Second-Order Systems — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {
+      delimiters: [
+        {left: '$$', right: '$$', display: true},
+        {left: '$', right: '$', display: false}
+      ]
+    })"></script>
+  <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Control Theory</div>
+        <a href="bode.html" class="nav-item active">1 · Second-Order Systems</a>
+        <span class="nav-item planned">2 · Root Locus</span>
+        <span class="nav-item planned">3 · Nyquist &amp; Stability</span>
+        <span class="nav-item planned">4 · PID Design</span>
+        <span class="nav-item planned">5 · State-Space</span>
+        <span class="nav-item planned">6 · Controllability &amp; Observability</span>
+      </div>
+
+      <hr class="sidebar-rule">
+
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#transfer-function" class="nav-item">Transfer function</a>
+        <a href="#bode-plot" class="nav-item">Bode plot</a>
+        <a href="#damping" class="nav-item">Damping regimes</a>
+      </div>
+    </div>
+
+    <!-- Main content -->
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Control Theory</a>
+        <span class="sep">›</span>
+        <span>Second-Order Systems</span>
+      </div>
+
+      <div class="lesson-title">Second-Order Systems</div>
+      <div class="lesson-meta">Control Theory · Lesson 1</div>
+
+      <!-- ── Transfer Function ─────────────────────────────── -->
+      <div id="transfer-function"></div>
+      <div class="section-head">Transfer Function</div>
+
+      <div class="prose">
+        A second-order system is parameterised by two quantities: the
+        <em>natural frequency</em> $\omega_n$ (rad/s) and the
+        <em>damping ratio</em> $\zeta$ (dimensionless).
+        Its standard-form transfer function is:
+      </div>
+
+      <div class="math-block">
+        $$H(s) = \frac{\omega_n^2}{s^2 + 2\zeta\omega_n s + \omega_n^2}$$
+      </div>
+
+      <div class="prose">
+        The poles of $H(s)$ are at
+        $s = \omega_n\!\left(-\zeta \pm \sqrt{\zeta^2 - 1}\right)$,
+        which gives three qualitatively different behaviours depending on $\zeta$.
+      </div>
+
+      <div class="callout">
+        The DC gain is always $H(0) = 1$ (0 dB) regardless of $\omega_n$ or $\zeta$.
+        The high-frequency asymptote rolls off at $-40\,\text{dB/decade}$ (two poles).
+      </div>
+
+      <!-- ── Bode Plot ──────────────────────────────────────── -->
+      <hr class="lesson-rule">
+      <div id="bode-plot"></div>
+      <div class="section-head">Bode Plot</div>
+
+      <div class="prose">
+        Drag the sliders to explore how $\omega_n$ and $\zeta$ shape the frequency response.
+        Note the resonant peak that appears when $\zeta < 1/\!\sqrt{2} \approx 0.707$.
+      </div>
+
+      <div class="widget-card">
+        <div class="widget-title">Interactive — Second-Order Bode Plot</div>
+        <div id="plot-container" style="width:100%;height:400px;"></div>
+        <div class="slider-row">
+          <span class="slider-name">$\omega_n$</span>
+          <span class="slider-label">0.1</span>
+          <input id="sl-wn" type="range" min="-1" max="2" step="0.02" value="0">
+          <span class="slider-label">100</span>
+          <span class="slider-val" id="val-wn">1.00 rad/s</span>
+        </div>
+        <div class="slider-row">
+          <span class="slider-name">$\zeta$</span>
+          <span class="slider-label">0.05</span>
+          <input id="sl-zeta" type="range" min="0.05" max="2.0" step="0.01" value="0.5">
+          <span class="slider-label">2.0</span>
+          <span class="slider-val" id="val-zeta">0.50</span>
+        </div>
+      </div>
+
+      <!-- ── Damping Regimes ────────────────────────────────── -->
+      <hr class="lesson-rule">
+      <div id="damping"></div>
+      <div class="section-head">Damping Regimes</div>
+
+      <div class="prose">
+        The character of the step response — and the shape of the Bode plot — changes
+        fundamentally with $\zeta$:
+      </div>
+
+      <div class="course-block">
+        <div class="course-block-code">$\zeta > 1$ — Overdamped</div>
+        <div class="course-block-desc">
+          Two distinct real poles. Step response decays to steady-state without oscillation.
+          Magnitude response rolls off monotonically; no peak.
+        </div>
+      </div>
+
+      <div class="course-block">
+        <div class="course-block-code">$\zeta = 1$ — Critically damped</div>
+        <div class="course-block-desc">
+          Repeated real pole at $s = -\omega_n$. Fastest non-oscillatory response.
+          Borderline between overdamped and underdamped behaviour.
+        </div>
+      </div>
+
+      <div class="course-block">
+        <div class="course-block-code">$0 < \zeta < 1$ — Underdamped</div>
+        <div class="course-block-desc">
+          Complex conjugate poles with negative real part. Step response oscillates and rings.
+          A resonant peak appears in the Bode magnitude plot when $\zeta < 1/\sqrt{2}$.
+        </div>
+      </div>
+
+      <div class="callout">
+        <strong>Butterworth condition:</strong> at $\zeta = 1/\!\sqrt{2} \approx 0.707$,
+        the magnitude response is maximally flat — no peak, no droop.
+        This is the optimal Butterworth damping for a second-order lowpass filter.
+      </div>
+
+      <div class="prose">
+        For the underdamped case, the resonant peak frequency $\omega_r$ and peak magnitude $M_r$ are:
+      </div>
+
+      <div class="math-block">
+        $$\omega_r = \omega_n\sqrt{1 - 2\zeta^2}, \qquad
+          M_r = \frac{1}{2\zeta\sqrt{1-\zeta^2}}$$
+      </div>
+
+      <div class="prose">
+        These only exist for $\zeta < 1/\!\sqrt{2}$.
+        As $\zeta \to 0$, the peak grows without bound and $\omega_r \to \omega_n$.
+      </div>
+
+      <div class="section-head" style="margin-top:28px">Python implementation</div>
+
+      <div class="code-block">def bode(omega_n, zeta, w):
+    """Compute Bode magnitude (dB) for a 2nd-order system."""
+    u = w / omega_n                             # normalised frequency
+    H = 1 / np.sqrt((1 - u**2)**2 + (2*zeta*u)**2)
+    return 20 * np.log10(H)
+
+# Example: plot for omega_n=1, zeta=0.5
+w = np.logspace(-2, 2, 800)
+mag_dB = bode(omega_n=1.0, zeta=0.5, w=w)</div>
+
+      <!-- Lesson nav -->
+      <div class="lesson-nav">
+        <span class="lesson-nav-btn disabled">← Previous</span>
+        <span class="lesson-nav-btn disabled">Root Locus →</span>
+      </div>
+
+    </div><!-- /main -->
+
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+<script>
+// ── Bode plot ─────────────────────────────────────────────────
+
+function logspace(a, b, n) {
+  const arr = [];
+  for (let i = 0; i < n; i++) {
+    arr.push(Math.pow(10, a + (b - a) * i / (n - 1)));
+  }
+  return arr;
+}
+
+function bodeCalc(omega_n, zeta) {
+  const us = logspace(-2, 2, 800);
+  const freqs = us.map(u => u * omega_n);
+  const mag_db = [], phase_deg = [];
+
+  for (const u of us) {
+    const re = 1 - u * u;
+    const im = 2 * zeta * u;
+    mag_db.push(20 * Math.log10(1 / Math.sqrt(re * re + im * im)));
+    phase_deg.push(-Math.atan2(im, re) * 180 / Math.PI);
+  }
+
+  return { freqs, mag_db, phase_deg };
+}
+
+function buildTraces(omega_n, zeta) {
+  const { freqs, mag_db, phase_deg } = bodeCalc(omega_n, zeta);
+  const blue = '#3a6a8a';
+  const wnLine = '#c87040';
+
+  return [
+    // Magnitude
+    {
+      x: freqs, y: mag_db,
+      mode: 'lines', line: { color: blue, width: 2 },
+      name: '|H(jω)|', xaxis: 'x', yaxis: 'y',
+      hovertemplate: 'ω = %{x:.3f}<br>%{y:.1f} dB<extra></extra>'
+    },
+    // ωn marker (magnitude subplot)
+    {
+      x: [omega_n, omega_n], y: [-85, 25],
+      mode: 'lines', line: { color: wnLine, width: 1, dash: 'dot' },
+      name: 'ωn', xaxis: 'x', yaxis: 'y',
+      hoverinfo: 'skip', showlegend: false
+    },
+    // Phase
+    {
+      x: freqs, y: phase_deg,
+      mode: 'lines', line: { color: blue, width: 2 },
+      name: '∠H(jω)', xaxis: 'x2', yaxis: 'y2',
+      hovertemplate: 'ω = %{x:.3f}<br>%{y:.1f}°<extra></extra>'
+    },
+    // ωn marker (phase subplot)
+    {
+      x: [omega_n, omega_n], y: [-190, 5],
+      mode: 'lines', line: { color: wnLine, width: 1, dash: 'dot' },
+      name: 'ωn', xaxis: 'x2', yaxis: 'y2',
+      hoverinfo: 'skip', showlegend: false
+    }
+  ];
+}
+
+const layout = {
+  margin: { t: 16, r: 16, b: 50, l: 56 },
+  paper_bgcolor: 'rgba(0,0,0,0)',
+  plot_bgcolor: '#fcfcfb',
+  font: { family: "'IBM Plex Sans', sans-serif", size: 12, color: '#1a2840' },
+  showlegend: false,
+  grid: { rows: 2, columns: 1, pattern: 'independent' },
+  xaxis: {
+    type: 'log', showticklabels: false,
+    showgrid: true, gridcolor: 'rgba(26,40,64,0.08)',
+    zeroline: false
+  },
+  yaxis: {
+    title: { text: 'dB', font: { size: 11 } },
+    domain: [0.52, 1],
+    range: [-75, 22],
+    showgrid: true, gridcolor: 'rgba(26,40,64,0.08)',
+    zeroline: true, zerolinecolor: 'rgba(26,40,64,0.20)', zerolinewidth: 1
+  },
+  xaxis2: {
+    type: 'log', anchor: 'y2',
+    title: { text: 'ω (rad/s)', font: { size: 11 } },
+    showgrid: true, gridcolor: 'rgba(26,40,64,0.08)',
+    zeroline: false
+  },
+  yaxis2: {
+    title: { text: 'deg', font: { size: 11 } },
+    domain: [0, 0.47],
+    range: [-185, 5],
+    tickvals: [0, -45, -90, -135, -180],
+    showgrid: true, gridcolor: 'rgba(26,40,64,0.08)',
+    zeroline: false
+  }
+};
+
+const config = {
+  displayModeBar: false,
+  responsive: true
+};
+
+const omega_n0 = 1.0, zeta0 = 0.5;
+Plotly.newPlot('plot-container', buildTraces(omega_n0, zeta0), layout, config);
+
+// ── Slider logic ──────────────────────────────────────────────
+
+const slWn   = document.getElementById('sl-wn');
+const slZeta = document.getElementById('sl-zeta');
+const valWn  = document.getElementById('val-wn');
+const valZ   = document.getElementById('val-zeta');
+
+function update() {
+  const omega_n = Math.pow(10, parseFloat(slWn.value));
+  const zeta    = parseFloat(slZeta.value);
+
+  valWn.textContent = omega_n.toFixed(omega_n < 10 ? 2 : 0) + ' rad/s';
+  valZ.textContent  = zeta.toFixed(2);
+
+  Plotly.react('plot-container', buildTraces(omega_n, zeta), layout, config);
+}
+
+slWn.addEventListener('input', update);
+slZeta.addEventListener('input', update);
+
+// init display values
+valWn.textContent = '1.00 rad/s';
+valZ.textContent  = '0.50';
+</script>
+
+</body>
+</html>
