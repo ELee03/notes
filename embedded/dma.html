@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DMA — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Architecture &amp; Internals</div>
+        <a href="mcu-architecture.html" class="nav-item">1 · MCU Architecture</a>
+        <a href="memory-clocks.html" class="nav-item">2 · Memory &amp; Clock Systems</a>
+        <a href="interrupts-nvic.html" class="nav-item">3 · Interrupts &amp; the NVIC</a>
+        <a href="dma.html" class="nav-item active">4 · DMA</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Peripherals</div>
+        <span class="nav-item planned">5 · GPIO</span>
+        <span class="nav-item planned">6 · Timers &amp; PWM</span>
+        <span class="nav-item planned">7 · ADC &amp; DAC</span>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Protocols</div>
+        <span class="nav-item planned">8 · UART</span>
+        <span class="nav-item planned">9 · SPI</span>
+        <span class="nav-item planned">10 · I2C</span>
+        <span class="nav-item planned">11 · CAN Bus</span>
+        <span class="nav-item planned">12 · USB Fundamentals</span>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Firmware</div>
+        <span class="nav-item planned">13 · Bare-Metal Patterns</span>
+        <span class="nav-item planned">14 · RTOS Concepts</span>
+        <span class="nav-item planned">15 · Debugging &amp; Test</span>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">PCB Design</div>
+        <span class="nav-item planned">16 · Layout Fundamentals</span>
+        <span class="nav-item planned">17 · Mixed-Signal Layout</span>
+        <span class="nav-item planned">18 · Power &amp; Thermal</span>
+        <span class="nav-item planned">19 · High-Speed &amp; RF</span>
+      </div>
+
+      <hr class="sidebar-rule">
+
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#why-dma" class="nav-item">Why DMA?</a>
+        <a href="#how-it-works" class="nav-item">How DMA works</a>
+        <a href="#descriptor" class="nav-item">Transfer descriptors</a>
+        <a href="#ldma" class="nav-item">EFR32 LDMA</a>
+        <a href="#patterns" class="nav-item">Code patterns</a>
+        <a href="#ping-pong" class="nav-item">Ping-pong buffers</a>
+        <a href="#limits" class="nav-item">Limitations</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Embedded Systems</a>
+        <span class="sep">›</span>
+        <span>4 · DMA</span>
+      </div>
+
+      <div class="lesson-title">4 · Direct Memory Access</div>
+      <div class="lesson-meta">DMA · Linked Descriptors · LDMA · Circular Buffers · Ping-Pong</div>
+
+      <!-- ── Why DMA? ──────────────────────────────────────────── -->
+      <div class="section-head" id="why-dma">Why DMA?</div>
+
+      <div class="prose">
+        Every data transfer in a microcontroller has to move bytes from one place
+        to another — from an ADC result register into a RAM buffer, from a RAM
+        array out through a UART transmit register, from one region of flash to
+        another. The naive approach makes the CPU do all of this work: read a
+        register, store to memory, loop, repeat. For short transfers this is fine.
+        For anything continuous — streaming sensor data, a high-speed protocol,
+        an audio buffer — the CPU spends most of its time as an expensive bus
+        driver and nothing else.
+      </div>
+
+      <div class="prose">
+        <strong>Direct Memory Access</strong> (DMA) solves this by giving the system
+        a second bus master — a dedicated hardware engine that moves data autonomously.
+        You describe the transfer once (source, destination, how many, what size), arm
+        the DMA channel, and the CPU is free to do something else — or sleep. The DMA
+        fires one interrupt when the job is done, and the CPU wakes up to find its
+        buffer already full.
+      </div>
+
+      <!-- SVG: CPU utilization comparison -->
+      <svg viewBox="0 0 860 230" style="width:100%;max-width:860px;display:block;margin:24px auto 8px;" role="img" aria-label="CPU utilization comparison: polling vs interrupts vs DMA">
+
+        <!-- Background -->
+        <rect width="860" height="230" fill="none"/>
+
+        <!-- ── Row labels ── -->
+        <text x="90" y="46" font-family="IBM Plex Sans,sans-serif" font-size="12" fill="#5a6a7a" text-anchor="end">Polling</text>
+        <text x="90" y="112" font-family="IBM Plex Sans,sans-serif" font-size="12" fill="#5a6a7a" text-anchor="end">Interrupt-<tspan x="90" dy="13">driven</tspan></text>
+        <text x="90" y="176" font-family="IBM Plex Sans,sans-serif" font-size="12" fill="#5a6a7a" text-anchor="end">DMA</text>
+
+        <!-- ── Timeline axis ── -->
+        <line x1="100" y1="220" x2="840" y2="220" stroke="#c0cdd6" stroke-width="1"/>
+        <text x="100" y="230" font-family="IBM Plex Sans,sans-serif" font-size="10" fill="#9aabb8">t=0</text>
+        <text x="828" y="230" font-family="IBM Plex Sans,sans-serif" font-size="10" fill="#9aabb8" text-anchor="end">time →</text>
+
+        <!-- ── Polling row: CPU is always busy ── -->
+        <!-- 8 read cycles, each with a "wait" and "read" portion -->
+        <g id="polling">
+          <!-- Solid CPU-busy block -->
+          <rect x="100" y="26" width="740" height="26" rx="3" fill="#3a6a8a" opacity="0.85"/>
+          <!-- dividers showing individual reads -->
+          <line x1="192" y1="26" x2="192" y2="52" stroke="#f5f5f2" stroke-width="1" opacity="0.5"/>
+          <line x1="285" y1="26" x2="285" y2="52" stroke="#f5f5f2" stroke-width="1" opacity="0.5"/>
+          <line x1="377" y1="26" x2="377" y2="52" stroke="#f5f5f2" stroke-width="1" opacity="0.5"/>
+          <line x1="470" y1="26" x2="470" y2="52" stroke="#f5f5f2" stroke-width="1" opacity="0.5"/>
+          <line x1="563" y1="26" x2="563" y2="52" stroke="#f5f5f2" stroke-width="1" opacity="0.5"/>
+          <line x1="655" y1="26" x2="655" y2="52" stroke="#f5f5f2" stroke-width="1" opacity="0.5"/>
+          <line x1="748" y1="26" x2="748" y2="52" stroke="#f5f5f2" stroke-width="1" opacity="0.5"/>
+          <text x="470" y="42" font-family="IBM Plex Sans,sans-serif" font-size="10.5" fill="#ffffff" text-anchor="middle" font-weight="500">CPU polling — no free time</text>
+        </g>
+
+        <!-- ── Interrupt row: short ISR bursts, CPU otherwise free ── -->
+        <g id="interrupts">
+          <!-- CPU free zones -->
+          <rect x="100" y="92" width="740" height="26" rx="3" fill="#dde6ec" opacity="0.7"/>
+          <!-- ISR bursts at each data-ready event -->
+          <rect x="148" y="92" width="22" height="26" rx="2" fill="#3a6a8a" opacity="0.9"/>
+          <rect x="240" y="92" width="22" height="26" rx="2" fill="#3a6a8a" opacity="0.9"/>
+          <rect x="333" y="92" width="22" height="26" rx="2" fill="#3a6a8a" opacity="0.9"/>
+          <rect x="425" y="92" width="22" height="26" rx="2" fill="#3a6a8a" opacity="0.9"/>
+          <rect x="518" y="92" width="22" height="26" rx="2" fill="#3a6a8a" opacity="0.9"/>
+          <rect x="611" y="92" width="22" height="26" rx="2" fill="#3a6a8a" opacity="0.9"/>
+          <rect x="703" y="92" width="22" height="26" rx="2" fill="#3a6a8a" opacity="0.9"/>
+          <rect x="796" y="92" width="22" height="26" rx="2" fill="#3a6a8a" opacity="0.9"/>
+          <!-- Labels -->
+          <text x="159" y="109" font-family="IBM Plex Mono,monospace" font-size="8" fill="#ffffff" text-anchor="middle">ISR</text>
+          <text x="251" y="109" font-family="IBM Plex Mono,monospace" font-size="8" fill="#ffffff" text-anchor="middle">ISR</text>
+          <text x="344" y="109" font-family="IBM Plex Mono,monospace" font-size="8" fill="#ffffff" text-anchor="middle">ISR</text>
+          <text x="436" y="109" font-family="IBM Plex Mono,monospace" font-size="8" fill="#ffffff" text-anchor="middle">ISR</text>
+          <text x="529" y="109" font-family="IBM Plex Mono,monospace" font-size="8" fill="#ffffff" text-anchor="middle">ISR</text>
+          <text x="622" y="109" font-family="IBM Plex Mono,monospace" font-size="8" fill="#ffffff" text-anchor="middle">ISR</text>
+          <text x="714" y="109" font-family="IBM Plex Mono,monospace" font-size="8" fill="#ffffff" text-anchor="middle">ISR</text>
+          <text x="807" y="109" font-family="IBM Plex Mono,monospace" font-size="8" fill="#ffffff" text-anchor="middle">ISR</text>
+          <text x="340" y="84" font-family="IBM Plex Sans,sans-serif" font-size="10" fill="#7a8a9a">CPU free (but interrupted 8×)</text>
+        </g>
+
+        <!-- ── DMA row: CPU nearly free, DMA runs, one interrupt ── -->
+        <g id="dma">
+          <!-- CPU free bar -->
+          <rect x="100" y="158" width="690" height="26" rx="3" fill="#dde6ec" opacity="0.7"/>
+          <!-- DMA running — thin band below CPU bar -->
+          <rect x="100" y="186" width="690" height="10" rx="2" fill="#7ab8d4" opacity="0.8"/>
+          <text x="340" y="194" font-family="IBM Plex Sans,sans-serif" font-size="8.5" fill="#1a2840" text-anchor="middle" font-weight="500">DMA moving data</text>
+          <!-- Done interrupt + process -->
+          <rect x="790" y="158" width="20" height="26" rx="2" fill="#3a6a8a" opacity="0.9"/>
+          <rect x="812" y="158" width="28" height="26" rx="2" fill="#3a6a8a" opacity="0.6"/>
+          <text x="800" y="174" font-family="IBM Plex Mono,monospace" font-size="7.5" fill="#fff" text-anchor="middle">IRQ</text>
+          <text x="826" y="174" font-family="IBM Plex Mono,monospace" font-size="7.5" fill="#fff" text-anchor="middle">proc</text>
+          <text x="300" y="150" font-family="IBM Plex Sans,sans-serif" font-size="10" fill="#7a8a9a">CPU free — one interrupt at end</text>
+        </g>
+
+      </svg>
+      <div style="text-align:center;font-size:12px;color:#9aabb8;margin-bottom:24px;">Transferring 8 data items from a peripheral register to RAM under three strategies.</div>
+
+      <div class="prose">
+        The interrupt-driven approach is already a huge improvement over polling, but
+        it still exacts eight context switches — eight saves and restores of R0–R3, R12,
+        LR, PC, xPSR. For high-rate peripherals (1 kHz ADC × 8 channels, or a 921600
+        baud UART) those context switches accumulate. DMA eliminates them entirely, at
+        the cost of slightly more setup.
+      </div>
+
+      <!-- ── How DMA works ─────────────────────────────────────── -->
+      <div class="section-head" id="how-it-works">How DMA works</div>
+
+      <div class="prose">
+        A DMA controller is a second bus master that sits on the same AHB (or AHB-Lite)
+        bus as the CPU. It can initiate read and write cycles to any address the CPU can
+        reach — peripheral registers, SRAM, flash, external memory. The CPU configures
+        it and then steps aside; from the bus fabric's perspective, the DMA controller
+        looks like a second (slower) CPU.
+      </div>
+
+      <div class="prose">
+        Every DMA transfer has three ingredients:
+      </div>
+
+      <ul class="prose" style="margin-top:0;padding-left:1.4em;">
+        <li style="margin-bottom:8px;"><strong>Source address</strong> — where to read from. For peripheral-to-memory
+          transfers this is a peripheral data register (e.g., <code>ADC0→SINGLEDATA</code>
+          or <code>USART0→RXDATA</code>). For memory-to-memory it is a RAM or flash address.</li>
+        <li style="margin-bottom:8px;"><strong>Destination address</strong> — where to write to. Usually a RAM buffer
+          for incoming data, or a peripheral TX register for outgoing data.</li>
+        <li style="margin-bottom:8px;"><strong>Transfer count</strong> — how many <em>units</em> to move, where a
+          unit is 1, 2, or 4 bytes (byte / half-word / word). The controller decrements
+          an internal counter on each beat and stops when it hits zero.</li>
+      </ul>
+
+      <div class="prose">
+        Beyond these basics, most DMA controllers add a <strong>trigger</strong> —
+        a signal from a peripheral that says "I have data ready" (or "I'm ready to
+        accept data"). The DMA waits for the trigger before each beat rather than
+        running at bus speed, which naturally paces the transfer to the peripheral.
+        A USART RX trigger fires once per received byte; an ADC trigger fires once
+        per conversion. The DMA moves exactly as fast as the peripheral produces (or
+        consumes) data, without the CPU doing anything.
+      </div>
+
+      <div class="callout">
+        <strong>Bus arbitration.</strong> The CPU and DMA share the same bus. When both
+        want to access memory simultaneously, the bus arbiter gives one of them priority.
+        Most Cortex-M implementations use round-robin or fixed-priority arbitration with
+        "block size" — the DMA completes a configurable burst (e.g., 4 beats) before
+        yielding the bus, ensuring the CPU still gets regular bus access and isn't
+        completely starved.
+      </div>
+
+      <!-- ── Transfer descriptors ──────────────────────────────── -->
+      <div class="section-head" id="descriptor">Transfer descriptors</div>
+
+      <div class="prose">
+        Older DMA controllers (like the STM32 DMA1/DMA2) store the transfer parameters
+        directly in peripheral registers: write source address to <code>DMA_CSxPAR</code>,
+        destination to <code>DMA_CSxMAR</code>, count to <code>DMA_CSxNDTR</code>, then
+        enable the channel. Simple, but you can only describe one transfer at a time;
+        chaining transfers means taking a done interrupt and reprogramming the peripheral
+        registers in software.
+      </div>
+
+      <div class="prose">
+        The EFR32 uses a more capable architecture — a <strong>linked DMA</strong>
+        (LDMA) — where the transfer parameters live in a <strong>descriptor</strong>
+        stored in RAM. A descriptor is just a 16-byte struct (four 32-bit words):
+      </div>
+
+      <!-- SVG: Descriptor structure -->
+      <svg viewBox="0 0 620 310" style="width:100%;max-width:620px;display:block;margin:24px auto 8px;" role="img" aria-label="LDMA descriptor structure — four 32-bit words">
+
+        <!-- Outer box -->
+        <rect x="30" y="20" width="440" height="260" rx="4" fill="none" stroke="#c0cdd6" stroke-width="1.5"/>
+
+        <!-- Title -->
+        <text x="250" y="12" font-family="IBM Plex Mono,monospace" font-size="11.5" fill="#3a6a8a" text-anchor="middle" font-weight="500">LDMA_Descriptor_t  (16 bytes)</text>
+
+        <!-- Word 0: CTRL -->
+        <rect x="30" y="20" width="440" height="62" rx="0" fill="#eef4f8" stroke="#c0cdd6" stroke-width="1"/>
+        <text x="46" y="38" font-family="IBM Plex Mono,monospace" font-size="10" fill="#5a6a7a">[31:0]</text>
+        <text x="46" y="55" font-family="IBM Plex Sans,sans-serif" font-size="12" fill="#1a2840" font-weight="600">CTRL</text>
+        <!-- bit field bars inside CTRL -->
+        <rect x="110" y="28" width="58" height="18" rx="2" fill="#7ab8d4" opacity="0.45"/>
+        <text x="139" y="40" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#1a2840" text-anchor="middle">xferCnt[10:0]</text>
+        <rect x="172" y="28" width="36" height="18" rx="2" fill="#3a6a8a" opacity="0.3"/>
+        <text x="190" y="40" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#1a2840" text-anchor="middle">size</text>
+        <rect x="212" y="28" width="36" height="18" rx="2" fill="#3a6a8a" opacity="0.3"/>
+        <text x="230" y="40" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#1a2840" text-anchor="middle">srcInc</text>
+        <rect x="252" y="28" width="36" height="18" rx="2" fill="#3a6a8a" opacity="0.3"/>
+        <text x="270" y="40" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#1a2840" text-anchor="middle">dstInc</text>
+        <rect x="292" y="28" width="50" height="18" rx="2" fill="#7ab8d4" opacity="0.45"/>
+        <text x="317" y="40" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#1a2840" text-anchor="middle">blockSize</text>
+        <rect x="346" y="28" width="36" height="18" rx="2" fill="#3a6a8a" opacity="0.3"/>
+        <text x="364" y="40" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#1a2840" text-anchor="middle">doneIfs</text>
+        <rect x="386" y="28" width="70" height="18" rx="2" fill="#7ab8d4" opacity="0.45"/>
+        <text x="421" y="40" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#1a2840" text-anchor="middle">structType…</text>
+        <!-- annotation row -->
+        <text x="110" y="74" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a6a7a">count − 1</text>
+        <text x="172" y="74" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a6a7a">B/H/W</text>
+        <text x="212" y="74" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a6a7a">+1/+2/+4/0</text>
+        <text x="265" y="74" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a6a7a">+1/+2/+4/0</text>
+        <text x="293" y="74" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a6a7a">burst size</text>
+        <text x="348" y="74" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a6a7a">irq flag</text>
+
+        <!-- Word 1: SRC -->
+        <rect x="30" y="82" width="440" height="56" rx="0" fill="#f8f9fb" stroke="#c0cdd6" stroke-width="1"/>
+        <text x="46" y="100" font-family="IBM Plex Mono,monospace" font-size="10" fill="#5a6a7a">[63:32]</text>
+        <text x="46" y="117" font-family="IBM Plex Sans,sans-serif" font-size="12" fill="#1a2840" font-weight="600">SRC</text>
+        <text x="180" y="117" font-family="IBM Plex Mono,monospace" font-size="11" fill="#3a6a8a">0x40010108</text>
+        <text x="420" y="117" font-family="IBM Plex Sans,sans-serif" font-size="10.5" fill="#7a8a9a" text-anchor="end" font-style="italic">e.g. ADC0→SINGLEDATA</text>
+
+        <!-- Word 2: DST -->
+        <rect x="30" y="138" width="440" height="56" rx="0" fill="#eef4f8" stroke="#c0cdd6" stroke-width="1"/>
+        <text x="46" y="156" font-family="IBM Plex Mono,monospace" font-size="10" fill="#5a6a7a">[95:64]</text>
+        <text x="46" y="173" font-family="IBM Plex Sans,sans-serif" font-size="12" fill="#1a2840" font-weight="600">DST</text>
+        <text x="180" y="173" font-family="IBM Plex Mono,monospace" font-size="11" fill="#3a6a8a">0x20000200</text>
+        <text x="420" y="173" font-family="IBM Plex Sans,sans-serif" font-size="10.5" fill="#7a8a9a" text-anchor="end" font-style="italic">RAM buffer address</text>
+
+        <!-- Word 3: LINK -->
+        <rect x="30" y="194" width="440" height="86" rx="0" fill="#f8f9fb" stroke="#c0cdd6" stroke-width="1"/>
+        <text x="46" y="212" font-family="IBM Plex Mono,monospace" font-size="10" fill="#5a6a7a">[127:96]</text>
+        <text x="46" y="229" font-family="IBM Plex Sans,sans-serif" font-size="12" fill="#1a2840" font-weight="600">LINK</text>
+        <rect x="110" y="200" width="300" height="18" rx="2" fill="#7ab8d4" opacity="0.45"/>
+        <text x="260" y="212" font-family="IBM Plex Mono,monospace" font-size="9" fill="#1a2840" text-anchor="middle">next descriptor address [31:2]</text>
+        <rect x="414" y="200" width="44" height="18" rx="2" fill="#3a6a8a" opacity="0.3"/>
+        <text x="436" y="212" font-family="IBM Plex Mono,monospace" font-size="9" fill="#1a2840" text-anchor="middle">mode[1:0]</text>
+        <text x="110" y="250" font-family="IBM Plex Sans,sans-serif" font-size="10.5" fill="#5a6a7a">0x00000000 → no chaining (single transfer)</text>
+        <text x="110" y="267" font-family="IBM Plex Sans,sans-serif" font-size="10.5" fill="#5a6a7a">non-zero → load next descriptor when done</text>
+
+        <!-- Byte-size marker -->
+        <line x1="475" y1="20" x2="475" y2="280" stroke="#c0cdd6" stroke-width="1" stroke-dasharray="3,3"/>
+        <text x="480" y="56" font-family="IBM Plex Mono,monospace" font-size="9" fill="#9aabb8">4 B</text>
+        <text x="480" y="112" font-family="IBM Plex Mono,monospace" font-size="9" fill="#9aabb8">4 B</text>
+        <text x="480" y="168" font-family="IBM Plex Mono,monospace" font-size="9" fill="#9aabb8">4 B</text>
+        <text x="480" y="237" font-family="IBM Plex Mono,monospace" font-size="9" fill="#9aabb8">4 B</text>
+
+      </svg>
+      <div style="text-align:center;font-size:12px;color:#9aabb8;margin-bottom:24px;">A 16-byte LDMA descriptor. Four fields: control word, source address, destination address, and link word.</div>
+
+      <div class="prose">
+        The power of this layout is in the LINK field. When the DMA hardware finishes
+        a descriptor, it checks the LINK word. If it is non-zero, it fetches the
+        address stored there and loads a <em>new</em> descriptor from RAM — no CPU
+        involvement. This is what makes it a <em>linked</em> DMA. You can build an
+        entire chain of transfers that execute back-to-back without a single interrupt
+        or CPU instruction. If the last descriptor in the chain points back to the
+        first, the chain runs forever — which is exactly the circular buffer pattern.
+      </div>
+
+      <table class="prose" style="width:100%;border-collapse:collapse;font-size:13.5px;margin-bottom:24px;">
+        <thead>
+          <tr style="background:#eef4f8;">
+            <th style="padding:7px 10px;border:1px solid #d0dae0;text-align:left;font-weight:600;">CTRL field</th>
+            <th style="padding:7px 10px;border:1px solid #d0dae0;text-align:left;font-weight:600;">Meaning</th>
+            <th style="padding:7px 10px;border:1px solid #d0dae0;text-align:left;font-weight:600;">Common values</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;font-family:'IBM Plex Mono',monospace;font-size:12.5px;">xferCnt</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">Transfer count minus one (11-bit field → up to 2048 beats)</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;font-family:'IBM Plex Mono',monospace;font-size:12.5px;">N − 1</td>
+          </tr>
+          <tr style="background:#f8f9fb;">
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;font-family:'IBM Plex Mono',monospace;font-size:12.5px;">size</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">Unit size per beat</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;font-family:'IBM Plex Mono',monospace;font-size:12.5px;">0=byte, 1=half-word, 2=word</td>
+          </tr>
+          <tr>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;font-family:'IBM Plex Mono',monospace;font-size:12.5px;">srcInc / dstInc</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">How much to advance the address after each beat. Set to 0 for peripheral registers (same address every beat); set to +1/+2/+4 for memory (advance through buffer).</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;font-family:'IBM Plex Mono',monospace;font-size:12.5px;">3=no-inc, 0=+1unit</td>
+          </tr>
+          <tr style="background:#f8f9fb;">
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;font-family:'IBM Plex Mono',monospace;font-size:12.5px;">blockSize</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">Beats per bus arbitration slot. Higher values give DMA more burst bandwidth but reduce CPU bus access.</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;font-family:'IBM Plex Mono',monospace;font-size:12.5px;">1 (most common)</td>
+          </tr>
+          <tr>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;font-family:'IBM Plex Mono',monospace;font-size:12.5px;">doneIfs</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">Raise an interrupt when this descriptor completes. Can be set on some descriptors but not others in a chain.</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;font-family:'IBM Plex Mono',monospace;font-size:12.5px;">0 or 1</td>
+          </tr>
+          <tr style="background:#f8f9fb;">
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;font-family:'IBM Plex Mono',monospace;font-size:12.5px;">structType</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">Type of descriptor action: <code>xfer</code> (normal data move), <code>sync</code> (wait for a software sync bit), <code>write</code> (write a constant to memory).</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;font-family:'IBM Plex Mono',monospace;font-size:12.5px;">0=xfer</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- ── EFR32 LDMA ────────────────────────────────────────── -->
+      <div class="section-head" id="ldma">The EFR32 LDMA</div>
+
+      <div class="prose">
+        The EFR32 LDMA (Linked DMA) provides 8 independent channels. Each channel
+        runs its own descriptor chain and can be triggered by a different peripheral
+        signal — you could simultaneously stream ADC data on channel 0, transmit a
+        UART packet on channel 1, and copy a lookup table in memory on channel 2.
+      </div>
+
+      <div class="prose">
+        Each channel has its own hardware registers:
+      </div>
+
+      <ul class="prose" style="margin-top:0;padding-left:1.4em;">
+        <li style="margin-bottom:6px;"><code>CH[n].REQSEL</code> — selects which peripheral signal triggers this channel. There are up to 64 sources (USART RX, USART TX, ADC scan, ADC single, TIMER overflow, etc.).</li>
+        <li style="margin-bottom:6px;"><code>CH[n].CFG</code> — arbitration configuration: number of bus slots this channel gets per arbitration round.</li>
+        <li style="margin-bottom:6px;"><code>CH[n].LOOP</code> — loop counter for LOOP-type descriptors (rarely used; LINK chaining is more flexible).</li>
+        <li style="margin-bottom:6px;"><code>CH[n].CTRL / SRC / DST / LINK</code> — read-only mirrors of the currently-executing descriptor (useful for debugging).</li>
+      </ul>
+
+      <div class="prose">
+        You rarely write to these registers directly. Silicon Labs provides the EMLIB
+        LDMA driver (<code>em_ldma.h</code>), which wraps everything in two structs
+        and a handful of macros:
+      </div>
+
+      <ul class="prose" style="margin-top:0;padding-left:1.4em;">
+        <li style="margin-bottom:6px;"><code>LDMA_TransferCfg_t</code> — channel-level configuration: which peripheral trigger to use.</li>
+        <li style="margin-bottom:6px;"><code>LDMA_Descriptor_t</code> — the 16-byte descriptor struct described above.</li>
+        <li style="margin-bottom:6px;"><code>LDMA_StartTransfer(ch, &amp;cfg, &amp;desc)</code> — loads the first descriptor into channel <em>ch</em> and arms it.</li>
+      </ul>
+
+      <div class="callout">
+        <strong>Series 2 difference: LDMAXBAR.</strong> On EFR32 Series 2 devices
+        (Cortex-M33), peripheral DMA signals are not routed directly through the LDMA.
+        Instead they go through an external arbiter called LDMAXBAR (LDMA Crossbar).
+        Each LDMA channel selects its signal from LDMAXBAR (up to 32 signal slots).
+        The EMLIB API handles this transparently — you still pass a
+        <code>ldmaPeripheralSignal_xxx</code> constant to the transfer config and
+        EMLIB programs both LDMAXBAR and LDMA for you.
+      </div>
+
+      <!-- ── Code patterns ─────────────────────────────────────── -->
+      <div class="section-head" id="patterns">Code patterns</div>
+
+      <div class="prose">
+        Three patterns cover the vast majority of DMA use cases in embedded firmware:
+        single shot transfers, continuous peripheral streaming, and memory-to-memory
+        copies. All three use the same <code>LDMA_StartTransfer()</code> call —
+        the difference is entirely in how the descriptor (or descriptor chain) is
+        constructed.
+      </div>
+
+      <div class="prose" style="font-weight:600;margin-bottom:4px;color:#1a2840;">Pattern 1 — Single transfer (ADC one-shot)</div>
+      <div class="prose" style="margin-top:0;">
+        The simplest case: take N samples from the ADC scan result register and fill
+        a RAM buffer. One descriptor, no link. The channel fires an interrupt when done
+        and stops.
+      </div>
+
+      <pre class="code-block"><code>#include "em_ldma.h"
+#include "em_adc.h"
+
+#define NUM_SAMPLES  256
+static uint32_t adc_buf[NUM_SAMPLES];
+
+void dma_adc_single_shot(void) {
+    // Descriptor: move NUM_SAMPLES words from ADC0->SCANDATA into adc_buf.
+    // SINGLE means no chaining — one descriptor, one interrupt, done.
+    LDMA_Descriptor_t desc = LDMA_DESCRIPTOR_SINGLE_P2M_WORD(
+        &ADC0->SCANDATA,   // src: peripheral register (no src increment)
+        adc_buf,           // dst: RAM array (auto-incremented each beat)
+        NUM_SAMPLES        // xferCnt = NUM_SAMPLES - 1 internally
+    );
+
+    // Transfer config: triggered by ADC0 scan-done signal
+    LDMA_TransferCfg_t cfg = LDMA_TRANSFER_CFG_PERIPHERAL(
+        ldmaPeripheralSignal_ADC0_SCAN
+    );
+
+    LDMA_Init_t init = LDMA_INIT_DEFAULT;
+    LDMA_Init(&init);
+
+    // Start on channel 0 — fires LDMA_IRQn when complete
+    LDMA_StartTransfer(0, &cfg, &desc);
+}
+
+void LDMA_IRQHandler(void) {
+    uint32_t flags = LDMA_IntGet();
+    LDMA_IntClear(flags);
+
+    if (flags &amp; (1u &lt;&lt; 0)) {
+        // Channel 0 done — adc_buf now holds NUM_SAMPLES results
+        process_samples(adc_buf, NUM_SAMPLES);
+    }
+}</code></pre>
+
+      <div class="prose">
+        Notice <code>LDMA_DESCRIPTOR_SINGLE_P2M_WORD</code> is a macro that fills in
+        the CTRL word correctly: no source increment (the ADC data register address is
+        fixed), destination increment of +4 bytes (word = 4 bytes), unit size = word,
+        no LINK address (single shot).
+      </div>
+
+      <div class="prose" style="font-weight:600;margin-bottom:4px;color:#1a2840;">Pattern 2 — UART TX without blocking</div>
+      <div class="prose" style="margin-top:0;">
+        DMA-driven UART transmit is the memory-to-peripheral mirror of the above.
+        The USART TX-buffer-level signal (<code>TXBL</code>) fires whenever the
+        transmit FIFO has room; the DMA feeds it one byte at a time.
+      </div>
+
+      <pre class="code-block"><code>static const uint8_t tx_message[] = "Hello from DMA\r\n";
+
+void dma_uart_transmit(void) {
+    LDMA_Descriptor_t desc = LDMA_DESCRIPTOR_SINGLE_M2P_BYTE(
+        tx_message,         // src: RAM (auto-incremented)
+        &amp;USART0->TXDATA,    // dst: USART TX register (no dst increment)
+        sizeof(tx_message) - 1
+    );
+
+    LDMA_TransferCfg_t cfg = LDMA_TRANSFER_CFG_PERIPHERAL(
+        ldmaPeripheralSignal_USART0_TXBL
+    );
+
+    LDMA_StartTransfer(1, &cfg, &desc);
+    // CPU is now free — bytes drip out of USART0 at baud rate
+    // LDMA_IRQn fires when all bytes are sent
+}</code></pre>
+
+      <!-- ── Ping-pong ──────────────────────────────────────────── -->
+      <div class="section-head" id="ping-pong">Continuous streaming: the ping-pong buffer</div>
+
+      <div class="prose">
+        A single-shot transfer works for sporadic data. For continuous data —
+        streaming ADC samples at 1 kHz indefinitely — you need a way to run DMA
+        forever while the CPU processes what has already arrived. This is the
+        <strong>ping-pong</strong> (or double-buffer) pattern.
+      </div>
+
+      <div class="prose">
+        Split the sample buffer into two halves. Build two descriptors: the first
+        fills the <em>ping</em> half and links to the second; the second fills the
+        <em>pong</em> half and links back to the first. Both have <code>doneIfs=1</code>
+        so each completion fires an interrupt. The result is a perpetually-running
+        loop: while DMA is filling pong, the CPU is processing ping, and vice versa.
+      </div>
+
+      <!-- SVG: Ping-pong diagram -->
+      <svg viewBox="0 0 860 310" style="width:100%;max-width:860px;display:block;margin:24px auto 8px;" role="img" aria-label="Ping-pong buffer pattern — two linked descriptors and a timeline">
+
+        <!-- ── Top half: descriptor chain ── -->
+        <!-- desc[0] box -->
+        <rect x="80" y="24" width="200" height="90" rx="5" fill="#eef4f8" stroke="#7ab8d4" stroke-width="1.5"/>
+        <text x="180" y="44" font-family="IBM Plex Mono,monospace" font-size="11" fill="#3a6a8a" text-anchor="middle" font-weight="500">desc[0]</text>
+        <text x="100" y="62" font-family="IBM Plex Sans,sans-serif" font-size="10.5" fill="#2a3040">SRC: ADC0→SINGLEDATA</text>
+        <text x="100" y="77" font-family="IBM Plex Sans,sans-serif" font-size="10.5" fill="#2a3040">DST: ping_buf[0]</text>
+        <text x="100" y="92" font-family="IBM Plex Sans,sans-serif" font-size="10.5" fill="#2a3040">cnt: HALF, doneIfs: 1</text>
+        <text x="100" y="107" font-family="IBM Plex Sans,sans-serif" font-size="10.5" fill="#3a6a8a">LINK → desc[1]</text>
+
+        <!-- desc[1] box -->
+        <rect x="460" y="24" width="200" height="90" rx="5" fill="#eef4f8" stroke="#7ab8d4" stroke-width="1.5"/>
+        <text x="560" y="44" font-family="IBM Plex Mono,monospace" font-size="11" fill="#3a6a8a" text-anchor="middle" font-weight="500">desc[1]</text>
+        <text x="480" y="62" font-family="IBM Plex Sans,sans-serif" font-size="10.5" fill="#2a3040">SRC: ADC0→SINGLEDATA</text>
+        <text x="480" y="77" font-family="IBM Plex Sans,sans-serif" font-size="10.5" fill="#2a3040">DST: pong_buf[0]</text>
+        <text x="480" y="92" font-family="IBM Plex Sans,sans-serif" font-size="10.5" fill="#2a3040">cnt: HALF, doneIfs: 1</text>
+        <text x="480" y="107" font-family="IBM Plex Sans,sans-serif" font-size="10.5" fill="#3a6a8a">LINK → desc[0]</text>
+
+        <!-- Link arrows -->
+        <!-- desc[0] → desc[1] -->
+        <path d="M 280 70 C 370 70 370 70 460 70" stroke="#3a6a8a" stroke-width="1.5" fill="none" marker-end="url(#arrowBlue)"/>
+        <!-- desc[1] → desc[0] (arc underneath) -->
+        <path d="M 560 114 C 560 150 180 150 180 114" stroke="#3a6a8a" stroke-width="1.5" fill="none" stroke-dasharray="5,3" marker-end="url(#arrowBlue)"/>
+
+        <!-- Arrow marker -->
+        <defs>
+          <marker id="arrowBlue" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+            <polygon points="0 0, 7 3.5, 0 7" fill="#3a6a8a"/>
+          </marker>
+          <marker id="arrowGrey" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+            <polygon points="0 0, 7 3.5, 0 7" fill="#7a8a9a"/>
+          </marker>
+        </defs>
+
+        <!-- RAM buffers -->
+        <rect x="80" y="170" width="200" height="30" rx="3" fill="#7ab8d4" opacity="0.35" stroke="#7ab8d4" stroke-width="1"/>
+        <text x="180" y="189" font-family="IBM Plex Mono,monospace" font-size="11" fill="#1a2840" text-anchor="middle">ping_buf[HALF]</text>
+
+        <rect x="460" y="170" width="200" height="30" rx="3" fill="#7ab8d4" opacity="0.35" stroke="#7ab8d4" stroke-width="1"/>
+        <text x="560" y="189" font-family="IBM Plex Mono,monospace" font-size="11" fill="#1a2840" text-anchor="middle">pong_buf[HALF]</text>
+
+        <!-- Arrows desc → buffer -->
+        <line x1="180" y1="114" x2="180" y2="168" stroke="#7ab8d4" stroke-width="1.5" marker-end="url(#arrowGrey)"/>
+        <line x1="560" y1="114" x2="560" y2="168" stroke="#7ab8d4" stroke-width="1.5" marker-end="url(#arrowGrey)"/>
+
+        <!-- ── Bottom half: timeline ── -->
+        <text x="40" y="238" font-family="IBM Plex Sans,sans-serif" font-size="11" fill="#5a6a7a" text-anchor="middle">DMA</text>
+        <text x="40" y="280" font-family="IBM Plex Sans,sans-serif" font-size="11" fill="#5a6a7a" text-anchor="middle">CPU</text>
+
+        <!-- Time axis -->
+        <line x1="60" y1="298" x2="830" y2="298" stroke="#c0cdd6" stroke-width="1"/>
+        <text x="820" y="307" font-family="IBM Plex Sans,sans-serif" font-size="9" fill="#9aabb8">time →</text>
+
+        <!-- DMA blocks: ping, pong, ping, pong -->
+        <rect x="60"  y="224" width="185" height="22" rx="2" fill="#3a6a8a" opacity="0.7"/>
+        <text x="152" y="238" font-family="IBM Plex Mono,monospace" font-size="9" fill="#fff" text-anchor="middle">DMA → ping_buf</text>
+
+        <rect x="245" y="224" width="185" height="22" rx="2" fill="#7ab8d4" opacity="0.8"/>
+        <text x="337" y="238" font-family="IBM Plex Mono,monospace" font-size="9" fill="#fff" text-anchor="middle">DMA → pong_buf</text>
+
+        <rect x="430" y="224" width="185" height="22" rx="2" fill="#3a6a8a" opacity="0.7"/>
+        <text x="522" y="238" font-family="IBM Plex Mono,monospace" font-size="9" fill="#fff" text-anchor="middle">DMA → ping_buf</text>
+
+        <rect x="615" y="224" width="185" height="22" rx="2" fill="#7ab8d4" opacity="0.8"/>
+        <text x="707" y="238" font-family="IBM Plex Mono,monospace" font-size="9" fill="#fff" text-anchor="middle">DMA → pong_buf</text>
+
+        <!-- Interrupt markers at DMA boundaries -->
+        <line x1="245" y1="216" x2="245" y2="250" stroke="#3a6a8a" stroke-width="1.5" stroke-dasharray="3,2"/>
+        <text x="245" y="213" font-family="IBM Plex Mono,monospace" font-size="8" fill="#3a6a8a" text-anchor="middle">IRQ</text>
+        <line x1="430" y1="216" x2="430" y2="250" stroke="#3a6a8a" stroke-width="1.5" stroke-dasharray="3,2"/>
+        <text x="430" y="213" font-family="IBM Plex Mono,monospace" font-size="8" fill="#3a6a8a" text-anchor="middle">IRQ</text>
+        <line x1="615" y1="216" x2="615" y2="250" stroke="#3a6a8a" stroke-width="1.5" stroke-dasharray="3,2"/>
+        <text x="615" y="213" font-family="IBM Plex Mono,monospace" font-size="8" fill="#3a6a8a" text-anchor="middle">IRQ</text>
+
+        <!-- CPU blocks: processes opposite buffer -->
+        <rect x="60"  y="263" width="185" height="22" rx="2" fill="#dde6ec"/>
+        <text x="152" y="277" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a6a7a" text-anchor="middle">(free / other work)</text>
+
+        <rect x="245" y="263" width="185" height="22" rx="2" fill="#3a6a8a" opacity="0.5"/>
+        <text x="337" y="277" font-family="IBM Plex Mono,monospace" font-size="9" fill="#fff" text-anchor="middle">process ping_buf</text>
+
+        <rect x="430" y="263" width="185" height="22" rx="2" fill="#3a6a8a" opacity="0.5"/>
+        <text x="522" y="277" font-family="IBM Plex Mono,monospace" font-size="9" fill="#fff" text-anchor="middle">process pong_buf</text>
+
+        <rect x="615" y="263" width="185" height="22" rx="2" fill="#3a6a8a" opacity="0.5"/>
+        <text x="707" y="277" font-family="IBM Plex Mono,monospace" font-size="9" fill="#fff" text-anchor="middle">process ping_buf</text>
+
+      </svg>
+      <div style="text-align:center;font-size:12px;color:#9aabb8;margin-bottom:24px;">Two linked descriptors alternate between ping and pong buffers. Each completion fires an IRQ; the CPU processes one half while DMA fills the other.</div>
+
+      <pre class="code-block"><code>#define HALF  128
+static uint32_t ping_buf[HALF];
+static uint32_t pong_buf[HALF];
+
+// Two descriptors stored in RAM — must be 4-byte aligned
+static LDMA_Descriptor_t desc[2];
+
+void dma_adc_stream_init(void) {
+    // desc[0]: fill ping_buf, then load desc[1]
+    desc[0] = (LDMA_Descriptor_t)LDMA_DESCRIPTOR_LINKREL_P2M_WORD(
+        &ADC0->SCANDATA,  // src
+        ping_buf,         // dst
+        HALF,             // count
+        +1                // link offset: +1 descriptor forward = desc[1]
+    );
+    desc[0].xfer.doneIfs = 1;  // interrupt when ping_buf full
+
+    // desc[1]: fill pong_buf, then link back to desc[0]
+    desc[1] = (LDMA_Descriptor_t)LDMA_DESCRIPTOR_LINKREL_P2M_WORD(
+        &ADC0->SCANDATA,
+        pong_buf,
+        HALF,
+        -1                // link offset: -1 descriptor back = desc[0]
+    );
+    desc[1].xfer.doneIfs = 1;  // interrupt when pong_buf full
+
+    LDMA_TransferCfg_t cfg = LDMA_TRANSFER_CFG_PERIPHERAL(
+        ldmaPeripheralSignal_ADC0_SCAN);
+
+    LDMA_StartTransfer(0, &cfg, &desc[0]);
+}
+
+void LDMA_IRQHandler(void) {
+    uint32_t flags = LDMA_IntGet();
+    LDMA_IntClear(flags);
+
+    if (flags &amp; (1u &lt;&lt; 0)) {
+        // Determine which half DMA just finished by inspecting
+        // the current destination pointer
+        uint32_t next_dst = LDMA->CH[0].DST;
+        if (next_dst == (uint32_t)pong_buf) {
+            // DMA is now filling pong — safe to process ping
+            process_samples(ping_buf, HALF);
+        } else {
+            // DMA is now filling ping — safe to process pong
+            process_samples(pong_buf, HALF);
+        }
+    }
+}</code></pre>
+
+      <div class="callout">
+        <strong>Descriptor alignment.</strong> LDMA descriptor arrays must be declared
+        as <code>static</code> (or global) and be naturally aligned — the hardware
+        reads them via the 4-byte-aligned LINK address. Never put a descriptor on the
+        stack inside a function that returns; the DMA hardware will keep reading from
+        that stack address long after the frame is gone.
+      </div>
+
+      <div class="prose">
+        <strong>What about <code>LINKREL</code> vs <code>LINKABS</code>?</strong>
+        The <em>relative</em> form (<code>LINKREL</code>) stores an offset in units of
+        16 bytes (one descriptor) from the current descriptor's address. This is
+        convenient when descriptors are in a contiguous array — <code>+1</code> means
+        "the next element," <code>-1</code> means "the previous." The <em>absolute</em>
+        form (<code>LINKABS</code>) stores the physical RAM address directly. Use
+        absolute links when descriptors are scattered in memory or when the chain is
+        more complex than a simple array.
+      </div>
+
+      <!-- ── Memory-to-memory ──────────────────────────────────── -->
+      <div class="prose" style="font-weight:600;margin-bottom:4px;color:#1a2840;">Memory-to-memory copy</div>
+      <div class="prose" style="margin-top:0;">
+        DMA can also move data between two RAM regions — useful for initializing large
+        buffers, copying data into a second structure for processing, or preparing a
+        DMA-ready ping-pong scratch buffer. There is no peripheral trigger; the transfer
+        uses a software (immediate) trigger and runs as fast as the bus allows.
+      </div>
+
+      <pre class="code-block"><code>void dma_memcpy(void *dst, const void *src, size_t words) {
+    LDMA_Descriptor_t desc = LDMA_DESCRIPTOR_SINGLE_M2M_WORD(src, dst, words);
+    LDMA_TransferCfg_t cfg = LDMA_TRANSFER_CFG_MEMORY();
+    LDMA_StartTransfer(2, &cfg, &desc);
+    // For a blocking call, wait until done:
+    while (LDMA_TransferDone(2)) { }
+}</code></pre>
+
+      <!-- ── Limitations ───────────────────────────────────────── -->
+      <div class="section-head" id="limits">What DMA can't do</div>
+
+      <div class="prose">
+        DMA excels at bulk data movement but is the wrong tool for some jobs:
+      </div>
+
+      <ul class="prose" style="margin-top:0;padding-left:1.4em;">
+        <li style="margin-bottom:8px;"><strong>Conditional transfers.</strong> The DMA controller has no ALU.
+          It cannot check a value, branch, or apply logic. If you need "copy bytes until
+          you see a 0x0A," you need the CPU — or you use DMA to fill a buffer and then
+          scan it in software.</li>
+        <li style="margin-bottom:8px;"><strong>Non-contiguous peripheral access.</strong> DMA moves data
+          in linear address sequences. Reading alternating registers or striding through
+          a struct requires either a CPU loop or a scatter-gather extension (which the
+          EFR32 LDMA supports via write descriptors — but this quickly becomes complex).</li>
+        <li style="margin-bottom:8px;"><strong>Very short or very sporadic transfers.</strong>
+          The overhead of setting up a descriptor (a few dozen cycles) outweighs the
+          benefit for 1–4 byte transfers that happen rarely. A plain interrupt or even
+          polling wins there.</li>
+        <li style="margin-bottom:8px;"><strong>Cache coherency (EFR32 Series 2 with M33).</strong>
+          On devices with an instruction cache, the cache and DMA see the same physical
+          memory. If DMA writes to a region that the CPU has cached, the CPU will read
+          stale data. The EFR32 Series 2 does not have a data cache (only an instruction
+          cache), so this is not a practical concern for data buffers — but it is
+          critical on Cortex-M7 and Cortex-A devices.</li>
+      </ul>
+
+      <div class="prose">
+        Within those boundaries, DMA is indispensable for any embedded system that
+        moves significant data. A biosensor front-end sampling 8 channels at 1 kHz
+        (8000 samples/second, 32 bytes each = 256 kB/s) would need the CPU to handle
+        256,000 interrupt entries per second without DMA. With DMA and a ping-pong
+        buffer, the CPU sees 2 × (rate / HALF) = at most a handful of IRQs per second
+        and is otherwise completely free.
+      </div>
+
+      <hr class="lesson-rule">
+
+      <!-- ── References ────────────────────────────────────────── -->
+      <div class="section-head">References</div>
+
+      <ul class="prose" style="padding-left:1.4em;font-size:13.5px;color:#5a6a7a;">
+        <li style="margin-bottom:6px;">Silicon Labs, <em>EFR32xG12 Reference Manual</em> (LDMA chapter) — register-level descriptor fields and signal source table.</li>
+        <li style="margin-bottom:6px;">Silicon Labs, <em>EMLIB API Reference — em_ldma.h</em> — <code>LDMA_StartTransfer()</code>, descriptor macros, and usage examples.</li>
+        <li style="margin-bottom:6px;">J. Yiu, <em>The Definitive Guide to ARM Cortex-M3 and Cortex-M4 Processors</em> (3rd ed.) — AHB bus arbitration and DMA bus master role (Ch. 15).</li>
+        <li style="margin-bottom:6px;">M. White, <em>Making Embedded Systems</em> (2nd ed.) — Chapters on using DMA for ADC and serial peripherals.</li>
+      </ul>
+
+      <!-- ── Nav ───────────────────────────────────────────────── -->
+      <div class="lesson-nav">
+        <a href="interrupts-nvic.html" class="lesson-nav-btn">← Lesson 3: Interrupts &amp; the NVIC</a>
+        <a href="index.html" class="lesson-nav-btn">Back to Embedded Systems</a>
+        <a href="#" class="lesson-nav-btn disabled">Next → (coming soon)</a>
+      </div>
+
+    </div><!-- /main -->
+
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+</body>
+</html>
