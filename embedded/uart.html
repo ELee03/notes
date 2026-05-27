@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UART — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Architecture &amp; Internals</div>
+        <a href="mcu-architecture.html" class="nav-item">1 · MCU Architecture</a>
+        <a href="memory-clocks.html" class="nav-item">2 · Memory &amp; Clock Systems</a>
+        <a href="interrupts-nvic.html" class="nav-item">3 · Interrupts &amp; the NVIC</a>
+        <a href="dma.html" class="nav-item">4 · DMA</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Peripherals</div>
+        <a href="gpio.html" class="nav-item">5 · GPIO</a>
+        <a href="timers-pwm.html" class="nav-item">6 · Timers &amp; PWM</a>
+        <a href="adc-dac.html" class="nav-item">7 · ADC &amp; DAC</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Protocols</div>
+        <a href="uart.html" class="nav-item active">8 · UART</a>
+        <span class="nav-item planned">9 · SPI</span>
+        <span class="nav-item planned">10 · I2C</span>
+        <span class="nav-item planned">11 · CAN Bus</span>
+        <span class="nav-item planned">12 · USB Fundamentals</span>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Firmware</div>
+        <span class="nav-item planned">13 · Bare-Metal Patterns</span>
+        <span class="nav-item planned">14 · RTOS Concepts</span>
+        <span class="nav-item planned">15 · Debugging &amp; Test</span>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">PCB Design</div>
+        <span class="nav-item planned">16 · Layout Fundamentals</span>
+        <span class="nav-item planned">17 · Mixed-Signal Layout</span>
+        <span class="nav-item planned">18 · Power &amp; Thermal</span>
+        <span class="nav-item planned">19 · High-Speed &amp; RF</span>
+      </div>
+
+      <hr class="sidebar-rule">
+
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#frame" class="nav-item">Frame format</a>
+        <a href="#baud" class="nav-item">Baud rate &amp; tolerance</a>
+        <a href="#levels" class="nav-item">RS-232 vs TTL</a>
+        <a href="#flow" class="nav-item">Flow control</a>
+        <a href="#efr32-api" class="nav-item">EFR32 USART API</a>
+        <a href="#failures" class="nav-item">Failure modes</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Embedded Systems</a>
+        <span class="sep">›</span>
+        <span>8 · UART</span>
+      </div>
+
+      <div class="lesson-title">8 · UART</div>
+      <div class="lesson-meta">Frame Format · Baud Rate · RS-232 · Flow Control · EFR32 USART</div>
+
+      <div class="prose">
+        UART — Universal Asynchronous Receiver-Transmitter — is the simplest serial
+        protocol in common use. It requires only two wires (TX and RX), has no clock
+        line, and needs no addressing because it is inherently point-to-point. UART
+        is ubiquitous in embedded systems for debug consoles, firmware update over
+        serial, GPS modules, GSM modems, inter-processor communication, and any
+        situation where a short cable connects two devices.
+      </div>
+
+      <div class="prose">
+        "Universal" refers to the configurable frame format — data bits, parity, stop
+        bits can all be tuned. "Asynchronous" is the key property: transmitter and
+        receiver share no clock line. They must independently agree on a baud rate
+        before communication, and each bit is decoded by sampling the line at the
+        agreed rate after synchronizing on the falling edge of a start bit.
+      </div>
+
+      <!-- ── Frame format ──────────────────────────────────────── -->
+      <div class="section-head" id="frame">Frame format</div>
+
+      <div class="prose">
+        A UART frame consists of: one start bit, 5–9 data bits (almost always 8),
+        an optional parity bit, and one or two stop bits. The line idles <em>high</em>
+        (logic 1, typically VDD). The start bit is always logic 0 — the falling edge
+        of the idle-to-start transition is what synchronises the receiver.
+      </div>
+
+      <!-- SVG: UART frame waveform for 0x41 = 'A' in 8N1 -->
+      <svg viewBox="0 0 840 160" style="width:100%;max-width:840px;display:block;margin:24px auto 8px;" role="img" aria-label="UART 8N1 frame for 0x41 (letter A): idle, start bit, 8 data bits LSB first, stop bit">
+
+        <defs>
+          <marker id="arrU" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <polygon points="0 0,6 3,0 6" fill="#3a6a8a"/>
+          </marker>
+        </defs>
+
+        <!-- Signal line -->
+        <!-- Layout: x=30 to x=820; 11 bit-cells × 71px each = 781px. Actually 11 bit cells: idle, start, D0-D7, stop -->
+        <!-- Bit width = 70px. Total = 12*70 = 840. x start = 0 + margin -->
+        <!-- Positions: idle=0..70, start=70..140, D0=140..210, D1=210..280, D2=280..350, D3=350..420, D4=420..490, D5=490..560, D6=560..630, D7=630..700, stop=700..770, idle=770..840 -->
+        <!-- All x shifted right by 10 -->
+
+        <!-- 0x41 = 0b01000001: D0=1, D1=0, D2=0, D3=0, D4=0, D5=0, D6=1, D7=0 -->
+        <!-- HIGH=y40, LOW=y100 -->
+
+        <!-- Timeline axis -->
+        <line x1="10" y1="130" x2="840" y2="130" stroke="#c0cdd6" stroke-width="1"/>
+
+        <!-- Waveform: build segment by segment -->
+        <!-- Idle (HIGH) → start (LOW) → D0(1,HIGH) → D1(0,LOW) → D2(0,LOW) → D3(0,LOW) → D4(0,LOW) → D5(0,LOW) → D6(1,HIGH) → D7(0,LOW) → stop(1,HIGH) → idle(HIGH) -->
+
+        <!-- Idle HIGH 10→80 -->
+        <line x1="10" y1="40" x2="80" y2="40" stroke="#1a2840" stroke-width="2.5"/>
+        <!-- Fall to start -->
+        <line x1="80" y1="40" x2="80" y2="100" stroke="#1a2840" stroke-width="2.5"/>
+        <!-- Start LOW 80→150 -->
+        <line x1="80" y1="100" x2="150" y2="100" stroke="#1a2840" stroke-width="2.5"/>
+        <!-- Rise to D0 -->
+        <line x1="150" y1="100" x2="150" y2="40" stroke="#1a2840" stroke-width="2.5"/>
+        <!-- D0=1 HIGH 150→220 -->
+        <line x1="150" y1="40" x2="220" y2="40" stroke="#1a2840" stroke-width="2.5"/>
+        <!-- Fall to D1 -->
+        <line x1="220" y1="40" x2="220" y2="100" stroke="#1a2840" stroke-width="2.5"/>
+        <!-- D1=0 LOW 220→290 -->
+        <line x1="220" y1="100" x2="290" y2="100" stroke="#1a2840" stroke-width="2.5"/>
+        <!-- D2=0 LOW (same level, no transition) 290→360 -->
+        <line x1="290" y1="100" x2="360" y2="100" stroke="#1a2840" stroke-width="2.5"/>
+        <!-- D3=0 LOW 360→430 -->
+        <line x1="360" y1="100" x2="430" y2="100" stroke="#1a2840" stroke-width="2.5"/>
+        <!-- D4=0 LOW 430→500 -->
+        <line x1="430" y1="100" x2="500" y2="100" stroke="#1a2840" stroke-width="2.5"/>
+        <!-- D5=0 LOW 500→570 -->
+        <line x1="500" y1="100" x2="570" y2="100" stroke="#1a2840" stroke-width="2.5"/>
+        <!-- Rise to D6 -->
+        <line x1="570" y1="100" x2="570" y2="40" stroke="#1a2840" stroke-width="2.5"/>
+        <!-- D6=1 HIGH 570→640 -->
+        <line x1="570" y1="40" x2="640" y2="40" stroke="#1a2840" stroke-width="2.5"/>
+        <!-- Fall to D7 -->
+        <line x1="640" y1="40" x2="640" y2="100" stroke="#1a2840" stroke-width="2.5"/>
+        <!-- D7=0 LOW 640→710 -->
+        <line x1="640" y1="100" x2="710" y2="100" stroke="#1a2840" stroke-width="2.5"/>
+        <!-- Rise to stop -->
+        <line x1="710" y1="100" x2="710" y2="40" stroke="#1a2840" stroke-width="2.5"/>
+        <!-- Stop HIGH 710→780 -->
+        <line x1="710" y1="40" x2="780" y2="40" stroke="#1a2840" stroke-width="2.5"/>
+        <!-- Idle HIGH 780→840 -->
+        <line x1="780" y1="40" x2="840" y2="40" stroke="#1a2840" stroke-width="2.5"/>
+
+        <!-- Bit cell dividers (grey, light) -->
+        <line x1="80" y1="28" x2="80" y2="130" stroke="#9aabb8" stroke-width="1" stroke-dasharray="3,3"/>
+        <line x1="150" y1="28" x2="150" y2="130" stroke="#9aabb8" stroke-width="1" stroke-dasharray="3,3"/>
+        <line x1="220" y1="28" x2="220" y2="130" stroke="#9aabb8" stroke-width="1" stroke-dasharray="3,3"/>
+        <line x1="290" y1="28" x2="290" y2="130" stroke="#9aabb8" stroke-width="1" stroke-dasharray="3,3"/>
+        <line x1="360" y1="28" x2="360" y2="130" stroke="#9aabb8" stroke-width="1" stroke-dasharray="3,3"/>
+        <line x1="430" y1="28" x2="430" y2="130" stroke="#9aabb8" stroke-width="1" stroke-dasharray="3,3"/>
+        <line x1="500" y1="28" x2="500" y2="130" stroke="#9aabb8" stroke-width="1" stroke-dasharray="3,3"/>
+        <line x1="570" y1="28" x2="570" y2="130" stroke="#9aabb8" stroke-width="1" stroke-dasharray="3,3"/>
+        <line x1="640" y1="28" x2="640" y2="130" stroke="#9aabb8" stroke-width="1" stroke-dasharray="3,3"/>
+        <line x1="710" y1="28" x2="710" y2="130" stroke="#9aabb8" stroke-width="1" stroke-dasharray="3,3"/>
+        <line x1="780" y1="28" x2="780" y2="130" stroke="#9aabb8" stroke-width="1" stroke-dasharray="3,3"/>
+
+        <!-- Labels above each bit cell -->
+        <text x="45" y="22" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#5a6a7a" text-anchor="middle">IDLE</text>
+        <text x="115" y="22" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#e04040" text-anchor="middle">START</text>
+        <text x="185" y="22" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#3a6a8a" text-anchor="middle">D0=1</text>
+        <text x="255" y="22" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#3a6a8a" text-anchor="middle">D1=0</text>
+        <text x="325" y="22" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#3a6a8a" text-anchor="middle">D2=0</text>
+        <text x="395" y="22" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#3a6a8a" text-anchor="middle">D3=0</text>
+        <text x="465" y="22" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#3a6a8a" text-anchor="middle">D4=0</text>
+        <text x="535" y="22" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#3a6a8a" text-anchor="middle">D5=0</text>
+        <text x="605" y="22" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#3a6a8a" text-anchor="middle">D6=1</text>
+        <text x="675" y="22" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#3a6a8a" text-anchor="middle">D7=0</text>
+        <text x="745" y="22" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#5a8a5a" text-anchor="middle">STOP</text>
+        <text x="810" y="22" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#5a6a7a" text-anchor="middle">IDLE</text>
+
+        <!-- HIGH / LOW labels on left -->
+        <text x="6" y="44" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a6a7a" text-anchor="end">1</text>
+        <text x="6" y="104" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a6a7a" text-anchor="end">0</text>
+
+        <!-- Byte annotation below -->
+        <text x="430" y="148" font-family="IBM Plex Sans,sans-serif" font-size="11" fill="#3a6a8a" text-anchor="middle">0x41 = 'A' = 0b01000001  (LSB transmitted first)</text>
+
+        <!-- Sampling markers at bit centres -->
+        <circle cx="185" cy="40" r="3.5" fill="#7ab8d4" opacity="0.8"/>
+        <circle cx="255" cy="100" r="3.5" fill="#7ab8d4" opacity="0.8"/>
+        <circle cx="325" cy="100" r="3.5" fill="#7ab8d4" opacity="0.8"/>
+        <circle cx="395" cy="100" r="3.5" fill="#7ab8d4" opacity="0.8"/>
+        <circle cx="465" cy="100" r="3.5" fill="#7ab8d4" opacity="0.8"/>
+        <circle cx="535" cy="100" r="3.5" fill="#7ab8d4" opacity="0.8"/>
+        <circle cx="605" cy="40" r="3.5" fill="#7ab8d4" opacity="0.8"/>
+        <circle cx="675" cy="100" r="3.5" fill="#7ab8d4" opacity="0.8"/>
+
+      </svg>
+      <div style="text-align:center;font-size:12px;color:#9aabb8;margin-bottom:24px;">8N1 frame: 1 start bit (LOW), 8 data bits LSB-first, 1 stop bit (HIGH). Blue dots: receiver sampling points at bit centres.</div>
+
+      <div class="prose">
+        Data bits are transmitted LSB first. The character <code>'A'</code>
+        (0x41 = 0b01000001) has its bit 0 (the 1) transmitted first, followed by
+        bits 1–6 (all 0s), then bit 7 (0). The receiver reconstructs the byte by
+        reversing this sequence. This LSB-first convention is universal in UART and
+        worth memorising to avoid confusion when reading logic analyser traces.
+      </div>
+
+      <div class="prose">
+        The standard frame descriptor uses three numbers: <em>data bits / parity /
+        stop bits</em>. <strong>8N1</strong> means 8 data bits, no parity, 1 stop bit —
+        the default for nearly all modern UART communication. Other configurations
+        are rare: <strong>8E1</strong> (even parity) and <strong>7E1</strong> (7-bit
+        ASCII with even parity) appear in legacy industrial equipment; <strong>8N2</strong>
+        (two stop bits) is used when the receiver needs extra time between frames.
+      </div>
+
+      <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:24px;">
+        <thead>
+          <tr style="background:#eef4f8;">
+            <th style="padding:7px 10px;border:1px solid #d0dae0;font-weight:600;">Parity mode</th>
+            <th style="padding:7px 10px;border:1px solid #d0dae0;font-weight:600;">Parity bit value</th>
+            <th style="padding:7px 10px;border:1px solid #d0dae0;font-weight:600;">Purpose</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td style="padding:6px 10px;border:1px solid #e0e8ed;">None (N)</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">—</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">No error detection; saves 1 bit per frame</td></tr>
+          <tr style="background:#f8f9fb;"><td style="padding:6px 10px;border:1px solid #e0e8ed;">Even (E)</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">Makes total 1-bits even</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">Detects any single-bit error in the frame</td></tr>
+          <tr><td style="padding:6px 10px;border:1px solid #e0e8ed;">Odd (O)</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">Makes total 1-bits odd</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">Same detection as even; different convention</td></tr>
+          <tr style="background:#f8f9fb;"><td style="padding:6px 10px;border:1px solid #e0e8ed;">Mark</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">Always 1</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">Legacy; used for addressing in multi-drop UART</td></tr>
+          <tr><td style="padding:6px 10px;border:1px solid #e0e8ed;">Space</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">Always 0</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">Legacy; rarely used</td></tr>
+        </tbody>
+      </table>
+
+      <!-- ── Baud rate ──────────────────────────────────────────── -->
+      <div class="section-head" id="baud">Baud rate and clock error tolerance</div>
+
+      <div class="prose">
+        Baud rate is the number of symbols transmitted per second. For UART, one symbol
+        equals one bit, so baud rate equals bit rate. Both sides must be configured
+        identically; there is no handshake to discover baud rate automatically. Common
+        values: 9600, 19200, 38400, 57600, <strong>115200</strong> (the ubiquitous
+        default), 230400, 460800, 921600, and 1000000 baud.
+      </div>
+
+      <div class="prose">
+        Because the receiver has no clock reference from the transmitter, it must
+        recover bit timing from the data stream itself. Modern UART hardware uses
+        <strong>16× oversampling</strong>: the receiver samples the RX line 16 times
+        per bit period and takes the majority at samples 7, 8, 9 (centred on the
+        nominal bit). The receiver syncs its counter to the falling edge of the start
+        bit; any accumulated clock-rate mismatch shows up as a growing phase error.
+      </div>
+
+      <div class="math-block" style="font-family:'IBM Plex Mono',monospace;font-size:13px;padding:10px 20px;background:#f0f4f8;border-left:3px solid #7ab8d4;border-radius:3px;margin:0 0 16px 0;color:#1a2840;">
+        Max error before missampling ≈ (0.5 × 1-bit width) / (N-bit frame) = 1/(2N)
+        <br>
+        For 10-bit frame (8N1): max ≈ 5%   →   practical limit: ±2.5% each side
+      </div>
+
+      <div class="prose">
+        A 10-bit frame (1 start + 8 data + 1 stop) has 10 bit periods of accumulated
+        drift from the start-bit sync. To land within the middle third of the last
+        bit, cumulative drift must be &lt;1/6 bit ≈ 1.7%. The EFR32 baud rate divider
+        introduces &lt;0.5% error at most standard baud rates with a 38.4 MHz clock
+        (38.4 MHz / 115200 baud = exactly 333.3, so the 16× oversampling fractional
+        divider handles the fraction). Keep combined transmitter + receiver error
+        under 3%; under 1% is comfortable.
+      </div>
+
+      <pre class="code-block"><code>// EFR32 baud rate calculation (EMLIB does this automatically):
+// BRR = round(f_PCLK / (16 × baud)) - 1
+// f_PCLK = 38.4 MHz, baud = 115200:
+// BRR = round(38400000 / (16 × 115200)) - 1 = round(20.833) - 1 = 21 - 1 = 20
+// Actual baud = 38400000 / (16 × 21) = 114285.7 baud  →  0.79% error ✓
+
+// EMLIB abstracts this — just set init.baudrate = 115200 and USART_InitAsync()
+// will compute and program the divider automatically.</code></pre>
+
+      <!-- ── RS-232 vs TTL ─────────────────────────────────────── -->
+      <div class="section-head" id="levels">RS-232 vs TTL levels</div>
+
+      <div class="prose">
+        UART is a protocol, not a voltage standard. The same framing can ride on
+        different electrical levels:
+      </div>
+
+      <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:24px;">
+        <thead>
+          <tr style="background:#eef4f8;">
+            <th style="padding:7px 10px;border:1px solid #d0dae0;font-weight:600;">Standard</th>
+            <th style="padding:7px 10px;border:1px solid #d0dae0;font-weight:600;">Logic 0 (SPACE)</th>
+            <th style="padding:7px 10px;border:1px solid #d0dae0;font-weight:600;">Logic 1 (MARK)</th>
+            <th style="padding:7px 10px;border:1px solid #d0dae0;font-weight:600;">Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td style="padding:6px 10px;border:1px solid #e0e8ed;font-weight:600;">CMOS/TTL 3.3 V</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">~0 V</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">~3.3 V</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">Standard on modern MCUs</td></tr>
+          <tr style="background:#f8f9fb;"><td style="padding:6px 10px;border:1px solid #e0e8ed;font-weight:600;">CMOS/TTL 5 V</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">~0 V</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">~5 V</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">Legacy 5 V MCUs, Arduino 5 V</td></tr>
+          <tr><td style="padding:6px 10px;border:1px solid #e0e8ed;font-weight:600;">RS-232</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">+3 to +15 V</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">−3 to −15 V</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">Inverted polarity! Needs transceiver IC (MAX232)</td></tr>
+          <tr style="background:#f8f9fb;"><td style="padding:6px 10px;border:1px solid #e0e8ed;font-weight:600;">RS-485</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">A−B &gt; +200 mV</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">A−B &lt; −200 mV</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">Differential, multi-drop, up to 1.2 km</td></tr>
+        </tbody>
+      </table>
+
+      <div class="prose">
+        When connecting an MCU to a legacy RS-232 device (PC COM port, industrial
+        sensor), you cannot connect the 3.3 V TX directly to the RS-232 RX pin — the
+        voltage levels are incompatible and the polarity is inverted. Use a transceiver
+        chip (MAX232, MAX3232, or equivalent) that level-shifts and inverts the signal.
+        Modern debug probes and USB-UART adapters (CP2102, CH340G, FT232R) present
+        TTL UART directly, which is what you usually want.
+      </div>
+
+      <div class="callout">
+        <strong>Check Rx pin tolerance before connecting 5 V TTL to a 3.3 V MCU.</strong>
+        Most EFR32 GPIO pins are not 5 V tolerant. Connecting a 5 V device's TX line
+        directly to the EFR32 RX pin will damage the input. Use a resistor divider
+        (1 kΩ / 2 kΩ) or a logic-level converter.
+      </div>
+
+      <!-- ── Flow control ──────────────────────────────────────── -->
+      <div class="section-head" id="flow">Flow control</div>
+
+      <div class="prose">
+        Flow control prevents the receiver from being overwhelmed when its buffer
+        or processing cannot keep up with the transmitter. Without it, received bytes
+        can overwrite each other in the FIFO (overrun error).
+      </div>
+
+      <!-- SVG: RTS/CTS timing -->
+      <svg viewBox="0 0 820 200" style="width:100%;max-width:820px;display:block;margin:24px auto 8px;" role="img" aria-label="RTS/CTS hardware flow control timing: TX data, RTS, and CTS signal timing showing paused transmission when receiver buffer fills">
+
+        <!-- Labels -->
+        <text x="50" y="38" font-family="IBM Plex Sans,sans-serif" font-size="11" fill="#5a6a7a" text-anchor="end">TX data</text>
+        <text x="50" y="90" font-family="IBM Plex Sans,sans-serif" font-size="11" fill="#5a6a7a" text-anchor="end">RTS</text>
+        <text x="50" y="142" font-family="IBM Plex Sans,sans-serif" font-size="11" fill="#5a6a7a" text-anchor="end">CTS</text>
+        <text x="50" y="156" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#9aabb8" text-anchor="end">(at sender)</text>
+
+        <!-- Time axis -->
+        <line x1="60" y1="175" x2="800" y2="175" stroke="#c0cdd6" stroke-width="1"/>
+        <text x="795" y="183" font-family="IBM Plex Sans,sans-serif" font-size="9" fill="#9aabb8">t</text>
+
+        <!-- TX data: active (bytes flowing) then paused then resumed -->
+        <!-- TX active: 60→400, paused: 400→560, resumed: 560→800 -->
+        <rect x="60" y="22" width="340" height="28" rx="2" fill="#3a6a8a" opacity="0.7"/>
+        <text x="230" y="39" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#fff" text-anchor="middle">transmitting bytes…</text>
+        <rect x="400" y="22" width="160" height="28" rx="2" fill="#dde6ec"/>
+        <text x="480" y="39" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#7a8a9a" text-anchor="middle">paused</text>
+        <rect x="560" y="22" width="240" height="28" rx="2" fill="#3a6a8a" opacity="0.7"/>
+        <text x="680" y="39" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#fff" text-anchor="middle">transmitting bytes…</text>
+
+        <!-- RTS (sender asserts = buffer can accept): active HIGH, deasserted at 400, reasserted at 560 -->
+        <!-- RTS asserted = receiver ready / sender wants to send; convention varies; show common active-low -->
+        <!-- Show RTS low (asserted) = OK to send, high = stop -->
+        <polyline points="60,74 400,74 400,106 560,106 560,74 800,74"
+                  stroke="#7ab8d4" stroke-width="2" fill="none"/>
+        <text x="200" y="68" font-family="IBM Plex Mono,monospace" font-size="9" fill="#3a6a8a" text-anchor="middle">CTS_N = LOW (OK to send)</text>
+        <text x="480" y="120" font-family="IBM Plex Mono,monospace" font-size="9" fill="#e04040" text-anchor="middle">CTS_N = HIGH (pause)</text>
+
+        <!-- CTS (at sender, mirrors remote RTS with small delay) -->
+        <polyline points="60,126 412,126 412,158 572,158 572,126 800,126"
+                  stroke="#7ab8d4" stroke-width="2" fill="none" stroke-dasharray="5,3"/>
+        <text x="700" y="122" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#9aabb8">(propagation delay)</text>
+
+        <!-- Annotations -->
+        <line x1="400" y1="14" x2="400" y2="170" stroke="#e04040" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <text x="402" y="12" font-family="IBM Plex Mono,monospace" font-size="9" fill="#e04040">RX FIFO full</text>
+
+        <line x1="560" y1="14" x2="560" y2="170" stroke="#5a8a5a" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <text x="562" y="12" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a8a5a">RX FIFO drained</text>
+
+      </svg>
+      <div style="text-align:center;font-size:12px;color:#9aabb8;margin-bottom:24px;">RTS/CTS hardware flow control. When the receiver's FIFO fills, it deasserts its RTS line; the sender sees CTS go inactive (after propagation delay) and pauses transmission.</div>
+
+      <div class="prose">
+        <strong>Hardware flow control (RTS/CTS)</strong> uses two extra wires. The
+        receiver's RTS (Request To Send) output signals whether it can accept data;
+        this line connects to the transmitter's CTS (Clear To Send) input. When the
+        receiver's buffer fills, it deasserts RTS, and the transmitter pauses after
+        the current byte. When the buffer drains, RTS is reasserted and transmission
+        resumes. The EFR32 USART hardware can manage this automatically — once
+        configured, the hardware itself holds TX and monitors CTS with no software
+        overhead.
+      </div>
+
+      <div class="prose">
+        <strong>Software flow control (XON/XOFF)</strong> uses in-band control characters:
+        when the receiver sends 0x13 (Ctrl-S, XOFF), the transmitter stops; 0x11
+        (Ctrl-Q, XON) resumes it. This avoids extra wires but pollutes the data stream —
+        XOFF/XON cannot appear in binary data. Use it only when the data is guaranteed
+        to be printable ASCII and no extra wires are available.
+      </div>
+
+      <!-- ── EFR32 USART API ────────────────────────────────────── -->
+      <div class="section-head" id="efr32-api">EFR32 USART API</div>
+
+      <div class="prose">
+        The EFR32 USART peripheral supports UART (asynchronous), SPI (synchronous),
+        IrDA, and SmartCard modes from the same hardware. In UART mode, EMLIB's
+        <code>USART_InitAsync()</code> configures all the relevant registers.
+      </div>
+
+      <pre class="code-block"><code>#include "em_usart.h"
+#include "em_cmu.h"
+#include "em_gpio.h"
+
+// ── Initialize USART0 for 115200 8N1 UART (Series 1) ──────────
+
+void uart0_init(void) {
+    CMU_ClockEnable(cmuClock_USART0, true);
+    CMU_ClockEnable(cmuClock_GPIO,   true);
+
+    // Configure GPIO pins before enabling routing
+    GPIO_PinModeSet(gpioPortA, 0, gpioModePushPull, 1); // TX: push-pull, idle HIGH
+    GPIO_PinModeSet(gpioPortA, 1, gpioModeInputPull, 1); // RX: input with pull-up
+
+    USART_InitAsync_TypeDef init = USART_INITASYNC_DEFAULT;
+    init.baudrate = 115200;
+    init.databits = usartDatabits8;
+    init.parity   = usartNoParity;
+    init.stopbits = usartStopbits1;
+    // For flow control: init.hwFlowControl = usartHwFlowControlCtsAndRts;
+    USART_InitAsync(USART0, &init);
+
+    // Route TX/RX to location 0 pins (check datasheet for your package)
+    USART0->ROUTELOC0 = USART_ROUTELOC0_TXLOC_LOC0
+                      | USART_ROUTELOC0_RXLOC_LOC0;
+    USART0->ROUTEPEN  = USART_ROUTEPEN_TXPEN
+                      | USART_ROUTEPEN_RXPEN;
+}
+
+// ── Polling transmit / receive ─────────────────────────────────
+
+void uart_putchar(uint8_t c) {
+    USART_Tx(USART0, c);          // blocks until TX buffer empty
+}
+
+void uart_puts(const char *s) {
+    while (*s) uart_putchar(*s++);
+}
+
+uint8_t uart_getchar(void) {
+    return USART_Rx(USART0);      // blocks until byte received
+}
+
+// ── Interrupt-driven receive with ring buffer ─────────────────
+
+#include "ring_buffer.h"           // your ring buffer implementation
+static ring_buf_t rx_ring;
+
+void uart0_rx_irq_enable(void) {
+    USART_IntClear(USART0, USART_IF_RXDATAV);
+    USART_IntEnable(USART0, USART_IF_RXDATAV);  // RX data available
+    NVIC_ClearPendingIRQ(USART0_RX_IRQn);
+    NVIC_EnableIRQ(USART0_RX_IRQn);
+}
+
+void USART0_RX_IRQHandler(void) {
+    // RXDATAV clears automatically when RXDATA is read
+    uint8_t byte = USART_RxDataGet(USART0);
+    ring_buf_push(&rx_ring, byte);
+}</code></pre>
+
+      <div class="callout">
+        <strong>Series 2: EUSART.</strong> EFR32 Series 2 devices use EUSART0
+        (Enhanced USART) with driver <code>em_eusart.h</code>. The init structure
+        changes to <code>EUSART_UartInit_TypeDef</code> and routing uses the GPIO
+        peripheral's route registers (same pattern as GPIO Lesson 5). The
+        functional behaviour — frame format, baud rate, oversampling — is identical.
+      </div>
+
+      <!-- ── Failure modes ─────────────────────────────────────── -->
+      <div class="section-head" id="failures">Common failure modes</div>
+
+      <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:24px;">
+        <thead>
+          <tr style="background:#eef4f8;">
+            <th style="padding:7px 10px;border:1px solid #d0dae0;font-weight:600;">Error</th>
+            <th style="padding:7px 10px;border:1px solid #d0dae0;font-weight:600;">Cause</th>
+            <th style="padding:7px 10px;border:1px solid #d0dae0;font-weight:600;">EFR32 flag</th>
+            <th style="padding:7px 10px;border:1px solid #d0dae0;font-weight:600;">Fix</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;font-weight:600;">Framing error</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">Stop bit not received as HIGH (wrong baud rate, line noise, mismatched frame format)</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;font-family:'IBM Plex Mono',monospace;font-size:12px;">USART_IF_FERR</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">Verify baud rates match; check signal integrity with scope</td>
+          </tr>
+          <tr style="background:#f8f9fb;">
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;font-weight:600;">Overrun error</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">New byte arrived before firmware read the previous one from RXDATA</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;font-family:'IBM Plex Mono',monospace;font-size:12px;">USART_IF_RXOF</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">Use interrupt-driven or DMA receive; add RTS/CTS flow control</td>
+          </tr>
+          <tr>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;font-weight:600;">Parity error</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">Received parity bit does not match calculated parity (single-bit error in frame)</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;font-family:'IBM Plex Mono',monospace;font-size:12px;">USART_IF_PERR</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">Verify parity setting matches; improve signal integrity (termination, shorter cable)</td>
+          </tr>
+          <tr style="background:#f8f9fb;">
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;font-weight:600;">Break condition</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">Line held LOW for &gt;1 full frame time (intentional or wiring fault)</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;font-family:'IBM Plex Mono',monospace;font-size:12px;">USART_IF_FERR</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">Intentional use: LIN bus wakeup, UART bootloader entry on some MCUs</td>
+          </tr>
+          <tr>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;font-weight:600;">Garbled data</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">Clock mismatch, wrong data bits / stop bits setting, level mismatch (5V→3.3V)</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">—</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">Decode with logic analyser; verify full frame format agreement</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="prose">
+        The most common issue in practice is baud rate mismatch. If you see a flood
+        of framing errors or the received bytes are consistently wrong, put a logic
+        analyser on the line: measure the actual bit period of any known byte and
+        compare to 1/baud_rate. A 4% mismatch at 115200 baud = 43.4 µs per bit vs
+        expected 8.68 µs is immediately obvious on the analyser.
+      </div>
+
+      <hr class="lesson-rule">
+
+      <div class="section-head">References</div>
+      <ul class="prose" style="padding-left:1.4em;font-size:13.5px;color:#5a6a7a;">
+        <li style="margin-bottom:6px;">Silicon Labs, <em>EFR32xG12 Reference Manual</em> — USART chapter: async mode, baud rate divider, flow control, error flags.</li>
+        <li style="margin-bottom:6px;">Silicon Labs, <em>EMLIB API Reference — em_usart.h</em> — USART_InitAsync(), USART_BaudrateAsyncSet(), USART_Tx(), USART_RxDataGet().</li>
+        <li style="margin-bottom:6px;">J. Yiu, <em>The Definitive Guide to ARM Cortex-M3 and Cortex-M4 Processors</em> (3rd ed.) — Serial communication fundamentals.</li>
+        <li style="margin-bottom:6px;">M. White, <em>Making Embedded Systems</em> (2nd ed.) — Chapter on UART, ring buffers for interrupt-driven receive, and DMA-based UART transmit.</li>
+      </ul>
+
+      <!-- ── Nav ───────────────────────────────────────────────── -->
+      <div class="lesson-nav">
+        <a href="adc-dac.html" class="lesson-nav-btn">← Lesson 7: ADC &amp; DAC</a>
+        <a href="index.html" class="lesson-nav-btn">Back to Embedded Systems</a>
+        <a href="#" class="lesson-nav-btn disabled">Next → (coming soon)</a>
+      </div>
+
+    </div><!-- /main -->
+
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+</body>
+</html>
