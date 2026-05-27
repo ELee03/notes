@@ -39,7 +39,7 @@ books:
     year: 2024
     clusters: [embedded]
     annotation: Practical patterns for firmware architecture. Best entry point for embedded software design — state machines, driver layering, RTOS concepts.
-    source: SchoolStuff:Textbooks/making_embedded_systems.pdf
+    source: SchoolStuff:Textbooks/embedded/making_embedded_systems.pdf
 
   - id: yiu-arm
     title: The Definitive Guide to ARM Cortex-M3 and Cortex-M4 Processors
@@ -49,7 +49,7 @@ books:
     year: 2013
     clusters: [embedded]
     annotation: Authoritative reference for the Cortex-M architecture, NVIC, memory model, and fault handling. The ground truth for ARM-core specifics. Covers M3 and M4; newer M33 core (EFR32xG21+) requires the ARM Architecture Reference Manual.
-    source: SchoolStuff:Textbooks/pdfcoffee.com-yiu-j-the-definitive-guide-to-arm-cortex-m3-and-cortex-m4-processors-3rd-edition.pdf
+    source: SchoolStuff:Textbooks/embedded/pdfcoffee.com-yiu-j-the-definitive-guide-to-arm-cortex-m3-and-cortex-m4-processors-3rd-edition.pdf
 
   - id: barr-massa
     title: Programming Embedded Systems
@@ -69,7 +69,7 @@ books:
     year: 2015
     clusters: [embedded, circuits, analog]
     annotation: The definitive practical electronics reference. Chapters on op-amps, ADCs, noise, and mixed-signal design are essential reading for any embedded hardware work.
-    source: SchoolStuff:Textbooks/_The Art of Electronics 3rd ed [2015].pdf
+    source: SchoolStuff:Textbooks/embedded/_The Art of Electronics 3rd ed [2015].pdf
 
   - id: ott-emc
     title: Electromagnetic Compatibility Engineering
@@ -78,7 +78,7 @@ books:
     year: 2009
     clusters: [embedded]
     annotation: The standard reference for PCB EMC — ground planes, return current paths, filtering, and layout for emissions and immunity.
-    source: SchoolStuff:Textbooks/Electromagnetic Compatibility Engineering.pdf
+    source: SchoolStuff:Textbooks/embedded/Electromagnetic Compatibility Engineering.pdf
 
   - id: chen-linsys
     title: Linear System Theory and Design
