@@ -175,7 +175,7 @@
       "rl"
     ],
     "annotation": "UofT course notes bridging classical adaptive control and modern RL. Covers LQR, adaptive control, policy gradients, and Q-learning within a unified control-theoretic framework.",
-    "source": "source/textbooks/control/ece411_text.pdf"
+    "source": "SchoolStuff:Textbooks/computing/ece411_text.pdf"
   },
   {
     "id": "oppenheim-signals",
@@ -222,7 +222,7 @@
       "circuits"
     ],
     "annotation": "Primary circuits textbook for ECE 159. Covers KVL/KCL, phasors, Thevenin/Norton, op-amps, and AC steady-state analysis. Standard introductory circuits reference.",
-    "source": "source/textbooks/circuits/Sadiku-Fundamentals-Electric-Circuits-7th.pdf"
+    "source": "SchoolStuff:Courses/Year 1/Term 2/ECE 159/- Fundamentals of Electric Circuits (7th edition) (2021).pdf"
   },
   {
     "id": "sedra-smith",
@@ -257,7 +257,7 @@
       "analog"
     ],
     "annotation": "Primary reference for ECE 430. Covers CMOS op-amp design, noise, frequency compensation, folded-cascode topologies, and fully differential amplifiers.",
-    "source": "source/textbooks/analog/Analog-Integrated-Circuit-Design.pdf"
+    "source": "SchoolStuff:Textbooks/analog/Analog Integrated Circuit Design - Carusone.pdf"
   },
   {
     "id": "walpole-stats",
@@ -290,7 +290,7 @@
       "quantum"
     ],
     "annotation": "The standard undergraduate quantum mechanics text. Clear pedagogical style, covers wave functions, Schrodinger equation, infinite square well, harmonic oscillator, hydrogen atom, and perturbation theory.",
-    "source": "source/textbooks/quantum/Griffiths-Introduction-to-Quantum-Mechanics.pdf"
+    "source": "SchoolStuff:Textbooks/quantum/Griffiths-Introduction-to-Quantum-Mechanics.pdf"
   },
   {
     "id": "taylor-modern-physics",
@@ -340,7 +340,7 @@
       "bioelectricity"
     ],
     "annotation": "The authoritative neuroscience reference. Comprehensive coverage from ion channels and synaptic transmission to motor systems, cognition, and disorders.",
-    "source": "source/textbooks/neuroscience/Kandel-Principles-of-Neural-Science-5th.pdf"
+    "source": "SchoolStuff:Textbooks/neuroscience/Principles of Neural Science, Fifth - KANDEL.pdf"
   },
   {
     "id": "bear-neuroscience",
@@ -357,7 +357,7 @@
       "neuroscience"
     ],
     "annotation": "Accessible undergraduate neuroscience text. Strong on cellular and systems-level neuroscience without requiring a graduate background.",
-    "source": "source/textbooks/neuroscience/Bear-Neuroscience-Exploring-the-Brain.pdf"
+    "source": "SchoolStuff:Textbooks/neuroscience/Mark_F._Bear_PhD_Barry_W._Connors_PhD_Michael_A._Paradiso_PhD_-_Neuroscience__Exploring_the_Brain_2015_LWW_-_libgen.li.pdf"
   },
   {
     "id": "buzsaki-rhythms",
@@ -371,7 +371,7 @@
       "neuroscience"
     ],
     "annotation": "Explores neural oscillations and brain rhythms — theta, gamma, sharp-wave ripples. Essential background for anyone thinking about neural signals and brain dynamics.",
-    "source": "source/textbooks/neuroscience/Buzsaki-Rhythms-of-the-Brain.pdf"
+    "source": "SchoolStuff:Textbooks/neuroscience/Buzsaki G. Rhythms of the brain.pdf"
   },
   {
     "id": "he-neural-engineering",
@@ -386,7 +386,7 @@
       "bioelectricity"
     ],
     "annotation": "Primary textbook for ECE 441. Covers neural recording, stimulation, signal processing, brain-computer interfaces, EEG/fMRI, and neuromodulation applications.",
-    "source": "source/textbooks/bioelectricity/Neural-Engineering.pdf"
+    "source": "SchoolStuff:Textbooks/bioelectricity/Neural Engineering.pdf"
   },
   {
     "id": "sutton-barto",
@@ -402,7 +402,7 @@
       "rl"
     ],
     "annotation": "The foundational RL textbook. Covers MDPs, dynamic programming, Monte Carlo methods, TD-learning, Q-learning, policy gradient methods, and deep RL connections.",
-    "source": "source/textbooks/rl/Sutton-Barto-Reinforcement-Learning.pdf"
+    "source": "SchoolStuff:Textbooks/rl/Sutton-Barto-RL.pdf"
   },
   {
     "id": "strogatz-nonlinear",
@@ -418,7 +418,7 @@
       "physics"
     ],
     "annotation": "Exceptionally readable introduction to nonlinear dynamics — bifurcations, phase portraits, limit cycles, and chaos. Builds intuition through physical examples before formalism.",
-    "source": "source/textbooks/mathematics/Strogatz-Nonlinear-Dynamics-and-Chaos.pdf"
+    "source": "SchoolStuff:Textbooks/mathematics/Strogatz-Nonlinear-Dynamics-and-Chaos.pdf"
   },
   {
     "id": "mcgee-food",
