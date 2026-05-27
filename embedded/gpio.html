@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GPIO — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Architecture &amp; Internals</div>
+        <a href="mcu-architecture.html" class="nav-item">1 · MCU Architecture</a>
+        <a href="memory-clocks.html" class="nav-item">2 · Memory &amp; Clock Systems</a>
+        <a href="interrupts-nvic.html" class="nav-item">3 · Interrupts &amp; the NVIC</a>
+        <a href="dma.html" class="nav-item">4 · DMA</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Peripherals</div>
+        <a href="gpio.html" class="nav-item active">5 · GPIO</a>
+        <span class="nav-item planned">6 · Timers &amp; PWM</span>
+        <span class="nav-item planned">7 · ADC &amp; DAC</span>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Protocols</div>
+        <span class="nav-item planned">8 · UART</span>
+        <span class="nav-item planned">9 · SPI</span>
+        <span class="nav-item planned">10 · I2C</span>
+        <span class="nav-item planned">11 · CAN Bus</span>
+        <span class="nav-item planned">12 · USB Fundamentals</span>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Firmware</div>
+        <span class="nav-item planned">13 · Bare-Metal Patterns</span>
+        <span class="nav-item planned">14 · RTOS Concepts</span>
+        <span class="nav-item planned">15 · Debugging &amp; Test</span>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">PCB Design</div>
+        <span class="nav-item planned">16 · Layout Fundamentals</span>
+        <span class="nav-item planned">17 · Mixed-Signal Layout</span>
+        <span class="nav-item planned">18 · Power &amp; Thermal</span>
+        <span class="nav-item planned">19 · High-Speed &amp; RF</span>
+      </div>
+
+      <hr class="sidebar-rule">
+
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#output-modes" class="nav-item">Output modes</a>
+        <a href="#input-modes" class="nav-item">Input modes</a>
+        <a href="#schmitt" class="nav-item">Schmitt trigger</a>
+        <a href="#efr32-api" class="nav-item">EFR32 GPIO API</a>
+        <a href="#alt-func" class="nav-item">Alternate functions</a>
+        <a href="#gpio-irq" class="nav-item">GPIO interrupts</a>
+        <a href="#debounce" class="nav-item">Debouncing</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Embedded Systems</a>
+        <span class="sep">›</span>
+        <span>5 · GPIO</span>
+      </div>
+
+      <div class="lesson-title">5 · GPIO</div>
+      <div class="lesson-meta">Output Modes · Input Pull-ups · Schmitt Trigger · Alternate Functions · Pin Routing</div>
+
+      <div class="prose">
+        General Purpose Input/Output — GPIO — is the most fundamental peripheral in any
+        microcontroller. Every other peripheral on the chip (UART, SPI, ADC, timers)
+        ultimately exposes itself to the outside world through GPIO pins. Understanding
+        how GPIO pads work at the circuit level explains why the same pin can function
+        as a logic output, an I2C line, an ADC input, or a PWM channel — and why certain
+        combinations of signals require specific electrical configurations.
+      </div>
+
+      <div class="prose">
+        A GPIO pad is a small bidirectional interface between the silicon and the package
+        pin. Inside the pad cell there is an output driver, an input receiver, optional
+        pull resistors, a Schmitt trigger, and a multiplexer that selects between the GPIO
+        function and one of several peripheral functions. The firmware configures this
+        cell via a mode register.
+      </div>
+
+      <!-- ── Output modes ──────────────────────────────────────── -->
+      <div class="section-head" id="output-modes">Output modes</div>
+
+      <div class="prose">
+        There are two fundamentally different ways an MCU pin can drive a digital output
+        signal: <strong>push-pull</strong> and <strong>open-drain</strong>.
+        The distinction matters whenever multiple devices share a wire.
+      </div>
+
+      <!-- SVG: push-pull vs open-drain -->
+      <svg viewBox="0 0 760 240" style="width:100%;max-width:760px;display:block;margin:24px auto 8px;" role="img" aria-label="Push-pull vs open-drain output circuit comparison">
+
+        <defs>
+          <marker id="arr" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+            <polygon points="0 0,7 3.5,0 7" fill="#3a6a8a"/>
+          </marker>
+        </defs>
+
+        <!-- ══ Push-pull (left) ══ -->
+        <text x="190" y="18" font-family="IBM Plex Sans,sans-serif" font-size="13" fill="#1a2840" text-anchor="middle" font-weight="600">Push-pull</text>
+
+        <!-- VDD rail -->
+        <line x1="190" y1="28" x2="190" y2="48" stroke="#1a2840" stroke-width="2"/>
+        <text x="190" y="26" font-family="IBM Plex Mono,monospace" font-size="10" fill="#5a6a7a" text-anchor="middle">VDD</text>
+
+        <!-- P-FET (top): source at top, drain at bottom, gate on left -->
+        <!-- body symbol -->
+        <line x1="190" y1="48" x2="190" y2="80" stroke="#1a2840" stroke-width="2"/>
+        <line x1="178" y1="52" x2="178" y2="76" stroke="#1a2840" stroke-width="2.5"/> <!-- gate bar -->
+        <line x1="178" y1="52" x2="160" y2="52" stroke="#1a2840" stroke-width="1.5"/>  <!-- gate lead -->
+        <line x1="190" y1="56" x2="178" y2="56" stroke="#1a2840" stroke-width="1.5"/>  <!-- S connection -->
+        <line x1="190" y1="72" x2="178" y2="72" stroke="#1a2840" stroke-width="1.5"/>  <!-- D connection -->
+        <!-- P-FET label -->
+        <text x="148" y="65" font-family="IBM Plex Mono,monospace" font-size="9" fill="#3a6a8a" text-anchor="middle">P</text>
+        <!-- circle for inversion at gate (PMOS) -->
+        <circle cx="173" cy="64" r="3" fill="none" stroke="#1a2840" stroke-width="1.5"/>
+
+        <!-- Middle node -->
+        <line x1="190" y1="80" x2="190" y2="110" stroke="#1a2840" stroke-width="2"/>
+
+        <!-- N-FET (bottom) -->
+        <line x1="190" y1="110" x2="190" y2="145" stroke="#1a2840" stroke-width="2"/>
+        <line x1="178" y1="114" x2="178" y2="140" stroke="#1a2840" stroke-width="2.5"/>
+        <line x1="178" y1="114" x2="160" y2="114" stroke="#1a2840" stroke-width="1.5"/>
+        <line x1="190" y1="118" x2="178" y2="118" stroke="#1a2840" stroke-width="1.5"/>
+        <line x1="190" y1="136" x2="178" y2="136" stroke="#1a2840" stroke-width="1.5"/>
+        <text x="148" y="128" font-family="IBM Plex Mono,monospace" font-size="9" fill="#3a6a8a" text-anchor="middle">N</text>
+
+        <!-- GND -->
+        <line x1="190" y1="145" x2="190" y2="165" stroke="#1a2840" stroke-width="2"/>
+        <line x1="174" y1="165" x2="206" y2="165" stroke="#1a2840" stroke-width="2"/>
+        <line x1="179" y1="170" x2="201" y2="170" stroke="#1a2840" stroke-width="1.5"/>
+        <line x1="184" y1="175" x2="196" y2="175" stroke="#1a2840" stroke-width="1"/>
+
+        <!-- Output pin line -->
+        <line x1="190" y1="95" x2="240" y2="95" stroke="#1a2840" stroke-width="2"/>
+        <circle cx="190" cy="95" r="3" fill="#1a2840"/>
+        <text x="248" y="99" font-family="IBM Plex Mono,monospace" font-size="10" fill="#3a6a8a">PIN</text>
+
+        <!-- Data register drives both gates -->
+        <rect x="90" y="55" width="56" height="20" rx="3" fill="#eef4f8" stroke="#7ab8d4" stroke-width="1"/>
+        <text x="118" y="68" font-family="IBM Plex Mono,monospace" font-size="9" fill="#1a2840" text-anchor="middle">DATA_OUT</text>
+        <line x1="146" y1="65" x2="160" y2="65" stroke="#7ab8d4" stroke-width="1.5"/>  <!-- to P gate inversion -->
+        <line x1="146" y1="65" x2="146" y2="122" stroke="#7ab8d4" stroke-width="1.5"/>
+        <line x1="146" y1="122" x2="160" y2="122" stroke="#7ab8d4" stroke-width="1.5"/>   <!-- to N gate -->
+
+        <!-- Annotations -->
+        <text x="190" y="198" font-family="IBM Plex Sans,sans-serif" font-size="11" fill="#5a6a7a" text-anchor="middle">Actively drives high <em>and</em> low.</text>
+        <text x="190" y="213" font-family="IBM Plex Sans,sans-serif" font-size="11" fill="#5a6a7a" text-anchor="middle">Two devices can't share a wire —</text>
+        <text x="190" y="228" font-family="IBM Plex Sans,sans-serif" font-size="11" fill="#5a6a7a" text-anchor="middle">one drives high while other drives low → short.</text>
+
+        <!-- Divider -->
+        <line x1="380" y1="20" x2="380" y2="175" stroke="#e0e8ed" stroke-width="1" stroke-dasharray="4,3"/>
+
+        <!-- ══ Open-drain (right) ══ -->
+        <text x="570" y="18" font-family="IBM Plex Sans,sans-serif" font-size="13" fill="#1a2840" text-anchor="middle" font-weight="600">Open-drain</text>
+
+        <!-- External pull-up -->
+        <text x="570" y="26" font-family="IBM Plex Mono,monospace" font-size="10" fill="#5a6a7a" text-anchor="middle">VDD (external)</text>
+        <line x1="570" y1="28" x2="570" y2="48" stroke="#1a2840" stroke-width="2"/>
+        <!-- Resistor symbol -->
+        <rect x="560" y="48" width="20" height="38" rx="3" fill="#f5f5f2" stroke="#1a2840" stroke-width="1.5"/>
+        <text x="583" y="68" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a6a7a">R</text>
+        <line x1="570" y1="86" x2="570" y2="110" stroke="#1a2840" stroke-width="2"/>
+
+        <!-- Node between resistor and FET drain -->
+        <circle cx="570" cy="110" r="3" fill="#1a2840"/>
+        <line x1="570" y1="110" x2="630" y2="110" stroke="#1a2840" stroke-width="2"/>
+        <text x="638" y="114" font-family="IBM Plex Mono,monospace" font-size="10" fill="#3a6a8a">PIN</text>
+
+        <!-- N-FET only -->
+        <line x1="570" y1="110" x2="570" y2="145" stroke="#1a2840" stroke-width="2"/>
+        <line x1="558" y1="114" x2="558" y2="140" stroke="#1a2840" stroke-width="2.5"/>
+        <line x1="558" y1="114" x2="540" y2="114" stroke="#1a2840" stroke-width="1.5"/>
+        <line x1="570" y1="118" x2="558" y2="118" stroke="#1a2840" stroke-width="1.5"/>
+        <line x1="570" y1="136" x2="558" y2="136" stroke="#1a2840" stroke-width="1.5"/>
+        <text x="530" y="128" font-family="IBM Plex Mono,monospace" font-size="9" fill="#3a6a8a" text-anchor="middle">N</text>
+
+        <!-- GND -->
+        <line x1="570" y1="145" x2="570" y2="165" stroke="#1a2840" stroke-width="2"/>
+        <line x1="554" y1="165" x2="586" y2="165" stroke="#1a2840" stroke-width="2"/>
+        <line x1="559" y1="170" x2="581" y2="170" stroke="#1a2840" stroke-width="1.5"/>
+        <line x1="564" y1="175" x2="576" y2="175" stroke="#1a2840" stroke-width="1"/>
+
+        <!-- Data register drives gate only -->
+        <rect x="470" y="107" width="56" height="20" rx="3" fill="#eef4f8" stroke="#7ab8d4" stroke-width="1"/>
+        <text x="498" y="120" font-family="IBM Plex Mono,monospace" font-size="9" fill="#1a2840" text-anchor="middle">DATA_OUT</text>
+        <line x1="526" y1="117" x2="540" y2="117" stroke="#7ab8d4" stroke-width="1.5"/>
+
+        <!-- Annotations -->
+        <text x="570" y="198" font-family="IBM Plex Sans,sans-serif" font-size="11" fill="#5a6a7a" text-anchor="middle">Drives low only. Floats high via R.</text>
+        <text x="570" y="213" font-family="IBM Plex Sans,sans-serif" font-size="11" fill="#5a6a7a" text-anchor="middle">Multiple devices can share one wire —</text>
+        <text x="570" y="228" font-family="IBM Plex Sans,sans-serif" font-size="11" fill="#5a6a7a" text-anchor="middle">any device can pull low, none fights another.</text>
+
+      </svg>
+      <div style="text-align:center;font-size:12px;color:#9aabb8;margin-bottom:24px;">Push-pull uses both P- and N-FETs; open-drain uses only an N-FET with an external pull-up resistor.</div>
+
+      <div class="prose">
+        <strong>Push-pull</strong> uses both a P-channel FET (source to VDD) and an
+        N-channel FET (source to GND), driven by complementary signals from the output
+        data register. When DATA_OUT = 1, the P-FET is on and the N-FET is off — the
+        pin is actively pulled to VDD. When DATA_OUT = 0, the N-FET is on — the pin
+        is actively pulled to GND. There is never a floating state; the pin is always
+        driven. This is fast, low-impedance, and the right choice for most digital
+        outputs: LEDs, logic levels, clock lines that don't need wired-AND.
+      </div>
+
+      <div class="prose">
+        <strong>Open-drain</strong> uses only the N-FET. When DATA_OUT = 0, the FET
+        turns on and pulls the pin to GND. When DATA_OUT = 1, the FET is off and
+        the pin <em>floats</em> — its voltage is set entirely by whatever external
+        resistor or device is connected. This has a critical property: <em>two or more
+        open-drain devices can share a single wire without any risk of bus contention</em>.
+        If one device drives low and another drives low simultaneously, both are just
+        parallel N-FETs to GND — no short circuit. The line only goes high when
+        <em>all</em> devices release it and the pull-up resistor lifts it.
+      </div>
+
+      <div class="callout">
+        <strong>I2C requires open-drain.</strong> SDA and SCL on an I2C bus are both
+        open-drain lines with pull-up resistors. Any device on the bus can pull a line
+        low (to hold the bus or signal NAK) without knowing what other devices are doing.
+        If any device were push-pull, it could fight a device trying to drive the opposite
+        value. The wired-AND behaviour of open-drain is not a limitation — it is the
+        feature that makes multi-master I2C arbitration possible.
+      </div>
+
+      <!-- ── Input modes ───────────────────────────────────────── -->
+      <div class="section-head" id="input-modes">Input modes</div>
+
+      <div class="prose">
+        On the receive side, the pad cell connects the physical pin to a digital input
+        buffer. The mode register controls whether an internal pull resistor is enabled
+        and in which direction.
+      </div>
+
+      <!-- SVG: floating vs pull-up vs pull-down -->
+      <svg viewBox="0 0 760 200" style="width:100%;max-width:760px;display:block;margin:24px auto 8px;" role="img" aria-label="Three input modes: floating, pull-up, pull-down">
+
+        <!-- ══ Floating ══ -->
+        <text x="126" y="16" font-family="IBM Plex Sans,sans-serif" font-size="12.5" fill="#1a2840" text-anchor="middle" font-weight="600">Floating</text>
+
+        <!-- Pin -->
+        <line x1="30" y1="90" x2="100" y2="90" stroke="#1a2840" stroke-width="2"/>
+        <text x="22" y="94" font-family="IBM Plex Mono,monospace" font-size="10" fill="#3a6a8a" text-anchor="end">PIN</text>
+        <circle cx="100" cy="90" r="3" fill="#1a2840"/>
+
+        <!-- Input buffer triangle -->
+        <polygon points="100,70 100,110 140,90" fill="#eef4f8" stroke="#3a6a8a" stroke-width="1.5"/>
+        <line x1="140" y1="90" x2="175" y2="90" stroke="#1a2840" stroke-width="2"/>
+        <text x="185" y="94" font-family="IBM Plex Mono,monospace" font-size="10" fill="#3a6a8a">IN</text>
+
+        <!-- Noise indication -->
+        <path d="M 40 85 Q 50 75 60 90 Q 70 105 80 90" stroke="#e04040" stroke-width="1.5" fill="none" stroke-dasharray="3,2"/>
+        <text x="55" y="120" font-family="IBM Plex Sans,sans-serif" font-size="10" fill="#e04040" text-anchor="middle">noise / undefined</text>
+
+        <text x="126" y="158" font-family="IBM Plex Sans,sans-serif" font-size="10.5" fill="#5a6a7a" text-anchor="middle">No defined logic level</text>
+        <text x="126" y="172" font-family="IBM Plex Sans,sans-serif" font-size="10.5" fill="#5a6a7a" text-anchor="middle">when pin is unconnected</text>
+
+        <!-- Dividers -->
+        <line x1="253" y1="10" x2="253" y2="145" stroke="#e0e8ed" stroke-width="1" stroke-dasharray="4,3"/>
+        <line x1="507" y1="10" x2="507" y2="145" stroke="#e0e8ed" stroke-width="1" stroke-dasharray="4,3"/>
+
+        <!-- ══ Pull-up ══ -->
+        <text x="380" y="16" font-family="IBM Plex Sans,sans-serif" font-size="12.5" fill="#1a2840" text-anchor="middle" font-weight="600">Pull-up</text>
+
+        <!-- VDD -->
+        <text x="380" y="30" font-family="IBM Plex Mono,monospace" font-size="10" fill="#5a6a7a" text-anchor="middle">VDD</text>
+        <line x1="380" y1="32" x2="380" y2="48" stroke="#1a2840" stroke-width="1.5"/>
+        <!-- Resistor -->
+        <rect x="370" y="48" width="20" height="28" rx="3" fill="#f5f5f2" stroke="#1a2840" stroke-width="1.5"/>
+        <line x1="380" y1="76" x2="380" y2="90" stroke="#1a2840" stroke-width="1.5"/>
+        <circle cx="380" cy="90" r="3" fill="#1a2840"/>
+        <!-- Pin line -->
+        <line x1="283" y1="90" x2="380" y2="90" stroke="#1a2840" stroke-width="2"/>
+        <text x="275" y="94" font-family="IBM Plex Mono,monospace" font-size="10" fill="#3a6a8a" text-anchor="end">PIN</text>
+        <!-- Buffer -->
+        <polygon points="380,70 380,110 420,90" fill="#eef4f8" stroke="#3a6a8a" stroke-width="1.5"/>
+        <line x1="420" y1="90" x2="455" y2="90" stroke="#1a2840" stroke-width="2"/>
+        <text x="465" y="94" font-family="IBM Plex Mono,monospace" font-size="10" fill="#3a6a8a">IN</text>
+
+        <text x="380" y="158" font-family="IBM Plex Sans,sans-serif" font-size="10.5" fill="#5a6a7a" text-anchor="middle">Default HIGH. Unconnected pin</text>
+        <text x="380" y="172" font-family="IBM Plex Sans,sans-serif" font-size="10.5" fill="#5a6a7a" text-anchor="middle">reads 1. Button pulls to GND.</text>
+
+        <!-- ══ Pull-down ══ -->
+        <text x="634" y="16" font-family="IBM Plex Sans,sans-serif" font-size="12.5" fill="#1a2840" text-anchor="middle" font-weight="600">Pull-down</text>
+
+        <!-- Pin line -->
+        <line x1="537" y1="90" x2="634" y2="90" stroke="#1a2840" stroke-width="2"/>
+        <text x="529" y="94" font-family="IBM Plex Mono,monospace" font-size="10" fill="#3a6a8a" text-anchor="end">PIN</text>
+        <circle cx="634" cy="90" r="3" fill="#1a2840"/>
+
+        <!-- Buffer -->
+        <polygon points="634,70 634,110 674,90" fill="#eef4f8" stroke="#3a6a8a" stroke-width="1.5"/>
+        <line x1="674" y1="90" x2="709" y2="90" stroke="#1a2840" stroke-width="2"/>
+        <text x="719" y="94" font-family="IBM Plex Mono,monospace" font-size="10" fill="#3a6a8a">IN</text>
+
+        <!-- Resistor to GND -->
+        <line x1="634" y1="90" x2="634" y2="104" stroke="#1a2840" stroke-width="1.5"/>
+        <rect x="624" y="104" width="20" height="28" rx="3" fill="#f5f5f2" stroke="#1a2840" stroke-width="1.5"/>
+        <line x1="634" y1="132" x2="634" y2="143" stroke="#1a2840" stroke-width="1.5"/>
+        <!-- GND symbol -->
+        <line x1="620" y1="143" x2="648" y2="143" stroke="#1a2840" stroke-width="2"/>
+        <line x1="625" y1="148" x2="643" y2="148" stroke="#1a2840" stroke-width="1.5"/>
+        <line x1="630" y1="153" x2="638" y2="153" stroke="#1a2840" stroke-width="1"/>
+
+        <text x="634" y="172" font-family="IBM Plex Sans,sans-serif" font-size="10.5" fill="#5a6a7a" text-anchor="middle">Default LOW. Button drives to VDD.</text>
+
+      </svg>
+      <div style="text-align:center;font-size:12px;color:#9aabb8;margin-bottom:24px;">Internal pull resistors (typically 40–100 kΩ) prevent floating inputs from picking up noise when no external signal is connected.</div>
+
+      <div class="prose">
+        A <strong>floating input</strong> has no defined default state. When nothing is
+        connected, the pin is a tiny antenna — capacitive coupling to adjacent traces
+        can drive it anywhere between GND and VDD. A floating GPIO pin will read
+        random values. Always configure a pull direction on any pin that can be left
+        undriven.
+      </div>
+
+      <div class="prose">
+        <strong>Pull-up</strong> connects an internal resistor (typically 40–100 kΩ)
+        from the pin to VDD. The pin defaults to logic HIGH. A button or open-drain
+        device connected to GND overrides the pull; when it releases, the resistor
+        restores the high state. Active-low buttons work with pull-ups — when pressed,
+        the button shorts the pin to GND (logic 0); released, the resistor pulls it
+        back to VDD (logic 1).
+      </div>
+
+      <div class="prose">
+        <strong>Pull-down</strong> is the mirror: resistor to GND, default LOW.
+        Active-high buttons (to VDD) work with pull-downs.
+      </div>
+
+      <!-- ── Schmitt trigger ───────────────────────────────────── -->
+      <div class="section-head" id="schmitt">Schmitt trigger hysteresis</div>
+
+      <div class="prose">
+        A standard digital buffer switches at a single threshold. If the input signal
+        is slow (e.g., an RC-filtered signal or a long trace with reflections), it
+        spends time near the threshold, causing the output to oscillate rapidly — a
+        burst of spurious transitions known as <em>glitching</em>. The Schmitt trigger
+        fixes this with hysteresis: two separate thresholds, one for rising edges
+        and one for falling edges.
+      </div>
+
+      <!-- SVG: Schmitt trigger waveform -->
+      <svg viewBox="0 0 700 200" style="width:100%;max-width:700px;display:block;margin:24px auto 8px;" role="img" aria-label="Schmitt trigger: noisy input and clean output with hysteresis band">
+
+        <!-- Axes -->
+        <text x="10" y="100" font-family="IBM Plex Sans,sans-serif" font-size="11" fill="#5a6a7a" text-anchor="middle" transform="rotate(-90,10,100)">Voltage</text>
+        <line x1="36" y1="10" x2="36" y2="180" stroke="#c0cdd6" stroke-width="1.5"/>
+        <line x1="36" y1="180" x2="690" y2="180" stroke="#c0cdd6" stroke-width="1.5"/>
+        <text x="695" y="184" font-family="IBM Plex Sans,sans-serif" font-size="10" fill="#9aabb8">t</text>
+
+        <!-- Hysteresis band -->
+        <rect x="36" y="72" width="654" height="36" fill="#7ab8d4" opacity="0.12"/>
+        <line x1="36" y1="72" x2="690" y2="72" stroke="#7ab8d4" stroke-width="1" stroke-dasharray="5,4"/>
+        <line x1="36" y1="108" x2="690" y2="108" stroke="#7ab8d4" stroke-width="1" stroke-dasharray="5,4"/>
+        <text x="692" y="76" font-family="IBM Plex Mono,monospace" font-size="9" fill="#3a6a8a">V<tspan dy="3" font-size="7.5">H</tspan></text>
+        <text x="692" y="112" font-family="IBM Plex Mono,monospace" font-size="9" fill="#3a6a8a">V<tspan dy="3" font-size="7.5">L</tspan></text>
+
+        <!-- Noisy input waveform (slow + noise) -->
+        <path d="M 50 160
+                 Q 80 155 100 120 Q 110 105 120 110 Q 130 118 140 85
+                 Q 145 72 148 68 Q 152 62 155 65 Q 160 70 165 60
+                 Q 168 52 172 50
+                 Q 185 48 200 50 Q 210 52 215 56 Q 220 60 225 52
+                 Q 230 44 240 48
+                 Q 260 50 280 52 Q 290 55 295 60 Q 300 65 305 58
+                 Q 310 50 320 52
+                 Q 350 55 370 80 Q 385 100 395 115 Q 400 118 405 112
+                 Q 410 106 415 118 Q 418 125 422 130 Q 430 140 445 150
+                 Q 460 158 475 162 Q 490 162 500 160"
+              stroke="#3a6a8a" stroke-width="1.5" fill="none" opacity="0.7"/>
+        <text x="520" y="164" font-family="IBM Plex Sans,sans-serif" font-size="10.5" fill="#3a6a8a">input (noisy / slow)</text>
+
+        <!-- Clean Schmitt output (square wave, no glitches) -->
+        <!-- Starts LOW; rises above V_H → goes HIGH; falls below V_L → goes LOW -->
+        <polyline points="50,170 165,170 165,30 370,30 370,170 500,170"
+                  stroke="#1a2840" stroke-width="2" fill="none"/>
+        <text x="520" y="35" font-family="IBM Plex Sans,sans-serif" font-size="10.5" fill="#1a2840">Schmitt output (clean)</text>
+
+        <!-- Annotations -->
+        <line x1="165" y1="68" x2="165" y2="170" stroke="#9aabb8" stroke-width="1" stroke-dasharray="3,2"/>
+        <text x="165" y="65" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a6a7a" text-anchor="middle">crosses V_H → set</text>
+
+        <line x1="370" y1="115" x2="370" y2="170" stroke="#9aabb8" stroke-width="1" stroke-dasharray="3,2"/>
+        <text x="370" y="112" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a6a7a" text-anchor="middle">crosses V_L → reset</text>
+
+        <!-- VDD / GND labels -->
+        <text x="38" y="33" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a6a7a">HIGH</text>
+        <text x="38" y="172" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a6a7a">LOW</text>
+
+      </svg>
+      <div style="text-align:center;font-size:12px;color:#9aabb8;margin-bottom:24px;">Once the input crosses V<sub>H</sub> the output latches HIGH and ignores noise until the input falls below the separate V<sub>L</sub> threshold.</div>
+
+      <div class="prose">
+        On the EFR32, all GPIO input modes include a Schmitt trigger by default.
+        An additional <em>glitch filter</em> (2-cycle deglitcher) is available
+        by selecting <code>gpioModeInputPullFilter</code> or
+        <code>gpioModeWiredAndPullUpFilter</code> — useful for slow signals like
+        mechanical buttons where even a few microseconds of bounce would register
+        as a false edge.
+      </div>
+
+      <!-- ── EFR32 GPIO API ─────────────────────────────────────── -->
+      <div class="section-head" id="efr32-api">EFR32 GPIO API</div>
+
+      <div class="prose">
+        The EFR32 has up to six GPIO ports (PA–PF on xG12/13; PA–PD on xG21/22),
+        each with up to 16 pins. All GPIO configuration goes through a single function:
+      </div>
+
+      <pre class="code-block"><code>void GPIO_PinModeSet(GPIO_Port_TypeDef port,
+                     unsigned int      pin,
+                     GPIO_Mode_TypeDef mode,
+                     unsigned int      out);</code></pre>
+
+      <div class="prose">
+        The <code>out</code> parameter sets the initial value of the output data
+        register <em>and</em>, for input modes, selects pull direction:
+        <code>out=1</code> enables pull-up, <code>out=0</code> enables pull-down.
+      </div>
+
+      <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:24px;">
+        <thead>
+          <tr style="background:#eef4f8;">
+            <th style="padding:7px 10px;border:1px solid #d0dae0;text-align:left;font-weight:600;">Mode constant</th>
+            <th style="padding:7px 10px;border:1px solid #d0dae0;text-align:left;font-weight:600;">Direction</th>
+            <th style="padding:7px 10px;border:1px solid #d0dae0;text-align:left;font-weight:600;">Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td style="padding:6px 10px;border:1px solid #e0e8ed;font-family:'IBM Plex Mono',monospace;font-size:12px;">gpioModeDisabled</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">—</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">High-impedance, output disabled</td></tr>
+          <tr style="background:#f8f9fb;"><td style="padding:6px 10px;border:1px solid #e0e8ed;font-family:'IBM Plex Mono',monospace;font-size:12px;">gpioModeInput</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">In</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">Floating input, Schmitt trigger</td></tr>
+          <tr><td style="padding:6px 10px;border:1px solid #e0e8ed;font-family:'IBM Plex Mono',monospace;font-size:12px;">gpioModeInputPull</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">In</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">Input with pull-up (out=1) or pull-down (out=0), Schmitt trigger</td></tr>
+          <tr style="background:#f8f9fb;"><td style="padding:6px 10px;border:1px solid #e0e8ed;font-family:'IBM Plex Mono',monospace;font-size:12px;">gpioModeInputPullFilter</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">In</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">Pull + Schmitt + 2-cycle glitch filter</td></tr>
+          <tr><td style="padding:6px 10px;border:1px solid #e0e8ed;font-family:'IBM Plex Mono',monospace;font-size:12px;">gpioModePushPull</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">Out</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">Push-pull output, standard drive</td></tr>
+          <tr style="background:#f8f9fb;"><td style="padding:6px 10px;border:1px solid #e0e8ed;font-family:'IBM Plex Mono',monospace;font-size:12px;">gpioModePushPullAlternate</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">Out</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">Push-pull with alternate drive strength setting</td></tr>
+          <tr><td style="padding:6px 10px;border:1px solid #e0e8ed;font-family:'IBM Plex Mono',monospace;font-size:12px;">gpioModeWiredAnd</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">Out</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">Open-drain (wired-AND): drives low, floats high</td></tr>
+          <tr style="background:#f8f9fb;"><td style="padding:6px 10px;border:1px solid #e0e8ed;font-family:'IBM Plex Mono',monospace;font-size:12px;">gpioModeWiredAndPullUp</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">Out</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">Open-drain with internal pull-up (I2C style)</td></tr>
+          <tr><td style="padding:6px 10px;border:1px solid #e0e8ed;font-family:'IBM Plex Mono',monospace;font-size:12px;">gpioModeWiredAndPullUpFilter</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">Out</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">Open-drain + pull-up + glitch filter</td></tr>
+          <tr style="background:#f8f9fb;"><td style="padding:6px 10px;border:1px solid #e0e8ed;font-family:'IBM Plex Mono',monospace;font-size:12px;">gpioModeWiredOr</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">Out</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">Open-source (wired-OR): drives high, floats low</td></tr>
+        </tbody>
+      </table>
+
+      <pre class="code-block"><code>#include "em_gpio.h"
+#include "em_cmu.h"
+
+void gpio_init(void) {
+    CMU_ClockEnable(cmuClock_GPIO, true);
+
+    // LED on PF4 — push-pull output, start low (off)
+    GPIO_PinModeSet(gpioPortF, 4, gpioModePushPull, 0);
+
+    // Button on PF6 — input with internal pull-up (active low)
+    GPIO_PinModeSet(gpioPortF, 6, gpioModeInputPull, 1);
+
+    // I2C SDA on PD14 — open-drain with pull-up (wired-AND)
+    GPIO_PinModeSet(gpioPortD, 14, gpioModeWiredAndPullUp, 1);
+}
+
+// Output manipulation
+void led_on(void)     { GPIO_PinOutSet(gpioPortF, 4); }
+void led_off(void)    { GPIO_PinOutClear(gpioPortF, 4); }
+void led_toggle(void) { GPIO_PinOutToggle(gpioPortF, 4); }
+
+// Input read — returns 0 (pressed) or 1 (released) for active-low button
+bool button_pressed(void) {
+    return GPIO_PinInGet(gpioPortF, 6) == 0;
+}</code></pre>
+
+      <!-- Drive strength -->
+      <div class="prose" style="font-weight:600;margin-top:24px;margin-bottom:4px;color:#1a2840;">Drive strength</div>
+      <div class="prose" style="margin-top:0;">
+        EFR32 output pins have two drive-strength settings, each with a "main mode"
+        and an "alternate mode" (for when the pin is used as an alternate function):
+      </div>
+
+      <pre class="code-block"><code>// High drive for FET gates, buzzers, LEDs without external buffer
+GPIO_DriveStrengthSet(gpioPortF,
+                      gpioDriveStrengthStrongAlternateStrong);
+
+// Low drive (default) for ordinary logic signals — less EMI
+GPIO_DriveStrengthSet(gpioPortF,
+                      gpioDriveStrengthWeakAlternateWeak);</code></pre>
+
+      <div class="prose">
+        Higher drive strength = faster edges = more EMI. Use the minimum drive strength
+        that still meets your rise/fall time requirements, especially near RF sections.
+        On the EFR32, the default (weak) mode is adequate for 3.3 V logic; strong mode
+        is needed when driving capacitive loads quickly (e.g., a high-speed SPI clock
+        with heavy trace capacitance).
+      </div>
+
+      <!-- ── Alternate functions ───────────────────────────────── -->
+      <div class="section-head" id="alt-func">Alternate functions and pin routing</div>
+
+      <div class="prose">
+        Every MCU pin can serve multiple functions. The same physical pad that works
+        as a GPIO output can double as the TX pin of USART0, the CLK of SPI0, the CC0
+        capture pin of TIMER1, or the positive input of ADC0 — you choose by configuring
+        the pin's alternate function and telling the peripheral which pin location to use.
+      </div>
+
+      <div class="prose">
+        The EFR32 has a flexible routing scheme rather than a fixed pinout table. Most
+        peripherals offer several <em>locations</em> — different physical pin assignments
+        — so you can move a peripheral to avoid PCB routing conflicts.
+      </div>
+
+      <!-- SVG: pin routing block diagram -->
+      <svg viewBox="0 0 700 220" style="width:100%;max-width:700px;display:block;margin:24px auto 8px;" role="img" aria-label="EFR32 pin routing: one physical pin connects through a mux to GPIO or multiple peripheral functions">
+
+        <defs>
+          <marker id="arrB" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <polygon points="0 0,6 3,0 6" fill="#3a6a8a"/>
+          </marker>
+        </defs>
+
+        <!-- Physical pin -->
+        <rect x="20" y="90" width="80" height="40" rx="4" fill="#dde6ec" stroke="#7ab8d4" stroke-width="1.5"/>
+        <text x="60" y="107" font-family="IBM Plex Mono,monospace" font-size="11" fill="#1a2840" text-anchor="middle">Physical</text>
+        <text x="60" y="122" font-family="IBM Plex Mono,monospace" font-size="11" fill="#3a6a8a" text-anchor="middle">PA0</text>
+
+        <!-- Line to mux -->
+        <line x1="100" y1="110" x2="140" y2="110" stroke="#1a2840" stroke-width="2" marker-end="url(#arrB)"/>
+
+        <!-- Mux block -->
+        <polygon points="140,60 140,160 200,130 200,90" fill="#eef4f8" stroke="#3a6a8a" stroke-width="1.5"/>
+        <text x="162" y="108" font-family="IBM Plex Mono,monospace" font-size="10" fill="#3a6a8a" text-anchor="middle">MUX</text>
+        <text x="162" y="122" font-family="IBM Plex Mono,monospace" font-size="10" fill="#5a6a7a" text-anchor="middle">(MODE</text>
+        <text x="162" y="134" font-family="IBM Plex Mono,monospace" font-size="10" fill="#5a6a7a" text-anchor="middle">reg)</text>
+
+        <!-- MUX outputs to peripherals -->
+        <!-- GPIO -->
+        <line x1="200" y1="110" x2="240" y2="110" stroke="#1a2840" stroke-width="2" marker-end="url(#arrB)"/>
+        <rect x="240" y="94" width="120" height="32" rx="4" fill="#f0f8ea" stroke="#5a8a5a" stroke-width="1.5"/>
+        <text x="300" y="107" font-family="IBM Plex Sans,sans-serif" font-size="11" fill="#1a2840" text-anchor="middle" font-weight="600">GPIO</text>
+        <text x="300" y="120" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#5a8a5a" text-anchor="middle">OUT / IN / IRQ</text>
+
+        <!-- USART0 TX -->
+        <line x1="200" y1="98" x2="240" y2="68" stroke="#1a2840" stroke-width="1.5" marker-end="url(#arrB)" stroke-dasharray="4,3"/>
+        <rect x="240" y="52" width="130" height="32" rx="4" fill="#eef4f8" stroke="#7ab8d4" stroke-width="1.5"/>
+        <text x="305" y="65" font-family="IBM Plex Sans,sans-serif" font-size="11" fill="#1a2840" text-anchor="middle" font-weight="600">USART0 TX</text>
+        <text x="305" y="78" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#3a6a8a" text-anchor="middle">LOC0 → PA0</text>
+
+        <!-- SPI CLK -->
+        <line x1="200" y1="106" x2="240" y2="32" stroke="#1a2840" stroke-width="1.5" marker-end="url(#arrB)" stroke-dasharray="4,3"/>
+        <rect x="240" y="14" width="130" height="32" rx="4" fill="#eef4f8" stroke="#7ab8d4" stroke-width="1.5"/>
+        <text x="305" y="27" font-family="IBM Plex Sans,sans-serif" font-size="11" fill="#1a2840" text-anchor="middle" font-weight="600">USART1 CLK</text>
+        <text x="305" y="40" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#3a6a8a" text-anchor="middle">LOC2 → PA0</text>
+
+        <!-- TIMER CC0 -->
+        <line x1="200" y1="116" x2="240" y2="150" stroke="#1a2840" stroke-width="1.5" marker-end="url(#arrB)" stroke-dasharray="4,3"/>
+        <rect x="240" y="134" width="130" height="32" rx="4" fill="#eef4f8" stroke="#7ab8d4" stroke-width="1.5"/>
+        <text x="305" y="147" font-family="IBM Plex Sans,sans-serif" font-size="11" fill="#1a2840" text-anchor="middle" font-weight="600">TIMER1 CC0</text>
+        <text x="305" y="160" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#3a6a8a" text-anchor="middle">LOC1 → PA0</text>
+
+        <!-- ADC -->
+        <line x1="200" y1="122" x2="240" y2="186" stroke="#1a2840" stroke-width="1.5" marker-end="url(#arrB)" stroke-dasharray="4,3"/>
+        <rect x="240" y="172" width="130" height="32" rx="4" fill="#eef4f8" stroke="#7ab8d4" stroke-width="1.5"/>
+        <text x="305" y="185" font-family="IBM Plex Sans,sans-serif" font-size="11" fill="#1a2840" text-anchor="middle" font-weight="600">ADC0 CH0</text>
+        <text x="305" y="198" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#3a6a8a" text-anchor="middle">(analog input)</text>
+
+        <!-- ROUTELOC box -->
+        <rect x="400" y="52" width="160" height="132" rx="4" fill="#f8f9fb" stroke="#c0cdd6" stroke-width="1" stroke-dasharray="4,3"/>
+        <text x="480" y="72" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#5a6a7a" text-anchor="middle">Series 1:</text>
+        <text x="480" y="86" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#5a6a7a" text-anchor="middle">USARTx→ROUTELOC0</text>
+        <text x="480" y="100" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#5a6a7a" text-anchor="middle">USARTx→ROUTEPEN</text>
+        <line x1="400" y1="110" x2="560" y2="110" stroke="#e0e8ed" stroke-width="1"/>
+        <text x="480" y="126" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#5a6a7a" text-anchor="middle">Series 2:</text>
+        <text x="480" y="140" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#5a6a7a" text-anchor="middle">GPIO→USARTROUTEn</text>
+        <text x="480" y="154" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#5a6a7a" text-anchor="middle">.TXROUTE / ROUTEEN</text>
+        <text x="480" y="170" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#5a6a7a" text-anchor="middle">(per port+pin, not LOC)</text>
+
+      </svg>
+      <div style="text-align:center;font-size:12px;color:#9aabb8;margin-bottom:24px;">One physical pin routed to GPIO or one of several peripheral functions. Only one can be active at a time.</div>
+
+      <div class="prose" style="font-weight:600;margin-bottom:4px;color:#1a2840;">Series 1 routing (LOC + ROUTEPEN)</div>
+      <div class="prose" style="margin-top:0;">
+        On EFR32 Series 1, each peripheral has a <code>ROUTELOC0</code> register
+        (and <code>ROUTELOC1</code> for peripherals with more pins) that selects which
+        numbered location each signal appears on, and a <code>ROUTEPEN</code> register
+        that enables each routed pin:
+      </div>
+
+      <pre class="code-block"><code>// Route USART0 TX/RX to location 0 (PA0/PA1 on xG12)
+// and enable those pins in the USART0 peripheral
+GPIO_PinModeSet(gpioPortA, 0, gpioModePushPull, 1);  // TX
+GPIO_PinModeSet(gpioPortA, 1, gpioModeInputPull,  1);  // RX
+
+USART0->ROUTELOC0 = USART_ROUTELOC0_TXLOC_LOC0
+                  | USART_ROUTELOC0_RXLOC_LOC0;
+USART0->ROUTEPEN  = USART_ROUTEPEN_TXPEN
+                  | USART_ROUTEPEN_RXPEN;</code></pre>
+
+      <div class="prose" style="font-weight:600;margin-bottom:4px;color:#1a2840;">Series 2 routing (GPIO route registers)</div>
+      <div class="prose" style="margin-top:0;">
+        On EFR32 Series 2, the routing registers moved into the GPIO peripheral. You
+        specify the exact port and pin number rather than a location index, which
+        eliminates the need to look up which location maps to which pin:
+      </div>
+
+      <pre class="code-block"><code>// Route EUSART0 TX/RX to PA0/PA1 on Series 2
+GPIO_PinModeSet(gpioPortA, 0, gpioModePushPull, 1);
+GPIO_PinModeSet(gpioPortA, 1, gpioModeInputPull, 1);
+
+// Set port and pin for each signal
+GPIO->USARTROUTE[0].TXROUTE =
+    (gpioPortA &lt;&lt; _GPIO_USART_TXROUTE_PORT_SHIFT) |
+    (0 &lt;&lt; _GPIO_USART_TXROUTE_PIN_SHIFT);
+
+GPIO->USARTROUTE[0].RXROUTE =
+    (gpioPortA &lt;&lt; _GPIO_USART_RXROUTE_PORT_SHIFT) |
+    (1 &lt;&lt; _GPIO_USART_RXROUTE_PIN_SHIFT);
+
+// Enable the routed pins
+GPIO->USARTROUTE[0].ROUTEEN =
+    GPIO_USART_ROUTEEN_TXPEN | GPIO_USART_ROUTEEN_RXPEN;</code></pre>
+
+      <div class="callout">
+        <strong>Always configure the GPIO pin mode <em>before</em> enabling the
+        peripheral routing.</strong> The peripheral takes over the pad when routing
+        is enabled; if the pad is still in disabled mode at that point, the peripheral
+        output may be undefined for one clock cycle. Also, if a pin is used as an
+        analog input (ADC), set its mode to <code>gpioModeDisabled</code> — the
+        analog input path bypasses the digital input buffer, and leaving the digital
+        buffer enabled wastes current and adds noise.
+      </div>
+
+      <!-- ── GPIO interrupts ──────────────────────────────────── -->
+      <div class="section-head" id="gpio-irq">GPIO interrupts</div>
+
+      <div class="prose">
+        Any GPIO pin can generate an external interrupt on a rising edge, falling edge,
+        or both. The EFR32 routes GPIO interrupts through two NVIC vectors:
+        <code>GPIO_EVEN_IRQn</code> for even-numbered pins (0, 2, 4, …, 14) and
+        <code>GPIO_ODD_IRQn</code> for odd-numbered pins (1, 3, 5, …, 15). Inside
+        the handler, you read <code>GPIO_IntGet()</code> to find which pin fired.
+      </div>
+
+      <pre class="code-block"><code>#include "em_gpio.h"
+
+void gpio_interrupt_init(void) {
+    CMU_ClockEnable(cmuClock_GPIO, true);
+
+    // Button on PF6 with internal pull-up — active low
+    GPIO_PinModeSet(gpioPortF, 6, gpioModeInputPull, 1);
+
+    // Interrupt on falling edge (button press), rising edge (release), enabled
+    GPIO_ExtIntConfig(gpioPortF,
+                      6,
+                      6,       // interrupt number (0–15, must match pin)
+                      false,   // rising edge — no
+                      true,    // falling edge — yes
+                      true);   // enable immediately
+
+    NVIC_ClearPendingIRQ(GPIO_EVEN_IRQn);
+    NVIC_EnableIRQ(GPIO_EVEN_IRQn);  // pin 6 is even
+}
+
+void GPIO_EVEN_IRQHandler(void) {
+    uint32_t flags = GPIO_IntGet();
+    GPIO_IntClear(flags);
+
+    if (flags &amp; (1u &lt;&lt; 6)) {
+        // PF6 fell → button pressed
+        handle_button_press();
+    }
+}</code></pre>
+
+      <div class="callout">
+        <strong>One interrupt number per pin number, not per port.</strong>
+        The EFR32 GPIO interrupt controller assigns interrupt numbers 0–15 globally,
+        one per pin <em>index</em>. You cannot simultaneously have interrupts on
+        PA4 and PB4 — both would use interrupt number 4. Choose which port to use
+        for each interrupt number, and assign only one port's pin per number.
+      </div>
+
+      <!-- ── Debouncing ────────────────────────────────────────── -->
+      <div class="section-head" id="debounce">Debouncing mechanical contacts</div>
+
+      <div class="prose">
+        Mechanical switches don't produce a clean single transition when pressed. The
+        metal contacts bounce off each other for anywhere from a few hundred
+        microseconds to tens of milliseconds, producing a burst of rapid transitions
+        before settling to the final state. Without debouncing, one button press
+        generates dozens of GPIO interrupt events.
+      </div>
+
+      <div class="prose">
+        <strong>Hardware debounce:</strong> an RC low-pass filter (e.g., 10 kΩ + 100 nF
+        → τ = 1 ms) smooths the bounce, and the Schmitt trigger on the GPIO input
+        reconstructs a clean edge from the filtered waveform. This is reliable and
+        costs almost nothing in firmware, but requires two passives on the PCB.
+      </div>
+
+      <div class="prose">
+        <strong>Software debounce:</strong> on the first edge interrupt, disable the
+        GPIO interrupt and start a timer for ~20 ms. When the timer fires, re-read the
+        pin: if it is still in the expected pressed state, accept the press; then
+        re-enable the interrupt. This is the right choice when PCB real estate is tight.
+      </div>
+
+      <pre class="code-block"><code>// Software debounce using a one-shot timer (pseudo-code)
+static volatile bool debounce_active = false;
+
+void GPIO_EVEN_IRQHandler(void) {
+    GPIO_IntClear(GPIO_IntGet());
+    if (!debounce_active) {
+        debounce_active = true;
+        GPIO_IntDisable(1u &lt;&lt; 6);        // silence pin 6 interrupts
+        TIMER_start_oneshot_ms(20);       // 20 ms settle time
+    }
+}
+
+void TIMER_debounce_callback(void) {
+    debounce_active = false;
+    if (!GPIO_PinInGet(gpioPortF, 6)) {  // still low (pressed)?
+        handle_button_press();
+    }
+    GPIO_IntEnable(1u &lt;&lt; 6);            // re-arm for next press
+}</code></pre>
+
+      <hr class="lesson-rule">
+
+      <div class="section-head">References</div>
+      <ul class="prose" style="padding-left:1.4em;font-size:13.5px;color:#5a6a7a;">
+        <li style="margin-bottom:6px;">Silicon Labs, <em>EFR32xG12 Reference Manual</em> — GPIO chapter: mode register bit fields, routing locations, interrupt configuration.</li>
+        <li style="margin-bottom:6px;">Silicon Labs, <em>EMLIB API Reference — em_gpio.h</em> — <code>GPIO_PinModeSet()</code>, <code>GPIO_ExtIntConfig()</code>, drive strength API.</li>
+        <li style="margin-bottom:6px;">J. Yiu, <em>The Definitive Guide to ARM Cortex-M3 and Cortex-M4 Processors</em> (3rd ed.) — GPIO pad cell overview (typically in device-specific chapters).</li>
+        <li style="margin-bottom:6px;">M. White, <em>Making Embedded Systems</em> (2nd ed.) — Chapter on GPIO, input conditioning, and debouncing strategies.</li>
+      </ul>
+
+      <!-- ── Nav ───────────────────────────────────────────────── -->
+      <div class="lesson-nav">
+        <a href="dma.html" class="lesson-nav-btn">← Lesson 4: DMA</a>
+        <a href="index.html" class="lesson-nav-btn">Back to Embedded Systems</a>
+        <a href="#" class="lesson-nav-btn disabled">Next → (coming soon)</a>
+      </div>
+
+    </div><!-- /main -->
+
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+</body>
+</html>
