@@ -27,7 +27,7 @@
     <div class="sidebar">
       <div class="nav-section">
         <div class="nav-label">Architecture &amp; Internals</div>
-        <span class="nav-item planned">1 · MCU Architecture</span>
+        <a href="mcu-architecture.html" class="nav-item">1 · MCU Architecture</a>
         <span class="nav-item planned">2 · Memory &amp; Clock Systems</span>
         <span class="nav-item planned">3 · Interrupts &amp; the NVIC</span>
         <span class="nav-item planned">4 · DMA</span>
@@ -88,16 +88,21 @@
       <!-- ── Architecture & Internals ──────────────────────── -->
       <div class="section-head">Architecture &amp; Internals</div>
 
-      <div class="course-block">
-        <div class="course-block-code">Lessons 1–4</div>
-        <div class="course-block-name">MCU Architecture, Memory, Clocks, Interrupts, DMA</div>
-        <div class="course-block-desc">
-          The CPU core (ARM Cortex-M pipeline, register file, modes), memory map layout
-          (flash, SRAM, peripheral address space), clock trees and PLLs, the reset
-          sequence, the NVIC interrupt controller (priorities, preemption, tail-chaining),
-          and DMA — why it exists, how transfer descriptors work, and the circular buffer
-          pattern used in audio and ADC streaming.
-        </div>
+      <div class="lesson-row">
+        <a href="mcu-architecture.html" class="lesson-row-title">1 · MCU Architecture</a>
+        <span class="lesson-row-desc">ARM Cortex-M core, register file, modes &amp; privilege, fixed memory map, reset sequence, EFR32 series overview.</span>
+      </div>
+      <div class="lesson-row planned">
+        <span class="lesson-row-title">2 · Memory &amp; Clock Systems</span>
+        <span class="lesson-row-desc">Flash wait states, SRAM layout, clock tree, PLLs, CMU configuration, low-power clock sources.</span>
+      </div>
+      <div class="lesson-row planned">
+        <span class="lesson-row-title">3 · Interrupts &amp; the NVIC</span>
+        <span class="lesson-row-desc">Exception model, vector table, NVIC priority levels, preemption, tail-chaining, interrupt-safe code.</span>
+      </div>
+      <div class="lesson-row planned">
+        <span class="lesson-row-title">4 · DMA</span>
+        <span class="lesson-row-desc">Why DMA exists, transfer descriptors, LDMA (EFR32), circular buffer pattern for ADC/UART streaming.</span>
       </div>
 
       <!-- ── Peripherals ────────────────────────────────────── -->
