@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ADC &amp; DAC — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Architecture &amp; Internals</div>
+        <a href="mcu-architecture.html" class="nav-item">1 · MCU Architecture</a>
+        <a href="memory-clocks.html" class="nav-item">2 · Memory &amp; Clock Systems</a>
+        <a href="interrupts-nvic.html" class="nav-item">3 · Interrupts &amp; the NVIC</a>
+        <a href="dma.html" class="nav-item">4 · DMA</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Peripherals</div>
+        <a href="gpio.html" class="nav-item">5 · GPIO</a>
+        <a href="timers-pwm.html" class="nav-item">6 · Timers &amp; PWM</a>
+        <a href="adc-dac.html" class="nav-item active">7 · ADC &amp; DAC</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Protocols</div>
+        <span class="nav-item planned">8 · UART</span>
+        <span class="nav-item planned">9 · SPI</span>
+        <span class="nav-item planned">10 · I2C</span>
+        <span class="nav-item planned">11 · CAN Bus</span>
+        <span class="nav-item planned">12 · USB Fundamentals</span>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Firmware</div>
+        <span class="nav-item planned">13 · Bare-Metal Patterns</span>
+        <span class="nav-item planned">14 · RTOS Concepts</span>
+        <span class="nav-item planned">15 · Debugging &amp; Test</span>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">PCB Design</div>
+        <span class="nav-item planned">16 · Layout Fundamentals</span>
+        <span class="nav-item planned">17 · Mixed-Signal Layout</span>
+        <span class="nav-item planned">18 · Power &amp; Thermal</span>
+        <span class="nav-item planned">19 · High-Speed &amp; RF</span>
+      </div>
+
+      <hr class="sidebar-rule">
+
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#quantization" class="nav-item">Quantization</a>
+        <a href="#sar" class="nav-item">SAR architecture</a>
+        <a href="#key-params" class="nav-item">Key parameters</a>
+        <a href="#antialiasing" class="nav-item">Antialiasing</a>
+        <a href="#efr32-adc" class="nav-item">EFR32 ADC API</a>
+        <a href="#pipeline" class="nav-item">DMA acquisition pipeline</a>
+        <a href="#dac" class="nav-item">DAC &amp; alternatives</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Embedded Systems</a>
+        <span class="sep">›</span>
+        <span>7 · ADC &amp; DAC</span>
+      </div>
+
+      <div class="lesson-title">7 · ADC &amp; DAC</div>
+      <div class="lesson-meta">SAR · Quantization · Antialiasing · EFR32 ADC · DMA Acquisition Pipeline</div>
+
+      <div class="prose">
+        The ADC (Analog-to-Digital Converter) is where the physical world enters the
+        microcontroller. Pressure, temperature, bioelectric potential, light intensity —
+        every real-world measurand arrives at an MCU pin as a continuous voltage.
+        The ADC's job is to map that voltage onto a binary integer at a fixed instant
+        in time, producing a discrete sample. Understanding how that mapping works —
+        and how it can go wrong — is essential for any measurement system.
+      </div>
+
+      <!-- ── Quantization ──────────────────────────────────────── -->
+      <div class="section-head" id="quantization">Quantization and resolution</div>
+
+      <div class="prose">
+        An N-bit ADC divides the input range [0, V<sub>ref</sub>] into 2<sup>N</sup>
+        equal steps. The smallest distinguishable voltage change is one
+        <em>LSB</em> (Least Significant Bit):
+      </div>
+
+      <div class="math-block" style="font-family:'IBM Plex Mono',monospace;font-size:14px;padding:12px 20px;background:#f0f4f8;border-left:3px solid #7ab8d4;border-radius:3px;margin:0 0 16px 0;color:#1a2840;">
+        LSB = V<sub>ref</sub> / 2<sup>N</sup>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        V<sub>in</sub> ≈ code × LSB
+      </div>
+
+      <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:24px;">
+        <thead>
+          <tr style="background:#eef4f8;">
+            <th style="padding:7px 10px;border:1px solid #d0dae0;font-weight:600;">Resolution</th>
+            <th style="padding:7px 10px;border:1px solid #d0dae0;font-weight:600;">Codes</th>
+            <th style="padding:7px 10px;border:1px solid #d0dae0;font-weight:600;">LSB at V<sub>ref</sub>=2.5 V</th>
+            <th style="padding:7px 10px;border:1px solid #d0dae0;font-weight:600;">Typical use</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td style="padding:6px 10px;border:1px solid #e0e8ed;">8-bit</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">256</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">9.8 mV</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">Temperature, rough sensing</td></tr>
+          <tr style="background:#f8f9fb;"><td style="padding:6px 10px;border:1px solid #e0e8ed;">10-bit</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">1024</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">2.4 mV</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">General-purpose sensing</td></tr>
+          <tr><td style="padding:6px 10px;border:1px solid #e0e8ed;font-weight:600;">12-bit</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">4096</td><td style="padding:6px 10px;border:1px solid #e0e8ed;font-weight:600;">610 µV</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">EFR32 default — biosignals, precision sensors</td></tr>
+          <tr style="background:#f8f9fb;"><td style="padding:6px 10px;border:1px solid #e0e8ed;">16-bit</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">65536</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">38 µV</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">Audio, precision measurement (delta-sigma)</td></tr>
+          <tr><td style="padding:6px 10px;border:1px solid #e0e8ed;">24-bit</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">16.7 M</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">150 nV</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">Instrumentation, weighing scales</td></tr>
+        </tbody>
+      </table>
+
+      <div class="prose">
+        Quantization error is unavoidable — every conversion rounds the true voltage
+        to the nearest code, introducing ±½ LSB of uncertainty. At 12 bits with a
+        2.5 V reference this is ±305 µV. This is a fundamental noise floor that cannot
+        be reduced without increasing resolution or narrowing the input range. In
+        practice, other error sources (input noise, reference noise, offset, gain error)
+        often dominate.
+      </div>
+
+      <!-- ── SAR architecture ──────────────────────────────────── -->
+      <div class="section-head" id="sar">SAR ADC architecture</div>
+
+      <div class="prose">
+        Nearly every MCU-integrated ADC uses the <strong>Successive Approximation
+        Register</strong> (SAR) architecture. A SAR ADC performs a binary search to
+        find the digital code closest to the sampled voltage in exactly N clock cycles.
+      </div>
+
+      <!-- SVG: SAR binary search -->
+      <svg viewBox="0 0 780 260" style="width:100%;max-width:780px;display:block;margin:24px auto 8px;" role="img" aria-label="SAR ADC binary search: 4-bit example showing successive approximation steps">
+
+        <!-- Y axis: 0 to V_ref (0 to 15 codes) -->
+        <!-- X axis: time / bit steps -->
+
+        <!-- Axes -->
+        <line x1="60" y1="20" x2="60" y2="210" stroke="#c0cdd6" stroke-width="1.5"/>
+        <line x1="60" y1="210" x2="720" y2="210" stroke="#c0cdd6" stroke-width="1.5"/>
+
+        <!-- Y labels -->
+        <text x="54" y="214" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a6a7a" text-anchor="end">0</text>
+        <text x="54" y="149" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a6a7a" text-anchor="end">8</text>
+        <text x="54" y="85" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a6a7a" text-anchor="end">15</text>
+        <text x="30" y="125" font-family="IBM Plex Sans,sans-serif" font-size="10" fill="#5a6a7a" text-anchor="middle" transform="rotate(-90,30,125)">DAC output / code</text>
+
+        <!-- Horizontal reference lines -->
+        <line x1="58" y1="149" x2="62" y2="149" stroke="#c0cdd6" stroke-width="1"/>
+        <line x1="58" y1="85" x2="62" y2="85" stroke="#c0cdd6" stroke-width="1"/>
+
+        <!-- True input voltage: ~10.5 codes → y position -->
+        <!-- Map: code 0 → y=210, code 15 → y=85. Range=125px for 15 codes → 8.33px/code -->
+        <!-- code 10.5 → y = 210 - 10.5*8.33 = 210 - 87.5 = 122.5 → y≈122 -->
+        <line x1="60" y1="122" x2="720" y2="122" stroke="#e08040" stroke-width="1.5" stroke-dasharray="5,4"/>
+        <text x="726" y="126" font-family="IBM Plex Sans,sans-serif" font-size="10.5" fill="#e08040">V<tspan dy="3" font-size="8">in</tspan></text>
+        <text x="726" y="140" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#e08040">(≈10.6)</text>
+
+        <!-- SAR steps for a 4-bit ADC, target ≈ 10 (1010 binary) -->
+        <!-- Step 1: Try bit 3 (MSB) = 1 → DAC = 8. 8 < 10.6 → keep 1. -->
+        <!-- Step 2: Try bit 2 = 1 → DAC = 8+4=12. 12 > 10.6 → clear bit 2. -->
+        <!-- Step 3: Try bit 1 = 1 → DAC = 8+2=10. 10 < 10.6 → keep 1. -->
+        <!-- Step 4: Try bit 0 = 1 → DAC = 8+2+1=11. 11 > 10.6 → clear bit 0. Result = 1010 = 10. -->
+
+        <!-- DAC output staircase -->
+        <!-- Each step occupies ~130px width. Steps at x: 80→180, 210→340, 370→500, 530→660 -->
+
+        <!-- Step 1: DAC = 8, y = 210 - 8*8.33 = 143.4 → 143 -->
+        <rect x="80" y="143" width="130" height="4" rx="1" fill="#3a6a8a"/>
+        <text x="145" y="136" font-family="IBM Plex Mono,monospace" font-size="9" fill="#3a6a8a" text-anchor="middle">DAC=8</text>
+        <text x="145" y="224" font-family="IBM Plex Mono,monospace" font-size="9" fill="#1a2840" text-anchor="middle">Bit 3: try 1</text>
+        <!-- Result: 8 < V_in → keep -->
+        <text x="145" y="237" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#3a6a8a" text-anchor="middle">✓ keep (8 &lt; V_in)</text>
+
+        <!-- Step 2: DAC = 12, y = 210 - 12*8.33 = 110 -->
+        <rect x="225" y="110" width="130" height="4" rx="1" fill="#7ab8d4"/>
+        <text x="290" y="103" font-family="IBM Plex Mono,monospace" font-size="9" fill="#3a6a8a" text-anchor="middle">DAC=12</text>
+        <text x="290" y="224" font-family="IBM Plex Mono,monospace" font-size="9" fill="#1a2840" text-anchor="middle">Bit 2: try 1</text>
+        <!-- Result: 12 > V_in → clear -->
+        <text x="290" y="237" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#e04040" text-anchor="middle">✗ clear (12 &gt; V_in)</text>
+
+        <!-- Step 3: DAC = 8+2=10, y = 210 - 10*8.33 = 127 -->
+        <rect x="370" y="127" width="130" height="4" rx="1" fill="#3a6a8a"/>
+        <text x="435" y="120" font-family="IBM Plex Mono,monospace" font-size="9" fill="#3a6a8a" text-anchor="middle">DAC=10</text>
+        <text x="435" y="224" font-family="IBM Plex Mono,monospace" font-size="9" fill="#1a2840" text-anchor="middle">Bit 1: try 1</text>
+        <!-- Result: 10 < V_in → keep -->
+        <text x="435" y="237" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#3a6a8a" text-anchor="middle">✓ keep (10 &lt; V_in)</text>
+
+        <!-- Step 4: DAC = 10+1=11, y = 210 - 11*8.33 = 118 -->
+        <rect x="515" y="118" width="130" height="4" rx="1" fill="#7ab8d4"/>
+        <text x="580" y="111" font-family="IBM Plex Mono,monospace" font-size="9" fill="#3a6a8a" text-anchor="middle">DAC=11</text>
+        <text x="580" y="224" font-family="IBM Plex Mono,monospace" font-size="9" fill="#1a2840" text-anchor="middle">Bit 0: try 1</text>
+        <!-- Result: 11 > V_in → clear -->
+        <text x="580" y="237" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#e04040" text-anchor="middle">✗ clear (11 &gt; V_in)</text>
+
+        <!-- Result banner -->
+        <rect x="660" y="120" width="50" height="50" rx="3" fill="#3a6a8a" opacity="0.1" stroke="#3a6a8a" stroke-width="1"/>
+        <text x="685" y="138" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#1a2840" text-anchor="middle">Result</text>
+        <text x="685" y="152" font-family="IBM Plex Mono,monospace" font-size="11" fill="#3a6a8a" text-anchor="middle" font-weight="500">1010</text>
+        <text x="685" y="165" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#3a6a8a" text-anchor="middle">= 10</text>
+
+        <!-- Vertical step dividers -->
+        <line x1="220" y1="140" x2="220" y2="208" stroke="#dde6ec" stroke-width="1"/>
+        <line x1="365" y1="125" x2="365" y2="208" stroke="#dde6ec" stroke-width="1"/>
+        <line x1="510" y1="125" x2="510" y2="208" stroke="#dde6ec" stroke-width="1"/>
+        <line x1="655" y1="125" x2="655" y2="208" stroke="#dde6ec" stroke-width="1"/>
+
+        <!-- Sample-and-hold label -->
+        <rect x="60" y="20" width="20" height="100" rx="2" fill="#7ab8d4" opacity="0.2" stroke="#7ab8d4" stroke-width="1"/>
+        <text x="70" y="74" font-family="IBM Plex Sans,sans-serif" font-size="8" fill="#3a6a8a" text-anchor="middle" transform="rotate(-90,70,74)">S&amp;H</text>
+
+      </svg>
+      <div style="text-align:center;font-size:12px;color:#9aabb8;margin-bottom:24px;">4-bit SAR ADC converting ≈10.6: each clock cycle tests one bit from MSB down. 4 bits → 4 cycles → code 1010 = 10.</div>
+
+      <div class="prose">
+        The internal DAC starts at mid-scale (MSB = 1). If its output exceeds V<sub>in</sub>,
+        the MSB is cleared; if not, it stays set. Then the next bit is set and compared.
+        In this way each comparison eliminates half the remaining uncertainty — a binary
+        search. After N comparisons the result is exact to within ±½ LSB. An N-bit SAR
+        ADC always takes exactly N clock cycles per conversion, regardless of the input,
+        which makes timing predictable.
+      </div>
+
+      <div class="prose">
+        The SAR architecture dominates MCU-integrated ADCs because it is power-efficient,
+        fast enough for most sensor applications, and area-efficient. The main alternatives
+        are delta-sigma (higher resolution through oversampling and noise shaping, slower
+        throughput, used in audio codecs and precision instruments) and flash ADCs (one
+        comparator per code, 2<sup>N</sup>−1 comparators for N bits, extremely fast but
+        impractical above 8–10 bits due to size and power).
+      </div>
+
+      <!-- ── Key parameters ────────────────────────────────────── -->
+      <div class="section-head" id="key-params">Key ADC parameters</div>
+
+      <div class="prose">
+        Four parameters define how an ADC performs in a real system beyond the
+        ideal binary search model:
+      </div>
+
+      <div class="prose" style="font-weight:600;margin-bottom:4px;color:#1a2840;">Reference voltage</div>
+      <div class="prose" style="margin-top:0;">
+        The ADC codes the input voltage relative to V<sub>ref</sub>. Noise or drift
+        in the reference voltage directly adds to measurement error — a 1 mV shift in
+        a 2.5 V reference introduces a 0.04% full-scale error, which at 12 bits is
+        nearly 2 LSB. For precision work, use an external precision reference (e.g.,
+        a band-gap reference IC with 10 ppm/°C drift) rather than the internal reference.
+        For general-purpose sensing, the EFR32 internal 2.5 V reference (typ. 1% initial
+        accuracy) is adequate. Never reference an ADC to VDD unless you have no choice;
+        VDD carries load transients from the radio and digital logic.
+      </div>
+
+      <div class="prose" style="font-weight:600;margin-bottom:4px;color:#1a2840;">Acquisition (sampling) time</div>
+      <div class="prose" style="margin-top:0;">
+        Before the conversion begins, the ADC must charge its internal sampling
+        capacitor (typically 2–10 pF) to the input voltage. If the source impedance
+        is high (e.g., a biosensor electrode through a 1 MΩ input resistor), the RC
+        time constant may be long. The acquisition time register must be set long
+        enough for the capacitor to settle to within ½ LSB — otherwise the conversion
+        result reflects a partially-charged capacitor, not the true input.
+      </div>
+
+      <div class="math-block" style="font-family:'IBM Plex Mono',monospace;font-size:13px;padding:10px 20px;background:#f0f4f8;border-left:3px solid #7ab8d4;border-radius:3px;margin:0 0 16px 0;color:#1a2840;">
+        t<sub>acq</sub> ≥ (R<sub>source</sub> + R<sub>switch</sub>) × C<sub>sample</sub> × ln(2<sup>N+1</sup>)
+      </div>
+
+      <div class="prose" style="margin-top:0;">
+        At 12 bits, ln(2<sup>13</sup>) ≈ 9. With a 10 kΩ source and 5 pF sampling cap,
+        t<sub>acq</sub> ≥ 10k × 5p × 9 = 450 ns minimum. Add margin for parasitic
+        capacitance: use 1 µs or more.
+      </div>
+
+      <div class="prose" style="font-weight:600;margin-bottom:4px;color:#1a2840;">Sample rate and throughput</div>
+      <div class="prose" style="margin-top:0;">
+        Total conversion time = acquisition time + N × (1 / f_ADC). The EFR32 ADC
+        can run at up to 13 MHz with a maximum sample rate of ~1 Msps at 12-bit
+        resolution. For most biosignal applications (ECG, EMG: 0.05–3 kHz bandwidth)
+        a few kHz sample rate is more than adequate, and you can use a longer acquisition
+        time to tolerate higher source impedance.
+      </div>
+
+      <div class="prose" style="font-weight:600;margin-bottom:4px;color:#1a2840;">ENOB — Effective Number of Bits</div>
+      <div class="prose" style="margin-top:0;">
+        A real ADC is noisier than the ideal. ENOB = (SINAD − 1.76) / 6.02, where SINAD
+        is the signal-to-(noise + distortion) ratio in dB. A "12-bit" ADC might achieve
+        10–11 ENOB in practice — the lower bits are dominated by thermal noise. Improving
+        ENOB requires better supply decoupling, a quieter reference, and sometimes
+        hardware averaging (oversampling: take M samples and average → gain ½ log₂(M) bits).
+        The EFR32 ADC supports hardware oversampling up to 256× for up to 16 effective bits.
+      </div>
+
+      <!-- ── Antialiasing ──────────────────────────────────────── -->
+      <div class="section-head" id="antialiasing">Aliasing and antialiasing filters</div>
+
+      <div class="prose">
+        The Nyquist theorem requires sampling at at least twice the highest signal
+        frequency: f<sub>sample</sub> ≥ 2 × f<sub>signal</sub>. Any frequency component
+        above f<sub>sample</sub>/2 (the Nyquist frequency) that reaches the ADC will
+        alias — it will appear as a spurious component at a lower frequency in the
+        sampled signal. Aliasing is irreversible; once aliased, you cannot distinguish
+        the alias from a real signal component.
+      </div>
+
+      <!-- SVG: aliasing spectrum -->
+      <svg viewBox="0 0 740 210" style="width:100%;max-width:740px;display:block;margin:24px auto 8px;" role="img" aria-label="Aliasing: signal spectrum showing desired components, aliased component, and filter cutoff">
+
+        <!-- Frequency axis -->
+        <line x1="40" y1="160" x2="700" y2="160" stroke="#c0cdd6" stroke-width="1.5"/>
+        <line x1="40" y1="20" x2="40" y2="165" stroke="#c0cdd6" stroke-width="1.5"/>
+        <text x="705" y="164" font-family="IBM Plex Sans,sans-serif" font-size="10" fill="#9aabb8">f</text>
+        <text x="36" y="165" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a6a7a" text-anchor="end">0</text>
+
+        <!-- Frequency markers -->
+        <!-- Nyquist = fs/2 = 250 Hz; fs = 500 Hz. Aliased signal at 350 Hz -->
+        <!-- Map: 0 Hz = x=40, fs/2=250Hz at x=340, fs=500Hz at x=640 -->
+        <line x1="340" y1="155" x2="340" y2="165" stroke="#c0cdd6" stroke-width="1.5"/>
+        <text x="340" y="178" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a6a7a" text-anchor="middle">f<tspan dy="3" font-size="7">s</tspan>/2</text>
+        <text x="340" y="192" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#5a6a7a" text-anchor="middle">(Nyquist)</text>
+        <line x1="640" y1="155" x2="640" y2="165" stroke="#c0cdd6" stroke-width="1.5"/>
+        <text x="640" y="178" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a6a7a" text-anchor="middle">f<tspan dy="3" font-size="7">s</tspan></text>
+
+        <!-- Signal components (desired) — below Nyquist -->
+        <!-- f1=60 Hz → x = 40 + 60/500*600 = 40+72 = 112 -->
+        <!-- f2=150 Hz → x = 40 + 150/500*600 = 40+180 = 220 -->
+        <rect x="108" y="80" width="8" height="80" fill="#3a6a8a" rx="1"/>
+        <text x="112" y="75" font-family="IBM Plex Mono,monospace" font-size="9" fill="#3a6a8a" text-anchor="middle">60 Hz</text>
+        <rect x="216" y="100" width="8" height="60" fill="#3a6a8a" rx="1"/>
+        <text x="220" y="95" font-family="IBM Plex Mono,monospace" font-size="9" fill="#3a6a8a" text-anchor="middle">150 Hz</text>
+
+        <!-- Out-of-band component (aliased in) at 350 Hz — above Nyquist -->
+        <!-- 350 Hz → x = 40 + 350/500*600 = 40+420 = 460 -->
+        <rect x="456" y="110" width="8" height="50" fill="#e04040" rx="1" opacity="0.8"/>
+        <text x="460" y="105" font-family="IBM Plex Mono,monospace" font-size="9" fill="#e04040" text-anchor="middle">350 Hz</text>
+        <text x="460" y="146" font-family="IBM Plex Mono,monospace" font-size="8" fill="#e04040" text-anchor="middle">(above Nyquist)</text>
+
+        <!-- Arrow showing alias appearing at mirror frequency: fs - 350 = 150 Hz -->
+        <!-- Mirror of 350Hz around fs/2=250Hz: alias at 250-(350-250) = 150 Hz → x=220 -->
+        <path d="M 460 130 Q 380 90 228 130" stroke="#e04040" stroke-width="1.5" fill="none" stroke-dasharray="5,3" marker-end="url(#arrR)"/>
+        <text x="360" y="80" font-family="IBM Plex Sans,sans-serif" font-size="10" fill="#e04040">aliases to 150 Hz</text>
+
+        <defs>
+          <marker id="arrR" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <polygon points="0 0,6 3,0 6" fill="#e04040"/>
+          </marker>
+        </defs>
+
+        <!-- Antialiasing filter cutoff -->
+        <line x1="290" y1="20" x2="290" y2="160" stroke="#5a8a5a" stroke-width="1.5" stroke-dasharray="6,3"/>
+        <text x="290" y="15" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a8a5a" text-anchor="middle">AA filter cutoff</text>
+        <!-- Shaded stopband -->
+        <rect x="290" y="20" width="410" height="140" fill="#e04040" opacity="0.06"/>
+
+        <!-- Legend -->
+        <rect x="550" y="28" width="10" height="10" fill="#3a6a8a"/>
+        <text x="565" y="37" font-family="IBM Plex Sans,sans-serif" font-size="10" fill="#5a6a7a">Desired signal</text>
+        <rect x="550" y="46" width="10" height="10" fill="#e04040" opacity="0.8"/>
+        <text x="565" y="55" font-family="IBM Plex Sans,sans-serif" font-size="10" fill="#5a6a7a">Aliased component</text>
+        <rect x="550" y="64" width="10" height="10" fill="#e04040" opacity="0.06" stroke="#e04040" stroke-width="0.5"/>
+        <text x="565" y="73" font-family="IBM Plex Sans,sans-serif" font-size="10" fill="#5a6a7a">Stopband (blocked by AA filter)</text>
+
+      </svg>
+      <div style="text-align:center;font-size:12px;color:#9aabb8;margin-bottom:24px;">A 350 Hz component sampled at 500 Hz aliases to f<sub>s</sub>−350 = 150 Hz — indistinguishable from a real 150 Hz signal. The antialiasing (AA) low-pass filter attenuates components above f<sub>s</sub>/2 before they reach the ADC.</div>
+
+      <div class="prose">
+        The antialiasing filter is an analog low-pass filter placed before the ADC
+        input. A first-order RC filter is often sufficient: choose R and C so the
+        −3 dB cutoff is at or below f<sub>sample</sub>/2. For a 1 kHz sample rate,
+        cutoff ≤ 500 Hz; a 10 kΩ resistor and 33 nF capacitor gives f<sub>c</sub> =
+        1/(2π × 10k × 33n) ≈ 482 Hz. The RC filter also reduces high-frequency noise
+        from nearby digital switching.
+      </div>
+
+      <div class="callout">
+        <strong>RC filter doubles as a source impedance buffer issue.</strong> The
+        series resistor R adds to the source impedance. Ensure the ADC acquisition
+        time is long enough for the total (source || R) to charge the sampling
+        capacitor. For biosensor applications, the dominant source impedance is usually
+        the electrode impedance (kΩ–MΩ), making an instrumentation amplifier
+        front-end essential before the ADC.
+      </div>
+
+      <!-- ── EFR32 ADC API ─────────────────────────────────────── -->
+      <div class="section-head" id="efr32-adc">EFR32 ADC API</div>
+
+      <div class="prose">
+        EFR32 Series 1 uses the <code>ADC0</code> peripheral with EMLIB's
+        <code>em_adc.h</code> driver. Series 2 replaces it with <code>IADC0</code>
+        (Improved ADC) and <code>em_iadc.h</code>. The concepts are identical; the
+        API differs in structure names and channel selection syntax.
+      </div>
+
+      <pre class="code-block"><code>#include "em_adc.h"
+#include "em_cmu.h"
+
+// ── ADC0 initialization (Series 1 — em_adc.h) ─────────────────
+
+void adc_init(void) {
+    CMU_ClockEnable(cmuClock_ADC0, true);
+
+    // Top-level ADC init: clock prescaler and timebase
+    // ADC_PrescaleCalc targets a given ADC clock frequency (≤13 MHz)
+    ADC_Init_TypeDef init = ADC_INIT_DEFAULT;
+    init.prescale = ADC_PrescaleCalc(7000000, 0);  // 7 MHz ADC clock
+    init.timebase = ADC_TimebaseCalc(0);            // min timebase for warm-up
+    ADC_Init(ADC0, &init);
+
+    // Single-ended conversion on APORT channel
+    ADC_InitSingle_TypeDef single = ADC_INITSINGLE_DEFAULT;
+    single.reference = adcRef2V5;                // internal 2.5 V reference
+    single.resolution = adcRes12Bit;             // 12-bit result
+    single.posSel = adcPosSelAPORT1XCH0;         // input on APORT1X CH0 pin
+    single.negSel = adcNegSelVSS;               // single-ended vs GND
+    single.acqTime = adcAcqTime16;               // 16 ADC clocks ≈ 2.3 µs
+    single.fifoOverwrite = true;
+    ADC_InitSingle(ADC0, &single);
+}
+
+// Blocking single conversion (polling)
+uint32_t adc_read_single(void) {
+    ADC_Start(ADC0, adcStartSingle);
+    while (!(ADC0->IF &amp; ADC_IF_SINGLE)) { }
+    return ADC_DataSingleGet(ADC0);  // clears the IF flag
+}
+
+// Convert ADC code to millivolts (V_ref = 2500 mV, 12-bit)
+uint32_t code_to_mv(uint32_t code) {
+    return (code * 2500ul) / 4096ul;
+}</code></pre>
+
+      <div class="prose" style="font-weight:600;margin-bottom:4px;margin-top:20px;color:#1a2840;">Scan mode for multiple channels</div>
+      <div class="prose" style="margin-top:0;">
+        Scan mode sequences through multiple channels in one triggered conversion.
+        Each channel produces one 16-bit result word (with channel ID in the upper bits)
+        stored to the SCANDATAX register. This is what you feed to DMA.
+      </div>
+
+      <pre class="code-block"><code>#define N_CH  4   // scan 4 channels per trigger
+
+void adc_scan_init(void) {
+    ADC_InitScan_TypeDef scan = ADC_INITSCAN_DEFAULT;
+    scan.reference  = adcRef2V5;
+    scan.resolution = adcRes12Bit;
+    scan.acqTime    = adcAcqTime16;
+
+    // Build channel mask: APORT1X channels 0–3
+    ADC_ScanMask_TypeDef mask = { { 0 } };
+    ADC_ScanSingleEndedInputAdd(&mask, adcScanInputGroup0,
+                                adcPosSelAPORT1XCH0);
+    ADC_ScanSingleEndedInputAdd(&mask, adcScanInputGroup1,
+                                adcPosSelAPORT1XCH2);
+    ADC_ScanSingleEndedInputAdd(&mask, adcScanInputGroup2,
+                                adcPosSelAPORT1XCH4);
+    ADC_ScanSingleEndedInputAdd(&mask, adcScanInputGroup3,
+                                adcPosSelAPORT1XCH6);
+
+    scan.scanDmaEm2Wu = true;  // ADC can wake from EM2 and signal DMA
+    ADC_InitScan(ADC0, &scan, &mask);
+}
+
+// Start one scan manually; or use PRS trigger for regular rate
+void adc_trigger_scan(void) {
+    ADC_Start(ADC0, adcStartScan);
+}</code></pre>
+
+      <!-- ── DMA acquisition pipeline ──────────────────────────── -->
+      <div class="section-head" id="pipeline">DMA acquisition pipeline</div>
+
+      <div class="prose">
+        For continuous biosignal acquisition — ECG, EMG, accelerometry — you want
+        a fixed sample rate with zero CPU involvement per sample. The three building
+        blocks from earlier lessons combine into a complete hardware pipeline:
+      </div>
+
+      <!-- SVG: pipeline block diagram -->
+      <svg viewBox="0 0 780 140" style="width:100%;max-width:780px;display:block;margin:24px auto 8px;" role="img" aria-label="Acquisition pipeline: LETIMER overflows trigger PRS, PRS triggers ADC scan, ADC scan-done triggers DMA, DMA fills ping-pong buffer, interrupt wakes CPU for processing">
+
+        <defs>
+          <marker id="arrP" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <polygon points="0 0,6 3,0 6" fill="#3a6a8a"/>
+          </marker>
+        </defs>
+
+        <!-- Block 1: LETIMER -->
+        <rect x="20" y="40" width="110" height="52" rx="5" fill="#eef4f8" stroke="#7ab8d4" stroke-width="1.5"/>
+        <text x="75" y="62" font-family="IBM Plex Mono,monospace" font-size="10.5" fill="#1a2840" text-anchor="middle" font-weight="500">LETIMER</text>
+        <text x="75" y="76" font-family="IBM Plex Sans,sans-serif" font-size="9.5" fill="#5a6a7a" text-anchor="middle">32 kHz clock</text>
+        <text x="75" y="88" font-family="IBM Plex Sans,sans-serif" font-size="9.5" fill="#5a6a7a" text-anchor="middle">f_s = 1 kHz</text>
+
+        <!-- Arrow 1→2 -->
+        <line x1="130" y1="66" x2="158" y2="66" stroke="#3a6a8a" stroke-width="1.5" marker-end="url(#arrP)"/>
+        <text x="144" y="60" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#5a6a7a" text-anchor="middle">UF pulse</text>
+
+        <!-- Block 2: PRS -->
+        <rect x="158" y="40" width="90" height="52" rx="5" fill="#eef4f8" stroke="#7ab8d4" stroke-width="1.5"/>
+        <text x="203" y="62" font-family="IBM Plex Mono,monospace" font-size="10.5" fill="#1a2840" text-anchor="middle" font-weight="500">PRS</text>
+        <text x="203" y="76" font-family="IBM Plex Sans,sans-serif" font-size="9.5" fill="#5a6a7a" text-anchor="middle">Peripheral</text>
+        <text x="203" y="88" font-family="IBM Plex Sans,sans-serif" font-size="9.5" fill="#5a6a7a" text-anchor="middle">Reflex System</text>
+
+        <!-- Arrow 2→3 -->
+        <line x1="248" y1="66" x2="278" y2="66" stroke="#3a6a8a" stroke-width="1.5" marker-end="url(#arrP)"/>
+        <text x="263" y="60" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#5a6a7a" text-anchor="middle">trigger</text>
+
+        <!-- Block 3: ADC scan -->
+        <rect x="278" y="40" width="110" height="52" rx="5" fill="#eef4f8" stroke="#7ab8d4" stroke-width="1.5"/>
+        <text x="333" y="62" font-family="IBM Plex Mono,monospace" font-size="10.5" fill="#1a2840" text-anchor="middle" font-weight="500">ADC0 Scan</text>
+        <text x="333" y="76" font-family="IBM Plex Sans,sans-serif" font-size="9.5" fill="#5a6a7a" text-anchor="middle">4 ch × 12-bit</text>
+        <text x="333" y="88" font-family="IBM Plex Sans,sans-serif" font-size="9.5" fill="#5a6a7a" text-anchor="middle">8 bytes/frame</text>
+
+        <!-- Arrow 3→4 -->
+        <line x1="388" y1="66" x2="418" y2="66" stroke="#3a6a8a" stroke-width="1.5" marker-end="url(#arrP)"/>
+        <text x="403" y="60" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#5a6a7a" text-anchor="middle">scan done</text>
+
+        <!-- Block 4: LDMA -->
+        <rect x="418" y="40" width="100" height="52" rx="5" fill="#eef4f8" stroke="#7ab8d4" stroke-width="1.5"/>
+        <text x="468" y="62" font-family="IBM Plex Mono,monospace" font-size="10.5" fill="#1a2840" text-anchor="middle" font-weight="500">LDMA</text>
+        <text x="468" y="76" font-family="IBM Plex Sans,sans-serif" font-size="9.5" fill="#5a6a7a" text-anchor="middle">ch0: ADC_SCAN</text>
+        <text x="468" y="88" font-family="IBM Plex Sans,sans-serif" font-size="9.5" fill="#5a6a7a" text-anchor="middle">ping-pong</text>
+
+        <!-- Arrow 4→5 -->
+        <line x1="518" y1="66" x2="548" y2="66" stroke="#3a6a8a" stroke-width="1.5" marker-end="url(#arrP)"/>
+        <text x="533" y="60" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#5a6a7a" text-anchor="middle">half full</text>
+
+        <!-- Block 5: RAM buffer -->
+        <rect x="548" y="40" width="100" height="52" rx="5" fill="#e8f0e8" stroke="#5a8a5a" stroke-width="1.5"/>
+        <text x="598" y="62" font-family="IBM Plex Mono,monospace" font-size="10.5" fill="#1a2840" text-anchor="middle" font-weight="500">RAM buffer</text>
+        <text x="598" y="76" font-family="IBM Plex Sans,sans-serif" font-size="9.5" fill="#5a6a7a" text-anchor="middle">ping / pong</text>
+        <text x="598" y="88" font-family="IBM Plex Sans,sans-serif" font-size="9.5" fill="#5a6a7a" text-anchor="middle">2 × 256 frames</text>
+
+        <!-- Arrow 5→6: IRQ to CPU -->
+        <line x1="648" y1="66" x2="678" y2="66" stroke="#3a6a8a" stroke-width="1.5" marker-end="url(#arrP)"/>
+        <text x="663" y="60" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#5a6a7a" text-anchor="middle">IRQ ~2 Hz</text>
+
+        <!-- Block 6: CPU -->
+        <rect x="678" y="40" width="80" height="52" rx="5" fill="#f0f8ea" stroke="#5a8a5a" stroke-width="1.5"/>
+        <text x="718" y="62" font-family="IBM Plex Mono,monospace" font-size="10.5" fill="#1a2840" text-anchor="middle" font-weight="500">CPU</text>
+        <text x="718" y="76" font-family="IBM Plex Sans,sans-serif" font-size="9.5" fill="#5a6a7a" text-anchor="middle">process 256</text>
+        <text x="718" y="88" font-family="IBM Plex Sans,sans-serif" font-size="9.5" fill="#5a6a7a" text-anchor="middle">frames</text>
+
+        <!-- Caption below -->
+        <text x="390" y="120" font-family="IBM Plex Sans,sans-serif" font-size="10.5" fill="#5a6a7a" text-anchor="middle">LETIMER → PRS → ADC → LDMA → RAM. CPU wakes once per buffer half, not once per sample.</text>
+        <text x="390" y="135" font-family="IBM Plex Mono,monospace" font-size="10" fill="#3a6a8a" text-anchor="middle">1 kHz × 4 ch × 2 bytes = 8 kB/s · CPU active: &lt;1% · Everything else: hardware</text>
+
+      </svg>
+
+      <div class="prose">
+        The PRS (Peripheral Reflex System) is a hardware crossbar that routes signals
+        between peripherals without CPU involvement. Configure LETIMER to output an
+        underflow pulse on a PRS channel, then configure ADC0 to use that PRS channel
+        as its scan trigger. The ADC starts a scan every LETIMER period — no software
+        involvement.
+      </div>
+
+      <pre class="code-block"><code>#include "em_prs.h"
+#include "em_letimer.h"
+
+// 1. Route LETIMER0 UF (underflow) to PRS channel 0
+PRS_SourceSignalSet(0,                        // PRS channel 0
+                    PRS_CH_CTRL_SOURCESEL_LETIMER0,
+                    PRS_CH_CTRL_SIGSEL_LETIMER0UF,
+                    prsEdgePos);
+
+// 2. Configure ADC0 scan to start on PRS ch0
+// In ADC_InitScan_TypeDef:
+scan.prsEnable = true;
+scan.prsSel    = adcPRSSELCh0;
+
+// 3. DMA: signal = ldmaPeripheralSignal_ADC0_SCAN
+//    Source = &ADC0->SCANDATAX (16-bit result + channel ID)
+//    Descriptor: P2M_HALFWORD, HALF count, LINKREL ping-pong
+
+// 4. LETIMER configured for 1 ms period (1 kHz)
+// → ADC scans 4 channels every 1 ms
+// → DMA moves each 8-byte frame to buffer
+// → CPU wakes every 256 ms to process 256 frames of 4-channel data</code></pre>
+
+      <div class="callout">
+        <strong>SCANDATAX vs SCANDATA.</strong> <code>ADC0→SCANDATAX</code> contains
+        both the 16-bit result and the 4-bit channel ID in bits [19:16]. Reading
+        SCANDATAX after each DMA beat lets you demultiplex channels in the buffer.
+        <code>ADC0→SCANDATA</code> contains only the result and can be used when
+        channels are always scanned in a fixed order (simpler but loses channel
+        context if any scan is missed).
+      </div>
+
+      <!-- ── DAC ───────────────────────────────────────────────── -->
+      <div class="section-head" id="dac">DAC and PWM-as-DAC</div>
+
+      <div class="prose">
+        A DAC (Digital-to-Analog Converter) is the inverse of the ADC: it turns a
+        digital code into a proportional voltage. Some EFR32 variants include a
+        <code>VDAC0</code> (12-bit, up to 500 ksps), but many BLE-focused EFR32
+        variants (including BGM13/BGM12 BLE modules) do not include a VDAC.
+      </div>
+
+      <div class="prose">
+        <strong>PWM + low-pass filter as a DAC</strong> is a universal fallback. A
+        PWM signal with duty cycle D produces an average voltage of D × V<sub>DD</sub>.
+        Pass the PWM through an RC low-pass filter and the result is a DC voltage
+        proportional to duty cycle. Resolution is determined by the PWM counter TOP
+        value: a 12-bit TOP gives 12-bit DAC resolution. Settling time is limited by
+        the RC time constant (typically 1–10 ms for audio-rate updates).
+      </div>
+
+      <pre class="code-block"><code>// PWM DAC: TIMER0 CC0 → R=10kΩ, C=100nF → f_c ≈ 159 Hz output filter
+// Set output voltage to ~1.0 V on a 3.3 V supply:
+// D = 1.0 / 3.3 = 0.303 → CC = 0.303 × (TOP + 1)
+
+void dac_set_voltage_mv(uint32_t mv) {
+    uint32_t top = TIMER_TopGet(TIMER0);
+    // CC = mv / VDD_mV * (top + 1)
+    uint32_t cc = (mv * (top + 1)) / 3300ul;
+    TIMER_CompareSet(TIMER0, 0, cc);
+}
+
+// For where VDAC0 exists (e.g., EFR32FG12):
+// VDAC_Init_TypeDef dacInit = VDAC_INIT_DEFAULT;
+// VDAC_Init(VDAC0, &dacInit);
+// VDAC_ChannelOutputSet(VDAC0, 0, code);  // 12-bit code → voltage</code></pre>
+
+      <div class="prose">
+        For audio-rate output (e.g., driving a speaker with synthesized waveforms),
+        the PWM frequency should be much higher than the filter cutoff to keep
+        ripple low — 100 kHz PWM with a 1 kHz filter cutoff gives 40 dB of ripple
+        attenuation. For static or slowly-changing voltages (bias generation, sensor
+        excitation), even a 10 kHz PWM is fine.
+      </div>
+
+      <hr class="lesson-rule">
+
+      <div class="section-head">References</div>
+      <ul class="prose" style="padding-left:1.4em;font-size:13.5px;color:#5a6a7a;">
+        <li style="margin-bottom:6px;">Silicon Labs, <em>EFR32xG12 Reference Manual</em> — ADC chapter: APORT channel mux, scan mode, PRS trigger, oversampling.</li>
+        <li style="margin-bottom:6px;">Silicon Labs, <em>EMLIB API Reference — em_adc.h</em> — ADC_Init(), ADC_InitSingle(), ADC_InitScan(), ADC_PrescaleCalc().</li>
+        <li style="margin-bottom:6px;">Silicon Labs, <em>Application Note AN0021: ADC Usage in EFR32</em> — practical guidance on reference selection, acquisition time, and noise reduction.</li>
+        <li style="margin-bottom:6px;">J. Yiu, <em>The Definitive Guide to ARM Cortex-M3 and Cortex-M4 Processors</em> (3rd ed.) — ADC integration and DMA-triggered sampling (Ch. 22).</li>
+        <li style="margin-bottom:6px;">M. White, <em>Making Embedded Systems</em> (2nd ed.) — Chapter on ADC usage for biosignal acquisition and combined DMA+ADC patterns.</li>
+      </ul>
+
+      <!-- ── Nav ───────────────────────────────────────────────── -->
+      <div class="lesson-nav">
+        <a href="timers-pwm.html" class="lesson-nav-btn">← Lesson 6: Timers &amp; PWM</a>
+        <a href="index.html" class="lesson-nav-btn">Back to Embedded Systems</a>
+        <a href="#" class="lesson-nav-btn disabled">Next → (coming soon)</a>
+      </div>
+
+    </div><!-- /main -->
+
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+</body>
+</html>
