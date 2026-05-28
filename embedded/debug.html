@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Debugging &amp; Test — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Architecture &amp; Internals</div>
+        <a href="mcu-architecture.html" class="nav-item">1 · MCU Architecture</a>
+        <a href="memory-clocks.html" class="nav-item">2 · Memory &amp; Clock Systems</a>
+        <a href="interrupts-nvic.html" class="nav-item">3 · Interrupts &amp; the NVIC</a>
+        <a href="dma.html" class="nav-item">4 · DMA</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Peripherals</div>
+        <a href="gpio.html" class="nav-item">5 · GPIO</a>
+        <a href="timers-pwm.html" class="nav-item">6 · Timers &amp; PWM</a>
+        <a href="adc-dac.html" class="nav-item">7 · ADC &amp; DAC</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Protocols</div>
+        <a href="uart.html" class="nav-item">8 · UART</a>
+        <a href="spi.html" class="nav-item">9 · SPI</a>
+        <a href="i2c.html" class="nav-item">10 · I2C</a>
+        <a href="can.html" class="nav-item">11 · CAN Bus</a>
+        <a href="usb.html" class="nav-item">12 · USB Fundamentals</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Firmware</div>
+        <a href="bare-metal.html" class="nav-item">13 · Bare-Metal Patterns</a>
+        <a href="rtos.html" class="nav-item">14 · RTOS Concepts</a>
+        <a href="debug.html" class="nav-item active">15 · Debugging &amp; Test</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">PCB Design</div>
+        <span class="nav-item planned">16 · Layout Fundamentals</span>
+        <span class="nav-item planned">17 · Mixed-Signal Layout</span>
+        <span class="nav-item planned">18 · Power &amp; Thermal</span>
+        <span class="nav-item planned">19 · High-Speed &amp; RF</span>
+      </div>
+
+      <hr class="sidebar-rule">
+
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#swd-jtag" class="nav-item">SWD &amp; JTAG</a>
+        <a href="#cortex-debug" class="nav-item">Cortex-M debug hardware</a>
+        <a href="#openocd-gdb" class="nav-item">OpenOCD &amp; GDB</a>
+        <a href="#faults" class="nav-item">Fault analysis</a>
+        <a href="#printf-debug" class="nav-item">printf &amp; ITM tracing</a>
+        <a href="#logic-analyzer" class="nav-item">Logic analyzer</a>
+        <a href="#oscilloscope" class="nav-item">Oscilloscope techniques</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Embedded Systems</a>
+        <span class="sep">›</span>
+        <span>15 · Debugging &amp; Test</span>
+      </div>
+
+      <div class="lesson-title">15 · Debugging &amp; Test</div>
+      <div class="lesson-meta">SWD · JTAG · OpenOCD · GDB · Fault Analysis · Logic Analyzer · Oscilloscope</div>
+
+      <div class="prose">
+        Embedded debugging differs from software debugging on a PC in one
+        fundamental way: the system under test is a physical object, and the bugs
+        are often at the intersection of software and hardware. A wrong register
+        write crashes the MCU. A timing bug only appears at a particular CPU
+        frequency. A floating input pin causes sporadic failures. Understanding
+        the full debug toolchain — from the hardware debug port on the chip to the
+        waveforms on the oscilloscope — is what separates productive firmware
+        engineers from people who guess and reflash.
+      </div>
+
+      <hr class="lesson-rule">
+
+      <!-- ── SWD & JTAG ──────────────────────────────────────── -->
+      <div class="section-head" id="swd-jtag">SWD &amp; JTAG</div>
+
+      <div class="prose">
+        Both SWD and JTAG are physical interfaces that give a host computer
+        access to the chip's internal debug infrastructure without using any
+        application-level resources (no UART pin, no CPU cycle budget during
+        halted debug).
+      </div>
+
+      <!-- Debug connection block diagram SVG -->
+      <svg viewBox="0 0 620 160" xmlns="http://www.w3.org/2000/svg"
+           style="width:100%;max-width:620px;display:block;margin:20px auto 24px;">
+        <rect width="620" height="160" fill="#f5f5f2" rx="6"/>
+
+        <!-- PC box -->
+        <rect x="20" y="50" width="110" height="60" rx="6" fill="white" stroke="#9aabb8" stroke-width="1.5"/>
+        <text x="75" y="76" text-anchor="middle" fill="#1a2840" font-family="IBM Plex Sans" font-size="12" font-weight="600">Host PC</text>
+        <text x="75" y="93" text-anchor="middle" fill="#5a7a9a" font-family="IBM Plex Mono" font-size="10">OpenOCD</text>
+        <text x="75" y="107" text-anchor="middle" fill="#5a7a9a" font-family="IBM Plex Mono" font-size="10">+ GDB</text>
+
+        <!-- USB arrow PC → probe -->
+        <line x1="130" y1="80" x2="188" y2="80" stroke="#9aabb8" stroke-width="1.5" marker-end="url(#arr-d1)"/>
+        <text x="159" y="72" text-anchor="middle" fill="#7a8a9a" font-family="IBM Plex Sans" font-size="10">USB</text>
+
+        <!-- Debug probe -->
+        <rect x="190" y="50" width="120" height="60" rx="6" fill="white" stroke="#3a6a8a" stroke-width="1.5"/>
+        <text x="250" y="72" text-anchor="middle" fill="#1a2840" font-family="IBM Plex Sans" font-size="12" font-weight="600">Debug Probe</text>
+        <text x="250" y="88" text-anchor="middle" fill="#5a7a9a" font-family="IBM Plex Mono" font-size="10">J-Link / ST-Link</text>
+        <text x="250" y="103" text-anchor="middle" fill="#5a7a9a" font-family="IBM Plex Mono" font-size="10">CMSIS-DAP</text>
+
+        <!-- SWD/JTAG arrow probe → MCU -->
+        <line x1="310" y1="80" x2="368" y2="80" stroke="#3a6a8a" stroke-width="1.5" marker-end="url(#arr-d2)"/>
+        <text x="339" y="70" text-anchor="middle" fill="#3a6a8a" font-family="IBM Plex Sans" font-size="10" font-weight="500">SWD / JTAG</text>
+        <text x="339" y="93" text-anchor="middle" fill="#5a7a9a" font-family="IBM Plex Mono" font-size="9">2 or 4 wires</text>
+
+        <!-- MCU box -->
+        <rect x="370" y="30" width="220" height="100" rx="6" fill="white" stroke="#7ab8d4" stroke-width="1.5"/>
+        <text x="480" y="52" text-anchor="middle" fill="#1a2840" font-family="IBM Plex Sans" font-size="12" font-weight="600">MCU (EFR32)</text>
+        <!-- Internal components -->
+        <rect x="385" y="62" width="70" height="26" rx="4" fill="#e8f4fa" stroke="#7ab8d4" stroke-width="1"/>
+        <text x="420" y="78" text-anchor="middle" fill="#1a5870" font-family="IBM Plex Mono" font-size="9">DAP / SW-DP</text>
+        <rect x="465" y="62" width="58" height="26" rx="4" fill="#e8f4fa" stroke="#7ab8d4" stroke-width="1"/>
+        <text x="494" y="78" text-anchor="middle" fill="#1a5870" font-family="IBM Plex Mono" font-size="9">AHB-AP</text>
+        <rect x="533" y="62" width="48" height="26" rx="4" fill="#e8f4fa" stroke="#7ab8d4" stroke-width="1"/>
+        <text x="557" y="78" text-anchor="middle" fill="#1a5870" font-family="IBM Plex Mono" font-size="9">ITM/DWT</text>
+        <!-- Arrows inside MCU -->
+        <line x1="455" y1="75" x2="463" y2="75" stroke="#7ab8d4" stroke-width="1" marker-end="url(#arr-d3)"/>
+        <line x1="523" y1="75" x2="531" y2="75" stroke="#7ab8d4" stroke-width="1" marker-end="url(#arr-d3)"/>
+        <!-- Application CPU -->
+        <rect x="385" y="96" width="196" height="24" rx="4" fill="#f0f8ff" stroke="#9aabb8" stroke-width="1"/>
+        <text x="483" y="112" text-anchor="middle" fill="#1a2840" font-family="IBM Plex Sans" font-size="10">Cortex-M CPU + Flash + RAM</text>
+
+        <!-- Arrowhead markers -->
+        <defs>
+          <marker id="arr-d1" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+            <polygon points="0 0, 7 3.5, 0 7" fill="#9aabb8"/>
+          </marker>
+          <marker id="arr-d2" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+            <polygon points="0 0, 7 3.5, 0 7" fill="#3a6a8a"/>
+          </marker>
+          <marker id="arr-d3" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
+            <polygon points="0 0, 5 2.5, 0 5" fill="#7ab8d4"/>
+          </marker>
+        </defs>
+      </svg>
+
+      <div class="prose">
+        <strong>JTAG</strong> (IEEE 1149.1) uses four signals: TCK (clock), TMS
+        (mode select), TDI (data in), TDO (data out), plus an optional TRST reset.
+        It is a daisy-chain bus — multiple devices on the same board can share the
+        JTAG chain.
+      </div>
+
+      <div class="prose">
+        <strong>SWD</strong> (Serial Wire Debug) is ARM's two-wire alternative:
+        SWDIO (bidirectional data) and SWDCLK (clock). It provides the same debug
+        and memory-access capability as JTAG in two fewer pins — important on
+        small packages. Nearly all Cortex-M development uses SWD. The EFR32
+        exposes SWD on dedicated pins that remain functional regardless of GPIO
+        configuration.
+      </div>
+
+      <!-- ── Cortex-M Debug Hardware ─────────────────────────── -->
+      <div class="section-head" id="cortex-debug">Cortex-M Debug Hardware</div>
+
+      <div class="prose">
+        Every Cortex-M core contains a standardised set of debug components
+        accessible via the Debug Access Port (DAP). You rarely configure these
+        directly — OpenOCD and GDB do it for you — but knowing they exist explains
+        what the debugger can and cannot do.
+      </div>
+
+      <div class="prose">
+        <strong>DAP — Debug Access Port.</strong>
+        The entry point accessible over SWD or JTAG. Contains the SW-DP
+        (Serial Wire Debug Port) or JTAG-DP that accepts commands from the probe,
+        plus one or more Access Ports (APs) for different subsystems.
+      </div>
+
+      <div class="prose">
+        <strong>AHB-AP — AHB Access Port.</strong>
+        Translates DAP commands into bus transactions on the main AHB bus. This
+        is what lets GDB read and write any memory address — RAM, Flash, and
+        memory-mapped peripheral registers — even while the CPU is running. It is
+        the foundation of <em>non-intrusive</em> debug (reading a variable without
+        halting).
+      </div>
+
+      <div class="prose">
+        <strong>FPB — Flash Patch and Breakpoint.</strong>
+        Provides up to 8 hardware breakpoints (6 instruction, 2 literal on
+        Cortex-M3/M4). A hardware breakpoint halts the CPU the instant the PC
+        reaches a target address, with zero code modification. This is different
+        from software breakpoints, which replace the instruction at the target
+        with a <code>BKPT</code> opcode — software breakpoints cannot be set in
+        execute-only Flash on some MCUs.
+      </div>
+
+      <div class="prose">
+        <strong>DWT — Data Watchpoint and Trace.</strong>
+        Provides hardware watchpoints (halt on a specific memory address being
+        read or written) and the cycle counter
+        (<code>DWT-&gt;CYCCNT</code>) — a 32-bit register that increments every
+        CPU clock cycle. Reading CYCCNT before and after a code section gives
+        exact cycle-accurate timing without any timer peripheral.
+      </div>
+
+      <div class="code-block"><pre>// Enable the DWT cycle counter (must be done explicitly)
+CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
+DWT->CYCCNT = 0;
+DWT->CTRL   |= DWT_CTRL_CYCCNTENA_Msk;
+
+// --- Time a section ---
+uint32_t t0 = DWT->CYCCNT;
+do_something();
+uint32_t cycles = DWT->CYCCNT - t0;
+// cycles / SystemCoreClock gives time in seconds</pre></div>
+
+      <div class="prose">
+        <strong>ITM — Instrumentation Trace Macrocell.</strong>
+        A dedicated output channel for trace data. By writing to ITM stimulus
+        ports, firmware can emit printf-style messages over the SWO (Serial Wire
+        Output) pin without using a UART. See <a href="#printf-debug">printf &amp;
+        ITM tracing</a> below.
+      </div>
+
+      <!-- ── OpenOCD & GDB ───────────────────────────────────── -->
+      <div class="section-head" id="openocd-gdb">OpenOCD &amp; GDB</div>
+
+      <div class="prose">
+        <strong>OpenOCD</strong> (Open On-Chip Debugger) is open-source software
+        that runs on the host PC. It speaks USB to the debug probe (J-Link,
+        ST-Link, CMSIS-DAP) on one side, and exposes a GDB server (port 3333 by
+        default) on the other. GDB connects to this server and sends standard
+        remote serial protocol commands; OpenOCD translates them into SWD/JTAG
+        transactions.
+      </div>
+
+      <div class="code-block"><pre># Start OpenOCD for EFR32 with a J-Link probe
+openocd -f interface/jlink.cfg \
+        -f target/efm32.cfg
+
+# GDB connects to the running OpenOCD server
+arm-none-eabi-gdb firmware.elf
+
+(gdb) target remote localhost:3333   # connect to OpenOCD
+(gdb) monitor reset halt             # reset and halt CPU
+(gdb) load                           # flash firmware.elf
+(gdb) monitor reset halt             # reset again after flash
+(gdb) continue                       # run</pre></div>
+
+      <div class="prose">
+        Essential GDB commands for embedded work:
+      </div>
+
+      <div class="code-block"><pre># Execution control
+(gdb) break main              # set breakpoint at function
+(gdb) break uart.c:47         # set breakpoint at file:line
+(gdb) watch g_rx_count        # hardware watchpoint: halt on write
+(gdb) continue / c            # resume execution
+(gdb) step / s                # step one C source line (enters calls)
+(gdb) next / n                # step over (doesn't enter calls)
+(gdb) finish                  # run until current function returns
+(gdb) stepi / si              # step one machine instruction
+
+# Inspect state
+(gdb) info registers          # all CPU registers
+(gdb) print g_sensor_val      # print variable value
+(gdb) print/x 0x40010000      # print memory address in hex
+(gdb) x/16xw 0x20000000       # examine 16 words from SRAM base
+(gdb) backtrace / bt          # call stack
+
+# Memory
+(gdb) set var g_mode = 2      # write variable while running
+(gdb) monitor mdw 0x40000000  # raw word read via OpenOCD
+
+# Reset
+(gdb) monitor reset halt      # hardware reset, halt at reset vector</pre></div>
+
+      <div class="callout">
+        <strong>Debug build flags matter.</strong>
+        Compile with <code>-g3 -O0</code> during development: <code>-g3</code>
+        includes full debug symbols (variable names, types, line numbers),
+        <code>-O0</code> disables optimisation so variables aren't optimised
+        away and single-stepping follows the source line-by-line. Release builds
+        use <code>-O2</code> or <code>-Os</code> which makes GDB nearly unusable
+        — variables appear as <code>&lt;optimized out&gt;</code> and stepping
+        jumps seemingly random lines.
+      </div>
+
+      <!-- ── Fault Analysis ──────────────────────────────────── -->
+      <div class="section-head" id="faults">Fault Analysis</div>
+
+      <div class="prose">
+        When firmware accesses an invalid memory address, executes an undefined
+        instruction, or violates a memory protection boundary, the Cortex-M
+        processor takes a <em>fault exception</em>. The most common is
+        <strong>HardFault</strong>. Without a debugger attached, this causes an
+        immediate reset and all state is lost. The right approach is to install a
+        fault handler that captures state before resetting.
+      </div>
+
+      <div class="prose">
+        The key registers to read on any fault:
+      </div>
+
+      <div class="code-block"><pre>// Read these in your HardFault_Handler to diagnose the fault
+
+// Configurable Fault Status Register — which fault and why
+uint32_t CFSR  = SCB->CFSR;
+
+// Individual sub-registers within CFSR
+uint8_t  MMFSR = (CFSR >> 0)  & 0xFF;  // MemManage faults
+uint8_t  BFSR  = (CFSR >> 8)  & 0xFF;  // BusFault faults
+uint16_t UFSR  = (CFSR >> 16) & 0xFFFF; // UsageFault faults
+
+// Fault addresses (only valid when corresponding address-valid bit set)
+uint32_t MMFAR = SCB->MMFAR;  // MemManage fault address
+uint32_t BFAR  = SCB->BFAR;   // BusFault address
+
+// Hard Fault Status Register
+uint32_t HFSR  = SCB->HFSR;</pre></div>
+
+      <div class="prose">
+        The most useful diagnostic pattern is to read the stacked PC — the address
+        of the instruction that caused the fault — from the exception stack frame:
+      </div>
+
+      <div class="code-block"><pre>// In startup.s or a C wrapper:
+// On exception entry, Cortex-M hardware pushes r0-r3, r12, LR, PC, xPSR
+// to the process stack (PSP) if in thread mode, or main stack (MSP) in handler mode.
+
+void HardFault_Handler(void) {
+    __asm volatile (
+        "tst    lr, #4          \n"   // test bit 2 of LR (EXC_RETURN)
+        "ite    eq              \n"   // if EQ (bit 2 clear): came from MSP
+        "mrseq  r0, msp         \n"   //   r0 = MSP
+        "mrsne  r0, psp         \n"   //   r0 = PSP
+        "b      hard_fault_c    \n"   // call C handler with stack frame ptr
+    );
+}
+
+void hard_fault_c(uint32_t *frame) {
+    uint32_t stacked_pc = frame[6];  // PC is 7th word pushed
+    uint32_t stacked_lr = frame[5];
+    uint32_t stacked_r0 = frame[0];
+
+    // Log or breakpoint here
+    (void)stacked_pc;  // inspect in debugger
+    for (;;) {}        // halt — don't reset silently
+}</pre></div>
+
+      <div class="prose">
+        With a debugger attached, a simpler approach: set a breakpoint inside
+        <code>HardFault_Handler</code>, then use GDB's <code>backtrace</code>
+        after the fault. If GDB doesn't automatically unwind through the exception
+        frame, use <code>x/8xw $msp</code> (or <code>$psp</code>) to read the
+        pushed frame manually and identify the faulting PC.
+      </div>
+
+      <div class="callout">
+        <strong>Common HardFault causes:</strong>
+        (1) NULL pointer dereference — stacked PC points just after the bad load/store.
+        (2) Stack overflow — stacked frame lands in invalid memory; BFSR UNSTKERR bit set.
+        (3) Unaligned access with strict alignment required — UFSR UNALIGNED bit set.
+        (4) Division by zero with UFSR trap enabled — UFSR DIVBYZERO bit set.
+        (5) Executing data as code — bad function pointer, usually UFSR INVSTATE.
+      </div>
+
+      <!-- ── printf & ITM Tracing ───────────────────────────── -->
+      <div class="section-head" id="printf-debug">printf &amp; ITM Tracing</div>
+
+      <div class="prose">
+        The simplest debug technique is inserting <code>printf</code> calls and
+        observing the output. There are two output paths available on Cortex-M:
+      </div>
+
+      <div class="prose">
+        <strong>UART printf.</strong>
+        Retarget the C library's <code>_write()</code> system call to send bytes
+        over a UART. Simple, widely understood, works on any toolchain.
+        Disadvantage: consumes a UART peripheral and GPIO pins, adds UART baud rate
+        latency, and transmitting inside a time-critical ISR will distort timing.
+      </div>
+
+      <div class="prose">
+        <strong>ITM/SWO printf (non-intrusive).</strong>
+        Send characters through the ITM Stimulus Port 0, which the debug probe
+        captures on the SWO pin and forwards to OpenOCD's trace log. No UART
+        needed, extremely fast (runs at tens of MHz), and the output appears in the
+        debug host without touching any application peripheral. Disadvantage:
+        requires a probe that supports SWO (J-Link does; cheaper CMSIS-DAP
+        adapters often do not).
+      </div>
+
+      <div class="code-block"><pre>// ITM_SendChar — retarget fputc to ITM stimulus port 0
+int fputc(int ch, FILE *f) {
+    (void)f;
+    // Wait until port 0 is not busy
+    while (ITM->PORT[0].u32 == 0) {}
+    ITM->PORT[0].u8 = (uint8_t)ch;
+    return ch;
+}
+
+// OpenOCD configuration to capture SWO:
+// monitor tpiu config internal swo.log uart false 38400000 2000000
+// Then: tail -f swo.log   in a terminal</pre></div>
+
+      <div class="callout">
+        <strong>Semihosting</strong> is a third option: ARM's mechanism for
+        routing <code>printf</code> output through the debug connection using
+        a special <code>BKPT</code> instruction. It works without any pins, but
+        is extremely slow (each character halts the CPU and waits for the host to
+        respond) and completely breaks without a debugger attached. Use it only
+        for early bringup on development hardware where the debugger is always
+        connected.
+      </div>
+
+      <!-- ── Logic Analyzer ─────────────────────────────────── -->
+      <div class="section-head" id="logic-analyzer">Logic Analyzer</div>
+
+      <div class="prose">
+        A logic analyzer captures multiple digital signals simultaneously and
+        displays them as a waveform timeline. Unlike an oscilloscope it records
+        logic levels (1/0), not voltage, and can capture hours of traffic at
+        megahertz sample rates. The most important feature for embedded work is
+        <strong>protocol decoding</strong> — the analyser understands UART, SPI,
+        I2C, CAN, USB, and dozens of other protocols and annotates the waveform
+        with decoded bytes and fields.
+      </div>
+
+      <div class="prose">
+        <strong>Sigrok / PulseView</strong> is the open-source analyser software;
+        it works with cheap ($10–30) USB logic analysers (Saleae clones based on
+        the Cypress FX2) up to professional units. For EFR32 work, a 4–8 channel
+        analyser at 24 MHz sample rate is sufficient for most protocols.
+      </div>
+
+      <div class="prose">
+        Key setups for common protocols:
+      </div>
+
+      <ul class="prose" style="margin-top:0; padding-left:1.4em;">
+        <li style="margin-bottom:8px;"><strong>UART decode:</strong>
+          Attach one probe to TX and/or RX. In PulseView, add the UART decoder,
+          set baud rate to match firmware (<code>configTICK_RATE_HZ</code> is
+          irrelevant — use the USART baud rate), set data bits/parity/stop to
+          match. Decoded bytes appear above the waveform. Look for framing errors
+          (STOP bit low) or unexpected bytes to diagnose mis-configured baud
+          generators.</li>
+        <li style="margin-bottom:8px;"><strong>SPI decode:</strong>
+          Attach probes to SCLK, MOSI, MISO, CS. Set CPOL and CPHA in the
+          decoder to match firmware. The decoder shows each byte per CS assertion.
+          Common issue to check: is CS actually being deasserted between transfers?
+          Some bugs only manifest as two CS pulses that merge because the MCU
+          didn't deassert long enough.</li>
+        <li style="margin-bottom:8px;"><strong>I2C decode:</strong>
+          Attach probes to SCL and SDA. The decoder shows each address and
+          data byte, marks ACK/NAK, and flags protocol violations. A NAK in
+          an unexpected place immediately shows whether the device acknowledged
+          its address — if not, check pull-up values and device power.</li>
+      </ul>
+
+      <div class="callout">
+        <strong>Triggering.</strong>
+        Logic analysers can trigger (start recording) on a specific bit pattern,
+        protocol event, or signal edge. Use triggers to capture rare events —
+        e.g., "start recording only when this CAN message ID appears" or
+        "capture only on SPI CS assertion." Without triggers you drown in data.
+      </div>
+
+      <!-- ── Oscilloscope Techniques ─────────────────────────── -->
+      <div class="section-head" id="oscilloscope">Oscilloscope Techniques</div>
+
+      <div class="prose">
+        The oscilloscope shows voltage vs time. Where a logic analyser tells you
+        <em>what</em> the signal says, the oscilloscope tells you <em>how well</em>
+        it says it. Signal integrity problems, overshoot, ringing, ground noise,
+        and incorrect voltage levels are invisible to a logic analyser but obvious
+        on the oscilloscope.
+      </div>
+
+      <div class="prose">
+        <strong>Key measurements for embedded work:</strong>
+      </div>
+
+      <ul class="prose" style="margin-top:0; padding-left:1.4em;">
+        <li style="margin-bottom:8px;"><strong>Rise/fall time.</strong>
+          The time for a signal to transition from 10% to 90% of its swing. For
+          SPI or I2C at high speeds, slow edges (caused by excessive bus
+          capacitance or weak pull-ups) cause setup/hold violations. A 400 kHz
+          I2C bus should have rise times under ~300 ns.</li>
+        <li style="margin-bottom:8px;"><strong>Overshoot and ringing.</strong>
+          Inductive transmission lines ring when driven hard. Excessive ringing
+          can exceed Schmitt trigger hysteresis thresholds and cause multiple
+          logic transitions per intended edge. Add series termination resistors
+          (22–33 Ω) near the driver to damp ringing.</li>
+        <li style="margin-bottom:8px;"><strong>Ground noise.</strong>
+          Use the scope's math channel to subtract two channels: CH1 on a signal,
+          CH2 on the nearby ground plane. Any difference is conducted ground noise.
+          High ground noise usually points to a missing or mis-placed decoupling
+          capacitor.</li>
+        <li style="margin-bottom:8px;"><strong>PWM duty cycle verification.</strong>
+          Trigger on the rising edge, measure the pulse width and period. Compare
+          with the expected value from the timer register settings. If they
+          disagree, check clock tree configuration or prescaler values.</li>
+        <li style="margin-bottom:8px;"><strong>Timing loops.</strong>
+          Toggle a GPIO at the start and end of a critical section, then measure
+          the resulting pulse on the scope. Faster and lower-overhead than CYCCNT
+          for verifying ISR latency or DMA trigger-to-transfer timing.</li>
+      </ul>
+
+      <div class="callout">
+        <strong>Probe ground matters.</strong>
+        The oscilloscope probe's ground clip must be connected to a ground point
+        as close to the signal under test as possible. A long ground clip acts as
+        an inductor, adding ringing and noise to every measurement — the waveform
+        looks broken when the probing technique is the problem.
+      </div>
+
+      <hr class="lesson-rule">
+
+      <div class="lesson-nav">
+        <a href="rtos.html" class="lesson-nav-btn">← 14 · RTOS Concepts</a>
+        <a href="layout.html" class="lesson-nav-btn">16 · Layout Fundamentals →</a>
+      </div>
+
+    </div><!-- /main -->
+
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+</body>
+</html>
