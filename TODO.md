@@ -7,8 +7,7 @@ Last updated: 2026-05-28
 
 ## In Progress
 
-- [ ] **Mermaid batch 2** — remaining ~14 SVG → Mermaid replacements across:
-  memory-clocks, rtos, bare-metal, dma, gpio, usb, debug, spi, interrupts-nvic
+*(nothing actively in-flight)*
 
 ---
 
@@ -24,9 +23,38 @@ Last updated: 2026-05-28
   Requires knowing which specific textbook chapters each lesson draws from;
   ask user or leave as a template with TODOs.
 
+- [ ] **KiCad circuit replacements (5 SVGs)** — KiCad 10.0.3 confirmed installed at
+  `C:\Program Files\KiCad\10.0\bin\kicad-cli.exe`. Targets:
+  - `gpio.html` — Push-pull + open-drain output circuits
+  - `power-thermal.html` — Buck converter hot loop
+  - `can.html` — CAN bus with 120Ω termination resistors
+  - `i2c.html` — Open-drain pull-up bus topology (multiple devices + resistors)
+
+## Assessed — Keep as SVG (Mermaid not appropriate)
+
+The following SVGs were reviewed and decided to keep as hand-coded SVG because
+Mermaid cannot replicate their layout, custom shapes, or semantic content:
+- `bare-metal.html` startup sequence — has Flash/RAM side annotation box
+- `bare-metal.html` ring buffer — circular layout with head/tail pointers
+- `gpio.html` pin routing — trapezoid MUX symbol + fan-out
+- `spi.html` shift register loop — hardware circuit diagram
+- `spi.html` CPOL/CPHA waveforms — kept as SVG (complex timing with sample markers)
+- `spi.html` CS topologies — two-panel comparison with colored CS lines
+- `dma.html` CPU utilization — timeline/bar chart
+- `dma.html` ping-pong buffer — timeline with DMA+CPU bands
+- `dma.html` descriptor structure — 32-bit memory layout
+- `memory-clocks.html` SRAM layout — address-annotated memory region stack
+- `interrupts-nvic.html` exception stacking — stack frame memory layout
+- `debug.html` connection block — clean as-is, MCU has nested sub-components
+
 ---
 
 ## Completed This Session
+
+- [x] **Mermaid batch 3** — clock tree in memory-clocks.html
+  - `memory-clocks.html` — Clock tree (`flowchart LR`; 4 color-coded sources → HF/LF Muxes → Prescaler → outputs)
+  - Mermaid CDN added to memory-clocks.html head
+  - Pushed in commit 95ef1a3; verified in Chrome
 
 - [x] **Mermaid batch 2** — replaced 3 more SVGs:
   - `rtos.html` — Task state machine (`stateDiagram-v2`, LR; Running/Ready/Blocked/Suspended with `classDef`)
