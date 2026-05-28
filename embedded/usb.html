@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>USB Fundamentals — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Architecture &amp; Internals</div>
+        <a href="mcu-architecture.html" class="nav-item">1 · MCU Architecture</a>
+        <a href="memory-clocks.html" class="nav-item">2 · Memory &amp; Clock Systems</a>
+        <a href="interrupts-nvic.html" class="nav-item">3 · Interrupts &amp; the NVIC</a>
+        <a href="dma.html" class="nav-item">4 · DMA</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Peripherals</div>
+        <a href="gpio.html" class="nav-item">5 · GPIO</a>
+        <a href="timers-pwm.html" class="nav-item">6 · Timers &amp; PWM</a>
+        <a href="adc-dac.html" class="nav-item">7 · ADC &amp; DAC</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Protocols</div>
+        <a href="uart.html" class="nav-item">8 · UART</a>
+        <a href="spi.html" class="nav-item">9 · SPI</a>
+        <a href="i2c.html" class="nav-item">10 · I2C</a>
+        <a href="can.html" class="nav-item">11 · CAN Bus</a>
+        <a href="usb.html" class="nav-item active">12 · USB Fundamentals</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Firmware</div>
+        <span class="nav-item planned">13 · Bare-Metal Patterns</span>
+        <span class="nav-item planned">14 · RTOS Concepts</span>
+        <span class="nav-item planned">15 · Debugging &amp; Test</span>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">PCB Design</div>
+        <span class="nav-item planned">16 · Layout Fundamentals</span>
+        <span class="nav-item planned">17 · Mixed-Signal Layout</span>
+        <span class="nav-item planned">18 · Power &amp; Thermal</span>
+        <span class="nav-item planned">19 · High-Speed &amp; RF</span>
+      </div>
+
+      <hr class="sidebar-rule">
+
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#why-usb" class="nav-item">Why USB is complex</a>
+        <a href="#electrical" class="nav-item">Electrical layer</a>
+        <a href="#enumeration" class="nav-item">Enumeration</a>
+        <a href="#descriptors" class="nav-item">Descriptor hierarchy</a>
+        <a href="#transfers" class="nav-item">Transfer types</a>
+        <a href="#cdc-acm" class="nav-item">CDC-ACM virtual serial</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Embedded Systems</a>
+        <span class="sep">›</span>
+        <span>12 · USB Fundamentals</span>
+      </div>
+
+      <div class="lesson-title">12 · USB Fundamentals</div>
+      <div class="lesson-meta">Enumeration · Descriptors · Transfer Types · CDC-ACM · USB-FS vs USB-HS</div>
+
+      <div class="prose">
+        USB — Universal Serial Bus — is everywhere: every laptop, microcontroller
+        development board, and medical device with a Type-C connector is running it.
+        But USB is radically more complex than UART, SPI, or I2C. Where those protocols
+        are documented in a few pages, the USB 2.0 specification is 650 pages. Most
+        embedded engineers interact with USB through a protocol stack (a USB device
+        library), not by bit-banging registers. Understanding the fundamentals still
+        matters: it tells you why enumeration fails, why your device is slow, and why
+        that latency spike happens on every 1 ms boundary.
+      </div>
+
+      <div class="prose">
+        This lesson covers the conceptual model that underlies all USB 2.0 device
+        firmware: what happens at the electrical level, how enumeration works, how
+        the descriptor hierarchy tells the host what kind of device you are, the
+        four transfer types and when to use each, and CDC-ACM as the practical
+        example most embedded engineers reach for first.
+      </div>
+
+      <!-- ── Why USB is complex ────────────────────────────────── -->
+      <div class="section-head" id="why-usb">Why USB is more complex than other protocols</div>
+
+      <div class="prose">
+        Every protocol in this cluster so far (UART, SPI, I2C, CAN) follows the same
+        basic model: both sides agree on a format, one side asserts a signal, the other
+        reads it. USB is fundamentally different in two ways:
+      </div>
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:8px;"><strong>The host is always in charge.</strong> USB has no peer-to-peer communication. One host (a PC, SoC, or USB OTG controller) owns the bus and polls every device on a fixed schedule. Devices never initiate a transfer — they only respond to host requests. This means your MCU firmware cannot "send data when ready" the way it can over UART; it can only pre-load a buffer and wait for the host to ask for it.</li>
+        <li style="margin-bottom:8px;"><strong>Devices must identify themselves.</strong> A UART receiver just starts decoding bytes. A USB host does not know what a device is until it reads a structured set of descriptors from it. The entire process of reading those descriptors, assigning an address, and loading a driver is called <em>enumeration</em>, and it must complete correctly before any data transfer can occur.</li>
+      </ul>
+
+      <!-- ── Electrical layer ──────────────────────────────────── -->
+      <div class="section-head" id="electrical">Electrical layer: D+ and D−</div>
+
+      <div class="prose">
+        USB uses a differential pair: D+ and D−. Like CAN, the receiver responds to
+        the differential voltage V<sub>D+</sub> − V<sub>D−</sub>, rejecting common-mode
+        noise. Unlike CAN, USB is not a multi-drop bus — it is a strict host-to-device
+        point-to-point or star topology via a hub.
+      </div>
+
+      <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:24px;">
+        <thead>
+          <tr style="background:#eef4f8;">
+            <th style="padding:7px 10px;border:1px solid #d0dae0;font-weight:600;">Speed</th>
+            <th style="padding:7px 10px;border:1px solid #d0dae0;font-weight:600;">Bit rate</th>
+            <th style="padding:7px 10px;border:1px solid #d0dae0;font-weight:600;">D+ pull-up</th>
+            <th style="padding:7px 10px;border:1px solid #d0dae0;font-weight:600;">Common use</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;font-weight:600;">Low Speed (LS)</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">1.5 Mbps</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">D− pull-up</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">HID devices (mouse, keyboard)</td>
+          </tr>
+          <tr style="background:#f8f9fb;">
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;font-weight:600;">Full Speed (FS)</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">12 Mbps</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">D+ pull-up to 3.3 V</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">CDC, HID, audio — most MCU USB</td>
+          </tr>
+          <tr>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;font-weight:600;">High Speed (HS)</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">480 Mbps</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">Negotiated during reset</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">Mass storage, video, high-throughput data</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="prose">
+        Speed detection happens automatically. When the device connects, the host detects
+        which line is pulled up (FS: D+ high; LS: D− high) to determine the initial speed.
+        A HS-capable device starts at FS and then negotiates up to HS during the reset
+        sequence using a chirp handshake.
+      </div>
+
+      <div class="prose">
+        USB-FS signal levels are 3.3 V differential. USB-HS uses current-mode signalling
+        (17.78 mA into 45 Ω per line), which is why HS PHYs require an external or
+        integrated transceiver and cannot be done with simple GPIO-level push-pull driving.
+        Most MCUs that claim "USB-HS" integrate the HS PHY on-chip; some require an
+        external ULPI PHY chip.
+      </div>
+
+      <!-- ── Enumeration ───────────────────────────────────────── -->
+      <div class="section-head" id="enumeration">Enumeration</div>
+
+      <div class="prose">
+        Enumeration is the conversation that happens between the host and device
+        immediately after connection. It proceeds in a fixed sequence, and if any
+        step fails, the device is never usable — it sits unrecognised in Device Manager
+        or dmesg with an error code.
+      </div>
+
+      <!-- SVG: enumeration sequence as a vertical flow -->
+      <svg viewBox="0 0 680 520" style="width:100%;max-width:680px;display:block;margin:24px auto 8px;" role="img" aria-label="USB enumeration sequence: connect detected, reset, address assignment, descriptor reads, driver load">
+
+        <!-- Host column header -->
+        <text x="170" y="22" font-family="IBM Plex Sans,sans-serif" font-size="11" font-weight="600" fill="#1a2840" text-anchor="middle">HOST</text>
+        <!-- Device column header -->
+        <text x="510" y="22" font-family="IBM Plex Sans,sans-serif" font-size="11" font-weight="600" fill="#5a8a5a" text-anchor="middle">DEVICE</text>
+
+        <!-- Vertical lifelines -->
+        <line x1="170" y1="28" x2="170" y2="510" stroke="#c0cdd6" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <line x1="510" y1="28" x2="510" y2="510" stroke="#c0cdd6" stroke-width="1.5" stroke-dasharray="4,3"/>
+
+        <!-- Step 1: Connect detected -->
+        <rect x="60" y="38" width="220" height="28" rx="4" fill="#eef4f8" stroke="#7ab8d4" stroke-width="1"/>
+        <text x="170" y="56" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#1a2840" text-anchor="middle">D+ pull-up detected → connect</text>
+        <line x1="510" y1="52" x2="280" y2="52" stroke="#5a8a5a" stroke-width="1.5"/>
+        <polygon points="284,48 276,52 284,56" fill="#5a8a5a"/>
+
+        <!-- Step 2: Reset -->
+        <rect x="60" y="84" width="220" height="28" rx="4" fill="#eef4f8" stroke="#7ab8d4" stroke-width="1"/>
+        <text x="170" y="102" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#1a2840" text-anchor="middle">Assert SE0 reset (≥10 ms)</text>
+        <line x1="170" y1="98" x2="510" y2="98" stroke="#3a6a8a" stroke-width="1.5"/>
+        <polygon points="506,94 514,98 506,102" fill="#3a6a8a"/>
+
+        <!-- Step 3: GET_DESCRIPTOR (device, 8 bytes) -->
+        <rect x="60" y="130" width="220" height="28" rx="4" fill="#eef4f8" stroke="#7ab8d4" stroke-width="1"/>
+        <text x="170" y="148" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#1a2840" text-anchor="middle">GET_DESCRIPTOR (device, 8 B)</text>
+        <line x1="170" y1="144" x2="510" y2="144" stroke="#3a6a8a" stroke-width="1.5"/>
+        <polygon points="506,140 514,144 506,148" fill="#3a6a8a"/>
+        <!-- Device responds -->
+        <rect x="400" y="158" width="220" height="28" rx="4" fill="#f0f6f0" stroke="#5a8a5a" stroke-width="1"/>
+        <text x="510" y="176" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#1a2840" text-anchor="middle">bMaxPacketSize0 = 8/16/32/64</text>
+        <line x1="510" y1="172" x2="170" y2="172" stroke="#5a8a5a" stroke-width="1.5"/>
+        <polygon points="174,168 166,172 174,176" fill="#5a8a5a"/>
+
+        <!-- Step 4: SET_ADDRESS -->
+        <rect x="60" y="202" width="220" height="28" rx="4" fill="#eef4f8" stroke="#7ab8d4" stroke-width="1"/>
+        <text x="170" y="220" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#1a2840" text-anchor="middle">SET_ADDRESS (e.g. addr=3)</text>
+        <line x1="170" y1="216" x2="510" y2="216" stroke="#3a6a8a" stroke-width="1.5"/>
+        <polygon points="506,212 514,216 506,220" fill="#3a6a8a"/>
+        <!-- Device ACKs -->
+        <rect x="400" y="230" width="220" height="28" rx="4" fill="#f0f6f0" stroke="#5a8a5a" stroke-width="1"/>
+        <text x="510" y="248" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#1a2840" text-anchor="middle">ACK, switch to new address</text>
+        <line x1="510" y1="244" x2="170" y2="244" stroke="#5a8a5a" stroke-width="1.5"/>
+        <polygon points="174,240 166,244 174,248" fill="#5a8a5a"/>
+
+        <!-- Step 5: GET_DESCRIPTOR full device descriptor -->
+        <rect x="60" y="274" width="220" height="28" rx="4" fill="#eef4f8" stroke="#7ab8d4" stroke-width="1"/>
+        <text x="170" y="292" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#1a2840" text-anchor="middle">GET_DESCRIPTOR (device, full)</text>
+        <line x1="170" y1="288" x2="510" y2="288" stroke="#3a6a8a" stroke-width="1.5"/>
+        <polygon points="506,284 514,288 506,292" fill="#3a6a8a"/>
+        <rect x="400" y="302" width="220" height="28" rx="4" fill="#f0f6f0" stroke="#5a8a5a" stroke-width="1"/>
+        <text x="510" y="320" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#1a2840" text-anchor="middle">18-byte device descriptor</text>
+        <line x1="510" y1="316" x2="170" y2="316" stroke="#5a8a5a" stroke-width="1.5"/>
+        <polygon points="174,312 166,316 174,320" fill="#5a8a5a"/>
+
+        <!-- Step 6: GET_DESCRIPTOR config + interface + endpoints -->
+        <rect x="60" y="346" width="220" height="28" rx="4" fill="#eef4f8" stroke="#7ab8d4" stroke-width="1"/>
+        <text x="170" y="364" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#1a2840" text-anchor="middle">GET_DESCRIPTOR (config tree)</text>
+        <line x1="170" y1="360" x2="510" y2="360" stroke="#3a6a8a" stroke-width="1.5"/>
+        <polygon points="506,356 514,360 506,364" fill="#3a6a8a"/>
+        <rect x="400" y="374" width="220" height="28" rx="4" fill="#f0f6f0" stroke="#5a8a5a" stroke-width="1"/>
+        <text x="510" y="392" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#1a2840" text-anchor="middle">Config + Interface + Endpoints</text>
+        <line x1="510" y1="388" x2="170" y2="388" stroke="#5a8a5a" stroke-width="1.5"/>
+        <polygon points="174,384 166,388 174,392" fill="#5a8a5a"/>
+
+        <!-- Step 7: SET_CONFIGURATION + driver load -->
+        <rect x="60" y="418" width="220" height="28" rx="4" fill="#eef4f8" stroke="#7ab8d4" stroke-width="1"/>
+        <text x="170" y="436" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#1a2840" text-anchor="middle">SET_CONFIGURATION (1)</text>
+        <line x1="170" y1="432" x2="510" y2="432" stroke="#3a6a8a" stroke-width="1.5"/>
+        <polygon points="506,428 514,432 506,436" fill="#3a6a8a"/>
+
+        <!-- Final state -->
+        <rect x="220" y="462" width="240" height="28" rx="4" fill="#3a6a8a" opacity="0.15" stroke="#3a6a8a" stroke-width="1"/>
+        <text x="340" y="480" font-family="IBM Plex Sans,sans-serif" font-size="10" font-weight="600" fill="#1a2840" text-anchor="middle">Device enumerated — data transfers begin</text>
+
+      </svg>
+      <div style="text-align:center;font-size:12px;color:#9aabb8;margin-bottom:24px;">USB enumeration sequence. Every step is a host-initiated control transfer on endpoint 0. If any step times out or returns an error, enumeration fails and the device is unusable.</div>
+
+      <div class="prose">
+        The address assigned in SET_ADDRESS is how the host identifies the device for
+        the rest of the session — it is chosen by the host, not the device. After
+        SET_ADDRESS the device firmware must switch its response address before the
+        next transaction, which is why USB device stacks handle this in the interrupt
+        handler with tight timing.
+      </div>
+
+      <!-- ── Descriptor hierarchy ──────────────────────────────── -->
+      <div class="section-head" id="descriptors">Descriptor hierarchy</div>
+
+      <div class="prose">
+        A USB device describes itself through a structured hierarchy of descriptors —
+        binary data structures with fixed field layouts. The host reads these to understand
+        what the device is, how to configure it, and how to communicate with it.
+      </div>
+
+      <!-- SVG: descriptor hierarchy tree -->
+      <svg viewBox="0 0 700 300" style="width:100%;max-width:700px;display:block;margin:24px auto 8px;" role="img" aria-label="USB descriptor hierarchy: one device descriptor at top, one or more configuration descriptors, each with one or more interface descriptors, each with endpoint descriptors">
+
+        <!-- Device Descriptor -->
+        <rect x="260" y="10" width="180" height="44" rx="5" fill="#3a6a8a" opacity="0.85"/>
+        <text x="350" y="30" font-family="IBM Plex Sans,sans-serif" font-size="11" font-weight="600" fill="#fff" text-anchor="middle">Device Descriptor</text>
+        <text x="350" y="45" font-family="IBM Plex Mono,monospace" font-size="9" fill="#c8dce8" text-anchor="middle">VID / PID / USB version / class</text>
+
+        <!-- Line down from Device -->
+        <line x1="350" y1="54" x2="350" y2="78" stroke="#7ab8d4" stroke-width="1.5"/>
+
+        <!-- Configuration Descriptor -->
+        <rect x="230" y="78" width="240" height="44" rx="5" fill="#3a6a8a" opacity="0.65"/>
+        <text x="350" y="98" font-family="IBM Plex Sans,sans-serif" font-size="11" font-weight="600" fill="#fff" text-anchor="middle">Configuration Descriptor</text>
+        <text x="350" y="113" font-family="IBM Plex Mono,monospace" font-size="9" fill="#c8dce8" text-anchor="middle">bNumInterfaces / bMaxPower / bmAttributes</text>
+
+        <!-- Line down from Config, splits to two Interface nodes -->
+        <line x1="350" y1="122" x2="350" y2="146" stroke="#7ab8d4" stroke-width="1.5"/>
+        <line x1="200" y1="146" x2="500" y2="146" stroke="#7ab8d4" stroke-width="1.5"/>
+        <line x1="200" y1="146" x2="200" y2="166" stroke="#7ab8d4" stroke-width="1.5"/>
+        <line x1="500" y1="146" x2="500" y2="166" stroke="#7ab8d4" stroke-width="1.5"/>
+
+        <!-- Interface 0 -->
+        <rect x="100" y="166" width="200" height="44" rx="5" fill="#5a8a5a" opacity="0.75"/>
+        <text x="200" y="186" font-family="IBM Plex Sans,sans-serif" font-size="10" font-weight="600" fill="#fff" text-anchor="middle">Interface 0</text>
+        <text x="200" y="201" font-family="IBM Plex Mono,monospace" font-size="9" fill="#c8e8c8" text-anchor="middle">bInterfaceClass / bAlternateSetting</text>
+
+        <!-- Interface 1 -->
+        <rect x="400" y="166" width="200" height="44" rx="5" fill="#5a8a5a" opacity="0.75"/>
+        <text x="500" y="186" font-family="IBM Plex Sans,sans-serif" font-size="10" font-weight="600" fill="#fff" text-anchor="middle">Interface 1</text>
+        <text x="500" y="201" font-family="IBM Plex Mono,monospace" font-size="9" fill="#c8e8c8" text-anchor="middle">bInterfaceClass / bAlternateSetting</text>
+
+        <!-- Lines from Interface 0 to two endpoint descriptors -->
+        <line x1="200" y1="210" x2="200" y2="234" stroke="#7ab8d4" stroke-width="1.5"/>
+        <line x1="130" y1="234" x2="270" y2="234" stroke="#7ab8d4" stroke-width="1.5"/>
+        <line x1="130" y1="234" x2="130" y2="250" stroke="#7ab8d4" stroke-width="1.5"/>
+        <line x1="270" y1="234" x2="270" y2="250" stroke="#7ab8d4" stroke-width="1.5"/>
+
+        <!-- EP0 IN -->
+        <rect x="60" y="250" width="140" height="36" rx="4" fill="#d4840a" opacity="0.75"/>
+        <text x="130" y="267" font-family="IBM Plex Sans,sans-serif" font-size="10" font-weight="600" fill="#fff" text-anchor="middle">Endpoint Descriptor</text>
+        <text x="130" y="279" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#fde8c8" text-anchor="middle">EP1 IN / Bulk / 64 B</text>
+
+        <!-- EP0 OUT -->
+        <rect x="210" y="250" width="140" height="36" rx="4" fill="#d4840a" opacity="0.75"/>
+        <text x="280" y="267" font-family="IBM Plex Sans,sans-serif" font-size="10" font-weight="600" fill="#fff" text-anchor="middle">Endpoint Descriptor</text>
+        <text x="280" y="279" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#fde8c8" text-anchor="middle">EP1 OUT / Bulk / 64 B</text>
+
+        <!-- Endpoint from Interface 1 -->
+        <line x1="500" y1="210" x2="500" y2="250" stroke="#7ab8d4" stroke-width="1.5"/>
+        <rect x="420" y="250" width="160" height="36" rx="4" fill="#d4840a" opacity="0.75"/>
+        <text x="500" y="267" font-family="IBM Plex Sans,sans-serif" font-size="10" font-weight="600" fill="#fff" text-anchor="middle">Endpoint Descriptor</text>
+        <text x="500" y="279" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#fde8c8" text-anchor="middle">EP2 IN / Interrupt / 8 B</text>
+
+      </svg>
+      <div style="text-align:center;font-size:12px;color:#9aabb8;margin-bottom:24px;">One device per bus address. Each device has one or more configurations. Each configuration has one or more interfaces (a logical function). Each interface has endpoint descriptors describing its data pipes.</div>
+
+      <div class="prose">
+        A few key fields in the device descriptor matter most in firmware:
+      </div>
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:6px;"><strong>idVendor / idProduct (VID/PID)</strong> — 16-bit numbers that identify the manufacturer and product. The host OS uses these to find the right driver. You need a registered VID for commercial products; for prototyping, use a VID/PID pair licensed for open-source use (e.g. from the OpenMoko pool, or buy a sub-licence from a vendor).</li>
+        <li style="margin-bottom:6px;"><strong>bDeviceClass / bInterfaceClass</strong> — class codes tell the host what kind of device this is. Class 0x02 = CDC (Communications Device Class), 0x03 = HID, 0x08 = Mass Storage. Standard class codes trigger standard OS drivers, meaning no custom driver is needed on the host.</li>
+        <li style="margin-bottom:6px;"><strong>bMaxPacketSize0</strong> — the maximum payload size for endpoint 0 (the control endpoint). The host reads this in the first 8-byte GET_DESCRIPTOR and adjusts all subsequent control transfers accordingly.</li>
+      </ul>
+
+      <!-- ── Transfer types ────────────────────────────────────── -->
+      <div class="section-head" id="transfers">The four transfer types</div>
+
+      <div class="prose">
+        USB defines four endpoint transfer types, each with different guarantees
+        on latency, bandwidth, and reliability. Every endpoint has exactly one type,
+        declared in its descriptor.
+      </div>
+
+      <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:24px;">
+        <thead>
+          <tr style="background:#eef4f8;">
+            <th style="padding:7px 10px;border:1px solid #d0dae0;font-weight:600;">Type</th>
+            <th style="padding:7px 10px;border:1px solid #d0dae0;font-weight:600;">Guaranteed latency?</th>
+            <th style="padding:7px 10px;border:1px solid #d0dae0;font-weight:600;">Error recovery</th>
+            <th style="padding:7px 10px;border:1px solid #d0dae0;font-weight:600;">Bandwidth</th>
+            <th style="padding:7px 10px;border:1px solid #d0dae0;font-weight:600;">Typical use</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;font-weight:600;">Control</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">No</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">Retries</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">Up to 20% of frame</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">Enumeration, device configuration (EP0 only)</td>
+          </tr>
+          <tr style="background:#f8f9fb;">
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;font-weight:600;">Bulk</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">No</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">Retries (reliable)</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">Leftover bandwidth</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">Mass storage, CDC data, printer — large reliable transfers</td>
+          </tr>
+          <tr>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;font-weight:600;">Interrupt</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;font-weight:600;">Yes (polling interval)</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">Retries</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">Guaranteed slice per frame</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">HID (keyboard, mouse), CDC notification endpoint</td>
+          </tr>
+          <tr style="background:#f8f9fb;">
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;font-weight:600;">Isochronous</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;font-weight:600;">Yes (every frame)</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">None (drops)</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">Up to 1023 B/frame (FS)</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">Audio, video — timing-critical streams that tolerate drops</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="prose">
+        The <strong>1 ms USB frame</strong> is the heartbeat of the bus. At Full Speed,
+        the host generates a Start-of-Frame (SOF) token every 1 ms. Control and interrupt
+        transfers are scheduled within each frame; bulk transfers fill whatever bandwidth
+        remains. Isochronous endpoints get a guaranteed slot in every frame, but dropped
+        packets are never retransmitted — audio glitches rather than stalls.
+      </div>
+
+      <div class="callout">
+        <strong>Why bulk is not "fast".</strong> Bulk has no guaranteed latency. If a
+        high-priority interrupt endpoint fills most of a frame's bandwidth, your bulk
+        transfer waits. In practice, on a lightly loaded USB bus bulk is fast (multiple
+        megabytes per second at FS). On a busy bus with lots of HID and audio traffic,
+        bulk can stall for many milliseconds. If you need deterministic latency, use
+        interrupt transfers.
+      </div>
+
+      <!-- ── CDC-ACM ────────────────────────────────────────────── -->
+      <div class="section-head" id="cdc-acm">CDC-ACM: virtual serial port</div>
+
+      <div class="prose">
+        The most common USB class in embedded development is
+        <strong>CDC-ACM</strong> — Communications Device Class, Abstract Control Model.
+        It makes your MCU appear to the host OS as a standard serial port (COM port
+        on Windows, <code>/dev/ttyACMx</code> on Linux, <code>/dev/cu.usbmodem...</code>
+        on macOS). No custom driver needed; the OS ships one. This is why development
+        boards can be programmed and debugged over the same USB cable used for power.
+      </div>
+
+      <div class="prose">
+        CDC-ACM uses two USB interfaces and three endpoints:
+      </div>
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:6px;"><strong>Interface 0 — CDC Control:</strong> One interrupt IN endpoint (the "notification endpoint") used to send line state changes (DTR, DCD) to the host. In practice many implementations never use this and the host still works.</li>
+        <li style="margin-bottom:6px;"><strong>Interface 1 — CDC Data:</strong> One bulk IN endpoint (device→host data) and one bulk OUT endpoint (host→device data). These carry the actual byte stream.</li>
+      </ul>
+
+      <div class="prose">
+        The host can also send control requests to set the baud rate, data bits, parity,
+        and stop bits via the SET_LINE_CODING request. Your MCU firmware receives these
+        and can apply them to a hardware UART — useful for USB-UART bridge firmware.
+        Or you can ignore them entirely if you are not bridging to a real UART and just
+        use the bulk endpoints as a generic byte pipe.
+      </div>
+
+      <pre class="code-block"><code>// CDC-ACM endpoint configuration (simplified — actual stack handles this)
+//
+// EP0   Control  (IN + OUT)  — enumeration, SET_LINE_CODING, etc.
+// EP1   Interrupt IN         — CDC notification (line state, often unused)
+// EP2   Bulk IN              — device → host data bytes
+// EP3   Bulk OUT             — host → device data bytes
+//
+// From firmware's perspective, you just fill EP2's TX buffer when you
+// have data to send, and read from EP3's RX buffer when the host writes.
+// The USB stack fires a callback when EP3 has new data.
+//
+// Example: Silicon Labs USB library (em_usb.h)
+//
+// void usbDataReceived(USB_Status_TypeDef status,
+//                      uint32_t xferred,
+//                      uint32_t remaining) {
+//     if (status == USB_STATUS_OK) {
+//         // xferred bytes available in rx_buf
+//         process_bytes(rx_buf, xferred);
+//         // re-arm the OUT endpoint for next transfer
+//         USBD_Read(CDC_EP_DATA_OUT, rx_buf, sizeof(rx_buf), usbDataReceived);
+//     }
+// }
+//
+// void usbSend(const uint8_t *data, uint32_t len) {
+//     USBD_Write(CDC_EP_DATA_IN, (void*)data, len, NULL);
+// }</code></pre>
+
+      <div class="prose">
+        The key thing to understand is that CDC-ACM bulk transfers are still subject
+        to the USB 1 ms frame boundary. If you call the write function between two SOF
+        tokens, your data goes out in the very next frame — 0 to 1 ms latency. This
+        means CDC-ACM is not suitable as a real-time data path for anything that needs
+        sub-millisecond latency. For that, use an interrupt endpoint (bounded to your
+        declared polling interval, typically 1–16 ms for FS).
+      </div>
+
+      <div class="callout">
+        <strong>VID/PID for CDC-ACM in prototypes.</strong> Silicon Labs devices with
+        the official USB PID from their USB library will enumerate as a Silicon Labs
+        virtual COM port — which is fine for development. For a product shipped to
+        customers, you need your own registered VID (from USB-IF) and a product PID.
+        Sharing a VID/PID with another product in the field causes mysterious device
+        conflicts on the host.
+      </div>
+
+      <hr class="lesson-rule">
+
+      <div class="section-head">References</div>
+      <ul class="prose" style="padding-left:1.4em;font-size:13.5px;color:#5a6a7a;">
+        <li style="margin-bottom:6px;">USB Implementers Forum, <em>Universal Serial Bus Specification Revision 2.0</em> (2000) — the primary spec; chapters 9 (enumeration and descriptors) and 5 (transfer types) are the most relevant.</li>
+        <li style="margin-bottom:6px;">Jan Axelson, <em>USB Complete</em> (5th ed.) — highly readable introduction to USB device firmware; covers descriptors, transfer types, and class drivers with worked examples.</li>
+        <li style="margin-bottom:6px;">Silicon Labs, <em>EFR32 USB Library Reference Manual</em> — USBD_Init(), USBD_Read(), USBD_Write(), CDC class template.</li>
+        <li style="margin-bottom:6px;">M. White, <em>Making Embedded Systems</em> (2nd ed.) — overview of USB class codes, enumeration flow, and common failure modes.</li>
+      </ul>
+
+      <!-- ── Nav ───────────────────────────────────────────────── -->
+      <div class="lesson-nav">
+        <a href="can.html" class="lesson-nav-btn">← Lesson 11: CAN Bus</a>
+        <a href="index.html" class="lesson-nav-btn">Back to Embedded Systems</a>
+        <a href="#" class="lesson-nav-btn disabled">Next → (coming soon)</a>
+      </div>
+
+    </div><!-- /main -->
+
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+</body>
+</html>
