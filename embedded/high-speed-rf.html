@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>High-Speed &amp; RF — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Architecture &amp; Internals</div>
+        <a href="mcu-architecture.html" class="nav-item">1 · MCU Architecture</a>
+        <a href="memory-clocks.html" class="nav-item">2 · Memory &amp; Clock Systems</a>
+        <a href="interrupts-nvic.html" class="nav-item">3 · Interrupts &amp; the NVIC</a>
+        <a href="dma.html" class="nav-item">4 · DMA</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Peripherals</div>
+        <a href="gpio.html" class="nav-item">5 · GPIO</a>
+        <a href="timers-pwm.html" class="nav-item">6 · Timers &amp; PWM</a>
+        <a href="adc-dac.html" class="nav-item">7 · ADC &amp; DAC</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Protocols</div>
+        <a href="uart.html" class="nav-item">8 · UART</a>
+        <a href="spi.html" class="nav-item">9 · SPI</a>
+        <a href="i2c.html" class="nav-item">10 · I2C</a>
+        <a href="can.html" class="nav-item">11 · CAN Bus</a>
+        <a href="usb.html" class="nav-item">12 · USB Fundamentals</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Firmware</div>
+        <a href="bare-metal.html" class="nav-item">13 · Bare-Metal Patterns</a>
+        <a href="rtos.html" class="nav-item">14 · RTOS Concepts</a>
+        <a href="debug.html" class="nav-item">15 · Debugging &amp; Test</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">PCB Design</div>
+        <a href="layout.html" class="nav-item">16 · Layout Fundamentals</a>
+        <a href="mixed-signal.html" class="nav-item">17 · Mixed-Signal Layout</a>
+        <a href="power-thermal.html" class="nav-item">18 · Power &amp; Thermal</a>
+        <a href="high-speed-rf.html" class="nav-item active">19 · High-Speed &amp; RF</a>
+      </div>
+
+      <hr class="sidebar-rule">
+
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#transmission-lines" class="nav-item">Transmission lines</a>
+        <a href="#microstrip-stripline" class="nav-item">Microstrip vs stripline</a>
+        <a href="#differential-pairs" class="nav-item">Differential pairs</a>
+        <a href="#usb-layout" class="nav-item">USB layout rules</a>
+        <a href="#antennas" class="nav-item">PCB antennas</a>
+        <a href="#rf-keepouts" class="nav-item">RF keepouts</a>
+        <a href="#matching" class="nav-item">Matching networks</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Embedded Systems</a>
+        <span class="sep">›</span>
+        <span>19 · High-Speed &amp; RF</span>
+      </div>
+
+      <div class="lesson-title">19 · High-Speed &amp; RF</div>
+      <div class="lesson-meta">Transmission Lines · Controlled Impedance · Differential Pairs · Antennas · Matching Networks</div>
+
+      <div class="prose">
+        At low frequencies, a PCB trace is just a conductor. At high frequencies,
+        it is a transmission line — and the distinction matters enormously. A signal
+        transition that would be clean on a 100 kHz bus becomes distorted by
+        reflections, radiation, and signal integrity violations at 100 MHz and above.
+        Understanding transmission line behaviour, controlled impedance, and RF
+        antenna coupling transforms what seems like "black magic" into predictable
+        physics.
+      </div>
+
+      <hr class="lesson-rule">
+
+      <!-- ── Transmission Lines ─────────────────────────────── -->
+      <div class="section-head" id="transmission-lines">Transmission Lines</div>
+
+      <div class="prose">
+        The rule of thumb for when a trace behaves as a transmission line:
+        when the trace length exceeds λ/10 at the signal's highest significant
+        frequency, transmission-line effects are important.
+      </div>
+
+      <div class="code-block"><pre>/* Signal velocity in FR4 PCB traces:
+ *   v = c / √εr_eff
+ *   For microstrip on FR4: εr_eff ≈ (εr + 1) / 2 ≈ (4.3 + 1) / 2 ≈ 2.65
+ *   v = 3e8 / √2.65 ≈ 1.84e8 m/s  (~0.6c)
+ *
+ * Wavelength at frequency f:
+ *   λ = v / f
+ *
+ * λ/10 threshold (trace should be treated as T-line if longer):
+ *   At  100 MHz: λ/10 = 1.84e8 / (100e6 × 10) = 184 mm — long traces only
+ *   At  500 MHz: λ/10 = 1.84e8 / (500e6 × 10) =  37 mm — many traces qualify
+ *   At 2.4 GHz: λ/10 = 1.84e8 / (2.4e9 × 10)  =   8 mm — almost all traces
+ *
+ * USB full-speed (12 Mbps) has harmonics to ~60 MHz → λ/10 ≈ 300 mm
+ *   (most USB traces are fine without length matching at FS)
+ * USB high-speed (480 Mbps) has harmonics to ~2.4 GHz → λ/10 ≈ 8 mm
+ *   (requires controlled impedance and length matching)
+ */</pre></div>
+
+      <div class="prose">
+        The characteristic impedance Z₀ of a transmission line depends on the
+        geometry — trace width, dielectric thickness, and dielectric constant.
+        When the source impedance matches Z₀ matches the load impedance, energy
+        transfers completely. When there is a mismatch, the reflection coefficient is:
+      </div>
+
+      <div class="code-block"><pre>Γ = (Z_L - Z₀) / (Z_L + Z₀)
+
+/* Examples:
+ * Z₀ = 50 Ω (trace), Z_L = open circuit → Γ = +1 → full reflection, same polarity
+ * Z₀ = 50 Ω (trace), Z_L = short circuit → Γ = -1 → full reflection, inverted
+ * Z₀ = 50 Ω (trace), Z_L = 50 Ω          → Γ = 0  → no reflection
+ * Z₀ = 50 Ω (trace), Z_L = CMOS input (~pF) → Z_L ≈ 1/jωC → high → Γ ≈ +1
+ *
+ * At a series stub or via: the signal sees a sudden impedance discontinuity.
+ * A via adds ~0.5–1 nH; at 2.4 GHz that's 7–15 Ω extra inductance.
+ */</pre></div>
+
+      <!-- ── Microstrip vs Stripline ─────────────────────────── -->
+      <div class="section-head" id="microstrip-stripline">Microstrip vs Stripline</div>
+
+      <!-- Cross-section SVG -->
+      <svg viewBox="0 0 620 230" xmlns="http://www.w3.org/2000/svg"
+           style="width:100%;max-width:620px;display:block;margin:20px auto 8px;">
+        <rect width="620" height="230" fill="#f5f5f2" rx="6"/>
+
+        <!-- ── MICROSTRIP ── -->
+        <text x="150" y="22" text-anchor="middle" fill="#1a2840" font-family="IBM Plex Sans" font-size="13" font-weight="600">Microstrip</text>
+        <text x="150" y="37" text-anchor="middle" fill="#5a7a9a" font-family="IBM Plex Sans" font-size="10">(outer layer, partial air dielectric)</text>
+
+        <!-- Air above -->
+        <rect x="30" y="42" width="240" height="28" rx="2" fill="#f0f8ff" opacity="0.6"/>
+        <text x="150" y="60" text-anchor="middle" fill="#8ab0c0" font-family="IBM Plex Sans" font-size="10" font-style="italic">air (εr = 1)</text>
+
+        <!-- Signal trace -->
+        <rect x="110" y="62" width="80" height="10" rx="2" fill="#c8a020" opacity="0.9"/>
+        <text x="150" y="59" text-anchor="middle" fill="#7a5010" font-family="IBM Plex Mono" font-size="9">w</text>
+        <line x1="110" y1="55" x2="110" y2="62" stroke="#7a5010" stroke-width="1" stroke-dasharray="2,2"/>
+        <line x1="190" y1="55" x2="190" y2="62" stroke="#7a5010" stroke-width="1" stroke-dasharray="2,2"/>
+
+        <!-- FR4 dielectric -->
+        <rect x="30" y="72" width="240" height="60" rx="0" fill="#e0dac0" opacity="0.6"/>
+        <text x="150" y="106" text-anchor="middle" fill="#5a5020" font-family="IBM Plex Sans" font-size="10" font-style="italic">FR4 substrate (εr ≈ 4.3)</text>
+        <!-- h dimension -->
+        <line x1="270" y1="72" x2="270" y2="132" stroke="#5a5020" stroke-width="1"/>
+        <line x1="265" y1="72" x2="275" y2="72" stroke="#5a5020" stroke-width="1"/>
+        <line x1="265" y1="132" x2="275" y2="132" stroke="#5a5020" stroke-width="1"/>
+        <text x="280" y="105" fill="#5a5020" font-family="IBM Plex Mono" font-size="9">h</text>
+
+        <!-- GND plane -->
+        <rect x="30" y="132" width="240" height="14" rx="2" fill="#40a060" opacity="0.7"/>
+        <text x="150" y="143" text-anchor="middle" fill="white" font-family="IBM Plex Mono" font-size="9">GND plane</text>
+
+        <!-- Z0 formula -->
+        <text x="150" y="170" text-anchor="middle" fill="#1a2840" font-family="IBM Plex Mono" font-size="10">Z₀ ≈ 87/√(εr+1.41) × ln(5.98h/(0.8w+t))</text>
+        <text x="150" y="185" text-anchor="middle" fill="#5a7a9a" font-family="IBM Plex Sans" font-size="10">Field partly in air → effective εr lower → faster propagation</text>
+
+        <!-- ── STRIPLINE ── -->
+        <text x="460" y="22" text-anchor="middle" fill="#1a2840" font-family="IBM Plex Sans" font-size="13" font-weight="600">Stripline</text>
+        <text x="460" y="37" text-anchor="middle" fill="#5a7a9a" font-family="IBM Plex Sans" font-size="10">(inner layer, full FR4 dielectric)</text>
+
+        <!-- Top GND plane -->
+        <rect x="340" y="42" width="240" height="14" rx="2" fill="#40a060" opacity="0.7"/>
+        <text x="460" y="53" text-anchor="middle" fill="white" font-family="IBM Plex Mono" font-size="9">GND plane (L2)</text>
+
+        <!-- FR4 top half -->
+        <rect x="340" y="56" width="240" height="36" rx="0" fill="#e0dac0" opacity="0.6"/>
+
+        <!-- Signal trace (buried) -->
+        <rect x="420" y="84" width="80" height="10" rx="2" fill="#c8a020" opacity="0.9"/>
+        <text x="460" y="81" text-anchor="middle" fill="#7a5010" font-family="IBM Plex Mono" font-size="9">w</text>
+
+        <!-- FR4 bottom half -->
+        <rect x="340" y="94" width="240" height="36" rx="0" fill="#e0dac0" opacity="0.6"/>
+        <text x="460" y="120" text-anchor="middle" fill="#5a5020" font-family="IBM Plex Sans" font-size="10" font-style="italic">FR4 (εr ≈ 4.3)</text>
+
+        <!-- Bottom GND plane -->
+        <rect x="340" y="130" width="240" height="14" rx="2" fill="#40a060" opacity="0.7"/>
+        <text x="460" y="141" text-anchor="middle" fill="white" font-family="IBM Plex Mono" font-size="9">GND plane (L3)</text>
+
+        <!-- Advantages -->
+        <text x="340" y="170" fill="#2a5a30" font-family="IBM Plex Sans" font-size="10">✓ Field fully enclosed → no radiation</text>
+        <text x="340" y="185" fill="#2a5a30" font-family="IBM Plex Sans" font-size="10">✓ Shielded by reference planes</text>
+        <text x="340" y="200" fill="#c05050" font-family="IBM Plex Sans" font-size="10">✗ Harder to test with probe, wider traces</text>
+
+        <!-- Divider -->
+        <line x1="310" y1="18" x2="310" y2="215" stroke="#d0d8e0" stroke-width="1" stroke-dasharray="4,3"/>
+      </svg>
+      <div class="prose" style="font-size:12.5px;color:#5a6a7a;text-align:center;margin-top:0;margin-bottom:20px;">
+        Microstrip (outer layer, partially in air) is the default for most PCB signal traces. Stripline (inner layer, between two reference planes) provides better isolation from adjacent noise and reduced radiation.
+      </div>
+
+      <div class="prose">
+        For the EFR32 and most embedded MCUs, the RF trace from the IC to the
+        antenna connector or antenna is a 50 Ω microstrip. On a standard 4-layer
+        board with 100–200 µm dielectric between L1 (signal) and L2 (GND):
+        a 50 Ω microstrip trace is approximately 0.18–0.30 mm wide, depending on
+        exact stackup. Always use the PCB manufacturer's impedance calculator
+        or a tool like Saturn PCB Design, as FR4 εr varies ±10% across
+        manufacturers and even within a batch.
+      </div>
+
+      <!-- ── Differential Pairs ─────────────────────────────── -->
+      <div class="section-head" id="differential-pairs">Differential Pairs</div>
+
+      <div class="prose">
+        Differential signalling transmits data as the voltage difference between
+        two traces (V+ − V−) rather than a single trace referenced to GND.
+        The advantage: any noise that couples into both traces equally
+        (common-mode noise) is cancelled at the receiver. This makes differential
+        interfaces (USB, Ethernet, LVDS, CAN) substantially more immune to noise
+        and able to tolerate ground potential differences between communicating nodes.
+      </div>
+
+      <div class="prose">
+        Differential pair layout rules:
+      </div>
+
+      <ul class="prose" style="margin-top:0; padding-left:1.4em;">
+        <li style="margin-bottom:7px;"><strong>Route as a matched pair.</strong>
+          The two traces must be the same width, the same copper weight, and as
+          close to the same physical length as possible. Any length difference
+          creates a skew between the two signals, converting common-mode noise into
+          differential noise and degrading timing.</li>
+        <li style="margin-bottom:7px;"><strong>Keep traces close together.</strong>
+          Tight coupling between the + and − traces means they pick up nearly
+          identical noise, which cancels at the receiver. Typical gap: 0.1–0.2 mm
+          (matching the trace width). Do not separate the pair to route around an
+          obstacle — route the obstacle around the pair.</li>
+        <li style="margin-bottom:7px;"><strong>Length-match to within spec.</strong>
+          USB 2.0 high-speed: maximum 100 ps skew ≈ 18 mm at 1.84e8 m/s in FR4.
+          In practice, keep within 5 mm for most designs. Use meandering on the
+          shorter trace to equalise length rather than lengthening both.</li>
+        <li style="margin-bottom:7px;"><strong>Avoid vias in the differential pair.</strong>
+          Each via adds ~0.5–1 nH of inductance and a capacitive discontinuity.
+          If a layer change is unavoidable, add a via to both traces simultaneously
+          (never one alone), and place GND vias on either side.</li>
+        <li style="margin-bottom:7px;"><strong>Differential impedance Z_diff = 2 × Z_single × (1 − coupling).</strong>
+          For tightly coupled traces, Z_diff is somewhat lower than 2 × Z_single.
+          USB requires 90 Ω differential (±15%); Ethernet 100 Ω differential.
+          PCB stack-up calculators handle this — specify the differential impedance
+          target, not just single-ended.</li>
+      </ul>
+
+      <!-- ── USB Layout Rules ───────────────────────────────── -->
+      <div class="section-head" id="usb-layout">USB Layout Rules</div>
+
+      <div class="prose">
+        USB is the most common high-speed differential interface on embedded
+        boards. The layout rules differ by USB speed:
+      </div>
+
+      <div class="prose">
+        <strong>USB Full-Speed (12 Mbps).</strong>
+        Frequencies are below 100 MHz. Controlled impedance is recommended but
+        not strictly required for short traces (&lt;50 mm). Keep D+ and D− as a
+        matched pair, away from clocks and switching supplies. Series resistors
+        (27–33 Ω) near the MCU are standard for FS — they damp reflections.
+      </div>
+
+      <div class="prose">
+        <strong>USB High-Speed (480 Mbps).</strong>
+        This requires full controlled impedance (90 Ω differential), careful
+        length matching (within 5 mm), no vias in the data pair if possible,
+        and routing entirely within the top signal layer with GND plane on L2.
+        The USB spec allows a maximum of 18 mm length skew between D+ and D−;
+        in practice design for ≤5 mm.
+      </div>
+
+      <div class="code-block"><pre>/* USB HS routing checklist:
+ * ✓ D+ and D− routed as differential pair, 90 Ω differential
+ * ✓ Trace width and gap sized for 90 Ω diff (verify with calculator)
+ * ✓ Length mismatch < 5 mm (meander the shorter trace)
+ * ✓ No vias in differential pair
+ * ✓ Solid GND plane directly under the pair (no slots)
+ * ✓ Series 22 Ω resistors on D+/D− close to the MCU pad (not the connector)
+ * ✓ ESD protection IC (TVS diode array) as close to the connector as possible
+ * ✓ Place ESD protection IC before the series resistors in signal path:
+ *   Connector → ESD TVS → 22 Ω series → MCU
+ * ✗ Do not route USB pair parallel to clock or switching regulator traces
+ * ✗ Do not split GND plane under the USB pair
+ */</pre></div>
+
+      <!-- ── PCB Antennas ─────────────────────────────────────── -->
+      <div class="section-head" id="antennas">PCB Antennas</div>
+
+      <div class="prose">
+        For the EFR32 family (Bluetooth, Zigbee, Thread, Wi-Fi), the RF output
+        drives either a U.FL/SMA connector for an external antenna, or a PCB
+        antenna fabricated in copper on the board itself. PCB antennas eliminate
+        the cost and reliability issues of connectors, at the expense of
+        layout constraints.
+      </div>
+
+      <div class="prose">
+        <strong>Chip antenna.</strong>
+        A pre-tuned ceramic resonator in a small package (0402 or 0603).
+        Low-cost, compact, and consistent. Placement requirements: the chip
+        antenna must be at the board edge with no copper (ground plane, power
+        pour, or other traces) within a specified clearance zone — typically
+        3–7 mm on each side and below the antenna, as specified in the antenna
+        datasheet. Silicon Labs reference designs specify chip antenna placement
+        precisely for the EFR32.
+      </div>
+
+      <div class="prose">
+        <strong>Inverted-F antenna (IFA).</strong>
+        The most common PCB trace antenna for 2.4 GHz. It consists of a
+        horizontal radiating element (approximately λ/4 long), a shorting strip
+        connecting the element to the ground plane, and a feed point where the
+        50 Ω RF trace connects. The name comes from its cross-section resembling
+        an inverted letter F.
+      </div>
+
+      <!-- Inverted-F antenna SVG -->
+      <svg viewBox="0 0 560 220" xmlns="http://www.w3.org/2000/svg"
+           style="width:100%;max-width:560px;display:block;margin:20px auto 8px;">
+        <rect width="560" height="220" fill="#f5f5f2" rx="6"/>
+
+        <!-- Board outline -->
+        <rect x="20" y="20" width="520" height="180" rx="5" fill="white" stroke="#c0c8d0" stroke-width="1.5"/>
+
+        <!-- Ground plane (covers most of the board) -->
+        <rect x="30" y="30" width="520" height="160" rx="4" fill="#40a060" opacity="0.15" stroke="#40a060" stroke-width="1" stroke-dasharray="4,3"/>
+        <text x="200" y="175" text-anchor="middle" fill="#2a6040" font-family="IBM Plex Mono" font-size="9">GND pour</text>
+
+        <!-- RF keepout (cleared zone near antenna) -->
+        <rect x="340" y="30" width="200" height="160" rx="4" fill="white" stroke="#c05050" stroke-width="1.5" stroke-dasharray="5,3"/>
+        <text x="440" y="180" text-anchor="middle" fill="#c05050" font-family="IBM Plex Sans" font-size="9" font-weight="600">RF keepout (no copper)</text>
+
+        <!-- Ground edge -->
+        <line x1="340" y1="150" x2="30" y2="150" stroke="#40a060" stroke-width="4"/>
+        <text x="185" y="145" text-anchor="middle" fill="#1a4020" font-family="IBM Plex Mono" font-size="9">ground plane edge</text>
+
+        <!-- IFA: horizontal radiating element -->
+        <line x1="360" y1="70" x2="530" y2="70" stroke="#c8a020" stroke-width="4"/>
+        <text x="445" y="62" text-anchor="middle" fill="#7a5010" font-family="IBM Plex Sans" font-size="10" font-weight="600">radiating element ≈ λ/4 ≈ 30 mm at 2.4 GHz</text>
+
+        <!-- IFA: shorting strip (connects element to GND plane at left) -->
+        <line x1="360" y1="70" x2="360" y2="150" stroke="#c8a020" stroke-width="4"/>
+        <text x="345" y="115" text-anchor="end" fill="#7a5010" font-family="IBM Plex Sans" font-size="9">shorting strip</text>
+
+        <!-- IFA: feed point (50 Ω trace connects here) -->
+        <circle cx="400" cy="150" r="5" fill="#c8a020" stroke="#7a5010" stroke-width="1.5"/>
+        <line x1="400" y1="70" x2="400" y2="150" stroke="#7a5010" stroke-width="1.5" stroke-dasharray="3,2"/>
+        <text x="410" y="115" fill="#7a5010" font-family="IBM Plex Sans" font-size="9">feed point</text>
+        <text x="410" y="127" fill="#9a7020" font-family="IBM Plex Mono" font-size="8">~50 Ω tap</text>
+
+        <!-- 50 Ω RF feed trace from MCU -->
+        <line x1="200" y1="150" x2="400" y2="150" stroke="#3a6a8a" stroke-width="2"/>
+        <text x="300" y="143" text-anchor="middle" fill="#1a3870" font-family="IBM Plex Mono" font-size="9">50 Ω microstrip</text>
+
+        <!-- MCU box -->
+        <rect x="80" y="110" width="80" height="55" rx="5" fill="white" stroke="#3a6a8a" stroke-width="1.5"/>
+        <text x="120" y="140" text-anchor="middle" fill="#1a2840" font-family="IBM Plex Sans" font-size="11" font-weight="600">EFR32</text>
+
+        <!-- Matching network -->
+        <rect x="165" y="138" width="32" height="24" rx="4" fill="#fdf0e0" stroke="#c8a020" stroke-width="1.5"/>
+        <text x="181" y="153" text-anchor="middle" fill="#7a5010" font-family="IBM Plex Sans" font-size="8">Match</text>
+
+        <!-- Dimension annotation -->
+        <line x1="360" y1="65" x2="530" y2="65" stroke="#7a5010" stroke-width="1"/>
+        <line x1="360" y1="61" x2="360" y2="69" stroke="#7a5010" stroke-width="1"/>
+        <line x1="530" y1="61" x2="530" y2="69" stroke="#7a5010" stroke-width="1"/>
+      </svg>
+      <div class="prose" style="font-size:12.5px;color:#5a6a7a;text-align:center;margin-top:0;margin-bottom:20px;">
+        Inverted-F antenna: the radiating element (~λ/4 long), a shorting strip to GND, and a 50 Ω feed tap. The entire structure sits in a copper-free keepout zone at the board edge.
+      </div>
+
+      <div class="prose">
+        At 2.4 GHz, λ/4 in free space is 31 mm. On a PCB, the element is slightly
+        shorter because it rides over the board substrate, which increases the
+        effective dielectric constant and shortens the resonant length. Typically
+        the element length needs tuning by adjusting length and the position of
+        the shorting strip. Silicon Labs provides reference designs and Simplicity
+        Studio antenna models that are pre-tuned for the EFR32 footprint.
+      </div>
+
+      <!-- ── RF Keepouts ─────────────────────────────────────── -->
+      <div class="section-head" id="rf-keepouts">RF Keepouts</div>
+
+      <div class="prose">
+        The RF keepout is the single most violated antenna layout rule by first-time
+        designers. An antenna that radiates well in free space radiates poorly when
+        surrounded by copper — the nearby copper changes the antenna's resonant
+        frequency, reduces its radiation efficiency, and alters its radiation
+        pattern.
+      </div>
+
+      <ul class="prose" style="margin-top:0; padding-left:1.4em;">
+        <li style="margin-bottom:6px;"><strong>Keepout zone dimensions.</strong>
+          Follow the antenna manufacturer's application note or the EFR32 reference
+          design exactly. For a typical 2.4 GHz chip antenna: no copper within
+          4–7 mm on the sides, 3–5 mm below, and the area directly in front of
+          (or below) the radiating element must be completely copper-free on all
+          layers.</li>
+        <li style="margin-bottom:6px;"><strong>Keepout applies to ALL copper on ALL layers.</strong>
+          The ground plane must be pulled back. The power plane must be pulled back.
+          Even GND via stitching must not enter the keepout zone. A GND via 2 mm
+          from a chip antenna can detune it by tens of MHz.</li>
+        <li style="margin-bottom:6px;"><strong>The antenna must be at the board edge.</strong>
+          Placing the antenna in the center of the board forces keepout in all
+          directions, wasting board area and limiting routing. At the board edge,
+          copper is only present on three sides instead of four.</li>
+        <li style="margin-bottom:6px;"><strong>Enclosures affect antenna tuning.</strong>
+          A plastic enclosure (εr ≈ 2–4) placed over the antenna shifts its
+          resonant frequency downward. If the product will live in an enclosure,
+          retune the antenna with the enclosure present. Metal enclosures require
+          a slot or window for the antenna.</li>
+      </ul>
+
+      <!-- ── Matching Networks ───────────────────────────────── -->
+      <div class="section-head" id="matching">Matching Networks</div>
+
+      <div class="prose">
+        The EFR32's RF output pin has 50 Ω source impedance. Most antennas present
+        an impedance close to 50 Ω when correctly sized and tuned — but never
+        exactly 50 Ω due to manufacturing variation, nearby components, and
+        enclosure effects. A <strong>matching network</strong> is a network of
+        inductors and capacitors placed between the RF output and the antenna to
+        transform the antenna's actual impedance to 50 Ω at the operating
+        frequency, maximising power transfer and minimising reflections.
+      </div>
+
+      <div class="prose">
+        The standard topology is a <strong>π network</strong> (shunt-series-shunt)
+        or <strong>L network</strong> (series-shunt). The component values are
+        calculated from the load impedance using a Smith chart or an RF calculator
+        (Murata SimSurfing, Keysight ADS, Qorvo Match.ly).
+      </div>
+
+      <div class="code-block"><pre>/* EFR32 RF output to PCB antenna — typical matching network:
+ *
+ *   RF_PIN ─── L1 ─── ANT
+ *                |
+ *               C1
+ *                |
+ *               GND
+ *
+ * Component placement rules:
+ * 1. L1 and C1 go between the RF pin and the antenna, as close to the
+ *    RF pin as possible (ideally <3 mm from the pad).
+ * 2. The GND via for C1 must be as short as possible — a long GND stub
+ *    adds inductance that shifts the match point.
+ * 3. Route the 50 Ω trace straight from the RF pin to the match network,
+ *    then from the match network to the antenna — no bends, no vias.
+ * 4. Keep the matching network away from the antenna keepout zone —
+ *    it should be on the GND plane side of the RF trace, not in the
+ *    keepout zone.
+ * 5. Leave room for a 0 Ω shunt and series options in the footprint for
+ *    tuning during bring-up (π topology provides this flexibility).
+ *
+ * The EFR32 datasheet and AN0715 (EFR32 RF Hardware Design) provide
+ * recommended component values for specific antenna configurations.
+ */</pre></div>
+
+      <div class="prose">
+        Measuring the matching network's effect requires a Vector Network Analyser
+        (VNA) to measure S11 (return loss) at the RF pin. A well-matched antenna
+        at 2.4 GHz shows S11 &lt; −10 dB (less than 10% of power reflected back).
+        If this is not available, a spectrum analyser with a directional coupler
+        can give a rough indication. For most EFR32 designs following a reference
+        design layout closely, the default matching component values work without
+        adjustment.
+      </div>
+
+      <div class="callout">
+        <strong>Start from a validated reference design.</strong>
+        For the EFR32 family, Silicon Labs provides reference schematics and layouts
+        in Simplicity Studio and on the Silicon Labs website. These are tuned,
+        RF-characterised designs. Unless there is a compelling reason to deviate,
+        replicate the reference layout for the RF section exactly — especially the
+        keepout dimensions, matching network placement, and RF trace routing.
+        RF design has many subtle variables; reducing unknowns with a proven
+        starting point is always the right call.
+      </div>
+
+      <hr class="lesson-rule">
+
+      <div class="lesson-nav">
+        <a href="power-thermal.html" class="lesson-nav-btn">← 18 · Power &amp; Thermal</a>
+        <a href="index.html" class="lesson-nav-btn">↑ Embedded Systems Index</a>
+      </div>
+
+    </div><!-- /main -->
+
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+</body>
+</html>
