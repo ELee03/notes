@@ -28,6 +28,14 @@ Last updated: 2026-05-28
 
 ## Completed This Session
 
+- [x] **Mermaid batch 2** — replaced 3 more SVGs:
+  - `rtos.html` — Task state machine (`stateDiagram-v2`, LR; Running/Ready/Blocked/Suspended with `classDef`)
+  - `usb.html` — USB enumeration sequence (`sequenceDiagram`, HOST↔DEVICE, 11 messages + Note)
+  - `usb.html` — Descriptor hierarchy tree (`flowchart TD`; blue/green/amber `classDef` by level)
+  - Mermaid CDN added to rtos.html and usb.html heads
+  - All changes pushed in commit ca0559e
+  - Visual verification: all 3 diagrams confirmed rendering in Chrome
+
 - [x] **Mermaid batch 1** — replaced 3 SVG state/flow diagrams with Mermaid:
   - `mcu-architecture.html` — Processor mode state machine (`stateDiagram-v2`, LR, Handler Mode amber `classDef`)
   - `mcu-architecture.html` — Reset startup flow (`flowchart TD`, stadium RESET, color-coded steps)
