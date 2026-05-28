@@ -117,18 +117,96 @@
         The distinction matters whenever multiple devices share a wire.
       </div>
 
-      <!-- push-pull vs open-drain: schemdraw-generated SVGs -->
+      <!-- push-pull vs open-drain: hand-coded inline SVG -->
       <div style="display:flex;justify-content:center;gap:56px;margin:24px auto;flex-wrap:wrap;align-items:flex-start;">
+
+        <!-- ── Push-pull ── -->
         <div style="text-align:center;">
           <div style="font-weight:600;font-size:13px;color:#1a2840;margin-bottom:8px;">Push-pull</div>
-          <img src="_gpio_pushpull.svg" style="max-width:260px;width:100%;display:block;margin:0 auto;" alt="Push-pull output circuit: PMOS and NMOS in series between VDD and GND">
+          <svg viewBox="0 0 240 178" style="max-width:240px;width:100%;display:block;margin:0 auto;" role="img" aria-label="Push-pull output circuit: PMOS and NMOS in series, both gates driven by DATA_OUT">
+            <!-- VDD -->
+            <text x="130" y="13" font-family="IBM Plex Mono,monospace" font-size="10" fill="#5a6a7a" text-anchor="middle">VDD</text>
+            <!-- Continuous source-drain axis -->
+            <line x1="130" y1="15" x2="130" y2="158" stroke="#1a2840" stroke-width="2"/>
+            <!-- PMOS: gate bar -->
+            <line x1="118" y1="44" x2="118" y2="72" stroke="#1a2840" stroke-width="2.5"/>
+            <!-- PMOS: source stub (top, near VDD) -->
+            <line x1="123" y1="48" x2="130" y2="48" stroke="#1a2840" stroke-width="1.5"/>
+            <!-- PMOS: drain stub (bottom, toward output) -->
+            <line x1="123" y1="68" x2="130" y2="68" stroke="#1a2840" stroke-width="1.5"/>
+            <!-- PMOS: gate lead + inversion circle (PMOS active-low convention) -->
+            <line x1="88" y1="58" x2="118" y2="58" stroke="#1a2840" stroke-width="1.5"/>
+            <circle cx="115" cy="58" r="3" fill="none" stroke="#1a2840" stroke-width="1.5"/>
+            <text x="83" y="61.5" font-family="IBM Plex Mono,monospace" font-size="9" fill="#3a6a8a" text-anchor="end">P</text>
+            <!-- PIN output tap at mid-node -->
+            <circle cx="130" cy="93" r="3" fill="#1a2840"/>
+            <line x1="130" y1="93" x2="207" y2="93" stroke="#1a2840" stroke-width="2"/>
+            <text x="215" y="97" font-family="IBM Plex Mono,monospace" font-size="10" fill="#3a6a8a">PIN</text>
+            <!-- NMOS: gate bar -->
+            <line x1="118" y1="114" x2="118" y2="142" stroke="#1a2840" stroke-width="2.5"/>
+            <!-- NMOS: drain stub (top, from output) -->
+            <line x1="123" y1="118" x2="130" y2="118" stroke="#1a2840" stroke-width="1.5"/>
+            <!-- NMOS: source stub (bottom, toward GND) -->
+            <line x1="123" y1="138" x2="130" y2="138" stroke="#1a2840" stroke-width="1.5"/>
+            <!-- NMOS: gate lead -->
+            <line x1="88" y1="128" x2="118" y2="128" stroke="#1a2840" stroke-width="1.5"/>
+            <text x="83" y="131.5" font-family="IBM Plex Mono,monospace" font-size="9" fill="#3a6a8a" text-anchor="end">N</text>
+            <!-- GND symbol -->
+            <line x1="114" y1="158" x2="146" y2="158" stroke="#1a2840" stroke-width="2"/>
+            <line x1="119" y1="163" x2="141" y2="163" stroke="#1a2840" stroke-width="1.5"/>
+            <line x1="124" y1="168" x2="136" y2="168" stroke="#1a2840" stroke-width="1"/>
+            <!-- Gate bus: vertical, connects both gate leads -->
+            <line x1="88" y1="58" x2="88" y2="128" stroke="#3a6a8a" stroke-width="1.5"/>
+            <!-- T-junction dot where DATA_OUT meets the bus -->
+            <circle cx="88" cy="93" r="2.5" fill="#3a6a8a"/>
+            <!-- DATA_OUT register block -->
+            <rect x="8" y="84" width="62" height="18" rx="3" fill="#eef4f8" stroke="#7ab8d4" stroke-width="1"/>
+            <text x="39" y="96.5" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#1a2840" text-anchor="middle">DATA_OUT</text>
+            <line x1="70" y1="93" x2="88" y2="93" stroke="#7ab8d4" stroke-width="1.5"/>
+          </svg>
           <div style="font-size:11px;color:#5a6a7a;margin-top:10px;">Actively drives HIGH and LOW.<br>Two PP outputs cannot share a wire.</div>
         </div>
+
+        <!-- ── Open-drain ── -->
         <div style="text-align:center;">
           <div style="font-weight:600;font-size:13px;color:#1a2840;margin-bottom:8px;">Open-drain</div>
-          <img src="_gpio_opendrain.svg" style="max-width:190px;width:100%;display:block;margin:0 auto;" alt="Open-drain output circuit: NMOS only with external pull-up resistor">
+          <svg viewBox="0 0 210 170" style="max-width:200px;width:100%;display:block;margin:0 auto;" role="img" aria-label="Open-drain output circuit: NMOS only with external pull-up resistor to VDD">
+            <!-- VDD -->
+            <text x="100" y="13" font-family="IBM Plex Mono,monospace" font-size="10" fill="#5a6a7a" text-anchor="middle">VDD</text>
+            <!-- VDD wire to resistor -->
+            <line x1="100" y1="15" x2="100" y2="30" stroke="#1a2840" stroke-width="2"/>
+            <!-- Pull-up resistor (box symbol) -->
+            <rect x="88" y="30" width="24" height="36" rx="3" fill="#f5f5f2" stroke="#c8a020" stroke-width="1.5"/>
+            <text x="115" y="45" font-family="IBM Plex Mono,monospace" font-size="9" fill="#c8a020">R</text>
+            <text x="119" y="50" font-family="IBM Plex Mono,monospace" font-size="7" fill="#c8a020">pu</text>
+            <!-- Wire from resistor to PIN node -->
+            <line x1="100" y1="66" x2="100" y2="83" stroke="#1a2840" stroke-width="2"/>
+            <!-- PIN node -->
+            <circle cx="100" cy="83" r="3" fill="#1a2840"/>
+            <line x1="100" y1="83" x2="178" y2="83" stroke="#1a2840" stroke-width="2"/>
+            <text x="186" y="87" font-family="IBM Plex Mono,monospace" font-size="10" fill="#3a6a8a">PIN</text>
+            <!-- Source-drain axis from PIN node to GND -->
+            <line x1="100" y1="83" x2="100" y2="150" stroke="#1a2840" stroke-width="2"/>
+            <!-- NMOS: gate bar -->
+            <line x1="88" y1="91" x2="88" y2="119" stroke="#1a2840" stroke-width="2.5"/>
+            <!-- NMOS: drain stub (top) -->
+            <line x1="93" y1="95" x2="100" y2="95" stroke="#1a2840" stroke-width="1.5"/>
+            <!-- NMOS: source stub (bottom) -->
+            <line x1="93" y1="115" x2="100" y2="115" stroke="#1a2840" stroke-width="1.5"/>
+            <!-- NMOS: gate lead (starts at DATA_OUT box right edge x=46) -->
+            <line x1="46" y1="105" x2="88" y2="105" stroke="#1a2840" stroke-width="1.5"/>
+            <text x="83" y="108.5" font-family="IBM Plex Mono,monospace" font-size="9" fill="#3a6a8a" text-anchor="end">N</text>
+            <!-- GND symbol -->
+            <line x1="86" y1="150" x2="114" y2="150" stroke="#1a2840" stroke-width="2"/>
+            <line x1="91" y1="155" x2="109" y2="155" stroke="#1a2840" stroke-width="1.5"/>
+            <line x1="96" y1="160" x2="104" y2="160" stroke="#1a2840" stroke-width="1"/>
+            <!-- DATA_OUT register block (right edge meets gate lead at x=46) -->
+            <rect x="2" y="96" width="44" height="18" rx="3" fill="#eef4f8" stroke="#7ab8d4" stroke-width="1"/>
+            <text x="24" y="108.5" font-family="IBM Plex Mono,monospace" font-size="7.5" fill="#1a2840" text-anchor="middle">DATA_OUT</text>
+          </svg>
           <div style="font-size:11px;color:#5a6a7a;margin-top:10px;">Drives LOW only; floats HIGH via R<sub>pu</sub>.<br>Multiple OD outputs can share a wire.</div>
         </div>
+
       </div>
       <div style="text-align:center;font-size:12px;color:#9aabb8;margin-bottom:24px;">Push-pull uses both P- and N-FETs; open-drain uses only an N-FET with an external pull-up resistor.</div>
 
