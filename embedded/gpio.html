@@ -137,9 +137,9 @@
         <!-- body symbol -->
         <line x1="190" y1="48" x2="190" y2="80" stroke="#1a2840" stroke-width="2"/>
         <line x1="178" y1="52" x2="178" y2="76" stroke="#1a2840" stroke-width="2.5"/> <!-- gate bar -->
-        <line x1="178" y1="52" x2="160" y2="52" stroke="#1a2840" stroke-width="1.5"/>  <!-- gate lead -->
-        <line x1="190" y1="56" x2="178" y2="56" stroke="#1a2840" stroke-width="1.5"/>  <!-- S connection -->
-        <line x1="190" y1="72" x2="178" y2="72" stroke="#1a2840" stroke-width="1.5"/>  <!-- D connection -->
+        <line x1="178" y1="64" x2="160" y2="64" stroke="#1a2840" stroke-width="1.5"/>  <!-- gate lead (mid-gate) -->
+        <line x1="190" y1="56" x2="183" y2="56" stroke="#1a2840" stroke-width="1.5"/>  <!-- S stub (gap before gate bar) -->
+        <line x1="190" y1="72" x2="183" y2="72" stroke="#1a2840" stroke-width="1.5"/>  <!-- D stub (gap before gate bar) -->
         <!-- P-FET label -->
         <text x="148" y="65" font-family="IBM Plex Mono,monospace" font-size="9" fill="#3a6a8a" text-anchor="middle">P</text>
         <!-- circle for inversion at gate (PMOS) -->
@@ -151,9 +151,9 @@
         <!-- N-FET (bottom) -->
         <line x1="190" y1="110" x2="190" y2="145" stroke="#1a2840" stroke-width="2"/>
         <line x1="178" y1="114" x2="178" y2="140" stroke="#1a2840" stroke-width="2.5"/>
-        <line x1="178" y1="114" x2="160" y2="114" stroke="#1a2840" stroke-width="1.5"/>
-        <line x1="190" y1="118" x2="178" y2="118" stroke="#1a2840" stroke-width="1.5"/>
-        <line x1="190" y1="136" x2="178" y2="136" stroke="#1a2840" stroke-width="1.5"/>
+        <line x1="178" y1="127" x2="160" y2="127" stroke="#1a2840" stroke-width="1.5"/>  <!-- gate lead (mid-gate) -->
+        <line x1="190" y1="118" x2="183" y2="118" stroke="#1a2840" stroke-width="1.5"/>  <!-- D stub -->
+        <line x1="190" y1="136" x2="183" y2="136" stroke="#1a2840" stroke-width="1.5"/>  <!-- S stub -->
         <text x="148" y="128" font-family="IBM Plex Mono,monospace" font-size="9" fill="#3a6a8a" text-anchor="middle">N</text>
 
         <!-- GND -->
@@ -168,11 +168,11 @@
         <text x="248" y="99" font-family="IBM Plex Mono,monospace" font-size="10" fill="#3a6a8a">PIN</text>
 
         <!-- Data register drives both gates -->
-        <rect x="90" y="55" width="56" height="20" rx="3" fill="#eef4f8" stroke="#7ab8d4" stroke-width="1"/>
+        <rect x="84" y="55" width="68" height="20" rx="3" fill="#eef4f8" stroke="#7ab8d4" stroke-width="1"/>
         <text x="118" y="68" font-family="IBM Plex Mono,monospace" font-size="9" fill="#1a2840" text-anchor="middle">DATA_OUT</text>
-        <line x1="146" y1="65" x2="160" y2="65" stroke="#7ab8d4" stroke-width="1.5"/>  <!-- to P gate inversion -->
-        <line x1="146" y1="65" x2="146" y2="122" stroke="#7ab8d4" stroke-width="1.5"/>
-        <line x1="146" y1="122" x2="160" y2="122" stroke="#7ab8d4" stroke-width="1.5"/>   <!-- to N gate -->
+        <line x1="152" y1="64" x2="160" y2="64" stroke="#7ab8d4" stroke-width="1.5"/>  <!-- to P gate lead -->
+        <line x1="152" y1="64" x2="152" y2="127" stroke="#7ab8d4" stroke-width="1.5"/>
+        <line x1="152" y1="127" x2="160" y2="127" stroke="#7ab8d4" stroke-width="1.5"/>  <!-- to N gate lead -->
 
         <!-- Annotations -->
         <text x="190" y="198" font-family="IBM Plex Sans,sans-serif" font-size="11" fill="#5a6a7a" text-anchor="middle">Actively drives high <em>and</em> low.</text>
@@ -201,9 +201,9 @@
         <!-- N-FET only -->
         <line x1="570" y1="110" x2="570" y2="145" stroke="#1a2840" stroke-width="2"/>
         <line x1="558" y1="114" x2="558" y2="140" stroke="#1a2840" stroke-width="2.5"/>
-        <line x1="558" y1="114" x2="540" y2="114" stroke="#1a2840" stroke-width="1.5"/>
-        <line x1="570" y1="118" x2="558" y2="118" stroke="#1a2840" stroke-width="1.5"/>
-        <line x1="570" y1="136" x2="558" y2="136" stroke="#1a2840" stroke-width="1.5"/>
+        <line x1="558" y1="127" x2="540" y2="127" stroke="#1a2840" stroke-width="1.5"/>  <!-- gate lead (mid-gate) -->
+        <line x1="570" y1="118" x2="563" y2="118" stroke="#1a2840" stroke-width="1.5"/>  <!-- D stub -->
+        <line x1="570" y1="136" x2="563" y2="136" stroke="#1a2840" stroke-width="1.5"/>  <!-- S stub -->
         <text x="530" y="128" font-family="IBM Plex Mono,monospace" font-size="9" fill="#3a6a8a" text-anchor="middle">N</text>
 
         <!-- GND -->
@@ -213,9 +213,9 @@
         <line x1="564" y1="175" x2="576" y2="175" stroke="#1a2840" stroke-width="1"/>
 
         <!-- Data register drives gate only -->
-        <rect x="470" y="107" width="56" height="20" rx="3" fill="#eef4f8" stroke="#7ab8d4" stroke-width="1"/>
+        <rect x="464" y="107" width="68" height="20" rx="3" fill="#eef4f8" stroke="#7ab8d4" stroke-width="1"/>
         <text x="498" y="120" font-family="IBM Plex Mono,monospace" font-size="9" fill="#1a2840" text-anchor="middle">DATA_OUT</text>
-        <line x1="526" y1="117" x2="540" y2="117" stroke="#7ab8d4" stroke-width="1.5"/>
+        <line x1="532" y1="127" x2="540" y2="127" stroke="#7ab8d4" stroke-width="1.5"/>
 
         <!-- Annotations -->
         <text x="570" y="198" font-family="IBM Plex Sans,sans-serif" font-size="11" fill="#5a6a7a" text-anchor="middle">Drives low only. Floats high via R.</text>
@@ -301,13 +301,15 @@
         <rect x="370" y="48" width="20" height="28" rx="3" fill="#f5f5f2" stroke="#1a2840" stroke-width="1.5"/>
         <line x1="380" y1="76" x2="380" y2="90" stroke="#1a2840" stroke-width="1.5"/>
         <circle cx="380" cy="90" r="3" fill="#1a2840"/>
-        <!-- Pin line -->
+        <!-- Pin line to node -->
         <line x1="283" y1="90" x2="380" y2="90" stroke="#1a2840" stroke-width="2"/>
         <text x="275" y="94" font-family="IBM Plex Mono,monospace" font-size="10" fill="#3a6a8a" text-anchor="end">PIN</text>
-        <!-- Buffer -->
-        <polygon points="380,70 380,110 420,90" fill="#eef4f8" stroke="#3a6a8a" stroke-width="1.5"/>
-        <line x1="420" y1="90" x2="455" y2="90" stroke="#1a2840" stroke-width="2"/>
-        <text x="465" y="94" font-family="IBM Plex Mono,monospace" font-size="10" fill="#3a6a8a">IN</text>
+        <!-- Node to buffer connector -->
+        <line x1="380" y1="90" x2="412" y2="90" stroke="#1a2840" stroke-width="2"/>
+        <!-- Buffer (moved right to clear the resistor) -->
+        <polygon points="412,70 412,110 452,90" fill="#eef4f8" stroke="#3a6a8a" stroke-width="1.5"/>
+        <line x1="452" y1="90" x2="478" y2="90" stroke="#1a2840" stroke-width="2"/>
+        <text x="486" y="94" font-family="IBM Plex Mono,monospace" font-size="10" fill="#3a6a8a">IN</text>
 
         <text x="380" y="158" font-family="IBM Plex Sans,sans-serif" font-size="10.5" fill="#5a6a7a" text-anchor="middle">Default HIGH. Unconnected pin</text>
         <text x="380" y="172" font-family="IBM Plex Sans,sans-serif" font-size="10.5" fill="#5a6a7a" text-anchor="middle">reads 1. Button pulls to GND.</text>
@@ -315,15 +317,17 @@
         <!-- ══ Pull-down ══ -->
         <text x="634" y="16" font-family="IBM Plex Sans,sans-serif" font-size="12.5" fill="#1a2840" text-anchor="middle" font-weight="600">Pull-down</text>
 
-        <!-- Pin line -->
+        <!-- Pin line to node -->
         <line x1="537" y1="90" x2="634" y2="90" stroke="#1a2840" stroke-width="2"/>
         <text x="529" y="94" font-family="IBM Plex Mono,monospace" font-size="10" fill="#3a6a8a" text-anchor="end">PIN</text>
         <circle cx="634" cy="90" r="3" fill="#1a2840"/>
 
-        <!-- Buffer -->
-        <polygon points="634,70 634,110 674,90" fill="#eef4f8" stroke="#3a6a8a" stroke-width="1.5"/>
-        <line x1="674" y1="90" x2="709" y2="90" stroke="#1a2840" stroke-width="2"/>
-        <text x="719" y="94" font-family="IBM Plex Mono,monospace" font-size="10" fill="#3a6a8a">IN</text>
+        <!-- Node to buffer connector -->
+        <line x1="634" y1="90" x2="654" y2="90" stroke="#1a2840" stroke-width="2"/>
+        <!-- Buffer (moved right to clear the node/resistor wire) -->
+        <polygon points="654,70 654,110 694,90" fill="#eef4f8" stroke="#3a6a8a" stroke-width="1.5"/>
+        <line x1="694" y1="90" x2="722" y2="90" stroke="#1a2840" stroke-width="2"/>
+        <text x="730" y="94" font-family="IBM Plex Mono,monospace" font-size="10" fill="#3a6a8a">IN</text>
 
         <!-- Resistor to GND -->
         <line x1="634" y1="90" x2="634" y2="104" stroke="#1a2840" stroke-width="1.5"/>

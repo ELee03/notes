@@ -8,6 +8,15 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {
+      delimiters: [
+        {left: '$$', right: '$$', display: true},
+        {left: '$', right: '$', display: false}
+      ]
+    })"></script>
 </head>
 <body>
 
@@ -276,14 +285,15 @@
         ΔV under a step load change ΔI, the PDN impedance must satisfy:
       </div>
 
-      <div class="code-block"><pre>Z_target = ΔV / ΔI
+      <div class="math-block">$$Z_\text{target} = \frac{\Delta V}{\Delta I}$$</div>
 
-Example: 3.3 V supply, 5% droop limit, 200 mA step load from an MCU waking from sleep
-  ΔV = 0.05 × 3.3 V = 165 mV
-  ΔI = 200 mA
-  Z_target = 0.165 / 0.200 = 0.825 Ω
-
-The PDN impedance must stay below 825 mΩ across the relevant frequency range.</pre></div>
+      <div class="prose">
+        Example: 3.3 V supply, 5% droop limit, 200 mA load step from an MCU waking from
+        sleep. $\Delta V = 0.05 \times 3.3\,\text{V} = 165\,\text{mV}$,
+        $\Delta I = 200\,\text{mA}$, giving
+        $Z_\text{target} = 165\,\text{mV} / 200\,\text{mA} = 0.825\,\Omega$.
+        The PDN impedance must stay below 825 mΩ across the relevant frequency range.
+      </div>
 
       <div class="prose">
         Achieving low PDN impedance across frequency requires a capacitor cascade:
@@ -440,35 +450,26 @@ The PDN impedance must stay below 825 mΩ across the relevant frequency range.</
         for industrial-grade components.
       </div>
 
-      <div class="code-block"><pre>/* Example: LDO regulator supplying 3.3 V at 200 mA from 5 V input
- *
- * Power dissipated in LDO:
- *   P_D = (V_IN - V_OUT) × I_LOAD = (5.0 - 3.3) × 0.200 = 340 mW
- *
- * Package: SOT-223, θ_JA = 60°C/W (datasheet, no copper pour)
- *
- * Case 1: minimal copper, no thermal pour
- *   T_J = T_A + P_D × θ_JA = 25 + 0.340 × 60 = 25 + 20 = 45°C ✓
- *
- * But at 85°C ambient (industrial):
- *   T_J = 85 + 0.340 × 60 = 85 + 20 = 105°C — still OK, but only just
- *
- * Case 2: with 10×10 mm copper pour + 4 vias to inner layer
- *   Effective θ_JA ≈ 35°C/W (many datasheets give this condition)
- *   T_J = 85 + 0.340 × 35 = 85 + 12 = 97°C ✓ good margin
- *
- * Key rule: always check the worst-case ambient temperature,
- *           not 25°C room temperature.
- */
+      <div class="prose" style="font-weight:600;margin-bottom:4px;color:#1a2840;">Example 1 — LDO, 3.3 V at 200 mA from 5 V, SOT-223 package</div>
+      <div class="prose" style="margin-top:0;">
+        Power dissipated in the LDO:
+        $$P_D = (V_\text{in} - V_\text{out}) \times I_\text{load} = (5.0 - 3.3)\,\text{V} \times 200\,\text{mA} = 340\,\text{mW}$$
+        With $\theta_{JA} = 60\,^\circ\text{C/W}$ (datasheet, no copper pour), at 25 °C ambient:
+        $$T_J = T_A + P_D \cdot \theta_{JA} = 25 + 0.340 \times 60 = 45\,^\circ\text{C} \checkmark$$
+        At 85 °C ambient (industrial worst case):
+        $T_J = 85 + 0.340 \times 60 = 105\,^\circ\text{C}$ — still OK, but only just.
+        With a 10×10 mm copper pour (effective $\theta_{JA} \approx 35\,^\circ\text{C/W}$):
+        $$T_J = 85 + 0.340 \times 35 = 97\,^\circ\text{C} \checkmark \text{ — good margin}$$
+        Always check the worst-case ambient, not 25 °C room temperature.
+      </div>
 
-/* Example: MCU (EFR32MG24) at full Tx power
- *   ICC = 10 mA at 3.3 V → P_MCU = 33 mW
- *   θ_JA = 30°C/W for QFN-48
- *   T_J = 85 + 0.033 × 30 = 85 + 1 = 86°C — negligible
- *
- * Power ICs (LDOs, switchers, H-bridges) are the ones that need
- * careful thermal analysis. MCUs rarely dissipate enough to matter.
- */</pre></div>
+      <div class="prose" style="font-weight:600;margin-bottom:4px;margin-top:12px;color:#1a2840;">Example 2 — EFR32MG24 MCU at full Tx power</div>
+      <div class="prose" style="margin-top:0;">
+        $I_{CC} = 10\,\text{mA}$ at 3.3 V gives $P_D = 33\,\text{mW}$.
+        With $\theta_{JA} = 30\,^\circ\text{C/W}$ for QFN-48:
+        $$T_J = 85 + 0.033 \times 30 = 86\,^\circ\text{C} \text{ — negligible}$$
+        Power ICs (LDOs, switchers, H-bridges) need careful thermal analysis; MCUs rarely dissipate enough to matter.
+      </div>
 
       <div class="prose">
         The datasheet typically provides θ_JA under two conditions: JEDEC standard

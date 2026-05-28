@@ -8,6 +8,15 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {
+      delimiters: [
+        {left: '$$', right: '$$', display: true},
+        {left: '$', right: '$', display: false}
+      ]
+    })"></script>
 </head>
 <body>
 
@@ -109,10 +118,8 @@
         <em>LSB</em> (Least Significant Bit):
       </div>
 
-      <div class="math-block" style="font-family:'IBM Plex Mono',monospace;font-size:14px;padding:12px 20px;background:#f0f4f8;border-left:3px solid #7ab8d4;border-radius:3px;margin:0 0 16px 0;color:#1a2840;">
-        LSB = V<sub>ref</sub> / 2<sup>N</sup>
-        &nbsp;&nbsp;&nbsp;&nbsp;
-        V<sub>in</sub> ≈ code × LSB
+      <div class="math-block">
+        $$\text{LSB} = \frac{V_\text{ref}}{2^N}, \qquad V_\text{in} \approx \text{code} \times \text{LSB}$$
       </div>
 
       <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:24px;">
@@ -303,11 +310,12 @@
 
       <div class="prose" style="font-weight:600;margin-bottom:4px;color:#1a2840;">ENOB — Effective Number of Bits</div>
       <div class="prose" style="margin-top:0;">
-        A real ADC is noisier than the ideal. ENOB = (SINAD − 1.76) / 6.02, where SINAD
-        is the signal-to-(noise + distortion) ratio in dB. A "12-bit" ADC might achieve
-        10–11 ENOB in practice — the lower bits are dominated by thermal noise. Improving
-        ENOB requires better supply decoupling, a quieter reference, and sometimes
-        hardware averaging (oversampling: take M samples and average → gain ½ log₂(M) bits).
+        A real ADC is noisier than the ideal. $\text{ENOB} = (\text{SINAD} - 1.76) / 6.02$,
+        where SINAD is the signal-to-(noise + distortion) ratio in dB. A "12-bit" ADC
+        might achieve 10–11 ENOB in practice — the lower bits are dominated by thermal
+        noise. Improving ENOB requires better supply decoupling, a quieter reference, and
+        sometimes hardware averaging (oversampling: take $M$ samples and average → gain
+        $\tfrac{1}{2}\log_2 M$ bits).
         The EFR32 ADC supports hardware oversampling up to 256× for up to 16 effective bits.
       </div>
 

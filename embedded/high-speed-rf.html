@@ -8,6 +8,15 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {
+      delimiters: [
+        {left: '$$', right: '$$', display: true},
+        {left: '$', right: '$', display: false}
+      ]
+    })"></script>
 </head>
 <body>
 
@@ -112,24 +121,37 @@
         frequency, transmission-line effects are important.
       </div>
 
-      <div class="code-block"><pre>/* Signal velocity in FR4 PCB traces:
- *   v = c / √εr_eff
- *   For microstrip on FR4: εr_eff ≈ (εr + 1) / 2 ≈ (4.3 + 1) / 2 ≈ 2.65
- *   v = 3e8 / √2.65 ≈ 1.84e8 m/s  (~0.6c)
- *
- * Wavelength at frequency f:
- *   λ = v / f
- *
- * λ/10 threshold (trace should be treated as T-line if longer):
- *   At  100 MHz: λ/10 = 1.84e8 / (100e6 × 10) = 184 mm — long traces only
- *   At  500 MHz: λ/10 = 1.84e8 / (500e6 × 10) =  37 mm — many traces qualify
- *   At 2.4 GHz: λ/10 = 1.84e8 / (2.4e9 × 10)  =   8 mm — almost all traces
- *
- * USB full-speed (12 Mbps) has harmonics to ~60 MHz → λ/10 ≈ 300 mm
- *   (most USB traces are fine without length matching at FS)
- * USB high-speed (480 Mbps) has harmonics to ~2.4 GHz → λ/10 ≈ 8 mm
- *   (requires controlled impedance and length matching)
- */</pre></div>
+      <div class="math-block">
+        $$v = \frac{c}{\sqrt{\varepsilon_{r,\text{eff}}}}, \qquad
+        \varepsilon_{r,\text{eff}} \approx \frac{\varepsilon_r + 1}{2}
+        \approx \frac{4.3 + 1}{2} \approx 2.65$$
+        $$v \approx \frac{3 \times 10^8\,\text{m/s}}{\sqrt{2.65}}
+        \approx 1.84 \times 10^8\,\text{m/s} \quad (\approx 0.6\,c)$$
+      </div>
+
+      <div class="prose">
+        Wavelength at frequency $f$: $\;\lambda = v/f$. The $\lambda/10$ threshold —
+        trace length above which transmission-line effects must be considered:
+      </div>
+
+      <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:8px;">
+        <thead>
+          <tr style="background:#eef4f8;">
+            <th style="padding:7px 10px;border:1px solid #d0dae0;text-align:left;font-weight:600;">Frequency</th>
+            <th style="padding:7px 10px;border:1px solid #d0dae0;text-align:left;font-weight:600;">λ/10 in FR4</th>
+            <th style="padding:7px 10px;border:1px solid #d0dae0;text-align:left;font-weight:600;">Implication</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td style="padding:6px 10px;border:1px solid #e0e8ed;">100 MHz</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">184 mm</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">Long traces only — most designs fine</td></tr>
+          <tr style="background:#f8f9fb;"><td style="padding:6px 10px;border:1px solid #e0e8ed;">500 MHz</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">37 mm</td><td style="padding:6px 10px;border:1px solid #e0e8ed;">Many longer traces qualify</td></tr>
+          <tr><td style="padding:6px 10px;border:1px solid #e0e8ed;font-weight:600;">2.4 GHz</td><td style="padding:6px 10px;border:1px solid #e0e8ed;font-weight:600;">8 mm</td><td style="padding:6px 10px;border:1px solid #e0e8ed;font-weight:600;">Almost every trace — Bluetooth/Wi-Fi</td></tr>
+        </tbody>
+      </table>
+      <div class="prose" style="font-size:12.5px;color:#5a6a7a;margin-bottom:20px;">
+        USB Full-Speed (12 Mbps, harmonics to ~60 MHz): λ/10 ≈ 300 mm — FS traces don't need controlled impedance.
+        USB High-Speed (480 Mbps, harmonics to ~2.4 GHz): λ/10 ≈ 8 mm — controlled impedance and length matching required.
+      </div>
 
       <div class="prose">
         The characteristic impedance Z₀ of a transmission line depends on the
@@ -138,17 +160,17 @@
         transfers completely. When there is a mismatch, the reflection coefficient is:
       </div>
 
-      <div class="code-block"><pre>Γ = (Z_L - Z₀) / (Z_L + Z₀)
+      <div class="math-block">$$\Gamma = \frac{Z_L - Z_0}{Z_L + Z_0}$$</div>
 
-/* Examples:
- * Z₀ = 50 Ω (trace), Z_L = open circuit → Γ = +1 → full reflection, same polarity
- * Z₀ = 50 Ω (trace), Z_L = short circuit → Γ = -1 → full reflection, inverted
- * Z₀ = 50 Ω (trace), Z_L = 50 Ω          → Γ = 0  → no reflection
- * Z₀ = 50 Ω (trace), Z_L = CMOS input (~pF) → Z_L ≈ 1/jωC → high → Γ ≈ +1
- *
- * At a series stub or via: the signal sees a sudden impedance discontinuity.
- * A via adds ~0.5–1 nH; at 2.4 GHz that's 7–15 Ω extra inductance.
- */</pre></div>
+      <div class="prose">
+        Examples with $Z_0 = 50\,\Omega$: an <em>open circuit</em> ($Z_L \to \infty$)
+        gives $\Gamma = +1$ — full reflection, same polarity. A <em>short circuit</em>
+        ($Z_L = 0$) gives $\Gamma = -1$ — full reflection, inverted polarity. A matched
+        load ($Z_L = Z_0$) gives $\Gamma = 0$ — zero reflection. A CMOS input
+        (capacitive, $Z_L \approx 1/j\omega C \gg Z_0$) gives $\Gamma \approx +1$.
+        A via stub adds roughly 0.5–1 nH of series inductance; at 2.4 GHz that is
+        $j\omega L \approx 7\text{–}15\,\Omega$ — enough to cause a measurable reflection.
+      </div>
 
       <!-- ── Microstrip vs Stripline ─────────────────────────── -->
       <div class="section-head" id="microstrip-stripline">Microstrip vs Stripline</div>

@@ -8,6 +8,15 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {
+      delimiters: [
+        {left: '$$', right: '$$', display: true},
+        {left: '$', right: '$', display: false}
+      ]
+    })"></script>
 </head>
 <body>
 
@@ -188,10 +197,14 @@
         for Standard mode, 300 ns for Fast mode, 120 ns for Fast-Plus.
       </div>
 
-      <div class="math-block" style="font-family:'IBM Plex Mono',monospace;font-size:13px;padding:10px 20px;background:#f0f4f8;border-left:3px solid #7ab8d4;border-radius:3px;margin:0 0 16px 0;color:#1a2840;">
-        Rp(min) = (VDD − VOL(max)) / IOL  &nbsp;≈&nbsp; (3.3 − 0.4) / 3 mA ≈ 970 Ω<br>
-        Rp(max) = t_rise / (0.8473 × C_bus)&nbsp;&nbsp;  [for 1/e rise time to 0.7×VDD]<br>
-        Typical: 2.2 kΩ–4.7 kΩ for 400 kHz Fast mode on a short PCB trace
+      <div class="math-block">
+        $$R_{p,\min} = \frac{V_{DD} - V_{OL(\max)}}{I_{OL}}
+        \approx \frac{3.3\,\text{V} - 0.4\,\text{V}}{3\,\text{mA}} \approx 970\,\Omega$$
+        $$R_{p,\max} = \frac{t_\text{rise}}{0.8473 \cdot C_\text{bus}}
+        \qquad \text{(10–90\% rise time to } 0.7\,V_{DD}\text{)}$$
+      </div>
+      <div class="prose" style="text-align:center;font-size:13px;color:#5a6a7a;margin-top:0;margin-bottom:16px;">
+        Typical: 2.2–4.7 kΩ for 400 kHz Fast mode on a short PCB trace
       </div>
 
       <!-- ── START / STOP conditions ──────────────────────────── -->
