@@ -117,112 +117,19 @@
         The distinction matters whenever multiple devices share a wire.
       </div>
 
-      <!-- SVG: push-pull vs open-drain -->
-      <svg viewBox="0 0 760 240" style="width:100%;max-width:760px;display:block;margin:24px auto 8px;" role="img" aria-label="Push-pull vs open-drain output circuit comparison">
-
-        <defs>
-          <marker id="arr" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
-            <polygon points="0 0,7 3.5,0 7" fill="#3a6a8a"/>
-          </marker>
-        </defs>
-
-        <!-- ══ Push-pull (left) ══ -->
-        <text x="190" y="18" font-family="IBM Plex Sans,sans-serif" font-size="13" fill="#1a2840" text-anchor="middle" font-weight="600">Push-pull</text>
-
-        <!-- VDD rail -->
-        <line x1="190" y1="28" x2="190" y2="48" stroke="#1a2840" stroke-width="2"/>
-        <text x="190" y="26" font-family="IBM Plex Mono,monospace" font-size="10" fill="#5a6a7a" text-anchor="middle">VDD</text>
-
-        <!-- P-FET (top): source at top, drain at bottom, gate on left -->
-        <!-- body symbol -->
-        <line x1="190" y1="48" x2="190" y2="80" stroke="#1a2840" stroke-width="2"/>
-        <line x1="178" y1="52" x2="178" y2="76" stroke="#1a2840" stroke-width="2.5"/> <!-- gate bar -->
-        <line x1="178" y1="64" x2="160" y2="64" stroke="#1a2840" stroke-width="1.5"/>  <!-- gate lead (mid-gate) -->
-        <line x1="190" y1="56" x2="183" y2="56" stroke="#1a2840" stroke-width="1.5"/>  <!-- S stub (gap before gate bar) -->
-        <line x1="190" y1="72" x2="183" y2="72" stroke="#1a2840" stroke-width="1.5"/>  <!-- D stub (gap before gate bar) -->
-        <!-- P-FET label -->
-        <text x="148" y="65" font-family="IBM Plex Mono,monospace" font-size="9" fill="#3a6a8a" text-anchor="middle">P</text>
-        <!-- circle for inversion at gate (PMOS) -->
-        <circle cx="173" cy="64" r="3" fill="none" stroke="#1a2840" stroke-width="1.5"/>
-
-        <!-- Middle node -->
-        <line x1="190" y1="80" x2="190" y2="110" stroke="#1a2840" stroke-width="2"/>
-
-        <!-- N-FET (bottom) -->
-        <line x1="190" y1="110" x2="190" y2="145" stroke="#1a2840" stroke-width="2"/>
-        <line x1="178" y1="114" x2="178" y2="140" stroke="#1a2840" stroke-width="2.5"/>
-        <line x1="178" y1="127" x2="160" y2="127" stroke="#1a2840" stroke-width="1.5"/>  <!-- gate lead (mid-gate) -->
-        <line x1="190" y1="118" x2="183" y2="118" stroke="#1a2840" stroke-width="1.5"/>  <!-- D stub -->
-        <line x1="190" y1="136" x2="183" y2="136" stroke="#1a2840" stroke-width="1.5"/>  <!-- S stub -->
-        <text x="148" y="128" font-family="IBM Plex Mono,monospace" font-size="9" fill="#3a6a8a" text-anchor="middle">N</text>
-
-        <!-- GND -->
-        <line x1="190" y1="145" x2="190" y2="165" stroke="#1a2840" stroke-width="2"/>
-        <line x1="174" y1="165" x2="206" y2="165" stroke="#1a2840" stroke-width="2"/>
-        <line x1="179" y1="170" x2="201" y2="170" stroke="#1a2840" stroke-width="1.5"/>
-        <line x1="184" y1="175" x2="196" y2="175" stroke="#1a2840" stroke-width="1"/>
-
-        <!-- Output pin line -->
-        <line x1="190" y1="95" x2="240" y2="95" stroke="#1a2840" stroke-width="2"/>
-        <circle cx="190" cy="95" r="3" fill="#1a2840"/>
-        <text x="248" y="99" font-family="IBM Plex Mono,monospace" font-size="10" fill="#3a6a8a">PIN</text>
-
-        <!-- Data register drives both gates -->
-        <rect x="84" y="55" width="68" height="20" rx="3" fill="#eef4f8" stroke="#7ab8d4" stroke-width="1"/>
-        <text x="118" y="68" font-family="IBM Plex Mono,monospace" font-size="9" fill="#1a2840" text-anchor="middle">DATA_OUT</text>
-        <line x1="152" y1="64" x2="160" y2="64" stroke="#7ab8d4" stroke-width="1.5"/>  <!-- to P gate lead -->
-        <line x1="152" y1="64" x2="152" y2="127" stroke="#7ab8d4" stroke-width="1.5"/>
-        <line x1="152" y1="127" x2="160" y2="127" stroke="#7ab8d4" stroke-width="1.5"/>  <!-- to N gate lead -->
-
-        <!-- Annotations -->
-        <text x="190" y="198" font-family="IBM Plex Sans,sans-serif" font-size="11" fill="#5a6a7a" text-anchor="middle">Actively drives high <em>and</em> low.</text>
-        <text x="190" y="213" font-family="IBM Plex Sans,sans-serif" font-size="11" fill="#5a6a7a" text-anchor="middle">Two devices can't share a wire —</text>
-        <text x="190" y="228" font-family="IBM Plex Sans,sans-serif" font-size="11" fill="#5a6a7a" text-anchor="middle">one drives high while other drives low → short.</text>
-
-        <!-- Divider -->
-        <line x1="380" y1="20" x2="380" y2="175" stroke="#e0e8ed" stroke-width="1" stroke-dasharray="4,3"/>
-
-        <!-- ══ Open-drain (right) ══ -->
-        <text x="570" y="18" font-family="IBM Plex Sans,sans-serif" font-size="13" fill="#1a2840" text-anchor="middle" font-weight="600">Open-drain</text>
-
-        <!-- External pull-up -->
-        <text x="570" y="26" font-family="IBM Plex Mono,monospace" font-size="10" fill="#5a6a7a" text-anchor="middle">VDD (external)</text>
-        <line x1="570" y1="28" x2="570" y2="48" stroke="#1a2840" stroke-width="2"/>
-        <!-- Resistor symbol -->
-        <rect x="560" y="48" width="20" height="38" rx="3" fill="#f5f5f2" stroke="#1a2840" stroke-width="1.5"/>
-        <text x="583" y="68" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a6a7a">R</text>
-        <line x1="570" y1="86" x2="570" y2="110" stroke="#1a2840" stroke-width="2"/>
-
-        <!-- Node between resistor and FET drain -->
-        <circle cx="570" cy="110" r="3" fill="#1a2840"/>
-        <line x1="570" y1="110" x2="630" y2="110" stroke="#1a2840" stroke-width="2"/>
-        <text x="638" y="114" font-family="IBM Plex Mono,monospace" font-size="10" fill="#3a6a8a">PIN</text>
-
-        <!-- N-FET only -->
-        <line x1="570" y1="110" x2="570" y2="145" stroke="#1a2840" stroke-width="2"/>
-        <line x1="558" y1="114" x2="558" y2="140" stroke="#1a2840" stroke-width="2.5"/>
-        <line x1="558" y1="127" x2="540" y2="127" stroke="#1a2840" stroke-width="1.5"/>  <!-- gate lead (mid-gate) -->
-        <line x1="570" y1="118" x2="563" y2="118" stroke="#1a2840" stroke-width="1.5"/>  <!-- D stub -->
-        <line x1="570" y1="136" x2="563" y2="136" stroke="#1a2840" stroke-width="1.5"/>  <!-- S stub -->
-        <text x="530" y="128" font-family="IBM Plex Mono,monospace" font-size="9" fill="#3a6a8a" text-anchor="middle">N</text>
-
-        <!-- GND -->
-        <line x1="570" y1="145" x2="570" y2="165" stroke="#1a2840" stroke-width="2"/>
-        <line x1="554" y1="165" x2="586" y2="165" stroke="#1a2840" stroke-width="2"/>
-        <line x1="559" y1="170" x2="581" y2="170" stroke="#1a2840" stroke-width="1.5"/>
-        <line x1="564" y1="175" x2="576" y2="175" stroke="#1a2840" stroke-width="1"/>
-
-        <!-- Data register drives gate only -->
-        <rect x="464" y="107" width="68" height="20" rx="3" fill="#eef4f8" stroke="#7ab8d4" stroke-width="1"/>
-        <text x="498" y="120" font-family="IBM Plex Mono,monospace" font-size="9" fill="#1a2840" text-anchor="middle">DATA_OUT</text>
-        <line x1="532" y1="127" x2="540" y2="127" stroke="#7ab8d4" stroke-width="1.5"/>
-
-        <!-- Annotations -->
-        <text x="570" y="198" font-family="IBM Plex Sans,sans-serif" font-size="11" fill="#5a6a7a" text-anchor="middle">Drives low only. Floats high via R.</text>
-        <text x="570" y="213" font-family="IBM Plex Sans,sans-serif" font-size="11" fill="#5a6a7a" text-anchor="middle">Multiple devices can share one wire —</text>
-        <text x="570" y="228" font-family="IBM Plex Sans,sans-serif" font-size="11" fill="#5a6a7a" text-anchor="middle">any device can pull low, none fights another.</text>
-
-      </svg>
+      <!-- push-pull vs open-drain: schemdraw-generated SVGs -->
+      <div style="display:flex;justify-content:center;gap:56px;margin:24px auto;flex-wrap:wrap;align-items:flex-start;">
+        <div style="text-align:center;">
+          <div style="font-weight:600;font-size:13px;color:#1a2840;margin-bottom:8px;">Push-pull</div>
+          <img src="_gpio_pushpull.svg" style="max-width:260px;width:100%;display:block;margin:0 auto;" alt="Push-pull output circuit: PMOS and NMOS in series between VDD and GND">
+          <div style="font-size:11px;color:#5a6a7a;margin-top:10px;">Actively drives HIGH and LOW.<br>Two PP outputs cannot share a wire.</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-weight:600;font-size:13px;color:#1a2840;margin-bottom:8px;">Open-drain</div>
+          <img src="_gpio_opendrain.svg" style="max-width:190px;width:100%;display:block;margin:0 auto;" alt="Open-drain output circuit: NMOS only with external pull-up resistor">
+          <div style="font-size:11px;color:#5a6a7a;margin-top:10px;">Drives LOW only; floats HIGH via R<sub>pu</sub>.<br>Multiple OD outputs can share a wire.</div>
+        </div>
+      </div>
       <div style="text-align:center;font-size:12px;color:#9aabb8;margin-bottom:24px;">Push-pull uses both P- and N-FETs; open-drain uses only an N-FET with an external pull-up resistor.</div>
 
       <div class="prose">
@@ -264,83 +171,24 @@
         and in which direction.
       </div>
 
-      <!-- SVG: floating vs pull-up vs pull-down -->
-      <svg viewBox="0 0 760 200" style="width:100%;max-width:760px;display:block;margin:24px auto 8px;" role="img" aria-label="Three input modes: floating, pull-up, pull-down">
-
-        <!-- ══ Floating ══ -->
-        <text x="126" y="16" font-family="IBM Plex Sans,sans-serif" font-size="12.5" fill="#1a2840" text-anchor="middle" font-weight="600">Floating</text>
-
-        <!-- Pin -->
-        <line x1="30" y1="90" x2="100" y2="90" stroke="#1a2840" stroke-width="2"/>
-        <text x="22" y="94" font-family="IBM Plex Mono,monospace" font-size="10" fill="#3a6a8a" text-anchor="end">PIN</text>
-        <circle cx="100" cy="90" r="3" fill="#1a2840"/>
-
-        <!-- Input buffer triangle -->
-        <polygon points="100,70 100,110 140,90" fill="#eef4f8" stroke="#3a6a8a" stroke-width="1.5"/>
-        <line x1="140" y1="90" x2="175" y2="90" stroke="#1a2840" stroke-width="2"/>
-        <text x="185" y="94" font-family="IBM Plex Mono,monospace" font-size="10" fill="#3a6a8a">IN</text>
-
-        <!-- Noise indication -->
-        <path d="M 40 85 Q 50 75 60 90 Q 70 105 80 90" stroke="#e04040" stroke-width="1.5" fill="none" stroke-dasharray="3,2"/>
-        <text x="55" y="120" font-family="IBM Plex Sans,sans-serif" font-size="10" fill="#e04040" text-anchor="middle">noise / undefined</text>
-
-        <text x="126" y="158" font-family="IBM Plex Sans,sans-serif" font-size="10.5" fill="#5a6a7a" text-anchor="middle">No defined logic level</text>
-        <text x="126" y="172" font-family="IBM Plex Sans,sans-serif" font-size="10.5" fill="#5a6a7a" text-anchor="middle">when pin is unconnected</text>
-
-        <!-- Dividers -->
-        <line x1="253" y1="10" x2="253" y2="145" stroke="#e0e8ed" stroke-width="1" stroke-dasharray="4,3"/>
-        <line x1="507" y1="10" x2="507" y2="145" stroke="#e0e8ed" stroke-width="1" stroke-dasharray="4,3"/>
-
-        <!-- ══ Pull-up ══ -->
-        <text x="380" y="16" font-family="IBM Plex Sans,sans-serif" font-size="12.5" fill="#1a2840" text-anchor="middle" font-weight="600">Pull-up</text>
-
-        <!-- VDD -->
-        <text x="380" y="30" font-family="IBM Plex Mono,monospace" font-size="10" fill="#5a6a7a" text-anchor="middle">VDD</text>
-        <line x1="380" y1="32" x2="380" y2="48" stroke="#1a2840" stroke-width="1.5"/>
-        <!-- Resistor -->
-        <rect x="370" y="48" width="20" height="28" rx="3" fill="#f5f5f2" stroke="#1a2840" stroke-width="1.5"/>
-        <line x1="380" y1="76" x2="380" y2="90" stroke="#1a2840" stroke-width="1.5"/>
-        <circle cx="380" cy="90" r="3" fill="#1a2840"/>
-        <!-- Pin line to node -->
-        <line x1="283" y1="90" x2="380" y2="90" stroke="#1a2840" stroke-width="2"/>
-        <text x="275" y="94" font-family="IBM Plex Mono,monospace" font-size="10" fill="#3a6a8a" text-anchor="end">PIN</text>
-        <!-- Node to buffer connector -->
-        <line x1="380" y1="90" x2="412" y2="90" stroke="#1a2840" stroke-width="2"/>
-        <!-- Buffer (moved right to clear the resistor) -->
-        <polygon points="412,70 412,110 452,90" fill="#eef4f8" stroke="#3a6a8a" stroke-width="1.5"/>
-        <line x1="452" y1="90" x2="478" y2="90" stroke="#1a2840" stroke-width="2"/>
-        <text x="486" y="94" font-family="IBM Plex Mono,monospace" font-size="10" fill="#3a6a8a">IN</text>
-
-        <text x="380" y="158" font-family="IBM Plex Sans,sans-serif" font-size="10.5" fill="#5a6a7a" text-anchor="middle">Default HIGH. Unconnected pin</text>
-        <text x="380" y="172" font-family="IBM Plex Sans,sans-serif" font-size="10.5" fill="#5a6a7a" text-anchor="middle">reads 1. Button pulls to GND.</text>
-
-        <!-- ══ Pull-down ══ -->
-        <text x="634" y="16" font-family="IBM Plex Sans,sans-serif" font-size="12.5" fill="#1a2840" text-anchor="middle" font-weight="600">Pull-down</text>
-
-        <!-- Pin line to node -->
-        <line x1="537" y1="90" x2="634" y2="90" stroke="#1a2840" stroke-width="2"/>
-        <text x="529" y="94" font-family="IBM Plex Mono,monospace" font-size="10" fill="#3a6a8a" text-anchor="end">PIN</text>
-        <circle cx="634" cy="90" r="3" fill="#1a2840"/>
-
-        <!-- Node to buffer connector -->
-        <line x1="634" y1="90" x2="654" y2="90" stroke="#1a2840" stroke-width="2"/>
-        <!-- Buffer (moved right to clear the node/resistor wire) -->
-        <polygon points="654,70 654,110 694,90" fill="#eef4f8" stroke="#3a6a8a" stroke-width="1.5"/>
-        <line x1="694" y1="90" x2="722" y2="90" stroke="#1a2840" stroke-width="2"/>
-        <text x="730" y="94" font-family="IBM Plex Mono,monospace" font-size="10" fill="#3a6a8a">IN</text>
-
-        <!-- Resistor to GND -->
-        <line x1="634" y1="90" x2="634" y2="104" stroke="#1a2840" stroke-width="1.5"/>
-        <rect x="624" y="104" width="20" height="28" rx="3" fill="#f5f5f2" stroke="#1a2840" stroke-width="1.5"/>
-        <line x1="634" y1="132" x2="634" y2="143" stroke="#1a2840" stroke-width="1.5"/>
-        <!-- GND symbol -->
-        <line x1="620" y1="143" x2="648" y2="143" stroke="#1a2840" stroke-width="2"/>
-        <line x1="625" y1="148" x2="643" y2="148" stroke="#1a2840" stroke-width="1.5"/>
-        <line x1="630" y1="153" x2="638" y2="153" stroke="#1a2840" stroke-width="1"/>
-
-        <text x="634" y="172" font-family="IBM Plex Sans,sans-serif" font-size="10.5" fill="#5a6a7a" text-anchor="middle">Default LOW. Button drives to VDD.</text>
-
-      </svg>
+      <!-- input modes: schemdraw-generated SVGs -->
+      <div style="display:flex;justify-content:center;gap:40px;margin:24px auto;flex-wrap:wrap;align-items:flex-start;">
+        <div style="text-align:center;">
+          <div style="font-weight:600;font-size:13px;color:#1a2840;margin-bottom:8px;">Floating</div>
+          <img src="_gpio_floating.svg" style="max-width:200px;width:100%;display:block;margin:0 auto;" alt="Floating input: pin connects directly to input buffer with no pull resistor">
+          <div style="font-size:11px;color:#5a6a7a;margin-top:10px;">No defined logic level<br>when pin is unconnected</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-weight:600;font-size:13px;color:#1a2840;margin-bottom:8px;">Pull-up</div>
+          <img src="_gpio_pullup.svg" style="max-width:200px;width:100%;display:block;margin:0 auto;" alt="Pull-up input: VDD through pull-up resistor to node, pin at node, input buffer after node">
+          <div style="font-size:11px;color:#5a6a7a;margin-top:10px;">Default HIGH. Unconnected pin reads 1.<br>Button pulls to GND.</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-weight:600;font-size:13px;color:#1a2840;margin-bottom:8px;">Pull-down</div>
+          <img src="_gpio_pulldown.svg" style="max-width:200px;width:100%;display:block;margin:0 auto;" alt="Pull-down input: pin at node, input buffer after node, pull-down resistor from node to GND">
+          <div style="font-size:11px;color:#5a6a7a;margin-top:10px;">Default LOW. Button drives to VDD.</div>
+        </div>
+      </div>
       <div style="text-align:center;font-size:12px;color:#9aabb8;margin-bottom:24px;">Internal pull resistors (typically 40–100 kΩ) prevent floating inputs from picking up noise when no external signal is connected.</div>
 
       <div class="prose">
