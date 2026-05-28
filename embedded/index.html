@@ -51,7 +51,7 @@
 
       <div class="nav-section">
         <div class="nav-label">Firmware</div>
-        <span class="nav-item planned">13 · Bare-Metal Patterns</span>
+        <a href="bare-metal.html" class="nav-item">13 · Bare-Metal Patterns</a>
         <span class="nav-item planned">14 · RTOS Concepts</span>
         <span class="nav-item planned">15 · Debugging &amp; Test</span>
       </div>
@@ -152,17 +152,19 @@
       <!-- ── Firmware ───────────────────────────────────────── -->
       <div class="section-head">Firmware Practices</div>
 
+      <div class="lesson-row">
+        <a href="bare-metal.html" class="lesson-row-title">13 · Bare-Metal Patterns</a>
+        <span class="lesson-row-desc">C startup sequence (.data/.bss init, init_array), superloop vs interrupt-driven hybrid, FSM design, interrupt-safe ring buffers, driver layering (HAL/driver/application), volatile and memory barriers (DMB/DSB/ISB).</span>
+      </div>
+
       <div class="course-block">
-        <div class="course-block-code">Lessons 13–15</div>
-        <div class="course-block-name">Bare-Metal Patterns, RTOS, Debugging</div>
+        <div class="course-block-code">Lessons 14–15</div>
+        <div class="course-block-name">RTOS Concepts, Debugging &amp; Test</div>
         <div class="course-block-desc">
-          Bare-metal startup sequence (vector table, stack setup, C runtime init),
-          state machine design, ring buffers and interrupt-safe data structures,
-          peripheral driver layering. RTOS scheduling (preemptive vs cooperative),
-          task priorities, mutexes and binary semaphores, common RTOS pitfalls
-          (priority inversion, stack overflow). Hardware debugging with SWD/JTAG,
-          OpenOCD and GDB, logic analyzer and oscilloscope techniques for protocol
-          decoding.
+          RTOS scheduling (preemptive vs cooperative), task priorities, mutexes and
+          binary semaphores, common RTOS pitfalls (priority inversion, stack overflow).
+          Hardware debugging with SWD/JTAG, OpenOCD and GDB, logic analyzer and
+          oscilloscope techniques for protocol decoding.
         </div>
       </div>
 

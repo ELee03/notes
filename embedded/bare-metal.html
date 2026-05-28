@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bare-Metal Patterns — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Architecture &amp; Internals</div>
+        <a href="mcu-architecture.html" class="nav-item">1 · MCU Architecture</a>
+        <a href="memory-clocks.html" class="nav-item">2 · Memory &amp; Clock Systems</a>
+        <a href="interrupts-nvic.html" class="nav-item">3 · Interrupts &amp; the NVIC</a>
+        <a href="dma.html" class="nav-item">4 · DMA</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Peripherals</div>
+        <a href="gpio.html" class="nav-item">5 · GPIO</a>
+        <a href="timers-pwm.html" class="nav-item">6 · Timers &amp; PWM</a>
+        <a href="adc-dac.html" class="nav-item">7 · ADC &amp; DAC</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Protocols</div>
+        <a href="uart.html" class="nav-item">8 · UART</a>
+        <a href="spi.html" class="nav-item">9 · SPI</a>
+        <a href="i2c.html" class="nav-item">10 · I2C</a>
+        <a href="can.html" class="nav-item">11 · CAN Bus</a>
+        <a href="usb.html" class="nav-item">12 · USB Fundamentals</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Firmware</div>
+        <a href="bare-metal.html" class="nav-item active">13 · Bare-Metal Patterns</a>
+        <span class="nav-item planned">14 · RTOS Concepts</span>
+        <span class="nav-item planned">15 · Debugging &amp; Test</span>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">PCB Design</div>
+        <span class="nav-item planned">16 · Layout Fundamentals</span>
+        <span class="nav-item planned">17 · Mixed-Signal Layout</span>
+        <span class="nav-item planned">18 · Power &amp; Thermal</span>
+        <span class="nav-item planned">19 · High-Speed &amp; RF</span>
+      </div>
+
+      <hr class="sidebar-rule">
+
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#startup" class="nav-item">Startup sequence</a>
+        <a href="#superloop" class="nav-item">Superloop vs interrupt-driven</a>
+        <a href="#state-machines" class="nav-item">State machines</a>
+        <a href="#ring-buffers" class="nav-item">Ring buffers</a>
+        <a href="#driver-layers" class="nav-item">Driver layering</a>
+        <a href="#volatile" class="nav-item">volatile &amp; memory barriers</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Embedded Systems</a>
+        <span class="sep">›</span>
+        <span>13 · Bare-Metal Patterns</span>
+      </div>
+
+      <div class="lesson-title">13 · Bare-Metal Patterns</div>
+      <div class="lesson-meta">Startup · Superloop · State Machines · Ring Buffers · Driver Layers · volatile</div>
+
+      <div class="prose">
+        "Bare metal" means firmware that runs directly on the hardware with no operating
+        system beneath it. There is no scheduler, no process isolation, no memory
+        allocator — just your code, the C runtime, and the hardware registers. This
+        sounds limiting, but bare-metal firmware powers the vast majority of deployed
+        embedded systems: medical sensors, motor controllers, wireless radios, automotive
+        ECUs. The absence of an OS removes overhead, unpredictability, and attack surface.
+      </div>
+
+      <div class="prose">
+        The patterns in this lesson are the toolkit that makes bare-metal firmware
+        manageable as it scales beyond a few hundred lines: how to structure the main
+        loop, how to model system behaviour, how to move data safely between interrupt
+        context and main context, and how to layer drivers so they remain testable.
+      </div>
+
+      <!-- ── Startup sequence ──────────────────────────────────── -->
+      <div class="section-head" id="startup">Startup sequence</div>
+
+      <div class="prose">
+        Before <code>main()</code> runs, the C runtime performs a fixed sequence of
+        initialization steps. Understanding this matters when debugging startup crashes
+        or when adding custom initialization (e.g. a watchdog that must be kicked before
+        the clock initialization that takes 50 ms).
+      </div>
+
+      <!-- SVG: startup sequence block flow -->
+      <svg viewBox="0 0 660 400" style="width:100%;max-width:660px;display:block;margin:24px auto 8px;" role="img" aria-label="MCU startup sequence: reset vector, stack pointer init, copy .data from Flash to RAM, zero .bss, run init_array constructors, then call main">
+
+        <!-- Reset vector box -->
+        <rect x="220" y="10" width="220" height="40" rx="5" fill="#3a6a8a" opacity="0.85"/>
+        <text x="330" y="28" font-family="IBM Plex Sans,sans-serif" font-size="11" font-weight="600" fill="#fff" text-anchor="middle">Reset Handler (from vector table)</text>
+        <text x="330" y="42" font-family="IBM Plex Mono,monospace" font-size="9" fill="#c8dce8" text-anchor="middle">PC loaded from address 0x00000004</text>
+
+        <line x1="330" y1="50" x2="330" y2="68" stroke="#7ab8d4" stroke-width="1.5"/>
+
+        <!-- MSP init -->
+        <rect x="200" y="68" width="260" height="36" rx="5" fill="#eef4f8" stroke="#7ab8d4" stroke-width="1.5"/>
+        <text x="330" y="84" font-family="IBM Plex Sans,sans-serif" font-size="11" font-weight="600" fill="#1a2840" text-anchor="middle">Set Main Stack Pointer</text>
+        <text x="330" y="97" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a6a7a" text-anchor="middle">MSP ← value at address 0x00000000</text>
+
+        <line x1="330" y1="104" x2="330" y2="122" stroke="#7ab8d4" stroke-width="1.5"/>
+
+        <!-- Copy .data -->
+        <rect x="170" y="122" width="320" height="36" rx="5" fill="#eef4f8" stroke="#7ab8d4" stroke-width="1.5"/>
+        <text x="330" y="138" font-family="IBM Plex Sans,sans-serif" font-size="11" font-weight="600" fill="#1a2840" text-anchor="middle">Copy .data section: Flash → RAM</text>
+        <text x="330" y="151" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a6a7a" text-anchor="middle">Initialised globals/statics get their values</text>
+
+        <line x1="330" y1="158" x2="330" y2="176" stroke="#7ab8d4" stroke-width="1.5"/>
+
+        <!-- Zero .bss -->
+        <rect x="190" y="176" width="280" height="36" rx="5" fill="#eef4f8" stroke="#7ab8d4" stroke-width="1.5"/>
+        <text x="330" y="192" font-family="IBM Plex Sans,sans-serif" font-size="11" font-weight="600" fill="#1a2840" text-anchor="middle">Zero .bss section in RAM</text>
+        <text x="330" y="205" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a6a7a" text-anchor="middle">Uninitialised globals/statics → 0</text>
+
+        <line x1="330" y1="212" x2="330" y2="230" stroke="#7ab8d4" stroke-width="1.5"/>
+
+        <!-- init_array -->
+        <rect x="190" y="230" width="280" height="36" rx="5" fill="#eef4f8" stroke="#7ab8d4" stroke-width="1.5"/>
+        <text x="330" y="246" font-family="IBM Plex Sans,sans-serif" font-size="11" font-weight="600" fill="#1a2840" text-anchor="middle">Run .init_array constructors</text>
+        <text x="330" y="259" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a6a7a" text-anchor="middle">C++ static constructors, __attribute__((constructor))</text>
+
+        <line x1="330" y1="266" x2="330" y2="284" stroke="#7ab8d4" stroke-width="1.5"/>
+
+        <!-- main() -->
+        <rect x="230" y="284" width="200" height="40" rx="5" fill="#5a8a5a" opacity="0.85"/>
+        <text x="330" y="302" font-family="IBM Plex Sans,sans-serif" font-size="12" font-weight="600" fill="#fff" text-anchor="middle">main()</text>
+        <text x="330" y="317" font-family="IBM Plex Mono,monospace" font-size="9" fill="#c8e8c8" text-anchor="middle">Your application code starts here</text>
+
+        <!-- Side annotation: what lives in Flash vs RAM -->
+        <rect x="10" y="122" width="140" height="150" rx="4" fill="#f5f5f2" stroke="#d0dae0" stroke-width="1"/>
+        <text x="80" y="140" font-family="IBM Plex Sans,sans-serif" font-size="9.5" font-weight="600" fill="#3a6a8a" text-anchor="middle">FLASH (read-only)</text>
+        <text x="80" y="156" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#5a6a7a" text-anchor="middle">.text (code)</text>
+        <text x="80" y="169" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#5a6a7a" text-anchor="middle">.rodata (const)</text>
+        <text x="80" y="182" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#5a6a7a" text-anchor="middle">.data init values</text>
+
+        <text x="80" y="202" font-family="IBM Plex Sans,sans-serif" font-size="9.5" font-weight="600" fill="#5a8a5a" text-anchor="middle">RAM (read-write)</text>
+        <text x="80" y="218" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#5a6a7a" text-anchor="middle">.data (copied)</text>
+        <text x="80" y="231" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#5a6a7a" text-anchor="middle">.bss (zeroed)</text>
+        <text x="80" y="244" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#5a6a7a" text-anchor="middle">heap / stack</text>
+        <line x1="170" y1="196" x2="190" y2="196" stroke="#7ab8d4" stroke-width="1" stroke-dasharray="3,2"/>
+
+        <!-- Note at bottom -->
+        <text x="330" y="365" font-family="IBM Plex Sans,sans-serif" font-size="10" fill="#9aabb8" text-anchor="middle">If main() returns, startup code enters an infinite loop.</text>
+        <text x="330" y="380" font-family="IBM Plex Sans,sans-serif" font-size="10" fill="#9aabb8" text-anchor="middle">On Cortex-M, returning from main() is a fault.</text>
+
+      </svg>
+      <div style="text-align:center;font-size:12px;color:#9aabb8;margin-bottom:24px;">The C startup sequence runs before main(). Linker scripts define the boundaries of each section and the addresses used during the copy and zero operations.</div>
+
+      <div class="prose">
+        Two consequences matter in practice. First, a global variable with an initialiser
+        (e.g. <code>int x = 42;</code>) has its initial value stored in Flash and copied
+        to RAM at startup — if your startup code is broken, <code>x</code> will be
+        uninitialised garbage. Second, a <code>static</code> variable inside a function
+        lives in <code>.bss</code>, is zeroed at startup, and retains its value across
+        calls — it is not re-initialised each time the function is entered.
+      </div>
+
+      <!-- ── Superloop vs interrupt-driven ──────────────────────── -->
+      <div class="section-head" id="superloop">Superloop vs interrupt-driven architecture</div>
+
+      <div class="prose">
+        Almost all bare-metal firmware is structured around one of two patterns, or
+        a hybrid of both.
+      </div>
+
+      <div class="prose">
+        <strong>The superloop</strong> is the simplest structure: <code>main()</code>
+        contains an infinite <code>while(1)</code> loop that polls every peripheral and
+        processes any pending work on each iteration. Interrupts may be used only to
+        set flags; the main loop checks those flags and does the actual work.
+      </div>
+
+      <pre class="code-block"><code>// Superloop pattern
+int main(void) {
+    system_init();      // clocks, peripherals, GPIO
+
+    while (1) {
+        if (uart_rx_ready()) {
+            process_uart_byte(uart_read());
+        }
+        if (adc_sample_ready()) {
+            process_adc_sample(adc_read());
+        }
+        if (timer_elapsed()) {
+            run_control_loop();
+            timer_clear();
+        }
+        // sleep until next event (optional, saves power)
+        __WFI();        // Wait For Interrupt — CPU halts until any interrupt
+    }
+}</code></pre>
+
+      <div class="prose">
+        The superloop is predictable and easy to debug — the execution path is always
+        visible in the call stack. Its weakness is latency: if <code>process_uart_byte()</code>
+        takes 2 ms and a time-critical ADC sample arrives during that window, it will
+        be missed. The loop period is the sum of all handler times, which grows as the
+        system gains features.
+      </div>
+
+      <div class="prose">
+        <strong>Interrupt-driven firmware</strong> does the real work inside interrupt
+        handlers rather than polling from the main loop. The main loop may be empty
+        (<code>while(1) { __WFI(); }</code>) or handle only low-priority background
+        tasks. This gives better latency for high-priority events but introduces
+        concurrency hazards: shared data accessed from both interrupt and main context
+        must be protected.
+      </div>
+
+      <div class="prose">
+        In practice most systems use a hybrid: time-critical paths (UART RX byte, ADC
+        sample) are handled in interrupt context; longer processing (packet parsing,
+        state transitions, display updates) is done in the main loop, signalled by a
+        flag set in the interrupt handler.
+      </div>
+
+      <!-- ── State machines ────────────────────────────────────── -->
+      <div class="section-head" id="state-machines">State machines</div>
+
+      <div class="prose">
+        A finite state machine (FSM) is the standard way to model any behaviour that
+        depends on history — a UART packet parser, a button debouncer, a connection
+        state tracker, a motor sequence controller. The core insight is that what the
+        system <em>does</em> next depends not just on the current input, but on what
+        <em>state</em> it is in.
+      </div>
+
+      <div class="prose">
+        The idiomatic C implementation uses an enum for states and a switch statement
+        for transitions:
+      </div>
+
+      <pre class="code-block"><code>// Example: UART packet parser FSM
+// Protocol: 0xAA (header), 1-byte length, N data bytes, 1-byte checksum
+
+typedef enum {
+    STATE_IDLE,
+    STATE_GOT_HEADER,
+    STATE_RECEIVING_DATA,
+    STATE_CHECKSUM,
+} parser_state_t;
+
+static parser_state_t state = STATE_IDLE;
+static uint8_t  expected_len;
+static uint8_t  byte_count;
+static uint8_t  rx_buf[64];
+static uint8_t  checksum_accum;
+
+void parser_feed(uint8_t byte) {
+    switch (state) {
+    case STATE_IDLE:
+        if (byte == 0xAA) {
+            state = STATE_GOT_HEADER;
+        }
+        break;
+
+    case STATE_GOT_HEADER:
+        if (byte == 0 || byte > sizeof(rx_buf)) {
+            state = STATE_IDLE;          // invalid length — reset
+            break;
+        }
+        expected_len     = byte;
+        byte_count       = 0;
+        checksum_accum   = 0;
+        state = STATE_RECEIVING_DATA;
+        break;
+
+    case STATE_RECEIVING_DATA:
+        rx_buf[byte_count++] = byte;
+        checksum_accum ^= byte;
+        if (byte_count == expected_len) {
+            state = STATE_CHECKSUM;
+        }
+        break;
+
+    case STATE_CHECKSUM:
+        if (byte == checksum_accum) {
+            packet_handler(rx_buf, expected_len);  // valid packet
+        }
+        state = STATE_IDLE;            // reset regardless of checksum result
+        break;
+    }
+}</code></pre>
+
+      <div class="prose">
+        Key properties of a well-written FSM: every state has a defined response to
+        every possible input (even if that response is "ignore and stay in this state"),
+        and every error path returns to a known recovery state rather than getting
+        stuck. <code>STATE_IDLE</code> is the recovery state here — any unexpected
+        byte from any state can safely transition back to it.
+      </div>
+
+      <!-- ── Ring buffers ──────────────────────────────────────── -->
+      <div class="section-head" id="ring-buffers">Ring buffers (circular buffers)</div>
+
+      <div class="prose">
+        The ring buffer is the standard data structure for passing data from interrupt
+        context to main context. The interrupt handler writes bytes into it; the main
+        loop reads them out at its own pace. Because writes and reads happen independently,
+        the buffer decouples the two.
+      </div>
+
+      <!-- SVG: ring buffer circular diagram -->
+      <svg viewBox="0 0 560 200" style="width:100%;max-width:560px;display:block;margin:24px auto 8px;" role="img" aria-label="Ring buffer: circular array of 8 slots, head pointer for writing, tail pointer for reading, data occupies the slots between tail and head">
+
+        <!-- 8 cells arranged in a ring (using arc approximation with rects) -->
+        <!-- Centre at 200, 100. Radius ~80. 8 cells, each at 45° increments -->
+        <!-- Cell positions (centre of each cell): -->
+        <!-- 0: (200+0, 100-80)=(200,20); 1: (200+57,100-57)=(257,43); 2: (280,100); 3: (257,157); 4: (200,180); 5: (143,157); 6: (120,100); 7: (143,43) -->
+
+        <!-- Draw cells as small rects centered at each position -->
+        <!-- Cell 0: top -->
+        <rect x="175" y="8"  width="50" height="26" rx="3" fill="#3a6a8a" opacity="0.7" stroke="#7ab8d4" stroke-width="1"/>
+        <text x="200" y="24" font-family="IBM Plex Mono,monospace" font-size="9" fill="#fff" text-anchor="middle">data</text>
+        <!-- Cell 1: top-right -->
+        <rect x="240" y="32" width="50" height="26" rx="3" fill="#3a6a8a" opacity="0.7" stroke="#7ab8d4" stroke-width="1"/>
+        <text x="265" y="48" font-family="IBM Plex Mono,monospace" font-size="9" fill="#fff" text-anchor="middle">data</text>
+        <!-- Cell 2: right -->
+        <rect x="272" y="86" width="50" height="26" rx="3" fill="#3a6a8a" opacity="0.7" stroke="#7ab8d4" stroke-width="1"/>
+        <text x="297" y="102" font-family="IBM Plex Mono,monospace" font-size="9" fill="#fff" text-anchor="middle">data</text>
+        <!-- Cell 3: bottom-right (HEAD — next write position) -->
+        <rect x="240" y="140" width="50" height="26" rx="3" fill="#e04040" opacity="0.8" stroke="#e04040" stroke-width="1.5"/>
+        <text x="265" y="156" font-family="IBM Plex Mono,monospace" font-size="9" fill="#fff" text-anchor="middle">← HEAD</text>
+        <!-- Cell 4: bottom -->
+        <rect x="175" y="164" width="50" height="26" rx="3" fill="#dde6ec" stroke="#c0cdd6" stroke-width="1"/>
+        <text x="200" y="180" font-family="IBM Plex Mono,monospace" font-size="9" fill="#9aabb8" text-anchor="middle">empty</text>
+        <!-- Cell 5: bottom-left -->
+        <rect x="108" y="140" width="50" height="26" rx="3" fill="#dde6ec" stroke="#c0cdd6" stroke-width="1"/>
+        <text x="133" y="156" font-family="IBM Plex Mono,monospace" font-size="9" fill="#9aabb8" text-anchor="middle">empty</text>
+        <!-- Cell 6: left (TAIL — next read position) -->
+        <rect x="76" y="86" width="50" height="26" rx="3" fill="#5a8a5a" opacity="0.8" stroke="#5a8a5a" stroke-width="1.5"/>
+        <text x="101" y="102" font-family="IBM Plex Mono,monospace" font-size="9" fill="#fff" text-anchor="middle">TAIL →</text>
+        <!-- Cell 7: top-left -->
+        <rect x="108" y="32" width="50" height="26" rx="3" fill="#3a6a8a" opacity="0.7" stroke="#7ab8d4" stroke-width="1"/>
+        <text x="133" y="48" font-family="IBM Plex Mono,monospace" font-size="9" fill="#fff" text-anchor="middle">data</text>
+
+        <!-- Circular arrow indicating direction of write -->
+        <path d="M200,34 A70,70 0 0,1 270,99" stroke="#7ab8d4" stroke-width="1.5" fill="none" stroke-dasharray="4,3"/>
+        <polygon points="266,95 274,103 278,93" fill="#7ab8d4"/>
+
+        <!-- Legend -->
+        <rect x="360" y="40" width="16" height="12" rx="2" fill="#3a6a8a" opacity="0.7"/>
+        <text x="382" y="51" font-family="IBM Plex Sans,sans-serif" font-size="10" fill="#5a6a7a">data bytes</text>
+        <rect x="360" y="62" width="16" height="12" rx="2" fill="#e04040" opacity="0.8"/>
+        <text x="382" y="73" font-family="IBM Plex Sans,sans-serif" font-size="10" fill="#5a6a7a">head (write next)</text>
+        <rect x="360" y="84" width="16" height="12" rx="2" fill="#5a8a5a" opacity="0.8"/>
+        <text x="382" y="95" font-family="IBM Plex Sans,sans-serif" font-size="10" fill="#5a6a7a">tail (read next)</text>
+        <rect x="360" y="106" width="16" height="12" rx="2" fill="#dde6ec" stroke="#c0cdd6" stroke-width="1"/>
+        <text x="382" y="117" font-family="IBM Plex Sans,sans-serif" font-size="10" fill="#5a6a7a">empty slots</text>
+
+        <text x="380" y="148" font-family="IBM Plex Sans,sans-serif" font-size="10" fill="#5a6a7a">Full when head+1 = tail</text>
+        <text x="380" y="162" font-family="IBM Plex Sans,sans-serif" font-size="10" fill="#5a6a7a">Empty when head = tail</text>
+        <text x="380" y="176" font-family="IBM Plex Sans,sans-serif" font-size="10" fill="#5a6a7a">Capacity = size − 1 slots</text>
+
+      </svg>
+      <div style="text-align:center;font-size:12px;color:#9aabb8;margin-bottom:24px;">Head advances on write; tail advances on read. Both wrap around modulo the buffer size. Interrupt writes at head; main loop reads from tail.</div>
+
+      <pre class="code-block"><code>// Interrupt-safe single-producer / single-consumer ring buffer
+// Works without a mutex when one side is producer (ISR) and
+// the other is consumer (main loop) — no simultaneous writes.
+
+#define RING_SIZE 64   // must be a power of two for masking trick
+typedef struct {
+    uint8_t  buf[RING_SIZE];
+    uint16_t head;     // written by producer (ISR)
+    uint16_t tail;     // written by consumer (main loop)
+} ring_buf_t;
+
+static inline bool ring_push(ring_buf_t *r, uint8_t byte) {
+    uint16_t next_head = (r->head + 1) & (RING_SIZE - 1);
+    if (next_head == r->tail) return false;  // full — drop byte
+    r->buf[r->head] = byte;
+    r->head = next_head;   // publish: write head AFTER storing data
+    return true;
+}
+
+static inline bool ring_pop(ring_buf_t *r, uint8_t *out) {
+    if (r->head == r->tail) return false;   // empty
+    *out = r->buf[r->tail];
+    r->tail = (r->tail + 1) & (RING_SIZE - 1);
+    return true;
+}
+
+// In the UART RX interrupt handler:
+void USART0_RX_IRQHandler(void) {
+    ring_push(&uart_rx_ring, USART_RxDataGet(USART0));
+}
+
+// In the main loop:
+void process_uart(void) {
+    uint8_t byte;
+    while (ring_pop(&uart_rx_ring, &byte)) {
+        parser_feed(byte);
+    }
+}</code></pre>
+
+      <div class="callout">
+        <strong>The ordering matters.</strong> In <code>ring_push()</code>, the data
+        byte is stored <em>before</em> updating <code>head</code>. This ensures the
+        consumer never sees an updated head pointing to a slot that does not yet
+        contain valid data. On a single-core Cortex-M, this works without a mutex
+        as long as only one writer and one reader exist — the write to <code>head</code>
+        is a single aligned 16-bit store, which is atomic on ARMv7-M.
+      </div>
+
+      <!-- ── Driver layering ───────────────────────────────────── -->
+      <div class="section-head" id="driver-layers">Driver layering</div>
+
+      <div class="prose">
+        As a firmware project grows, peripheral access scattered throughout the
+        application becomes unmaintainable. The standard fix is a three-layer model:
+      </div>
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:8px;"><strong>Hardware Abstraction Layer (HAL) / register layer</strong> — direct register access, vendor CMSIS/EMLIB calls. Knows about the specific MCU family. Example: <code>USART_Tx(USART0, byte)</code>.</li>
+        <li style="margin-bottom:8px;"><strong>Driver layer</strong> — wraps the HAL into a functional interface that does not expose MCU-specific types to the rest of the application. Owns the ring buffer, handles interrupts, manages state. Example: <code>uart_write(const uint8_t *data, size_t len)</code>.</li>
+        <li style="margin-bottom:8px;"><strong>Application layer</strong> — uses drivers through their clean API. Has no knowledge of which USART peripheral is in use, what the DMA channel number is, or how the interrupt is configured. Example: <code>comms_send_packet(&pkt)</code>.</li>
+      </ul>
+
+      <pre class="code-block"><code>// Driver layer: uart.h (what the application sees)
+void     uart_init(uint32_t baud);
+bool     uart_write(const uint8_t *data, size_t len);
+size_t   uart_read(uint8_t *buf, size_t max_len);
+bool     uart_tx_busy(void);
+
+// Driver layer: uart.c (what knows about USART0, DMA, interrupts)
+// -- hides ring_buf_t, USART0, DMA channel 2, USART0_RX_IRQn
+// -- application never sees any of these
+
+// Application layer: comms.c
+void comms_send_packet(const packet_t *pkt) {
+    uart_write(pkt->data, pkt->len);   // no USART0 here
+}</code></pre>
+
+      <div class="prose">
+        The payoff is portability and testability. To move from USART0 to USART1,
+        you change one file (<code>uart.c</code>), not every call site. To test
+        <code>comms.c</code> on a host machine, you provide a stub <code>uart.c</code>
+        that writes to a file instead of a UART peripheral.
+      </div>
+
+      <!-- ── volatile and memory barriers ─────────────────────── -->
+      <div class="section-head" id="volatile">volatile and memory ordering</div>
+
+      <div class="prose">
+        Two C keywords are essential for correct bare-metal firmware:
+        <code>volatile</code> and memory barriers.
+      </div>
+
+      <div class="prose">
+        <strong><code>volatile</code></strong> tells the compiler that a variable's
+        value may change outside the visible program flow — due to hardware, another
+        interrupt, or DMA. Without <code>volatile</code>, the compiler may cache the
+        variable in a register and never re-read it from memory, missing updates from
+        the interrupt handler.
+      </div>
+
+      <pre class="code-block"><code>// WRONG: compiler may optimise this to an infinite loop
+//        because it doesn't see anything modifying 'flag'
+bool flag = false;
+while (!flag) { }
+
+// CORRECT: volatile tells the compiler to re-read from memory each time
+volatile bool flag = false;
+while (!flag) { }
+
+// Also required for memory-mapped peripheral registers:
+// (CMSIS headers already declare these volatile — don't re-declare them)
+volatile uint32_t *reg = (volatile uint32_t *)0x40000000;
+*reg = 0x01;   // this write must reach the hardware, not be elided</code></pre>
+
+      <div class="prose">
+        <code>volatile</code> prevents the compiler from eliminating or reordering
+        accesses to that specific variable, but it does not prevent the CPU from
+        reordering memory operations relative to each other. On Cortex-M (which has
+        a weakly ordered memory model for normal memory), you need <strong>memory
+        barriers</strong> when the order of separate memory accesses matters — for
+        example, ensuring DMA descriptor fields are committed before the DMA enable
+        bit is written.
+      </div>
+
+      <pre class="code-block"><code>// Memory barrier intrinsics (ARM CMSIS)
+__DMB();  // Data Memory Barrier: all explicit memory accesses before the
+          // barrier complete before any after it. Use before enabling DMA.
+
+__DSB();  // Data Synchronization Barrier: stronger — waits for all
+          // outstanding memory transactions to complete. Use before
+          // modifying interrupt priority or enabling exceptions.
+
+__ISB();  // Instruction Synchronization Barrier: flushes the pipeline.
+          // Required after modifying VTOR (vector table offset) or
+          // after enabling/disabling caches.
+
+// Typical DMA setup pattern:
+desc.src = source_buf;
+desc.dst = dest_buf;
+desc.ctrl = LDMA_CTRL_SIZE_WORD | (count - 1);
+__DMB();             // ensure descriptor is written before LDMA sees it
+LDMA->CHEN |= (1 << channel);  // enable — hardware reads descriptor now</code></pre>
+
+      <hr class="lesson-rule">
+
+      <div class="section-head">References</div>
+      <ul class="prose" style="padding-left:1.4em;font-size:13.5px;color:#5a6a7a;">
+        <li style="margin-bottom:6px;">M. White, <em>Making Embedded Systems</em> (2nd ed.) — Chapters on state machines, ring buffers, driver layering, and the superloop pattern. The primary reference for this lesson.</li>
+        <li style="margin-bottom:6px;">J. Yiu, <em>The Definitive Guide to ARM Cortex-M3 and Cortex-M4 Processors</em> (3rd ed.) — Startup sequence, memory model, barrier instructions.</li>
+        <li style="margin-bottom:6px;">ARM Ltd., <em>ARM Cortex-M Programming Guide to Memory Barrier Instructions</em> (Application Note AN321) — Authoritative reference on when and why to use DMB/DSB/ISB.</li>
+        <li style="margin-bottom:6px;">Silicon Labs, <em>EFR32xG12 Reference Manual</em> — Startup code, linker script examples, CMSIS startup files.</li>
+      </ul>
+
+      <!-- ── Nav ───────────────────────────────────────────────── -->
+      <div class="lesson-nav">
+        <a href="usb.html" class="lesson-nav-btn">← Lesson 12: USB Fundamentals</a>
+        <a href="index.html" class="lesson-nav-btn">Back to Embedded Systems</a>
+        <a href="#" class="lesson-nav-btn disabled">Next → (coming soon)</a>
+      </div>
+
+    </div><!-- /main -->
+
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+</body>
+</html>
