@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CAN Bus — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Architecture &amp; Internals</div>
+        <a href="mcu-architecture.html" class="nav-item">1 · MCU Architecture</a>
+        <a href="memory-clocks.html" class="nav-item">2 · Memory &amp; Clock Systems</a>
+        <a href="interrupts-nvic.html" class="nav-item">3 · Interrupts &amp; the NVIC</a>
+        <a href="dma.html" class="nav-item">4 · DMA</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Peripherals</div>
+        <a href="gpio.html" class="nav-item">5 · GPIO</a>
+        <a href="timers-pwm.html" class="nav-item">6 · Timers &amp; PWM</a>
+        <a href="adc-dac.html" class="nav-item">7 · ADC &amp; DAC</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Protocols</div>
+        <a href="uart.html" class="nav-item">8 · UART</a>
+        <a href="spi.html" class="nav-item">9 · SPI</a>
+        <a href="i2c.html" class="nav-item">10 · I2C</a>
+        <a href="can.html" class="nav-item active">11 · CAN Bus</a>
+        <span class="nav-item planned">12 · USB Fundamentals</span>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Firmware</div>
+        <span class="nav-item planned">13 · Bare-Metal Patterns</span>
+        <span class="nav-item planned">14 · RTOS Concepts</span>
+        <span class="nav-item planned">15 · Debugging &amp; Test</span>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">PCB Design</div>
+        <span class="nav-item planned">16 · Layout Fundamentals</span>
+        <span class="nav-item planned">17 · Mixed-Signal Layout</span>
+        <span class="nav-item planned">18 · Power &amp; Thermal</span>
+        <span class="nav-item planned">19 · High-Speed &amp; RF</span>
+      </div>
+
+      <hr class="sidebar-rule">
+
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#differential" class="nav-item">Differential signalling</a>
+        <a href="#bits" class="nav-item">Dominant &amp; recessive bits</a>
+        <a href="#arbitration" class="nav-item">Non-destructive arbitration</a>
+        <a href="#frame" class="nav-item">Frame format</a>
+        <a href="#bit-stuffing" class="nav-item">Bit stuffing</a>
+        <a href="#errors" class="nav-item">Error detection &amp; confinement</a>
+        <a href="#termination" class="nav-item">Termination</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Embedded Systems</a>
+        <span class="sep">›</span>
+        <span>11 · CAN Bus</span>
+      </div>
+
+      <div class="lesson-title">11 · CAN Bus</div>
+      <div class="lesson-meta">Differential Signalling · Arbitration · Frame Format · Bit Stuffing · Error Confinement</div>
+
+      <div class="prose">
+        CAN — Controller Area Network — was designed in the 1980s for automotive
+        wiring harnesses and is now the dominant embedded bus in vehicles, industrial
+        machinery, and medical devices. Its defining property is robustness: CAN
+        survives short circuits on the bus, ground offsets between nodes, and faulty
+        nodes that continuously transmit errors. A misbehaving node is automatically
+        removed from the bus, leaving all other nodes unaffected.
+      </div>
+
+      <div class="prose">
+        CAN is a multi-master broadcast bus. Any node can transmit at any time; if two
+        nodes transmit simultaneously, a deterministic arbitration mechanism decides
+        which message wins — without destroying either transmission. The winning node
+        continues uninterrupted; the losing node retries automatically. Priority is
+        encoded directly in the message ID: a lower ID number always wins arbitration.
+      </div>
+
+      <!-- ── Differential signalling ──────────────────────────── -->
+      <div class="section-head" id="differential">Differential signalling (CAN-H / CAN-L)</div>
+
+      <div class="prose">
+        CAN uses a two-wire differential bus. Rather than signalling logic levels
+        relative to ground, a CAN transceiver drives a <em>voltage difference</em>
+        between two lines: CAN-H (high) and CAN-L (low). The receiver responds to
+        the differential voltage V<sub>diff</sub> = V<sub>CAN-H</sub> − V<sub>CAN-L</sub>,
+        not to either line alone.
+      </div>
+
+      <!-- SVG: CAN-H and CAN-L voltage levels for dominant/recessive -->
+      <svg viewBox="0 0 720 200" style="width:100%;max-width:720px;display:block;margin:24px auto 8px;" role="img" aria-label="CAN bus differential voltage levels: recessive state both lines at 2.5V, dominant state CAN-H at 3.5V and CAN-L at 1.5V giving 2V differential">
+
+        <!-- Grid lines -->
+        <line x1="80" y1="40"  x2="680" y2="40"  stroke="#e8edf0" stroke-width="1"/>
+        <line x1="80" y1="80"  x2="680" y2="80"  stroke="#e8edf0" stroke-width="1"/>
+        <line x1="80" y1="120" x2="680" y2="120" stroke="#e8edf0" stroke-width="1"/>
+        <line x1="80" y1="160" x2="680" y2="160" stroke="#e8edf0" stroke-width="1"/>
+
+        <!-- Y-axis labels -->
+        <text x="76" y="44"  font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#5a6a7a" text-anchor="end">4.0 V</text>
+        <text x="76" y="84"  font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#5a6a7a" text-anchor="end">3.0 V</text>
+        <text x="76" y="124" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#5a6a7a" text-anchor="end">2.0 V</text>
+        <text x="76" y="164" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#5a6a7a" text-anchor="end">1.0 V</text>
+
+        <!-- Recessive region (left side) -->
+        <rect x="80" y="30" width="200" height="150" fill="#f5f5f2" opacity="0.8"/>
+        <text x="180" y="18" font-family="IBM Plex Sans,sans-serif" font-size="10" font-weight="600" fill="#9aabb8" text-anchor="middle">RECESSIVE (logic 1)</text>
+
+        <!-- Both lines at 2.5 V (y=110 for 2.5V given 4V=y40, 0V=y200) -->
+        <!-- Scale: 4V=y40, 0V=y200, 1V=40px -->
+        <!-- 3.5V = y40+25 = y65; 2.5V = y40+60 = y100; 1.5V = y40+100 = y140 -->
+        <line x1="80" y1="100" x2="280" y2="100" stroke="#3a6a8a" stroke-width="2.5"/>
+        <line x1="80" y1="100" x2="280" y2="100" stroke="#e04040" stroke-width="2.5" stroke-dasharray="6,4"/>
+
+        <!-- Label in recessive zone -->
+        <text x="180" y="94" font-family="IBM Plex Mono,monospace" font-size="9" fill="#3a6a8a" text-anchor="middle">CAN-H = 2.5 V</text>
+        <text x="180" y="116" font-family="IBM Plex Mono,monospace" font-size="9" fill="#e04040" text-anchor="middle">CAN-L = 2.5 V</text>
+        <text x="180" y="130" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#9aabb8" text-anchor="middle">V_diff ≈ 0 V</text>
+
+        <!-- Transition -->
+        <line x1="280" y1="30" x2="280" y2="178" stroke="#c0cdd6" stroke-width="1.5" stroke-dasharray="4,3"/>
+
+        <!-- Dominant region (right side) -->
+        <rect x="280" y="30" width="400" height="150" fill="#eef4f8" opacity="0.8"/>
+        <text x="480" y="18" font-family="IBM Plex Sans,sans-serif" font-size="10" font-weight="600" fill="#1a2840" text-anchor="middle">DOMINANT (logic 0)</text>
+
+        <!-- CAN-H at 3.5 V -->
+        <line x1="280" y1="65" x2="680" y2="65" stroke="#3a6a8a" stroke-width="2.5"/>
+        <!-- CAN-L at 1.5 V -->
+        <line x1="280" y1="140" x2="680" y2="140" stroke="#e04040" stroke-width="2.5" stroke-dasharray="6,4"/>
+
+        <!-- Vertical transitions -->
+        <line x1="280" y1="100" x2="280" y2="65"  stroke="#3a6a8a" stroke-width="2.5"/>
+        <line x1="280" y1="100" x2="280" y2="140" stroke="#e04040" stroke-width="2.5"/>
+
+        <!-- Labels in dominant zone -->
+        <text x="480" y="59" font-family="IBM Plex Mono,monospace" font-size="9" fill="#3a6a8a" text-anchor="middle">CAN-H ≈ 3.5 V</text>
+        <text x="480" y="155" font-family="IBM Plex Mono,monospace" font-size="9" fill="#e04040" text-anchor="middle">CAN-L ≈ 1.5 V</text>
+
+        <!-- Differential arrow -->
+        <line x1="580" y1="65" x2="580" y2="140" stroke="#1a2840" stroke-width="1.5"/>
+        <polygon points="576,70 584,70 580,63" fill="#1a2840"/>
+        <polygon points="576,135 584,135 580,142" fill="#1a2840"/>
+        <text x="620" y="106" font-family="IBM Plex Mono,monospace" font-size="10" fill="#1a2840" text-anchor="middle">V_diff</text>
+        <text x="620" y="118" font-family="IBM Plex Mono,monospace" font-size="10" fill="#1a2840" text-anchor="middle">≈ 2 V</text>
+
+        <!-- Legend -->
+        <line x1="88" y1="188" x2="112" y2="188" stroke="#3a6a8a" stroke-width="2"/>
+        <text x="116" y="191" font-family="IBM Plex Mono,monospace" font-size="9" fill="#3a6a8a">CAN-H</text>
+        <line x1="168" y1="188" x2="192" y2="188" stroke="#e04040" stroke-width="2" stroke-dasharray="5,3"/>
+        <text x="196" y="191" font-family="IBM Plex Mono,monospace" font-size="9" fill="#e04040">CAN-L</text>
+
+      </svg>
+      <div style="text-align:center;font-size:12px;color:#9aabb8;margin-bottom:24px;">Recessive: both lines float to 2.5 V; V<sub>diff</sub> ≈ 0 V. Dominant: transceiver drives CAN-H high and CAN-L low; V<sub>diff</sub> ≈ 2 V. The differential signal rejects common-mode noise that would affect a single-ended bus.</div>
+
+      <div class="prose">
+        The advantage of differential signalling is noise rejection. Any interference
+        (motor switching, ignition noise, ground bounce) couples equally onto both
+        CAN-H and CAN-L as common-mode noise, which the differential receiver subtracts
+        out. This is why CAN is reliable in the harshest electrical environments — the
+        same noise that would corrupt a single-ended UART or I2C signal has almost no
+        effect on a differential bus.
+      </div>
+
+      <!-- ── Dominant / recessive ──────────────────────────────── -->
+      <div class="section-head" id="bits">Dominant and recessive bits</div>
+
+      <div class="prose">
+        CAN bits are not called "0" and "1" — they are called
+        <strong>dominant</strong> (logic 0) and <strong>recessive</strong> (logic 1).
+        This distinction is crucial:
+      </div>
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:6px;"><strong>Dominant (0)</strong> — the transceiver actively drives CAN-H HIGH and CAN-L LOW. Dominant <em>overwrites</em> recessive: if any node drives dominant, the bus is dominant, regardless of what other nodes are doing.</li>
+        <li style="margin-bottom:6px;"><strong>Recessive (1)</strong> — the transceiver is passive; both lines float to 2.5 V via the termination resistors. Recessive is only seen if <em>no node</em> is driving dominant simultaneously.</li>
+      </ul>
+
+      <div class="prose">
+        Think of it like an open-drain wired-AND: if any node pulls LOW (dominant),
+        the bus is LOW regardless. The bus is HIGH (recessive) only when everyone
+        releases it. This is the physical basis of non-destructive arbitration.
+      </div>
+
+      <!-- ── Non-destructive arbitration ─────────────────────── -->
+      <div class="section-head" id="arbitration">Non-destructive arbitration</div>
+
+      <div class="prose">
+        When two or more nodes begin transmitting simultaneously, they both start by
+        transmitting their message ID, one bit at a time, MSB first. After each bit,
+        every transmitting node reads back the bus to see what it actually sees.
+      </div>
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:6px;">If a node transmitted a recessive bit (1) but reads back dominant (0), it knows another node with a lower-numbered (higher-priority) ID is also transmitting. It immediately stops transmitting and switches to receiver mode. No bytes were lost — the bus looks like a normal transmission.</li>
+        <li style="margin-bottom:6px;">The winning node (which transmitted all dominant bits where others backed off) never even knew there was a conflict. It continues transmitting its complete frame without interruption.</li>
+        <li style="margin-bottom:6px;">The losing node waits for the bus to go idle, then retransmits automatically.</li>
+      </ul>
+
+      <!-- SVG: arbitration example between two nodes -->
+      <svg viewBox="0 0 760 200" style="width:100%;max-width:760px;display:block;margin:24px auto 8px;" role="img" aria-label="CAN arbitration example: Node A transmits ID 0b0010110, Node B transmits ID 0b0011001. Bit 4 differs — B transmits recessive, sees dominant from A, loses arbitration.">
+
+        <!-- Bit columns: 7 ID bits, label at top -->
+        <!-- x positions: bit6=90, bit5=170, bit4=250, bit3=330, bit2=410, bit1=490, bit0=570 -->
+        <!-- Levels: HIGH(recessive)=y50, LOW(dominant)=y90; rows: Node A=y50-90, Node B=y100-140, Bus=y150-190 -->
+
+        <!-- Column headers -->
+        <text x="90"  y="16" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#5a6a7a" text-anchor="middle">b6</text>
+        <text x="170" y="16" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#5a6a7a" text-anchor="middle">b5</text>
+        <text x="250" y="16" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#5a6a7a" text-anchor="middle">b4</text>
+        <text x="330" y="16" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#5a6a7a" text-anchor="middle">b3</text>
+        <text x="410" y="16" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#5a6a7a" text-anchor="middle">b2</text>
+        <text x="490" y="16" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#5a6a7a" text-anchor="middle">b1</text>
+        <text x="570" y="16" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#5a6a7a" text-anchor="middle">b0</text>
+
+        <!-- Row labels -->
+        <text x="48" y="63" font-family="IBM Plex Sans,sans-serif" font-size="10" fill="#3a6a8a" text-anchor="end">Node A</text>
+        <text x="48" y="72" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#3a6a8a" text-anchor="end">ID=0x16</text>
+        <text x="48" y="113" font-family="IBM Plex Sans,sans-serif" font-size="10" fill="#d4840a" text-anchor="end">Node B</text>
+        <text x="48" y="122" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#d4840a" text-anchor="end">ID=0x19</text>
+        <text x="48" y="163" font-family="IBM Plex Sans,sans-serif" font-size="10" fill="#1a2840" text-anchor="end">Bus</text>
+        <text x="48" y="172" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#5a6a7a" text-anchor="end">(actual)</text>
+
+        <!-- Node A ID: 0b0010110 = bit6=0,bit5=0,bit4=1,bit3=0,bit2=1,bit1=1,bit0=0 -->
+        <!-- D=dominant=y80(low), R=recessive=y44(high) -->
+        <!-- bit6=0(D): -->
+        <rect x="52" y="72" width="76" height="20" rx="2" fill="#3a6a8a" opacity="0.8"/>
+        <text x="90" y="85" font-family="IBM Plex Mono,monospace" font-size="9" fill="#fff" text-anchor="middle">DOM</text>
+        <!-- bit5=0(D): -->
+        <rect x="132" y="72" width="76" height="20" rx="2" fill="#3a6a8a" opacity="0.8"/>
+        <text x="170" y="85" font-family="IBM Plex Mono,monospace" font-size="9" fill="#fff" text-anchor="middle">DOM</text>
+        <!-- bit4=1(R): -->
+        <rect x="212" y="48" width="76" height="20" rx="2" fill="#3a6a8a" opacity="0.2"/>
+        <text x="250" y="61" font-family="IBM Plex Mono,monospace" font-size="9" fill="#1a2840" text-anchor="middle">REC</text>
+        <!-- bit3=0(D): -->
+        <rect x="292" y="72" width="76" height="20" rx="2" fill="#3a6a8a" opacity="0.8"/>
+        <text x="330" y="85" font-family="IBM Plex Mono,monospace" font-size="9" fill="#fff" text-anchor="middle">DOM</text>
+        <!-- bit2=1(R): -->
+        <rect x="372" y="48" width="76" height="20" rx="2" fill="#3a6a8a" opacity="0.2"/>
+        <text x="410" y="61" font-family="IBM Plex Mono,monospace" font-size="9" fill="#1a2840" text-anchor="middle">REC</text>
+        <!-- bit1=1(R): -->
+        <rect x="452" y="48" width="76" height="20" rx="2" fill="#3a6a8a" opacity="0.2"/>
+        <text x="490" y="61" font-family="IBM Plex Mono,monospace" font-size="9" fill="#1a2840" text-anchor="middle">REC</text>
+        <!-- bit0=0(D): -->
+        <rect x="532" y="72" width="76" height="20" rx="2" fill="#3a6a8a" opacity="0.8"/>
+        <text x="570" y="85" font-family="IBM Plex Mono,monospace" font-size="9" fill="#fff" text-anchor="middle">DOM</text>
+
+        <!-- Node B ID: 0b0011001 = bit6=0,bit5=0,bit4=1,bit3=1,bit2=0,bit1=0,bit0=1 -->
+        <!-- bit6=0(D): -->
+        <rect x="52" y="122" width="76" height="20" rx="2" fill="#d4840a" opacity="0.8"/>
+        <text x="90" y="135" font-family="IBM Plex Mono,monospace" font-size="9" fill="#fff" text-anchor="middle">DOM</text>
+        <!-- bit5=0(D): -->
+        <rect x="132" y="122" width="76" height="20" rx="2" fill="#d4840a" opacity="0.8"/>
+        <text x="170" y="135" font-family="IBM Plex Mono,monospace" font-size="9" fill="#fff" text-anchor="middle">DOM</text>
+        <!-- bit4=1(R): -->
+        <rect x="212" y="98" width="76" height="20" rx="2" fill="#d4840a" opacity="0.2"/>
+        <text x="250" y="111" font-family="IBM Plex Mono,monospace" font-size="9" fill="#1a2840" text-anchor="middle">REC</text>
+        <!-- bit3=1(R): — THIS IS WHERE B LOSES -->
+        <rect x="292" y="98" width="76" height="20" rx="2" fill="#d4840a" opacity="0.2"/>
+        <text x="330" y="111" font-family="IBM Plex Mono,monospace" font-size="9" fill="#1a2840" text-anchor="middle">REC</text>
+        <!-- bits 2-0: B has stopped, show greyed -->
+        <rect x="372" y="98" width="236" height="20" rx="2" fill="#e8edf0" opacity="0.6"/>
+        <text x="490" y="111" font-family="IBM Plex Mono,monospace" font-size="9" fill="#9aabb8" text-anchor="middle">← B stops transmitting</text>
+
+        <!-- Bus result row -->
+        <!-- bus shows DOM wherever either node is DOM -->
+        <!-- b6=DOM, b5=DOM, b4=REC (both REC), b3=DOM (A is DOM overrides B's REC), -->
+        <!-- b2..b0 = same as A -->
+        <rect x="52" y="172" width="76" height="20" rx="2" fill="#1a2840" opacity="0.7"/>
+        <text x="90" y="185" font-family="IBM Plex Mono,monospace" font-size="9" fill="#fff" text-anchor="middle">DOM</text>
+        <rect x="132" y="172" width="76" height="20" rx="2" fill="#1a2840" opacity="0.7"/>
+        <text x="170" y="185" font-family="IBM Plex Mono,monospace" font-size="9" fill="#fff" text-anchor="middle">DOM</text>
+        <rect x="212" y="148" width="76" height="20" rx="2" fill="#1a2840" opacity="0.15"/>
+        <text x="250" y="161" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a6a7a" text-anchor="middle">REC</text>
+        <rect x="292" y="172" width="76" height="20" rx="2" fill="#1a2840" opacity="0.7"/>
+        <text x="330" y="185" font-family="IBM Plex Mono,monospace" font-size="9" fill="#fff" text-anchor="middle">DOM</text>
+        <rect x="372" y="148" width="76" height="20" rx="2" fill="#1a2840" opacity="0.15"/>
+        <text x="410" y="161" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a6a7a" text-anchor="middle">REC</text>
+        <rect x="452" y="148" width="76" height="20" rx="2" fill="#1a2840" opacity="0.15"/>
+        <text x="490" y="161" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a6a7a" text-anchor="middle">REC</text>
+        <rect x="532" y="172" width="76" height="20" rx="2" fill="#1a2840" opacity="0.7"/>
+        <text x="570" y="185" font-family="IBM Plex Mono,monospace" font-size="9" fill="#fff" text-anchor="middle">DOM</text>
+
+        <!-- Arbitration loss arrow at bit3 -->
+        <line x1="330" y1="94" x2="330" y2="118" stroke="#e04040" stroke-width="1.5" stroke-dasharray="3,2"/>
+        <text x="665" y="106" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#e04040">B sent REC,</text>
+        <text x="665" y="116" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#e04040">bus = DOM</text>
+        <text x="665" y="126" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#e04040">→ B loses</text>
+
+      </svg>
+      <div style="text-align:center;font-size:12px;color:#9aabb8;margin-bottom:24px;">Node A (ID 0x16 = 0b0010110) vs Node B (ID 0x19 = 0b0011001). Both nodes transmit together until bit 3: A drives dominant, B drives recessive. The bus shows dominant. B reads dominant when it expected recessive — it stops and lets A win. A's lower ID = higher priority.</div>
+
+      <!-- ── Frame format ──────────────────────────────────────── -->
+      <div class="section-head" id="frame">Frame format</div>
+
+      <div class="prose">
+        CAN defines several frame types. The most important is the <strong>Data Frame</strong>,
+        which carries up to 8 bytes of payload. The CAN 2.0A standard uses
+        <strong>11-bit identifiers</strong>; CAN 2.0B (extended) uses <strong>29-bit
+        identifiers</strong> by adding an 18-bit extension field.
+      </div>
+
+      <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:24px;">
+        <thead>
+          <tr style="background:#eef4f8;">
+            <th style="padding:7px 10px;border:1px solid #d0dae0;font-weight:600;">Field</th>
+            <th style="padding:7px 10px;border:1px solid #d0dae0;font-weight:600;">Bits</th>
+            <th style="padding:7px 10px;border:1px solid #d0dae0;font-weight:600;">Purpose</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;font-weight:600;">SOF</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">1</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">Start of Frame — dominant bit that synchronises all nodes</td>
+          </tr>
+          <tr style="background:#f8f9fb;">
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;font-weight:600;">Identifier</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">11 (or 29)</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">Message ID; lower number = higher priority. Transmitted MSB first during arbitration.</td>
+          </tr>
+          <tr>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;font-weight:600;">RTR</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">1</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">Remote Transmission Request. Dominant = data frame; recessive = requests data from a node</td>
+          </tr>
+          <tr style="background:#f8f9fb;">
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;font-weight:600;">IDE</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">1</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">Identifier Extension. Dominant = standard (11-bit); recessive = extended (29-bit)</td>
+          </tr>
+          <tr>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;font-weight:600;">DLC</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">4</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">Data Length Code — number of data bytes (0–8)</td>
+          </tr>
+          <tr style="background:#f8f9fb;">
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;font-weight:600;">Data</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">0–64</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">0–8 bytes of payload</td>
+          </tr>
+          <tr>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;font-weight:600;">CRC</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">15 + 1</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">15-bit CRC over all preceding fields; followed by a recessive delimiter bit</td>
+          </tr>
+          <tr style="background:#f8f9fb;">
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;font-weight:600;">ACK slot</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">1 + 1</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">Transmitter sends recessive; any receiver that got a valid CRC overwrites it with dominant</td>
+          </tr>
+          <tr>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;font-weight:600;">EOF</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">7</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">7 recessive bits marking end of frame</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="prose">
+        The ACK mechanism is a key difference from other protocols. The transmitter
+        does not know who, if anyone, received its message. All it knows is whether
+        any node on the bus acknowledged it. If the ACK slot stays recessive (nobody
+        acknowledged), the transmitter raises an error. This gives CAN a broadcast
+        delivery guarantee: if the CRC is valid, at least one receiver confirmed receipt.
+      </div>
+
+      <!-- ── Bit stuffing ──────────────────────────────────────── -->
+      <div class="section-head" id="bit-stuffing">Bit stuffing</div>
+
+      <div class="prose">
+        CAN has no separate clock line. Nodes synchronise on bit edges — specifically,
+        on transitions from recessive to dominant or dominant to recessive. Long runs
+        of identical bits would give no edges to synchronise on. To prevent this, CAN
+        uses <strong>bit stuffing</strong>: after every five consecutive bits of the
+        same polarity, the transmitter inserts one bit of the opposite polarity.
+        Receivers remove these stuff bits automatically.
+      </div>
+
+      <div class="math-block" style="font-family:'IBM Plex Mono',monospace;font-size:13px;padding:10px 20px;background:#f0f4f8;border-left:3px solid #7ab8d4;border-radius:3px;margin:0 0 16px 0;color:#1a2840;">
+        Rule: after 5 consecutive bits of same value, insert 1 bit of opposite value
+        <br>
+        Example: 111110 → 1111100&nbsp;&nbsp; (0 is the stuff bit; receiver discards it)
+        <br>
+        Example: 000001 → 00000 + 1 + 1 = 000001 with transparent stuff at position 6
+      </div>
+
+      <div class="prose">
+        Bit stuffing inflates the frame slightly — in the worst case a data field has
+        20% overhead. More importantly, a <strong>stuff error</strong> — seeing six
+        consecutive bits of the same polarity — is always a protocol error. This is one
+        of the five error detection mechanisms in CAN (the others are CRC check,
+        frame format check, ACK check, and bit monitoring).
+      </div>
+
+      <!-- ── Error detection and confinement ─────────────────── -->
+      <div class="section-head" id="errors">Error detection and error confinement</div>
+
+      <div class="prose">
+        CAN's robustness comes from its layered error system. Every node maintains two
+        internal counters: the <strong>Transmit Error Counter (TEC)</strong> and the
+        <strong>Receive Error Counter (REC)</strong>. Errors increment the counters;
+        successful transmissions and receptions decrement them.
+      </div>
+
+      <div class="prose">
+        Based on these counters, each node is in one of three error states:
+      </div>
+
+      <!-- SVG: error state machine -->
+      <svg viewBox="0 0 700 160" style="width:100%;max-width:700px;display:block;margin:24px auto 8px;" role="img" aria-label="CAN error confinement state machine: Error Active (normal), Error Passive (TEC or REC over 127), and Bus Off (TEC over 255)">
+
+        <!-- Error Active box -->
+        <rect x="30" y="44" width="160" height="70" rx="6" fill="#e8f5e8" stroke="#5a8a5a" stroke-width="2"/>
+        <text x="110" y="72" font-family="IBM Plex Sans,sans-serif" font-size="11" font-weight="600" fill="#1a2840" text-anchor="middle">Error Active</text>
+        <text x="110" y="88" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a6a7a" text-anchor="middle">TEC, REC &lt; 128</text>
+        <text x="110" y="101" font-family="IBM Plex Sans,sans-serif" font-size="9" fill="#5a6a7a" text-anchor="middle">Normal operation</text>
+
+        <!-- Error Passive box -->
+        <rect x="270" y="44" width="160" height="70" rx="6" fill="#fff3e0" stroke="#d4840a" stroke-width="2"/>
+        <text x="350" y="72" font-family="IBM Plex Sans,sans-serif" font-size="11" font-weight="600" fill="#1a2840" text-anchor="middle">Error Passive</text>
+        <text x="350" y="88" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a6a7a" text-anchor="middle">TEC or REC ≥ 128</text>
+        <text x="350" y="101" font-family="IBM Plex Sans,sans-serif" font-size="9" fill="#5a6a7a" text-anchor="middle">Passive error flags only</text>
+
+        <!-- Bus Off box -->
+        <rect x="510" y="44" width="160" height="70" rx="6" fill="#fde8e8" stroke="#e04040" stroke-width="2"/>
+        <text x="590" y="72" font-family="IBM Plex Sans,sans-serif" font-size="11" font-weight="600" fill="#1a2840" text-anchor="middle">Bus Off</text>
+        <text x="590" y="88" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a6a7a" text-anchor="middle">TEC ≥ 256</text>
+        <text x="590" y="101" font-family="IBM Plex Sans,sans-serif" font-size="9" fill="#5a6a7a" text-anchor="middle">Disconnected from bus</text>
+
+        <!-- Transitions -->
+        <!-- Active → Passive -->
+        <line x1="190" y1="72" x2="270" y2="72" stroke="#d4840a" stroke-width="1.5"/>
+        <polygon points="266,68 274,72 266,76" fill="#d4840a"/>
+        <text x="230" y="64" font-family="IBM Plex Mono,monospace" font-size="8" fill="#d4840a" text-anchor="middle">TEC/REC ≥ 128</text>
+
+        <!-- Passive → Active -->
+        <line x1="270" y1="84" x2="190" y2="84" stroke="#5a8a5a" stroke-width="1.5"/>
+        <polygon points="194,80 186,84 194,88" fill="#5a8a5a"/>
+        <text x="230" y="97" font-family="IBM Plex Mono,monospace" font-size="8" fill="#5a8a5a" text-anchor="middle">TEC and REC &lt; 128</text>
+
+        <!-- Passive → Bus Off -->
+        <line x1="430" y1="72" x2="510" y2="72" stroke="#e04040" stroke-width="1.5"/>
+        <polygon points="506,68 514,72 506,76" fill="#e04040"/>
+        <text x="470" y="64" font-family="IBM Plex Mono,monospace" font-size="8" fill="#e04040" text-anchor="middle">TEC ≥ 256</text>
+
+        <!-- Bus Off → Active (recovery) -->
+        <path d="M590,114 Q590,145 350,145 Q110,145 110,114" stroke="#5a8a5a" stroke-width="1.5" fill="none" stroke-dasharray="5,3"/>
+        <polygon points="106,118 110,110 114,118" fill="#5a8a5a"/>
+        <text x="350" y="158" font-family="IBM Plex Mono,monospace" font-size="8" fill="#5a8a5a" text-anchor="middle">128 × 11 recessive bits seen (power cycle or bus recovery)</text>
+
+      </svg>
+      <div style="text-align:center;font-size:12px;color:#9aabb8;margin-bottom:24px;">CAN error confinement state machine. A faulty node escalates from Error Active → Error Passive → Bus Off, automatically disconnecting itself without taking down the bus.</div>
+
+      <div class="prose">
+        <strong>Error Active</strong> nodes transmit <em>active error flags</em>
+        (6 dominant bits) when they detect an error, which immediately aborts the
+        current frame for all nodes and triggers retransmission. <strong>Error
+        Passive</strong> nodes — ones that have already been flagged as unreliable —
+        can only send <em>passive error flags</em> (6 recessive bits), which are
+        invisible on the bus and do not disturb other nodes. A node in Bus Off state
+        cannot transmit or receive at all.
+      </div>
+
+      <div class="prose">
+        This graduated response is intentional. A node that detects occasional errors
+        due to noise will increment its error counters but stay in Error Active. A
+        node with a hardware fault that continuously generates errors will escalate to
+        Bus Off and disconnect itself, leaving all other nodes communicating normally.
+        CAN is designed so one faulty node cannot permanently corrupt bus traffic.
+      </div>
+
+      <!-- ── Termination ───────────────────────────────────────── -->
+      <div class="section-head" id="termination">Termination resistors</div>
+
+      <div class="prose">
+        CAN is a transmission line. At the bit rates used in real systems (125 kHz to
+        1 MHz, sometimes higher), the bus wires act as a transmission line, and
+        signal reflections from unterminated ends will corrupt frames. The fix is to
+        place a <strong>120 Ω resistor</strong> (matched to the CAN cable's
+        characteristic impedance) at each end of the bus — exactly two resistors,
+        one at each physical end.
+      </div>
+
+      <!-- SVG: CAN bus with termination resistors at ends -->
+      <svg viewBox="0 0 700 110" style="width:100%;max-width:700px;display:block;margin:24px auto 8px;" role="img" aria-label="CAN bus topology: two termination resistors at the physical ends of the bus, multiple nodes tapping in between">
+
+        <!-- CAN-H line -->
+        <line x1="40" y1="44" x2="660" y2="44" stroke="#3a6a8a" stroke-width="2"/>
+        <text x="20" y="48" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#3a6a8a" text-anchor="end">H</text>
+        <!-- CAN-L line -->
+        <line x1="40" y1="68" x2="660" y2="68" stroke="#e04040" stroke-width="2" stroke-dasharray="5,3"/>
+        <text x="20" y="72" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#e04040" text-anchor="end">L</text>
+
+        <!-- Left termination resistor -->
+        <rect x="30" y="47" width="16" height="18" rx="2" fill="#f5f5f2" stroke="#1a2840" stroke-width="1.5"/>
+        <text x="38" y="70" font-family="IBM Plex Mono,monospace" font-size="8" fill="#1a2840" text-anchor="middle">120Ω</text>
+
+        <!-- Right termination resistor -->
+        <rect x="654" y="47" width="16" height="18" rx="2" fill="#f5f5f2" stroke="#1a2840" stroke-width="1.5"/>
+        <text x="662" y="70" font-family="IBM Plex Mono,monospace" font-size="8" fill="#1a2840" text-anchor="middle">120Ω</text>
+
+        <!-- Node taps -->
+        <!-- Node 1 -->
+        <line x1="170" y1="44" x2="170" y2="82" stroke="#1a2840" stroke-width="1.5"/>
+        <line x1="170" y1="68" x2="170" y2="82" stroke="#1a2840" stroke-width="1.5"/>
+        <rect x="130" y="82" width="80" height="24" rx="3" fill="#eef4f8" stroke="#7ab8d4" stroke-width="1.5"/>
+        <text x="170" y="97" font-family="IBM Plex Sans,sans-serif" font-size="9" fill="#1a2840" text-anchor="middle">Node (ECU)</text>
+
+        <!-- Node 2 -->
+        <line x1="350" y1="44" x2="350" y2="82" stroke="#1a2840" stroke-width="1.5"/>
+        <line x1="350" y1="68" x2="350" y2="82" stroke="#1a2840" stroke-width="1.5"/>
+        <rect x="310" y="82" width="80" height="24" rx="3" fill="#eef4f8" stroke="#7ab8d4" stroke-width="1.5"/>
+        <text x="350" y="97" font-family="IBM Plex Sans,sans-serif" font-size="9" fill="#1a2840" text-anchor="middle">Node (sensor)</text>
+
+        <!-- Node 3 -->
+        <line x1="530" y1="44" x2="530" y2="82" stroke="#1a2840" stroke-width="1.5"/>
+        <line x1="530" y1="68" x2="530" y2="82" stroke="#1a2840" stroke-width="1.5"/>
+        <rect x="490" y="82" width="80" height="24" rx="3" fill="#eef4f8" stroke="#7ab8d4" stroke-width="1.5"/>
+        <text x="530" y="97" font-family="IBM Plex Sans,sans-serif" font-size="9" fill="#1a2840" text-anchor="middle">Node (actuator)</text>
+
+        <!-- Labels at ends -->
+        <text x="38" y="34" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#1a2840" text-anchor="middle">end</text>
+        <text x="662" y="34" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#1a2840" text-anchor="middle">end</text>
+
+      </svg>
+      <div style="text-align:center;font-size:12px;color:#9aabb8;margin-bottom:24px;">Exactly two 120 Ω resistors, one at each physical end of the bus. Nodes tap in along the middle. The parallel combination of two 120 Ω resistors = 60 Ω, which is the intended bus impedance seen by the transceivers.</div>
+
+      <div class="prose">
+        Common termination mistakes: adding termination at every node (too low
+        impedance, distorts the signal), putting termination in the middle of the bus
+        (unterminated stubs cause reflections from both ends), or forgetting termination
+        entirely (signal rings and causes bit errors). On a bench setup with a short
+        cable, missing termination may work by luck at low bit rates — it will fail in
+        production at the full intended bit rate or over a long cable.
+      </div>
+
+      <div class="callout">
+        <strong>Split termination.</strong> Some boards use two 60 Ω resistors with a
+        capacitor to ground at the midpoint instead of one 120 Ω. This forms an RC
+        low-pass filter that reduces high-frequency common-mode noise — useful in
+        very noisy environments such as engine bays.
+      </div>
+
+      <hr class="lesson-rule">
+
+      <div class="section-head">References</div>
+      <ul class="prose" style="padding-left:1.4em;font-size:13.5px;color:#5a6a7a;">
+        <li style="margin-bottom:6px;">Robert Bosch GmbH, <em>CAN Specification Version 2.0</em> (1991) — the original protocol definition; covers frame format, bit stuffing, error handling, and confinement.</li>
+        <li style="margin-bottom:6px;">Texas Instruments, <em>Introduction to the Controller Area Network (CAN)</em> (SLOA101) — practical application note covering arbitration, error handling, termination.</li>
+        <li style="margin-bottom:6px;">M. White, <em>Making Embedded Systems</em> (2nd ed.) — Chapter on CAN Bus fundamentals and error confinement.</li>
+        <li style="margin-bottom:6px;">J. Yiu, <em>The Definitive Guide to ARM Cortex-M3 and Cortex-M4 Processors</em> (3rd ed.) — overview of CAN controller integration in ARM-based MCUs.</li>
+      </ul>
+
+      <!-- ── Nav ───────────────────────────────────────────────── -->
+      <div class="lesson-nav">
+        <a href="i2c.html" class="lesson-nav-btn">← Lesson 10: I2C</a>
+        <a href="index.html" class="lesson-nav-btn">Back to Embedded Systems</a>
+        <a href="#" class="lesson-nav-btn disabled">Next → (coming soon)</a>
+      </div>
+
+    </div><!-- /main -->
+
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+</body>
+</html>
