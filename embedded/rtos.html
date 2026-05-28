@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RTOS Concepts — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Architecture &amp; Internals</div>
+        <a href="mcu-architecture.html" class="nav-item">1 · MCU Architecture</a>
+        <a href="memory-clocks.html" class="nav-item">2 · Memory &amp; Clock Systems</a>
+        <a href="interrupts-nvic.html" class="nav-item">3 · Interrupts &amp; the NVIC</a>
+        <a href="dma.html" class="nav-item">4 · DMA</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Peripherals</div>
+        <a href="gpio.html" class="nav-item">5 · GPIO</a>
+        <a href="timers-pwm.html" class="nav-item">6 · Timers &amp; PWM</a>
+        <a href="adc-dac.html" class="nav-item">7 · ADC &amp; DAC</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Protocols</div>
+        <a href="uart.html" class="nav-item">8 · UART</a>
+        <a href="spi.html" class="nav-item">9 · SPI</a>
+        <a href="i2c.html" class="nav-item">10 · I2C</a>
+        <a href="can.html" class="nav-item">11 · CAN Bus</a>
+        <a href="usb.html" class="nav-item">12 · USB Fundamentals</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Firmware</div>
+        <a href="bare-metal.html" class="nav-item">13 · Bare-Metal Patterns</a>
+        <a href="rtos.html" class="nav-item active">14 · RTOS Concepts</a>
+        <span class="nav-item planned">15 · Debugging &amp; Test</span>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">PCB Design</div>
+        <span class="nav-item planned">16 · Layout Fundamentals</span>
+        <span class="nav-item planned">17 · Mixed-Signal Layout</span>
+        <span class="nav-item planned">18 · Power &amp; Thermal</span>
+        <span class="nav-item planned">19 · High-Speed &amp; RF</span>
+      </div>
+
+      <hr class="sidebar-rule">
+
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#why-rtos" class="nav-item">Why an RTOS?</a>
+        <a href="#tasks" class="nav-item">Tasks &amp; the kernel</a>
+        <a href="#scheduler" class="nav-item">Scheduler &amp; context switch</a>
+        <a href="#sync" class="nav-item">Semaphores &amp; mutexes</a>
+        <a href="#queues" class="nav-item">Queues</a>
+        <a href="#priority-inversion" class="nav-item">Priority inversion</a>
+        <a href="#stack-overflow" class="nav-item">Stack overflow</a>
+        <a href="#freertos" class="nav-item">FreeRTOS in practice</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Embedded Systems</a>
+        <span class="sep">›</span>
+        <span>14 · RTOS Concepts</span>
+      </div>
+
+      <div class="lesson-title">14 · RTOS Concepts</div>
+      <div class="lesson-meta">Tasks · Scheduling · Semaphores · Mutexes · Queues · Priority Inversion</div>
+
+      <div class="prose">
+        A real-time operating system (RTOS) is a thin software layer that adds one
+        crucial capability the bare-metal superloop lacks: the ability to run several
+        logically independent activities concurrently, each with its own timing
+        guarantee. It does this not with multiple processors, but by rapidly
+        switching the single CPU between tasks — fast enough that each task appears
+        to run continuously. The "real-time" in the name means the kernel provides
+        deterministic scheduling with bounded latency, not that it is particularly
+        fast.
+      </div>
+
+      <hr class="lesson-rule">
+
+      <!-- ── Why an RTOS? ─────────────────────────────────────── -->
+      <div class="section-head" id="why-rtos">Why an RTOS?</div>
+
+      <div class="prose">
+        The superloop (Lesson 13) works well when all tasks are quick and similarly
+        timed. It falls apart when:
+      </div>
+
+      <ul class="prose" style="margin-top:0; padding-left:1.4em;">
+        <li style="margin-bottom:6px;"><strong>Timing requirements diverge.</strong>
+          Blinking an LED every second and servicing a 1 Mbit/s CAN bus are both
+          "things the firmware does," but one needs microsecond response and the
+          other is happy with milliseconds. A single loop iteration cannot satisfy
+          both without compromising one.</li>
+        <li style="margin-bottom:6px;"><strong>Long operations block everything.</strong>
+          If one part of the system needs to wait for an SD card write (tens of
+          milliseconds), the entire superloop stalls. There is no way to keep
+          servicing other work during the wait.</li>
+        <li style="margin-bottom:6px;"><strong>Complexity grows non-linearly.</strong>
+          Each new feature added to a superloop must interleave cleanly with
+          every existing feature. An RTOS lets each concern live in its own task,
+          with explicit synchronization at the boundaries.</li>
+      </ul>
+
+      <div class="prose">
+        An RTOS solves these problems by decomposing the firmware into <em>tasks</em>
+        — independent threads of execution — and providing a <em>scheduler</em> that
+        decides which task runs at each moment, plus <em>synchronization primitives</em>
+        (semaphores, mutexes, queues) for safe communication between tasks.
+      </div>
+
+      <div class="callout">
+        <strong>RTOS vs bare-metal is a tradeoff, not an upgrade.</strong>
+        An RTOS adds code size (~5–20 KB for FreeRTOS), a stack per task (often
+        512–2048 bytes each), and non-determinism at context-switch boundaries.
+        For a simple sensor node doing one thing, the superloop is the right answer.
+        Use an RTOS when you have genuinely concurrent activities with independent
+        timing requirements.
+      </div>
+
+      <!-- ── Tasks & the Kernel ───────────────────────────────── -->
+      <div class="section-head" id="tasks">Tasks &amp; the Kernel</div>
+
+      <div class="prose">
+        A <strong>task</strong> (also called a thread) is a C function that looks
+        like it runs forever. The RTOS gives it an exclusive, private stack and
+        assigns it a priority. From the task's perspective it has the whole CPU
+        to itself; the RTOS invisibly time-shares the hardware.
+      </div>
+
+      <div class="code-block"><pre>void sensor_task(void *pvParameters) {
+    // Task body — runs as if it owns the CPU
+    for (;;) {
+        uint16_t val = ADC_read();
+        xQueueSend(sensor_queue, &val, portMAX_DELAY);
+        vTaskDelay(pdMS_TO_TICKS(10));  // sleep 10 ms
+    }
+    // Tasks should never return. If they do, behaviour is undefined.
+}</pre></div>
+
+      <div class="prose">
+        Every task is in exactly one state at any moment. The state diagram below
+        covers all four states the kernel tracks:
+      </div>
+
+      <!-- Task state diagram SVG -->
+      <svg viewBox="0 0 620 220" xmlns="http://www.w3.org/2000/svg"
+           style="width:100%;max-width:620px;display:block;margin:20px auto 24px;">
+        <!-- Background -->
+        <rect width="620" height="220" fill="#f5f5f2" rx="6"/>
+
+        <!-- State boxes -->
+        <!-- Running (center-ish) -->
+        <rect x="250" y="80" width="120" height="48" rx="6" fill="#3a6a8a" stroke="none"/>
+        <text x="310" y="100" text-anchor="middle" fill="white" font-family="IBM Plex Sans" font-size="12" font-weight="600">Running</text>
+        <text x="310" y="117" text-anchor="middle" fill="#c0d8e8" font-family="IBM Plex Mono" font-size="10">on CPU</text>
+
+        <!-- Ready -->
+        <rect x="60" y="80" width="120" height="48" rx="6" fill="white" stroke="#3a6a8a" stroke-width="1.5"/>
+        <text x="120" y="100" text-anchor="middle" fill="#1a2840" font-family="IBM Plex Sans" font-size="12" font-weight="600">Ready</text>
+        <text x="120" y="117" text-anchor="middle" fill="#5a7a9a" font-family="IBM Plex Mono" font-size="10">waiting for CPU</text>
+
+        <!-- Blocked -->
+        <rect x="440" y="80" width="140" height="48" rx="6" fill="white" stroke="#7ab8d4" stroke-width="1.5"/>
+        <text x="510" y="100" text-anchor="middle" fill="#1a2840" font-family="IBM Plex Sans" font-size="12" font-weight="600">Blocked</text>
+        <text x="510" y="117" text-anchor="middle" fill="#5a7a9a" font-family="IBM Plex Mono" font-size="10">waiting for event</text>
+
+        <!-- Suspended -->
+        <rect x="250" y="168" width="120" height="40" rx="6" fill="white" stroke="#9aabb8" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <text x="310" y="184" text-anchor="middle" fill="#7a9aaa" font-family="IBM Plex Sans" font-size="12" font-weight="500">Suspended</text>
+        <text x="310" y="200" text-anchor="middle" fill="#9aabb8" font-family="IBM Plex Mono" font-size="10">vTaskSuspend()</text>
+
+        <!-- Arrows -->
+        <!-- Ready → Running: scheduler selects -->
+        <line x1="180" y1="104" x2="248" y2="104" stroke="#3a6a8a" stroke-width="1.5" marker-end="url(#arr-blue)"/>
+        <text x="214" y="97" text-anchor="middle" fill="#3a6a8a" font-family="IBM Plex Sans" font-size="10">selected</text>
+
+        <!-- Running → Ready: preempted / yield -->
+        <path d="M 250 116 C 215 132 185 128 180 116" fill="none" stroke="#9aabb8" stroke-width="1.5" marker-end="url(#arr-grey)"/>
+        <text x="214" y="135" text-anchor="middle" fill="#7a8a9a" font-family="IBM Plex Sans" font-size="10">preempted / yield</text>
+
+        <!-- Running → Blocked: wait on semaphore/queue/delay -->
+        <line x1="370" y1="104" x2="438" y2="104" stroke="#9aabb8" stroke-width="1.5" marker-end="url(#arr-grey)"/>
+        <text x="404" y="97" text-anchor="middle" fill="#7a8a9a" font-family="IBM Plex Sans" font-size="10">xSemaphoreTake</text>
+        <text x="404" y="108" text-anchor="middle" fill="#7a8a9a" font-family="IBM Plex Sans" font-size="10">/ xQueueReceive…</text>
+
+        <!-- Blocked → Ready: event occurs -->
+        <path d="M 510 80 C 510 50 310 50 310 79" fill="none" stroke="#7ab8d4" stroke-width="1.5" marker-end="url(#arr-cyan)"/>
+        <text x="415" y="46" text-anchor="middle" fill="#3a6a8a" font-family="IBM Plex Sans" font-size="10">event / timeout → unblocked</text>
+
+        <!-- Running → Suspended -->
+        <line x1="310" y1="128" x2="310" y2="167" stroke="#9aabb8" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr-grey)"/>
+
+        <!-- Suspended → Ready -->
+        <path d="M 250 188 C 180 188 120 160 120 129" fill="none" stroke="#9aabb8" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr-grey)"/>
+        <text x="166" y="182" text-anchor="middle" fill="#7a8a9a" font-family="IBM Plex Sans" font-size="10">vTaskResume()</text>
+
+        <!-- Arrowhead markers -->
+        <defs>
+          <marker id="arr-blue" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+            <polygon points="0 0, 7 3.5, 0 7" fill="#3a6a8a"/>
+          </marker>
+          <marker id="arr-grey" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+            <polygon points="0 0, 7 3.5, 0 7" fill="#9aabb8"/>
+          </marker>
+          <marker id="arr-cyan" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+            <polygon points="0 0, 7 3.5, 0 7" fill="#7ab8d4"/>
+          </marker>
+        </defs>
+      </svg>
+
+      <div class="prose">
+        <strong>Running</strong> — exactly one task (or the idle task) occupies
+        the CPU at a time. <strong>Ready</strong> — the task could run but a
+        higher-priority task is currently running. <strong>Blocked</strong> — the
+        task is waiting for something: a semaphore, a queue item, a timeout. It
+        will not consume CPU while blocked.
+        <strong>Suspended</strong> — explicitly paused via
+        <code>vTaskSuspend()</code>; not considered for scheduling until
+        <code>vTaskResume()</code> is called.
+      </div>
+
+      <div class="prose">
+        Each task has a <strong>private stack</strong> — a region of RAM that the
+        kernel switches in when that task runs. The stack holds the task's local
+        variables and the saved CPU context (registers) when the task is not
+        running. Sizing stacks correctly is one of the most error-prone parts of
+        RTOS development (see <a href="#stack-overflow">Stack Overflow</a>).
+      </div>
+
+      <!-- ── Scheduler & Context Switch ─────────────────────────── -->
+      <div class="section-head" id="scheduler">Scheduler &amp; Context Switch</div>
+
+      <div class="prose">
+        The scheduler decides which task runs. FreeRTOS and most embedded RTOSes
+        use a <strong>preemptive, priority-based scheduler</strong> with round-robin
+        for equal-priority tasks.
+      </div>
+
+      <div class="prose">
+        The rules are simple:
+      </div>
+
+      <ul class="prose" style="margin-top:0; padding-left:1.4em;">
+        <li style="margin-bottom:6px;">The highest-priority ready task always runs.</li>
+        <li style="margin-bottom:6px;">If two ready tasks share the same priority, they
+          take turns each tick (round-robin).</li>
+        <li style="margin-bottom:6px;">A running task is immediately preempted if a
+          higher-priority task becomes ready (e.g., because an ISR unblocked it).</li>
+      </ul>
+
+      <div class="prose">
+        The <strong>tick</strong> is a periodic timer interrupt that drives the
+        scheduler. FreeRTOS defaults to 1 ms ticks (1000 Hz). Each tick the
+        scheduler checks whether a context switch is needed. The tick period sets
+        the granularity of <code>vTaskDelay()</code> — you cannot sleep for less
+        than one tick.
+      </div>
+
+      <!-- Scheduling timeline SVG -->
+      <svg viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg"
+           style="width:100%;max-width:640px;display:block;margin:20px auto 8px;">
+        <rect width="640" height="200" fill="#f5f5f2" rx="6"/>
+
+        <!-- Time axis -->
+        <line x1="100" y1="170" x2="620" y2="170" stroke="#c0c8d0" stroke-width="1.5"/>
+        <text x="610" y="183" text-anchor="middle" fill="#7a8a9a" font-family="IBM Plex Sans" font-size="11">time →</text>
+
+        <!-- Tick marks -->
+        <line x1="100" y1="168" x2="100" y2="175" stroke="#c0c8d0" stroke-width="1"/>
+        <line x1="180" y1="168" x2="180" y2="175" stroke="#c0c8d0" stroke-width="1"/>
+        <line x1="260" y1="168" x2="260" y2="175" stroke="#c0c8d0" stroke-width="1"/>
+        <line x1="340" y1="168" x2="340" y2="175" stroke="#c0c8d0" stroke-width="1"/>
+        <line x1="420" y1="168" x2="420" y2="175" stroke="#c0c8d0" stroke-width="1"/>
+        <line x1="500" y1="168" x2="500" y2="175" stroke="#c0c8d0" stroke-width="1"/>
+        <line x1="580" y1="168" x2="580" y2="175" stroke="#c0c8d0" stroke-width="1"/>
+
+        <!-- Row labels -->
+        <text x="88" y="36" text-anchor="end" fill="#1a2840" font-family="IBM Plex Sans" font-size="12" font-weight="600">T1</text>
+        <text x="88" y="37" dy="2" text-anchor="end" fill="#5a7a9a" font-family="IBM Plex Mono" font-size="9">prio=3</text>
+        <text x="88" y="86" text-anchor="end" fill="#1a2840" font-family="IBM Plex Sans" font-size="12" font-weight="600">T2</text>
+        <text x="88" y="87" dy="2" text-anchor="end" fill="#5a7a9a" font-family="IBM Plex Mono" font-size="9">prio=2</text>
+        <text x="88" y="136" text-anchor="end" fill="#1a2840" font-family="IBM Plex Sans" font-size="12" font-weight="600">T3</text>
+        <text x="88" y="137" dy="2" text-anchor="end" fill="#5a7a9a" font-family="IBM Plex Mono" font-size="9">prio=1</text>
+
+        <!-- Row baselines -->
+        <line x1="100" y1="50" x2="620" y2="50" stroke="#e0e4e8" stroke-width="1"/>
+        <line x1="100" y1="100" x2="620" y2="100" stroke="#e0e4e8" stroke-width="1"/>
+        <line x1="100" y1="150" x2="620" y2="150" stroke="#e0e4e8" stroke-width="1"/>
+
+        <!-- T3 runs first (prio 1 = lowest when nothing else ready) -->
+        <!-- t=0..80: T3 running (nothing else ready) -->
+        <rect x="100" y="130" width="80" height="20" fill="#d0e8f4" rx="2"/>
+        <!-- t=80..100: T2 becomes ready, preempts T3 -->
+        <!-- T2 runs t=80..160 -->
+        <rect x="180" y="80" width="80" height="20" fill="#7ab8d4" rx="2"/>
+        <!-- T3 blocked t=80..160 (waiting) - just baseline -->
+        <!-- T1 becomes ready at t=160, preempts T2 -->
+        <rect x="260" y="20" width="80" height="30" fill="#3a6a8a" rx="2"/>
+        <!-- T2 ready but not running t=260..340 -->
+        <!-- T1 finishes (blocks on delay) at t=340 -->
+        <!-- T2 resumes t=340..420 -->
+        <rect x="340" y="80" width="80" height="20" fill="#7ab8d4" rx="2"/>
+        <!-- T1 unblocked again at t=380 → preempts T2 mid-way -->
+        <!-- Actually let's simplify the scenario -->
+        <!-- T2 finishes at t=420, T3 resumes -->
+        <rect x="420" y="130" width="80" height="20" fill="#d0e8f4" rx="2"/>
+        <!-- T1 short burst again at t=500 -->
+        <rect x="500" y="20" width="40" height="30" fill="#3a6a8a" rx="2"/>
+        <!-- T2 runs from t=540 -->
+        <rect x="540" y="80" width="40" height="20" fill="#7ab8d4" rx="2"/>
+
+        <!-- Preemption arrows -->
+        <line x1="180" y1="90" x2="180" y2="148" stroke="#e06060" stroke-width="1.5" stroke-dasharray="3,2"/>
+        <text x="183" y="120" fill="#c05050" font-family="IBM Plex Sans" font-size="9">preempt</text>
+        <line x1="260" y1="35" x2="260" y2="98" stroke="#e06060" stroke-width="1.5" stroke-dasharray="3,2"/>
+        <text x="263" y="70" fill="#c05050" font-family="IBM Plex Sans" font-size="9">preempt</text>
+
+        <!-- Labels in bars -->
+        <text x="140" y="144" text-anchor="middle" fill="#1a5870" font-family="IBM Plex Mono" font-size="9">run</text>
+        <text x="220" y="94" text-anchor="middle" fill="white" font-family="IBM Plex Mono" font-size="9">run</text>
+        <text x="300" y="39" text-anchor="middle" fill="white" font-family="IBM Plex Mono" font-size="9">run</text>
+        <text x="380" y="94" text-anchor="middle" fill="white" font-family="IBM Plex Mono" font-size="9">run</text>
+        <text x="460" y="144" text-anchor="middle" fill="#1a5870" font-family="IBM Plex Mono" font-size="9">run</text>
+        <text x="520" y="39" text-anchor="middle" fill="white" font-family="IBM Plex Mono" font-size="9">run</text>
+        <text x="560" y="94" text-anchor="middle" fill="white" font-family="IBM Plex Mono" font-size="9">run</text>
+      </svg>
+      <div class="prose" style="font-size:12.5px;color:#5a6a7a;text-align:center;margin-top:0;margin-bottom:20px;">
+        Preemptive scheduling: T1 (highest priority) interrupts T2 and T3 the moment it becomes ready. Lower-priority tasks only run when T1 blocks.
+      </div>
+
+      <div class="prose">
+        A <strong>context switch</strong> is the mechanism that makes this possible.
+        When the scheduler preempts a running task, it must save the task's
+        complete CPU state so it can resume later as if nothing happened. On
+        Cortex-M, that means:
+      </div>
+
+      <ul class="prose" style="margin-top:0; padding-left:1.4em;">
+        <li style="margin-bottom:5px;"><strong>Hardware-saved automatically</strong> (on any exception entry): r0–r3, r12, LR, PC, xPSR — 8 registers pushed to the current stack.</li>
+        <li style="margin-bottom:5px;"><strong>Software-saved by the RTOS</strong> (in the PendSV handler): r4–r11 (and s16–s31 if FPU is active).</li>
+        <li style="margin-bottom:5px;"><strong>Stack pointer saved</strong> to the TCB (Task Control Block — the kernel's per-task data structure). The new task's SP is loaded from its TCB.</li>
+      </ul>
+
+      <div class="prose">
+        FreeRTOS triggers context switches via <strong>PendSV</strong>, the
+        lowest-priority exception on Cortex-M. Using PendSV means the context
+        switch always happens after all higher-priority exceptions have completed —
+        it never preempts real hardware ISRs.
+      </div>
+
+      <div class="callout">
+        <strong>Cooperative vs preemptive scheduling.</strong>
+        In a <em>cooperative</em> (non-preemptive) RTOS, a task runs until it
+        explicitly yields by calling <code>taskYIELD()</code> or a blocking API.
+        The kernel never forcibly switches away from a running task. Cooperative
+        scheduling makes reasoning about shared state easier but breaks the
+        real-time guarantee — a task that spins never gives others a chance to run.
+        Most real-time systems use preemptive scheduling for this reason.
+      </div>
+
+      <!-- ── Semaphores & Mutexes ─────────────────────────────── -->
+      <div class="section-head" id="sync">Semaphores &amp; Mutexes</div>
+
+      <div class="prose">
+        Tasks need two things from each other: signals ("<em>something happened</em>")
+        and shared resources ("<em>only one of us uses this at a time</em>"). The
+        RTOS provides primitives for each.
+      </div>
+
+      <div class="section-head" style="font-size:13px;letter-spacing:0.04em;margin-top:20px;margin-bottom:10px;">Binary Semaphore</div>
+
+      <div class="prose">
+        A binary semaphore is a flag with two operations: <em>give</em> (post/signal)
+        and <em>take</em> (pend/wait). It has a count of 0 or 1. A task calling
+        <code>xSemaphoreTake()</code> on a zero-count semaphore blocks until another
+        task (or ISR) calls <code>xSemaphoreGive()</code>.
+      </div>
+
+      <div class="prose">
+        The canonical use case is <strong>ISR → task signaling</strong>: the ISR runs
+        to completion (quickly — no blocking allowed in ISRs), then gives the semaphore
+        to wake the task that will do the heavy lifting.
+      </div>
+
+      <div class="code-block"><pre>SemaphoreHandle_t uart_rx_sem;
+
+// --- ISR (runs in interrupt context) ---
+void UART0_IRQHandler(void) {
+    BaseType_t higher_prio_woken = pdFALSE;
+
+    ring_push(&rx_ring, UART0->RXDATA);  // store byte
+
+    // Give semaphore FROM ISR — use the FromISR variant!
+    xSemaphoreGiveFromISR(uart_rx_sem, &higher_prio_woken);
+
+    // If giving the semaphore unblocked a higher-priority task,
+    // request a context switch immediately on ISR exit.
+    portYIELD_FROM_ISR(higher_prio_woken);
+}
+
+// --- Task (runs in task context) ---
+void uart_rx_task(void *pvParameters) {
+    for (;;) {
+        // Block indefinitely until ISR gives the semaphore
+        xSemaphoreTake(uart_rx_sem, portMAX_DELAY);
+        // Process ring buffer here...
+        process_incoming_data();
+    }
+}</pre></div>
+
+      <div class="callout">
+        <strong>FromISR variants are mandatory in ISRs.</strong>
+        FreeRTOS maintains a critical section internally. Calling
+        <code>xSemaphoreGive()</code> from an ISR corrupts kernel state. Any
+        FreeRTOS API called from interrupt context must be the
+        <code>...FromISR</code> version. The <code>pxHigherPriorityTaskWoken</code>
+        pattern ensures the context switch happens on ISR exit, not mid-ISR.
+      </div>
+
+      <div class="section-head" style="font-size:13px;letter-spacing:0.04em;margin-top:20px;margin-bottom:10px;">Mutex</div>
+
+      <div class="prose">
+        A <strong>mutex</strong> (mutual exclusion) is a semaphore with
+        <em>ownership</em>. Unlike a binary semaphore, only the task that took the
+        mutex can give it back. Mutexes protect shared resources — peripheral
+        registers, global data structures, external flash — where only one task
+        should operate at a time.
+      </div>
+
+      <div class="code-block"><pre>MutexHandle_t spi_mutex;
+
+void task_a(void *p) {
+    for (;;) {
+        xSemaphoreTake(spi_mutex, portMAX_DELAY);  // acquire
+        spi_write(CMD_SENSOR_READ);                 // exclusive SPI access
+        xSemaphoreGive(spi_mutex);                  // release
+        vTaskDelay(pdMS_TO_TICKS(50));
+    }
+}
+
+void task_b(void *p) {
+    for (;;) {
+        xSemaphoreTake(spi_mutex, portMAX_DELAY);
+        spi_write(CMD_DISPLAY_UPDATE);
+        xSemaphoreGive(spi_mutex);
+        vTaskDelay(pdMS_TO_TICKS(100));
+    }
+}</pre></div>
+
+      <div class="prose">
+        FreeRTOS mutexes implement <strong>priority inheritance</strong> to mitigate
+        priority inversion (see below). Binary semaphores do not — use a mutex
+        whenever protecting a shared resource, reserve binary semaphores for
+        signaling.
+      </div>
+
+      <!-- ── Queues ───────────────────────────────────────────── -->
+      <div class="section-head" id="queues">Queues</div>
+
+      <div class="prose">
+        A <strong>queue</strong> is a FIFO buffer that the kernel manages. It
+        carries data — not just signals — between tasks. The sender copies data
+        into the queue; the receiver copies data out. Because the kernel owns the
+        buffer, there is no shared-memory race condition.
+      </div>
+
+      <div class="code-block"><pre>#define SENSOR_QUEUE_LEN  8
+
+typedef struct {
+    uint32_t timestamp_ms;
+    int16_t  temperature_cdeg;   // in 0.01 °C units
+} sensor_reading_t;
+
+QueueHandle_t sensor_queue;
+
+// Producer task
+void sensor_task(void *p) {
+    sensor_reading_t reading;
+    for (;;) {
+        reading.timestamp_ms     = xTaskGetTickCount();
+        reading.temperature_cdeg = read_temp_sensor();
+
+        // Block up to 10 ms if queue is full
+        xQueueSend(sensor_queue, &reading, pdMS_TO_TICKS(10));
+        vTaskDelay(pdMS_TO_TICKS(100));
+    }
+}
+
+// Consumer task
+void logger_task(void *p) {
+    sensor_reading_t reading;
+    for (;;) {
+        // Block indefinitely until a reading is available
+        if (xQueueReceive(sensor_queue, &reading, portMAX_DELAY) == pdTRUE) {
+            log_to_flash(reading.timestamp_ms, reading.temperature_cdeg);
+        }
+    }
+}</pre></div>
+
+      <div class="prose">
+        Queue length and item size are fixed at creation time. The kernel allocates
+        the buffer statically or from the heap. Queues are the primary mechanism
+        for transferring ownership of data between tasks with different rates —
+        the producer and consumer can run at different speeds, with the queue
+        absorbing bursts up to its depth.
+      </div>
+
+      <!-- ── Priority Inversion ──────────────────────────────── -->
+      <div class="section-head" id="priority-inversion">Priority Inversion</div>
+
+      <div class="prose">
+        Priority inversion is one of the most famous failure modes in RTOS
+        programming. It occurs when a high-priority task is blocked waiting for a
+        resource held by a low-priority task, while a medium-priority task
+        preempts the low-priority task — meaning the medium-priority task
+        effectively runs before the high-priority one.
+      </div>
+
+      <!-- Priority inversion timeline SVG -->
+      <svg viewBox="0 0 660 240" xmlns="http://www.w3.org/2000/svg"
+           style="width:100%;max-width:660px;display:block;margin:20px auto 8px;">
+        <rect width="660" height="240" fill="#f5f5f2" rx="6"/>
+
+        <!-- Title -->
+        <text x="330" y="20" text-anchor="middle" fill="#1a2840" font-family="IBM Plex Sans" font-size="12" font-weight="600">Priority Inversion Scenario</text>
+
+        <!-- Row labels -->
+        <text x="55" y="62" text-anchor="end" fill="#c05050" font-family="IBM Plex Sans" font-size="12" font-weight="600">HIGH</text>
+        <text x="55" y="76" text-anchor="end" fill="#9aabb8" font-family="IBM Plex Mono" font-size="9">prio=3</text>
+        <text x="55" y="112" text-anchor="end" fill="#e08030" font-family="IBM Plex Sans" font-size="12" font-weight="600">MED</text>
+        <text x="55" y="126" text-anchor="end" fill="#9aabb8" font-family="IBM Plex Mono" font-size="9">prio=2</text>
+        <text x="55" y="162" text-anchor="end" fill="#3a6a8a" font-family="IBM Plex Sans" font-size="12" font-weight="600">LOW</text>
+        <text x="55" y="176" text-anchor="end" fill="#9aabb8" font-family="IBM Plex Mono" font-size="9">prio=1</text>
+
+        <!-- Timeline baseline -->
+        <line x1="65" y1="210" x2="640" y2="210" stroke="#c0c8d0" stroke-width="1.5"/>
+        <text x="635" y="222" text-anchor="end" fill="#7a8a9a" font-family="IBM Plex Sans" font-size="10">time →</text>
+
+        <!-- Row guide lines -->
+        <line x1="65" y1="85" x2="640" y2="85" stroke="#e8ecf0" stroke-width="1"/>
+        <line x1="65" y1="135" x2="640" y2="135" stroke="#e8ecf0" stroke-width="1"/>
+        <line x1="65" y1="185" x2="640" y2="185" stroke="#e8ecf0" stroke-width="1"/>
+
+        <!-- Phase markers at top -->
+        <line x1="65" y1="25" x2="65" y2="210" stroke="#d0d8e0" stroke-width="1" stroke-dasharray="2,3"/>
+        <line x1="145" y1="25" x2="145" y2="210" stroke="#d0d8e0" stroke-width="1" stroke-dasharray="2,3"/>
+        <line x1="225" y1="25" x2="225" y2="210" stroke="#d0d8e0" stroke-width="1" stroke-dasharray="2,3"/>
+        <line x1="385" y1="25" x2="385" y2="210" stroke="#d0d8e0" stroke-width="1" stroke-dasharray="2,3"/>
+        <line x1="465" y1="25" x2="465" y2="210" stroke="#d0d8e0" stroke-width="1" stroke-dasharray="2,3"/>
+        <line x1="545" y1="25" x2="545" y2="210" stroke="#d0d8e0" stroke-width="1" stroke-dasharray="2,3"/>
+
+        <!-- LOW runs, acquires mutex (t=0..80) -->
+        <rect x="65" y="165" width="80" height="20" fill="#3a6a8a" rx="2"/>
+        <text x="105" y="179" text-anchor="middle" fill="white" font-family="IBM Plex Mono" font-size="9">run+lock</text>
+        <!-- LOW blocked/waiting (t=80..160) replaced by MED -->
+        <!-- annotation: LOW holds mutex -->
+
+        <!-- HIGH becomes ready at t=80, tries mutex, blocks -->
+        <rect x="145" y="55" width="5" height="25" fill="#c05050" rx="1"/>  <!-- thin bar = wants to run -->
+        <!-- HIGH blocked bar t=80..385 (can't get mutex) -->
+        <rect x="145" y="55" width="240" height="8" fill="#f0a0a0" rx="2"/>
+        <text x="265" y="62" text-anchor="middle" fill="#c05050" font-family="IBM Plex Sans" font-size="9">blocked — waiting for mutex</text>
+
+        <!-- MED preempts LOW at t=80..225 -->
+        <rect x="145" y="115" width="80" height="20" fill="#e08030" rx="2" opacity="0.9"/>
+        <text x="185" y="129" text-anchor="middle" fill="white" font-family="IBM Plex Mono" font-size="9">preempts</text>
+        <rect x="225" y="115" width="160" height="20" fill="#e08030" rx="2" opacity="0.9"/>
+        <text x="305" y="129" text-anchor="middle" fill="white" font-family="IBM Plex Mono" font-size="9">running (unrelated work)</text>
+
+        <!-- LOW can't run while MED is running -->
+        <!-- LOW resumes at t=225..385 -->
+        <rect x="385" y="165" width="80" height="20" fill="#3a6a8a" rx="2"/>
+        <text x="425" y="179" text-anchor="middle" fill="white" font-family="IBM Plex Mono" font-size="9">run…</text>
+
+        <!-- LOW releases mutex at t=385 -->
+        <rect x="465" y="165" width="10" height="20" fill="#7ab8d4" rx="1"/>
+        <text x="464" y="202" text-anchor="middle" fill="#3a6a8a" font-family="IBM Plex Sans" font-size="9">unlock</text>
+
+        <!-- HIGH unblocked, runs t=465+ -->
+        <rect x="465" y="55" width="80" height="25" fill="#c05050" rx="2"/>
+        <text x="505" y="72" text-anchor="middle" fill="white" font-family="IBM Plex Mono" font-size="9">runs!</text>
+
+        <!-- Inversion bracket -->
+        <line x1="145" y1="195" x2="465" y2="195" stroke="#e06060" stroke-width="1.5"/>
+        <line x1="145" y1="191" x2="145" y2="199" stroke="#e06060" stroke-width="1.5"/>
+        <line x1="465" y1="191" x2="465" y2="199" stroke="#e06060" stroke-width="1.5"/>
+        <text x="305" y="208" text-anchor="middle" fill="#c05050" font-family="IBM Plex Sans" font-size="10" font-weight="600">priority inverted — HIGH blocked while MED runs</text>
+      </svg>
+      <div class="prose" style="font-size:12.5px;color:#5a6a7a;text-align:center;margin-top:0;margin-bottom:20px;">
+        LOW holds the mutex. HIGH tries to acquire it and blocks. MED (no involvement with the mutex) preempts LOW — so HIGH is stuck waiting for LOW to run, which it can't until MED yields.
+      </div>
+
+      <div class="prose">
+        The fix is <strong>priority inheritance</strong>. When a mutex-holding task
+        blocks a higher-priority task, the kernel temporarily boosts the holder's
+        priority to match the highest waiter. In the example above, LOW would be
+        temporarily elevated to HIGH's priority, so MED cannot preempt it. Once
+        LOW releases the mutex, its priority reverts.
+      </div>
+
+      <div class="callout">
+        FreeRTOS mutexes implement priority inheritance; binary semaphores do not.
+        This is the practical reason to choose a mutex over a binary semaphore when
+        protecting shared resources. The Mars Pathfinder mission (1997) suffered
+        a famous priority inversion bug that caused repeated system resets because
+        its VxWorks RTOS priority inheritance was disabled on one mutex.
+      </div>
+
+      <!-- ── Stack Overflow ─────────────────────────────────── -->
+      <div class="section-head" id="stack-overflow">Stack Overflow</div>
+
+      <div class="prose">
+        Every task has a fixed-size stack allocated at creation time. If a task's
+        call depth or local variable usage exceeds the stack, it silently overwrites
+        adjacent memory — typically another task's stack or TCB — causing corrupted
+        behaviour that may not manifest until much later. Stack overflow is one of
+        the hardest RTOS bugs to diagnose.
+      </div>
+
+      <div class="prose">
+        FreeRTOS provides two detection methods:
+      </div>
+
+      <div class="code-block"><pre>// In FreeRTOSConfig.h:
+// Method 1 — stack watermark check on each context switch (cheap)
+#define configCHECK_FOR_STACK_OVERFLOW  1
+
+// Method 2 — fill stack with 0xA5 at creation, check pattern on switch
+#define configCHECK_FOR_STACK_OVERFLOW  2
+
+// Hook called on detection (you implement this):
+void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName) {
+    // Log the offending task name, then halt or reset
+    fault_handler("Stack overflow in task: %s", pcTaskName);
+    for (;;) {}
+}</pre></div>
+
+      <div class="prose">
+        To determine how much stack a task actually uses, call
+        <code>uxTaskGetStackHighWaterMark(NULL)</code> from within the task. It
+        returns the minimum number of free stack words that have remained since
+        the task started. A value near zero means the stack is dangerously
+        undersized.
+      </div>
+
+      <div class="callout">
+        <strong>Stack sizing rules of thumb.</strong>
+        Start with more than you think you need (e.g., 512 words = 2 KB on a
+        32-bit MCU). Enable watermark monitoring in development. Measure actual
+        usage, then trim with margin. Calls to <code>printf</code>-family functions
+        consume surprisingly large stack — typically 300–800 bytes. Any task that
+        calls into a complex library needs extra caution.
+      </div>
+
+      <!-- ── FreeRTOS in Practice ───────────────────────────── -->
+      <div class="section-head" id="freertos">FreeRTOS in Practice</div>
+
+      <div class="prose">
+        FreeRTOS is the most widely deployed embedded RTOS. It is open source,
+        well-documented, and supported natively by most MCU vendors including
+        Silicon Labs. The EFR32 SDK ships FreeRTOS integration out of the box.
+      </div>
+
+      <div class="prose">
+        The minimum configuration to get a FreeRTOS application running:
+      </div>
+
+      <div class="code-block"><pre>// 1. FreeRTOSConfig.h — tune to your MCU and RAM budget
+#define configUSE_PREEMPTION             1
+#define configCPU_CLOCK_HZ               ( 38400000UL )  // EFR32 at 38.4 MHz
+#define configTICK_RATE_HZ               ( 1000 )        // 1 ms tick
+#define configMAX_PRIORITIES             ( 5 )
+#define configMINIMAL_STACK_SIZE         ( 128 )         // words
+#define configTOTAL_HEAP_SIZE            ( 8192 )        // bytes
+#define configUSE_MUTEXES                1
+#define configUSE_COUNTING_SEMAPHORES    1
+#define configUSE_QUEUE_SETS             0
+#define configUSE_TIMERS                 0
+#define configCHECK_FOR_STACK_OVERFLOW   2
+
+// 2. main.c — create tasks, then start scheduler
+int main(void) {
+    hardware_init();
+
+    sensor_queue = xQueueCreate(SENSOR_QUEUE_LEN, sizeof(sensor_reading_t));
+    spi_mutex    = xSemaphoreCreateMutex();
+    uart_rx_sem  = xSemaphoreCreateBinary();
+
+    xTaskCreate(sensor_task,  "sensor",  256, NULL, 2, NULL);
+    xTaskCreate(logger_task,  "logger",  512, NULL, 1, NULL);
+    xTaskCreate(uart_rx_task, "uart_rx", 256, NULL, 3, NULL);
+
+    vTaskStartScheduler();  // never returns
+
+    for (;;) {}  // unreachable
+}</pre></div>
+
+      <div class="prose">
+        A few practical notes on the EFR32 + FreeRTOS combination:
+      </div>
+
+      <ul class="prose" style="margin-top:0; padding-left:1.4em;">
+        <li style="margin-bottom:6px;"><strong>SysTick drives the tick.</strong>
+          FreeRTOS configures SysTick to fire at
+          <code>configTICK_RATE_HZ</code>. Do not reconfigure SysTick elsewhere
+          in your application.</li>
+        <li style="margin-bottom:6px;"><strong>Interrupt priority boundaries.</strong>
+          FreeRTOS uses <code>configMAX_SYSCALL_INTERRUPT_PRIORITY</code> to set
+          the boundary between ISRs that may call FreeRTOS APIs (at or below this
+          priority) and ISRs that may not (above it). The latter class of ISRs
+          must complete without touching any kernel object.</li>
+        <li style="margin-bottom:6px;"><strong>Idle task &amp; tickless idle.</strong>
+          FreeRTOS creates an idle task automatically. You can hook into it via
+          <code>vApplicationIdleHook()</code>. The tickless idle extension
+          (<code>configUSE_TICKLESS_IDLE</code>) suppresses SysTick when all
+          tasks are blocked, enabling the EFR32 to enter EM1 or EM2 between
+          events — critical for battery-powered designs.</li>
+      </ul>
+
+      <hr class="lesson-rule">
+
+      <div class="lesson-nav">
+        <a href="bare-metal.html" class="lesson-nav-btn">← 13 · Bare-Metal Patterns</a>
+        <a href="debug.html" class="lesson-nav-btn">15 · Debugging &amp; Test →</a>
+      </div>
+
+    </div><!-- /main -->
+
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+</body>
+</html>

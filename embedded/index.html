@@ -52,7 +52,7 @@
       <div class="nav-section">
         <div class="nav-label">Firmware</div>
         <a href="bare-metal.html" class="nav-item">13 · Bare-Metal Patterns</a>
-        <span class="nav-item planned">14 · RTOS Concepts</span>
+        <a href="rtos.html" class="nav-item">14 · RTOS Concepts</a>
         <span class="nav-item planned">15 · Debugging &amp; Test</span>
       </div>
 
@@ -157,12 +157,15 @@
         <span class="lesson-row-desc">C startup sequence (.data/.bss init, init_array), superloop vs interrupt-driven hybrid, FSM design, interrupt-safe ring buffers, driver layering (HAL/driver/application), volatile and memory barriers (DMB/DSB/ISB).</span>
       </div>
 
+      <div class="lesson-row">
+        <a href="rtos.html" class="lesson-row-title">14 · RTOS Concepts</a>
+        <span class="lesson-row-desc">Tasks and task states, preemptive priority-based scheduling, context switch mechanics (PendSV), binary semaphores, mutexes with priority inheritance, queues, priority inversion, stack overflow detection.</span>
+      </div>
+
       <div class="course-block">
-        <div class="course-block-code">Lessons 14–15</div>
-        <div class="course-block-name">RTOS Concepts, Debugging &amp; Test</div>
+        <div class="course-block-code">Lesson 15</div>
+        <div class="course-block-name">Debugging &amp; Test</div>
         <div class="course-block-desc">
-          RTOS scheduling (preemptive vs cooperative), task priorities, mutexes and
-          binary semaphores, common RTOS pitfalls (priority inversion, stack overflow).
           Hardware debugging with SWD/JTAG, OpenOCD and GDB, logic analyzer and
           oscilloscope techniques for protocol decoding.
         </div>
