@@ -60,7 +60,7 @@
         <div class="nav-label">PCB Design</div>
         <a href="layout.html" class="nav-item">16 · Layout Fundamentals</a>
         <a href="mixed-signal.html" class="nav-item">17 · Mixed-Signal Layout</a>
-        <span class="nav-item planned">18 · Power &amp; Thermal</span>
+        <a href="power-thermal.html" class="nav-item">18 · Power &amp; Thermal</a>
         <span class="nav-item planned">19 · High-Speed &amp; RF</span>
       </div>
     </div>
@@ -180,15 +180,9 @@
         <span class="lesson-row-desc">Analog/digital floorplanning, single continuous ground plane (why split planes are wrong), AVDD/VREF bypass, ADC input trace routing, InAmp layout for biosensors, guard rings for high-impedance nodes, capacitive/inductive/common-impedance coupling and ferrite bead filtering.</span>
       </div>
 
-      <div class="course-block">
-        <div class="course-block-code">Lesson 18 · Power &amp; Thermal</div>
-        <div class="course-block-name">Switching Regulators, Power Delivery, Heat</div>
-        <div class="course-block-desc">
-          Buck and boost converter layout (tight switching loop, input capacitor
-          placement), power delivery network (PDN) design, thermal relief in
-          solder pads vs thermal resistance, copper pours for heat spreading,
-          and estimating junction temperature from power dissipation.
-        </div>
+      <div class="lesson-row">
+        <a href="power-thermal.html" class="lesson-row-title">18 · Power &amp; Thermal</a>
+        <span class="lesson-row-desc">Buck/boost hot loop layout (C_IN placement, minimise switching loop area), PDN target impedance and capacitor cascade, thermal resistance model (θ_JC + θ_CS + θ_SA), exposed pad + thermal via arrays (no thermal relief), copper pour sizing, T_J estimation at worst-case ambient.</span>
       </div>
 
       <div class="course-block">

@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Power &amp; Thermal — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Architecture &amp; Internals</div>
+        <a href="mcu-architecture.html" class="nav-item">1 · MCU Architecture</a>
+        <a href="memory-clocks.html" class="nav-item">2 · Memory &amp; Clock Systems</a>
+        <a href="interrupts-nvic.html" class="nav-item">3 · Interrupts &amp; the NVIC</a>
+        <a href="dma.html" class="nav-item">4 · DMA</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Peripherals</div>
+        <a href="gpio.html" class="nav-item">5 · GPIO</a>
+        <a href="timers-pwm.html" class="nav-item">6 · Timers &amp; PWM</a>
+        <a href="adc-dac.html" class="nav-item">7 · ADC &amp; DAC</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Protocols</div>
+        <a href="uart.html" class="nav-item">8 · UART</a>
+        <a href="spi.html" class="nav-item">9 · SPI</a>
+        <a href="i2c.html" class="nav-item">10 · I2C</a>
+        <a href="can.html" class="nav-item">11 · CAN Bus</a>
+        <a href="usb.html" class="nav-item">12 · USB Fundamentals</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Firmware</div>
+        <a href="bare-metal.html" class="nav-item">13 · Bare-Metal Patterns</a>
+        <a href="rtos.html" class="nav-item">14 · RTOS Concepts</a>
+        <a href="debug.html" class="nav-item">15 · Debugging &amp; Test</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">PCB Design</div>
+        <a href="layout.html" class="nav-item">16 · Layout Fundamentals</a>
+        <a href="mixed-signal.html" class="nav-item">17 · Mixed-Signal Layout</a>
+        <a href="power-thermal.html" class="nav-item active">18 · Power &amp; Thermal</a>
+        <span class="nav-item planned">19 · High-Speed &amp; RF</span>
+      </div>
+
+      <hr class="sidebar-rule">
+
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#switcher-basics" class="nav-item">Switching regulator basics</a>
+        <a href="#hot-loop" class="nav-item">The hot loop</a>
+        <a href="#layout-rules" class="nav-item">Buck/boost layout rules</a>
+        <a href="#pdn" class="nav-item">Power delivery network</a>
+        <a href="#thermal-model" class="nav-item">Thermal model</a>
+        <a href="#thermal-pads" class="nav-item">Thermal pads &amp; copper pours</a>
+        <a href="#tj-estimate" class="nav-item">Estimating T_J</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Embedded Systems</a>
+        <span class="sep">›</span>
+        <span>18 · Power &amp; Thermal</span>
+      </div>
+
+      <div class="lesson-title">18 · Power &amp; Thermal</div>
+      <div class="lesson-meta">Switching Regulators · PDN · Thermal Resistance · Copper Pours · Junction Temperature</div>
+
+      <div class="prose">
+        Power design is inseparable from PCB layout. A switching regulator that
+        simulates perfectly in SPICE can generate widespread noise on a physical
+        board if the layout is poor. A component that meets its datasheet power
+        budget can overheat and fail if the thermal path from die to ambient has
+        too much resistance. This lesson covers the layout rules that make power
+        conversion clean, and the thermal model that tells you whether an IC will
+        survive its operating conditions.
+      </div>
+
+      <hr class="lesson-rule">
+
+      <!-- ── Switching Regulator Basics ─────────────────────── -->
+      <div class="section-head" id="switcher-basics">Switching Regulator Basics</div>
+
+      <div class="prose">
+        A <strong>buck converter</strong> (step-down) uses a high-frequency switch
+        (typically 200 kHz–4 MHz) to chop the input voltage into pulses, which an
+        LC filter averages into the output voltage. When the switch is on (duty
+        cycle D), energy is stored in the inductor; when the switch is off, the
+        inductor freewheels current through a catch diode (or synchronous FET).
+        Output voltage V_OUT ≈ D × V_IN in continuous conduction mode.
+      </div>
+
+      <div class="prose">
+        A <strong>boost converter</strong> (step-up) works in the opposite sense:
+        energy is stored in the inductor when the switch is on (inductor connected
+        from V_IN to GND); when the switch is off, the inductor voltage adds to
+        V_IN to charge the output capacitor above V_IN.
+      </div>
+
+      <div class="prose">
+        What makes switching regulators layout-sensitive is the <em>rate of
+        change of current</em>. At a 1 MHz switching frequency with 1 A load
+        current switching on in 10 ns, dI/dt = 1/10e-9 = 100 MA/s. Any
+        inductance L in the loop generates a voltage spike V = L × dI/dt.
+        1 nH of parasitic inductance from a long trace produces 100 mV of ringing
+        — enough to cause conducted and radiated emissions.
+      </div>
+
+      <!-- ── The Hot Loop ────────────────────────────────────── -->
+      <div class="section-head" id="hot-loop">The Hot Loop</div>
+
+      <div class="prose">
+        The <strong>hot loop</strong> is the current loop that carries the full
+        switching transient. In a buck converter, it consists of:
+      </div>
+
+      <ul class="prose" style="margin-top:0; padding-left:1.4em;">
+        <li>Input capacitor (+) → high-side switch (PFET or NFET) → switching node (SW)</li>
+        <li>SW → low-side switch (or catch diode) → input capacitor (–)</li>
+      </ul>
+
+      <div class="prose">
+        This loop carries the discontinuous switching current — it switches from
+        full load current to zero and back at the switching frequency. The area
+        enclosed by this loop is the primary source of radiated EMI from the
+        converter. <strong>Minimising the hot loop area is the single most
+        important layout rule for switching regulators.</strong>
+      </div>
+
+      <!-- Buck converter hot loop layout SVG -->
+      <svg viewBox="0 0 580 240" xmlns="http://www.w3.org/2000/svg"
+           style="width:100%;max-width:580px;display:block;margin:20px auto 8px;">
+        <rect width="580" height="240" fill="#f5f5f2" rx="6"/>
+
+        <!-- Title -->
+        <text x="290" y="20" text-anchor="middle" fill="#1a2840" font-family="IBM Plex Sans" font-size="12" font-weight="600">Buck Converter — Layout View</text>
+
+        <!-- Input capacitor -->
+        <rect x="30" y="70" width="50" height="80" rx="5" fill="white" stroke="#c8a020" stroke-width="1.5"/>
+        <text x="55" y="107" text-anchor="middle" fill="#1a2840" font-family="IBM Plex Sans" font-size="11" font-weight="600">C_IN</text>
+        <text x="55" y="121" text-anchor="middle" fill="#7a6010" font-family="IBM Plex Mono" font-size="9">10 µF</text>
+
+        <!-- Regulator IC -->
+        <rect x="130" y="60" width="110" height="100" rx="5" fill="white" stroke="#3a6a8a" stroke-width="2"/>
+        <text x="185" y="103" text-anchor="middle" fill="#1a2840" font-family="IBM Plex Sans" font-size="11" font-weight="600">Regulator</text>
+        <text x="185" y="118" text-anchor="middle" fill="#3a6a8a" font-family="IBM Plex Mono" font-size="9">TPS62x / AP63</text>
+
+        <!-- Pin labels on IC -->
+        <text x="128" y="78" text-anchor="end" fill="#5a7a9a" font-family="IBM Plex Mono" font-size="9">VIN</text>
+        <text x="128" y="98" text-anchor="end" fill="#5a7a9a" font-family="IBM Plex Mono" font-size="9">GND</text>
+        <text x="242" y="88" text-anchor="start" fill="#5a7a9a" font-family="IBM Plex Mono" font-size="9">SW</text>
+
+        <!-- VIN trace (top, hot) -->
+        <line x1="80" y1="80" x2="130" y2="80" stroke="#c05050" stroke-width="3"/>
+        <!-- GND trace (bottom, hot) -->
+        <line x1="80" y1="140" x2="130" y2="140" stroke="#c05050" stroke-width="3"/>
+
+        <!-- Hot loop fill -->
+        <rect x="30" y="75" width="100" height="70" rx="2" fill="#c05050" opacity="0.08"/>
+        <text x="80" y="118" text-anchor="middle" fill="#c05050" font-family="IBM Plex Sans" font-size="10" font-weight="600">HOT LOOP</text>
+        <text x="80" y="131" text-anchor="middle" fill="#c05050" font-family="IBM Plex Sans" font-size="9">keep area small!</text>
+
+        <!-- SW to inductor -->
+        <line x1="240" y1="85" x2="310" y2="85" stroke="#3a6a8a" stroke-width="2"/>
+
+        <!-- Inductor -->
+        <rect x="310" y="68" width="70" height="40" rx="5" fill="white" stroke="#7ab8d4" stroke-width="1.5"/>
+        <text x="345" y="92" text-anchor="middle" fill="#1a2840" font-family="IBM Plex Sans" font-size="11" font-weight="600">L</text>
+
+        <!-- Inductor to output cap -->
+        <line x1="380" y1="85" x2="430" y2="85" stroke="#3a6a8a" stroke-width="2"/>
+
+        <!-- Output cap -->
+        <rect x="430" y="65" width="50" height="80" rx="5" fill="white" stroke="#7ab8d4" stroke-width="1.5"/>
+        <text x="455" y="102" text-anchor="middle" fill="#1a2840" font-family="IBM Plex Sans" font-size="11" font-weight="600">C_OUT</text>
+        <text x="455" y="116" text-anchor="middle" fill="#3a6a8a" font-family="IBM Plex Mono" font-size="9">22 µF</text>
+
+        <!-- VOUT label -->
+        <line x1="480" y1="85" x2="555" y2="85" stroke="#40a060" stroke-width="2"/>
+        <text x="545" y="80" fill="#1a4020" font-family="IBM Plex Mono" font-size="10">VOUT</text>
+
+        <!-- GND connections -->
+        <line x1="55" y1="150" x2="55" y2="185" stroke="#40a060" stroke-width="2"/>
+        <line x1="185" y1="160" x2="185" y2="185" stroke="#40a060" stroke-width="2"/>
+        <line x1="455" y1="145" x2="455" y2="185" stroke="#40a060" stroke-width="2"/>
+        <line x1="30" y1="185" x2="540" y2="185" stroke="#40a060" stroke-width="2"/>
+        <text x="285" y="198" text-anchor="middle" fill="#1a4020" font-family="IBM Plex Mono" font-size="9">GND plane</text>
+
+        <!-- Quiet loop: inductor + C_OUT -->
+        <rect x="300" y="60" width="190" height="90" rx="2" fill="#3a6a8a" opacity="0.05"/>
+        <text x="395" y="170" text-anchor="middle" fill="#3a6a8a" font-family="IBM Plex Sans" font-size="9">ripple loop (larger OK)</text>
+
+        <!-- Feedback trace -->
+        <path d="M 455 95 C 510 125 510 195 375 195 C 300 195 280 185 280 175" fill="none" stroke="#c8a020" stroke-width="1.5" stroke-dasharray="4,2"/>
+        <text x="510" y="155" fill="#7a6010" font-family="IBM Plex Sans" font-size="9">FB trace</text>
+        <text x="510" y="167" fill="#7a6010" font-family="IBM Plex Sans" font-size="9">(away from L)</text>
+      </svg>
+      <div class="prose" style="font-size:12.5px;color:#5a6a7a;text-align:center;margin-top:0;margin-bottom:20px;">
+        The hot loop (red, shaded) — input cap to regulator — must be as small as possible. The inductor and output cap form a larger ripple loop where EMI is less critical.
+      </div>
+
+      <!-- ── Buck/Boost Layout Rules ────────────────────────── -->
+      <div class="section-head" id="layout-rules">Buck / Boost Layout Rules</div>
+
+      <ul class="prose" style="margin-top:0; padding-left:1.4em;">
+        <li style="margin-bottom:8px;"><strong>Place C_IN directly at the regulator's VIN and GND pins.</strong>
+          The input capacitor should be the physically closest passive component
+          to the IC. A C_IN placed 5 mm away doubles the hot loop area and
+          nearly doubles the conducted/radiated noise. On the EFR32 board with an
+          on-chip switcher (DCDC), C_IN goes on the same side of the board as the
+          DCDC pins with trace length &lt;1 mm.</li>
+        <li style="margin-bottom:8px;"><strong>Minimise hot loop area.</strong>
+          CIN(+) → VIN pin → internal switch → SW pin → and back to CIN(–) via GND.
+          This path should form the smallest possible rectangle. Shorter, wider
+          traces reduce inductance. Vias in this path add 0.5–1 nH each — avoid
+          layer transitions inside the hot loop.</li>
+        <li style="margin-bottom:8px;"><strong>Place the inductor close to the SW node.</strong>
+          The SW node is the highest dV/dt point on the board. Keep the trace from
+          SW to the inductor short. The inductor itself generates a magnetic field —
+          orient it so its field does not couple into sensitive analog traces
+          (typically, orient with the winding axis perpendicular to nearby signal
+          traces).</li>
+        <li style="margin-bottom:8px;"><strong>Route the feedback trace away from the inductor.</strong>
+          The feedback divider from VOUT to the FB pin carries a tiny signal that
+          the regulator uses for output voltage control. Any noise coupled into FB
+          modulates the output voltage. Route FB on the quiet side of the regulator,
+          away from SW and the inductor.</li>
+        <li style="margin-bottom:8px;"><strong>Solid GND plane under the switching section.</strong>
+          No slots, no interruptions under the switcher footprint. The GND plane
+          completes the hot loop return path; any gap increases loop area.</li>
+        <li style="margin-bottom:8px;"><strong>Boost converter: same rules, different topology.</strong>
+          For a boost converter, the hot loop is from VIN/GND capacitor through the
+          switch to the inductor and back — identify the discontinuous current loop
+          and minimise its area. The output node is on the anode side of the catch
+          diode, which is comparatively quiet.</li>
+      </ul>
+
+      <!-- ── Power Delivery Network ─────────────────────────── -->
+      <div class="section-head" id="pdn">Power Delivery Network (PDN)</div>
+
+      <div class="prose">
+        The <strong>power delivery network</strong> is the complete electrical
+        path from the voltage regulator's output to each IC's VDD pin. Every
+        element of this path — traces, planes, vias, capacitors — has impedance,
+        and that impedance determines how much the supply voltage droops during a
+        transient load step.
+      </div>
+
+      <div class="prose">
+        The target impedance concept: for a maximum allowed supply droop of
+        ΔV under a step load change ΔI, the PDN impedance must satisfy:
+      </div>
+
+      <div class="code-block"><pre>Z_target = ΔV / ΔI
+
+Example: 3.3 V supply, 5% droop limit, 200 mA step load from an MCU waking from sleep
+  ΔV = 0.05 × 3.3 V = 165 mV
+  ΔI = 200 mA
+  Z_target = 0.165 / 0.200 = 0.825 Ω
+
+The PDN impedance must stay below 825 mΩ across the relevant frequency range.</pre></div>
+
+      <div class="prose">
+        Achieving low PDN impedance across frequency requires a capacitor cascade:
+        different capacitor values resonate at different frequencies, and combining
+        them provides low impedance across a wider bandwidth.
+      </div>
+
+      <ul class="prose" style="margin-top:0; padding-left:1.4em;">
+        <li style="margin-bottom:5px;"><strong>Voltage regulator (DC–10 kHz):</strong> the regulator's feedback loop provides low impedance up to its bandwidth (typically 50–200 kHz). Bulk capacitors at its output extend coverage.</li>
+        <li style="margin-bottom:5px;"><strong>Bulk electrolytic / tantalum (10 kHz–1 MHz):</strong> 10–100 µF placed near board power entry. Self-resonates around 100 kHz–1 MHz.</li>
+        <li style="margin-bottom:5px;"><strong>Local ceramic bypass (1–100 MHz):</strong> 100 nF X7R at each VDD pin (self-resonates at 10–30 MHz for 0402). Discussed in Lesson 16.</li>
+        <li style="margin-bottom:5px;"><strong>Power/ground plane capacitance (&gt;100 MHz):</strong> the parallel-plate capacitance of the GND/PWR plane pair (typically 50–200 pF/cm² for 0.1 mm dielectric spacing) provides ultra-high-frequency bypassing with essentially zero inductance.</li>
+      </ul>
+
+      <!-- ── Thermal Model ───────────────────────────────────── -->
+      <div class="section-head" id="thermal-model">Thermal Model</div>
+
+      <div class="prose">
+        Heat flows from the IC's die (junction) to the ambient air through a series
+        of thermal resistances, exactly analogous to an electrical resistor network.
+        The thermal resistance θ is defined as the temperature rise per watt of
+        power dissipated: θ [°C/W].
+      </div>
+
+      <!-- Thermal resistance model SVG -->
+      <svg viewBox="0 0 560 140" xmlns="http://www.w3.org/2000/svg"
+           style="width:100%;max-width:560px;display:block;margin:20px auto 8px;">
+        <rect width="560" height="140" fill="#f5f5f2" rx="6"/>
+
+        <!-- Nodes -->
+        <!-- T_J (junction) -->
+        <circle cx="60" cy="70" r="24" fill="#c05050" opacity="0.85"/>
+        <text x="60" y="67" text-anchor="middle" fill="white" font-family="IBM Plex Sans" font-size="11" font-weight="600">T_J</text>
+        <text x="60" y="80" text-anchor="middle" fill="#ffd0d0" font-family="IBM Plex Mono" font-size="9">junction</text>
+
+        <!-- θ_JC -->
+        <rect x="100" y="58" width="80" height="24" rx="4" fill="white" stroke="#c8a020" stroke-width="1.5"/>
+        <text x="140" y="72" text-anchor="middle" fill="#7a5010" font-family="IBM Plex Sans" font-size="11">θ<tspan font-size="9" dy="3">JC</tspan></text>
+        <line x1="84" y1="70" x2="100" y2="70" stroke="#9aabb8" stroke-width="1.5"/>
+        <line x1="180" y1="70" x2="196" y2="70" stroke="#9aabb8" stroke-width="1.5"/>
+
+        <!-- T_case (case/pad) -->
+        <circle cx="220" cy="70" r="24" fill="#e08030" opacity="0.75"/>
+        <text x="220" y="67" text-anchor="middle" fill="white" font-family="IBM Plex Sans" font-size="11" font-weight="600">T_C</text>
+        <text x="220" y="80" text-anchor="middle" fill="#fff0d0" font-family="IBM Plex Mono" font-size="9">case/pad</text>
+
+        <!-- θ_CS (or θ_PCB) -->
+        <rect x="260" y="58" width="80" height="24" rx="4" fill="white" stroke="#3a6a8a" stroke-width="1.5"/>
+        <text x="300" y="72" text-anchor="middle" fill="#1a3870" font-family="IBM Plex Sans" font-size="11">θ<tspan font-size="9" dy="3">CS</tspan></text>
+        <line x1="244" y1="70" x2="260" y2="70" stroke="#9aabb8" stroke-width="1.5"/>
+        <line x1="340" y1="70" x2="356" y2="70" stroke="#9aabb8" stroke-width="1.5"/>
+
+        <!-- T_board/heatsink -->
+        <circle cx="380" cy="70" r="24" fill="#3a6a8a" opacity="0.75"/>
+        <text x="380" y="67" text-anchor="middle" fill="white" font-family="IBM Plex Sans" font-size="11" font-weight="600">T_S</text>
+        <text x="380" y="80" text-anchor="middle" fill="#d0e8f4" font-family="IBM Plex Mono" font-size="9">spread</text>
+
+        <!-- θ_SA (or θ_CA) -->
+        <rect x="420" y="58" width="80" height="24" rx="4" fill="white" stroke="#7ab8d4" stroke-width="1.5"/>
+        <text x="460" y="72" text-anchor="middle" fill="#2a6080" font-family="IBM Plex Sans" font-size="11">θ<tspan font-size="9" dy="3">SA</tspan></text>
+        <line x1="404" y1="70" x2="420" y2="70" stroke="#9aabb8" stroke-width="1.5"/>
+        <line x1="500" y1="70" x2="516" y2="70" stroke="#9aabb8" stroke-width="1.5"/>
+
+        <!-- T_ambient -->
+        <circle cx="536" cy="70" r="20" fill="#7ab8d4" opacity="0.75"/>
+        <text x="536" y="67" text-anchor="middle" fill="white" font-family="IBM Plex Sans" font-size="11" font-weight="600">T_A</text>
+        <text x="536" y="80" text-anchor="middle" fill="#e0f4ff" font-family="IBM Plex Mono" font-size="9">amb.</text>
+
+        <!-- Heat source -->
+        <text x="60" y="110" text-anchor="middle" fill="#c05050" font-family="IBM Plex Sans" font-size="10">P_D (watts)</text>
+        <line x1="60" y1="94" x2="60" y2="103" stroke="#c05050" stroke-width="1.5" marker-end="url(#arr-heat)"/>
+        <defs>
+          <marker id="arr-heat" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <polygon points="0 0, 6 3, 0 6" fill="#c05050"/>
+          </marker>
+        </defs>
+
+        <!-- Formula at bottom -->
+        <text x="280" y="125" text-anchor="middle" fill="#1a2840" font-family="IBM Plex Mono" font-size="11">T_J = T_A + P_D × (θ_JC + θ_CS + θ_SA)</text>
+      </svg>
+      <div class="prose" style="font-size:12.5px;color:#5a6a7a;text-align:center;margin-top:0;margin-bottom:20px;">
+        Thermal resistance is analogous to electrical resistance: power (current) flows through series resistances, creating temperature drops (voltage drops) at each stage.
+      </div>
+
+      <div class="prose">
+        <strong>θ_JC</strong> (junction-to-case) — fixed by the IC package; found
+        in the datasheet. A well-packaged IC with exposed thermal pad may have
+        θ_JC = 2–5°C/W. A small SOT-23 might have θ_JC = 40–100°C/W.
+      </div>
+
+      <div class="prose">
+        <strong>θ_CS</strong> (case-to-board) — the interface between the package's
+        thermal pad and the copper beneath it. Primarily determined by solder joint
+        quality and copper area. For an exposed-pad IC soldered correctly to a
+        copper pour with vias: θ_CS ≈ 1–5°C/W. For a package resting on a
+        solder mask with poor thermal contact: θ_CS can be 20–50°C/W.
+      </div>
+
+      <div class="prose">
+        <strong>θ_SA</strong> (board-to-ambient) — depends on board copper area,
+        orientation (vertical boards convect better), airflow, and whether a
+        heatsink is used. Larger copper pour area reduces θ_SA by providing more
+        surface area for convective and radiative cooling.
+      </div>
+
+      <!-- ── Thermal Pads & Copper Pours ───────────────────── -->
+      <div class="section-head" id="thermal-pads">Thermal Pads &amp; Copper Pours</div>
+
+      <div class="prose">
+        Most modern power ICs (LDOs, switchers, motor drivers) come in packages
+        with an <strong>exposed pad</strong> (also called a thermal slug, EP, or
+        EPAD) on the underside. This pad is directly connected to the die, and the
+        primary thermal path is down through the solder joint into the PCB copper.
+        The exposed pad must be connected to a copper area with thermal vias through
+        to inner layers.
+      </div>
+
+      <div class="prose">
+        <strong>Thermal vias</strong> are the same through-hole vias used for
+        signals, but placed in a grid under the exposed pad to spread heat into the
+        inner GND plane. The via drill diameter is typically 0.2–0.3 mm, tented
+        (covered with soldermask) on the top side to prevent solder from wicking
+        down and starving the pad joint. A typical thermal via array is a 3×3 or
+        4×4 grid of vias under the exposed pad.
+      </div>
+
+      <div class="callout">
+        <strong>Do not use thermal relief spokes on exposed pad connections.</strong>
+        Thermal relief — the "asterisk" connection where four thin copper spokes
+        connect a pad to the surrounding pour — is useful for through-hole
+        components on large copper pours, where it allows the pad to heat up for
+        soldering without the pour conducting heat away. For an SMD exposed pad that
+        is the primary thermal path, thermal relief defeats the purpose. Connect the
+        exposed pad to the copper pour with a solid connection and as many thermal
+        vias as will fit.
+      </div>
+
+      <div class="prose">
+        <strong>Copper pour sizing for heat spreading.</strong>
+        The thermal resistance of a 1 oz (35 µm) copper layer is roughly 70°C/W
+        per square. A square of any size has the same resistance — doubling the
+        pour area doubles the number of squares only if you're spreading in one
+        dimension. In practice, a 10×10 mm copper pour reduces θ_SA by 20–40°C/W
+        compared to having no pour at all, depending on board thickness and
+        the number of vias to inner layers.
+      </div>
+
+      <!-- ── Estimating T_J ──────────────────────────────────── -->
+      <div class="section-head" id="tj-estimate">Estimating Junction Temperature</div>
+
+      <div class="prose">
+        The most important thermal check is confirming that T_J stays below the
+        maximum junction temperature from the datasheet — typically 125°C or 150°C
+        for industrial-grade components.
+      </div>
+
+      <div class="code-block"><pre>/* Example: LDO regulator supplying 3.3 V at 200 mA from 5 V input
+ *
+ * Power dissipated in LDO:
+ *   P_D = (V_IN - V_OUT) × I_LOAD = (5.0 - 3.3) × 0.200 = 340 mW
+ *
+ * Package: SOT-223, θ_JA = 60°C/W (datasheet, no copper pour)
+ *
+ * Case 1: minimal copper, no thermal pour
+ *   T_J = T_A + P_D × θ_JA = 25 + 0.340 × 60 = 25 + 20 = 45°C ✓
+ *
+ * But at 85°C ambient (industrial):
+ *   T_J = 85 + 0.340 × 60 = 85 + 20 = 105°C — still OK, but only just
+ *
+ * Case 2: with 10×10 mm copper pour + 4 vias to inner layer
+ *   Effective θ_JA ≈ 35°C/W (many datasheets give this condition)
+ *   T_J = 85 + 0.340 × 35 = 85 + 12 = 97°C ✓ good margin
+ *
+ * Key rule: always check the worst-case ambient temperature,
+ *           not 25°C room temperature.
+ */
+
+/* Example: MCU (EFR32MG24) at full Tx power
+ *   ICC = 10 mA at 3.3 V → P_MCU = 33 mW
+ *   θ_JA = 30°C/W for QFN-48
+ *   T_J = 85 + 0.033 × 30 = 85 + 1 = 86°C — negligible
+ *
+ * Power ICs (LDOs, switchers, H-bridges) are the ones that need
+ * careful thermal analysis. MCUs rarely dissipate enough to matter.
+ */</pre></div>
+
+      <div class="prose">
+        The datasheet typically provides θ_JA under two conditions: JEDEC standard
+        test board (no copper pour) and with a recommended copper area. Use the
+        latter when you have a copper pour. If neither condition matches your
+        design, interpolate or simulate with a thermal calculator.
+      </div>
+
+      <div class="callout">
+        <strong>Worst-case thermal check.</strong>
+        Always evaluate at maximum ambient temperature (T_A_max from the
+        system specification, e.g., 85°C for industrial), maximum power
+        dissipation (maximum load current, maximum input voltage), and minimum
+        copper (fewest layers, smallest board). If T_J &lt; T_J_max at this
+        corner, thermal is not a concern. If it is marginal, increase copper
+        area, reduce input voltage headroom, or choose a package with a lower θ_JC.
+      </div>
+
+      <hr class="lesson-rule">
+
+      <div class="lesson-nav">
+        <a href="mixed-signal.html" class="lesson-nav-btn">← 17 · Mixed-Signal Layout</a>
+        <a href="high-speed-rf.html" class="lesson-nav-btn">19 · High-Speed &amp; RF →</a>
+      </div>
+
+    </div><!-- /main -->
+
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+</body>
+</html>
