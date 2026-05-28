@@ -8,6 +8,24 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../style.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      mermaid.initialize({
+        startOnLoad: false,
+        theme: 'base',
+        themeVariables: {
+          fontFamily: "'IBM Plex Sans', sans-serif",
+          primaryColor: '#e8f0f7',
+          primaryBorderColor: '#3a6a8a',
+          primaryTextColor: '#1a2840',
+          lineColor: '#3a6a8a',
+          edgeLabelBackground: '#f5f5f2'
+        }
+      });
+      mermaid.run();
+    });
+  </script>
 </head>
 <body>
 
@@ -439,49 +457,30 @@
         Based on these counters, each node is in one of three error states:
       </div>
 
-      <!-- SVG: error state machine -->
-      <svg viewBox="0 0 700 160" style="width:100%;max-width:700px;display:block;margin:24px auto 8px;" role="img" aria-label="CAN error confinement state machine: Error Active (normal), Error Passive (TEC or REC over 127), and Bus Off (TEC over 255)">
+      <!-- Error confinement state machine — Mermaid -->
+      <div style="max-width:720px; margin:24px auto 8px; overflow-x:auto;">
+        <div class="mermaid">
+stateDiagram-v2
+    direction LR
+    EA : Error Active
+    EP : Error Passive
+    BO : Bus Off
 
-        <!-- Error Active box -->
-        <rect x="30" y="44" width="160" height="70" rx="6" fill="#e8f5e8" stroke="#5a8a5a" stroke-width="2"/>
-        <text x="110" y="72" font-family="IBM Plex Sans,sans-serif" font-size="11" font-weight="600" fill="#1a2840" text-anchor="middle">Error Active</text>
-        <text x="110" y="88" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a6a7a" text-anchor="middle">TEC, REC &lt; 128</text>
-        <text x="110" y="101" font-family="IBM Plex Sans,sans-serif" font-size="9" fill="#5a6a7a" text-anchor="middle">Normal operation</text>
+    [*] --> EA
+    EA --> EP : TEC or REC ≥ 128
+    EP --> EA : TEC and REC &lt; 128
+    EP --> BO : TEC ≥ 256
+    BO --> EA : 128 × 11 recessive bits
 
-        <!-- Error Passive box -->
-        <rect x="270" y="44" width="160" height="70" rx="6" fill="#fff3e0" stroke="#d4840a" stroke-width="2"/>
-        <text x="350" y="72" font-family="IBM Plex Sans,sans-serif" font-size="11" font-weight="600" fill="#1a2840" text-anchor="middle">Error Passive</text>
-        <text x="350" y="88" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a6a7a" text-anchor="middle">TEC or REC ≥ 128</text>
-        <text x="350" y="101" font-family="IBM Plex Sans,sans-serif" font-size="9" fill="#5a6a7a" text-anchor="middle">Passive error flags only</text>
+    classDef active fill:#e8f5e8,stroke:#5a8a5a,color:#1a2840
+    classDef passive fill:#fff3e0,stroke:#d4840a,color:#1a2840
+    classDef busoff fill:#fde8e8,stroke:#e04040,color:#1a2840
 
-        <!-- Bus Off box -->
-        <rect x="510" y="44" width="160" height="70" rx="6" fill="#fde8e8" stroke="#e04040" stroke-width="2"/>
-        <text x="590" y="72" font-family="IBM Plex Sans,sans-serif" font-size="11" font-weight="600" fill="#1a2840" text-anchor="middle">Bus Off</text>
-        <text x="590" y="88" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a6a7a" text-anchor="middle">TEC ≥ 256</text>
-        <text x="590" y="101" font-family="IBM Plex Sans,sans-serif" font-size="9" fill="#5a6a7a" text-anchor="middle">Disconnected from bus</text>
-
-        <!-- Transitions -->
-        <!-- Active → Passive -->
-        <line x1="190" y1="72" x2="270" y2="72" stroke="#d4840a" stroke-width="1.5"/>
-        <polygon points="266,68 274,72 266,76" fill="#d4840a"/>
-        <text x="230" y="64" font-family="IBM Plex Mono,monospace" font-size="8" fill="#d4840a" text-anchor="middle">TEC/REC ≥ 128</text>
-
-        <!-- Passive → Active -->
-        <line x1="270" y1="84" x2="190" y2="84" stroke="#5a8a5a" stroke-width="1.5"/>
-        <polygon points="194,80 186,84 194,88" fill="#5a8a5a"/>
-        <text x="230" y="97" font-family="IBM Plex Mono,monospace" font-size="8" fill="#5a8a5a" text-anchor="middle">TEC and REC &lt; 128</text>
-
-        <!-- Passive → Bus Off -->
-        <line x1="430" y1="72" x2="510" y2="72" stroke="#e04040" stroke-width="1.5"/>
-        <polygon points="506,68 514,72 506,76" fill="#e04040"/>
-        <text x="470" y="64" font-family="IBM Plex Mono,monospace" font-size="8" fill="#e04040" text-anchor="middle">TEC ≥ 256</text>
-
-        <!-- Bus Off → Active (recovery) -->
-        <path d="M590,114 Q590,145 350,145 Q110,145 110,114" stroke="#5a8a5a" stroke-width="1.5" fill="none" stroke-dasharray="5,3"/>
-        <polygon points="106,118 110,110 114,118" fill="#5a8a5a"/>
-        <text x="350" y="158" font-family="IBM Plex Mono,monospace" font-size="8" fill="#5a8a5a" text-anchor="middle">128 × 11 recessive bits seen (power cycle or bus recovery)</text>
-
-      </svg>
+    class EA active
+    class EP passive
+    class BO busoff
+        </div>
+      </div>
       <div style="text-align:center;font-size:12px;color:#9aabb8;margin-bottom:24px;">CAN error confinement state machine. A faulty node escalates from Error Active → Error Passive → Bus Off, automatically disconnecting itself without taking down the bus.</div>
 
       <div class="prose">

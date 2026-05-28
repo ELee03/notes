@@ -67,9 +67,14 @@ Last updated: 2026-05-28
   `<img>`. Not flagged as broken but may have layout issues similar to the
   output-mode SVGs that were redrawn. Review if user reports problems.
 
-- **KiCad for future complex schematics**: agreed to revisit when Circuits
-  cluster is written. For simple educational circuits (≤5 components), hand-
-  coded SVG is preferred.
+- **KiCad for schematics — pending install**: user is installing KiCad; will
+  confirm when ready. Plan: use `kicad-cli sch export svg` for ALL circuit
+  schematics going forward — Circuits cluster AND any Embedded diagrams that
+  warrant it (GPIO output stages, power topologies, etc.). Hand-coded SVG is
+  the fallback only while KiCad is unavailable.
+  Expected CLI path: `C:\Program Files\KiCad\10.0\bin\kicad-cli.exe`
+  Export command: `kicad-cli sch export svg --output <dir> <file>.kicad_sch`
+  Once confirmed, also add a note to CLAUDE.md under Visuals.
 
 - **Diagrams strategy (settled)**: WaveDrom for digital timing diagrams;
   hand-coded SVG for circuit schematics, analog waveforms, and anything needing
