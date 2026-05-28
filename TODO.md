@@ -7,7 +7,8 @@ Last updated: 2026-05-28
 
 ## In Progress
 
-*(nothing actively in-flight)*
+- [ ] **Mermaid batch 2** — remaining ~14 SVG → Mermaid replacements across:
+  memory-clocks, rtos, bare-metal, dma, gpio, usb, debug, spi, interrupts-nvic
 
 ---
 
@@ -26,6 +27,15 @@ Last updated: 2026-05-28
 ---
 
 ## Completed This Session
+
+- [x] **Mermaid batch 1** — replaced 3 SVG state/flow diagrams with Mermaid:
+  - `mcu-architecture.html` — Processor mode state machine (`stateDiagram-v2`, LR, Handler Mode amber `classDef`)
+  - `mcu-architecture.html` — Reset startup flow (`flowchart TD`, stadium RESET, color-coded steps)
+  - `can.html` — Error confinement state machine (`stateDiagram-v2`, green/amber/red `classDef`)
+  - Mermaid CDN added to `can.html` head
+  - WaveDrom skin fix (skins/default.js) confirmed working in uart.html and i2c.html
+  - All changes pushed in commit b64597c
+  - Visual verification: all 3 diagrams confirmed rendering in Chrome
 
 - [x] **Wavedrom timing diagrams** implemented:
   - `embedded/uart.html` — RTS/CTS flow control → WaveDrom (3 signals: TX data bus,

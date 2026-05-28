@@ -8,6 +8,24 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../style.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      mermaid.initialize({
+        startOnLoad: false,
+        theme: 'base',
+        themeVariables: {
+          fontFamily: "'IBM Plex Sans', sans-serif",
+          primaryColor: '#e8f0f7',
+          primaryBorderColor: '#3a6a8a',
+          primaryTextColor: '#1a2840',
+          lineColor: '#3a6a8a',
+          edgeLabelBackground: '#f5f5f2'
+        }
+      });
+      mermaid.run();
+    });
+  </script>
 </head>
 <body>
 
@@ -170,71 +188,32 @@
         covers all four states the kernel tracks:
       </div>
 
-      <!-- Task state diagram SVG -->
-      <svg viewBox="0 0 620 220" xmlns="http://www.w3.org/2000/svg"
-           style="width:100%;max-width:620px;display:block;margin:20px auto 24px;">
-        <!-- Background -->
-        <rect width="620" height="220" fill="#f5f5f2" rx="6"/>
+      <!-- Task state diagram — Mermaid -->
+      <div style="max-width:680px; margin:20px auto 24px; overflow-x:auto;">
+        <div class="mermaid">
+stateDiagram-v2
+    direction LR
+    RM : Running
+    RD : Ready
+    BL : Blocked
+    SP : Suspended
 
-        <!-- State boxes -->
-        <!-- Running (center-ish) -->
-        <rect x="250" y="80" width="120" height="48" rx="6" fill="#3a6a8a" stroke="none"/>
-        <text x="310" y="100" text-anchor="middle" fill="white" font-family="IBM Plex Sans" font-size="12" font-weight="600">Running</text>
-        <text x="310" y="117" text-anchor="middle" fill="#c0d8e8" font-family="IBM Plex Mono" font-size="10">on CPU</text>
+    [*] --> RD
+    RD --> RM : selected by scheduler
+    RM --> RD : preempted / yield
+    RM --> BL : xSemaphoreTake / xQueueReceive…
+    BL --> RD : event / timeout
+    RM --> SP : vTaskSuspend()
+    SP --> RD : vTaskResume()
 
-        <!-- Ready -->
-        <rect x="60" y="80" width="120" height="48" rx="6" fill="white" stroke="#3a6a8a" stroke-width="1.5"/>
-        <text x="120" y="100" text-anchor="middle" fill="#1a2840" font-family="IBM Plex Sans" font-size="12" font-weight="600">Ready</text>
-        <text x="120" y="117" text-anchor="middle" fill="#5a7a9a" font-family="IBM Plex Mono" font-size="10">waiting for CPU</text>
-
-        <!-- Blocked -->
-        <rect x="440" y="80" width="140" height="48" rx="6" fill="white" stroke="#7ab8d4" stroke-width="1.5"/>
-        <text x="510" y="100" text-anchor="middle" fill="#1a2840" font-family="IBM Plex Sans" font-size="12" font-weight="600">Blocked</text>
-        <text x="510" y="117" text-anchor="middle" fill="#5a7a9a" font-family="IBM Plex Mono" font-size="10">waiting for event</text>
-
-        <!-- Suspended -->
-        <rect x="250" y="168" width="120" height="40" rx="6" fill="white" stroke="#9aabb8" stroke-width="1.5" stroke-dasharray="4,3"/>
-        <text x="310" y="184" text-anchor="middle" fill="#7a9aaa" font-family="IBM Plex Sans" font-size="12" font-weight="500">Suspended</text>
-        <text x="310" y="200" text-anchor="middle" fill="#9aabb8" font-family="IBM Plex Mono" font-size="10">vTaskSuspend()</text>
-
-        <!-- Arrows -->
-        <!-- Ready → Running: scheduler selects -->
-        <line x1="180" y1="104" x2="248" y2="104" stroke="#3a6a8a" stroke-width="1.5" marker-end="url(#arr-blue)"/>
-        <text x="214" y="97" text-anchor="middle" fill="#3a6a8a" font-family="IBM Plex Sans" font-size="10">selected</text>
-
-        <!-- Running → Ready: preempted / yield -->
-        <path d="M 250 116 C 215 132 185 128 180 116" fill="none" stroke="#9aabb8" stroke-width="1.5" marker-end="url(#arr-grey)"/>
-        <text x="214" y="135" text-anchor="middle" fill="#7a8a9a" font-family="IBM Plex Sans" font-size="10">preempted / yield</text>
-
-        <!-- Running → Blocked: wait on semaphore/queue/delay -->
-        <line x1="370" y1="104" x2="438" y2="104" stroke="#9aabb8" stroke-width="1.5" marker-end="url(#arr-grey)"/>
-        <text x="404" y="97" text-anchor="middle" fill="#7a8a9a" font-family="IBM Plex Sans" font-size="10">xSemaphoreTake</text>
-        <text x="404" y="108" text-anchor="middle" fill="#7a8a9a" font-family="IBM Plex Sans" font-size="10">/ xQueueReceive…</text>
-
-        <!-- Blocked → Ready: event occurs -->
-        <path d="M 510 80 C 510 50 310 50 310 79" fill="none" stroke="#7ab8d4" stroke-width="1.5" marker-end="url(#arr-cyan)"/>
-        <text x="415" y="46" text-anchor="middle" fill="#3a6a8a" font-family="IBM Plex Sans" font-size="10">event / timeout → unblocked</text>
-
-        <!-- Running → Suspended -->
-        <line x1="310" y1="128" x2="310" y2="167" stroke="#9aabb8" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr-grey)"/>
-
-        <!-- Suspended → Ready -->
-        <path d="M 250 188 C 180 188 120 160 120 129" fill="none" stroke="#9aabb8" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr-grey)"/>
-        <text x="166" y="182" text-anchor="middle" fill="#7a8a9a" font-family="IBM Plex Sans" font-size="10">vTaskResume()</text>
-
-        <!-- Arrowhead markers -->
-        <defs>
-          <marker id="arr-blue" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
-            <polygon points="0 0, 7 3.5, 0 7" fill="#3a6a8a"/>
-          </marker>
-          <marker id="arr-grey" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
-            <polygon points="0 0, 7 3.5, 0 7" fill="#9aabb8"/>
-          </marker>
-          <marker id="arr-cyan" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
-            <polygon points="0 0, 7 3.5, 0 7" fill="#7ab8d4"/>
-          </marker>
-        </defs>
-      </svg>
+    classDef running fill:#3a6a8a,stroke:#3a6a8a,color:white
+    classDef blocked fill:#e8f4fa,stroke:#7ab8d4,color:#1a2840
+    classDef suspended fill:#f0f0f0,stroke:#9aabb8,color:#7a9aaa
+    class RM running
+    class BL blocked
+    class SP suspended
+        </div>
+      </div>
 
       <div class="prose">
         <strong>Running</strong> — exactly one task (or the idle task) occupies
