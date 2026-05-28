@@ -459,22 +459,22 @@
       <div class="prose" style="margin-top:0;">Power dissipated in the LDO:</div>
       <div class="math-block">$$P_D = (V_\text{in} - V_\text{out}) \times I_\text{load} = (5.0 - 3.3)\,\text{V} \times 200\,\text{mA} = 340\,\text{mW}$$</div>
       <div class="prose" style="margin-top:0;">
-        With $\theta_{JA} = 60\,^\circ\text{C/W}$ (datasheet, no copper pour), at 25 °C ambient:
+        With $\theta_{JA} = 60\,°\text{C/W}$ (datasheet, no copper pour), at 25 °C ambient:
       </div>
-      <div class="math-block">$$T_J = T_A + P_D \cdot \theta_{JA} = 25 + 0.340 \times 60 = 45\,^\circ\text{C}\ \checkmark$$</div>
+      <div class="math-block">$$T_J = T_A + P_D \cdot \theta_{JA} = 25 + 0.340 \times 60 = 45\,°\text{C}\ \checkmark$$</div>
       <div class="prose" style="margin-top:0;">
-        At 85 °C ambient (industrial worst case): $T_J = 85 + 0.340 \times 60 = 105\,^\circ\text{C}$ — still OK, but only just.
-        With a 10×10 mm copper pour (effective $\theta_{JA} \approx 35\,^\circ\text{C/W}$):
+        At 85 °C ambient (industrial worst case): $T_J = 85 + 0.340 \times 60 = 105\,°\text{C}$ — still OK, but only just.
+        With a 10×10 mm copper pour (effective $\theta_{JA} \approx 35\,°\text{C/W}$):
       </div>
-      <div class="math-block">$$T_J = 85 + 0.340 \times 35 = 97\,^\circ\text{C}\ \checkmark\ \text{— good margin}$$</div>
+      <div class="math-block">$$T_J = 85 + 0.340 \times 35 = 97\,°\text{C}\ \checkmark\ \text{— good margin}$$</div>
       <div class="prose" style="margin-top:0;">Always check the worst-case ambient, not 25 °C room temperature.</div>
 
       <div class="prose" style="font-weight:600;margin-bottom:4px;margin-top:12px;color:#1a2840;">Example 2 — EFR32MG24 MCU at full Tx power</div>
       <div class="prose" style="margin-top:0;">
         $I_{CC} = 10\,\text{mA}$ at 3.3 V gives $P_D = 33\,\text{mW}$.
-        With $\theta_{JA} = 30\,^\circ\text{C/W}$ for QFN-48:
+        With $\theta_{JA} = 30\,°\text{C/W}$ for QFN-48:
       </div>
-      <div class="math-block">$$T_J = 85 + 0.033 \times 30 = 86\,^\circ\text{C}\ \text{— negligible}$$</div>
+      <div class="math-block">$$T_J = 85 + 0.033 \times 30 = 86\,°\text{C}\ \text{— negligible}$$</div>
       <div class="prose" style="margin-top:0;">Power ICs (LDOs, switchers, H-bridges) need careful thermal analysis; MCUs rarely dissipate enough to matter.</div>
 
       <div class="prose">
