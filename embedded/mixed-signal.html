@@ -477,6 +477,14 @@
 <!-- Check DC current capacity: ferrite beads saturate! -->
 <!-- At 100 mA AVDD current, a bead saturating at 50 mA → useless. --></pre></div>
 
+      <!-- ── References ──────────────────────────────────────── -->
+      <div class="section-head">References</div>
+      <ul class="prose" style="padding-left:1.4em;font-size:13.5px;color:#5a6a7a;">
+        <li style="margin-bottom:6px;">H. W. Ott, <em>Electromagnetic Compatibility Engineering</em> — Chapters 5 and 6 address mixed-signal grounding, the myth of split ground planes, and correct single-point ground strategy; Chapter 11 covers capacitive/inductive/common-impedance coupling mechanisms that drive the isolation rules in this lesson.</li>
+        <li style="margin-bottom:6px;">P. Horowitz &amp; W. Hill, <em>The Art of Electronics</em> (3rd ed.) — Chapter 8 (Low-Noise Techniques) and Chapter 13 (ADC and DAC) cover op-amp input guard rings, differential-pair routing, and VREF bypass requirements directly applicable to the InAmp and ADC layout sections.</li>
+        <li style="margin-bottom:6px;">Analog Devices, <em>Linear Circuit Design Handbook</em> (available free at analog.com) — Chapter 7 (Hardware Design Techniques) is one of the best practical treatments of mixed-signal PCB layout, grounding, and ferrite bead selection.</li>
+      </ul>
+
       <hr class="lesson-rule">
 
       <div class="lesson-nav">

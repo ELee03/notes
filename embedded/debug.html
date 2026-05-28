@@ -545,6 +545,14 @@ int fputc(int ch, FILE *f) {
         looks broken when the probing technique is the problem.
       </div>
 
+      <!-- ── References ──────────────────────────────────────── -->
+      <div class="section-head">References</div>
+      <ul class="prose" style="padding-left:1.4em;font-size:13.5px;color:#5a6a7a;">
+        <li style="margin-bottom:6px;">J. Yiu, <em>The Definitive Guide to ARM Cortex-M3 and Cortex-M4 Processors</em> (3rd ed.) — covers the CoreSight debug architecture (DAP, AP, DWT, FPB, ITM), the SWD protocol, and HardFault/fault status register interpretation in detail.</li>
+        <li style="margin-bottom:6px;">ARM, <em>CoreSight Architecture Specification</em> (ARM IHI0029) — the primary specification for the debug and trace subsystem; useful for understanding ITM/ETM/SWO trace beyond what vendor docs cover.</li>
+        <li style="margin-bottom:6px;">M. White, <em>Making Embedded Systems</em> (2nd ed.) — Chapter 9 on dealing with bugs covers printf-style debugging, assert patterns, and logging strategies that complement the hardware debug tools in this lesson.</li>
+      </ul>
+
       <hr class="lesson-rule">
 
       <div class="lesson-nav">

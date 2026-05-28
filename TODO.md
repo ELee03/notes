@@ -1,7 +1,7 @@
 # Claude Agent TODO
 <!-- Keep this file updated as work progresses. Read it at the start of every session. -->
 
-Last updated: 2026-05-28
+Last updated: 2026-05-28 (session 2)
 
 ---
 
@@ -13,9 +13,13 @@ Last updated: 2026-05-28
 
 ## Pending — Embedded cluster visual/math pass
 
-- [ ] **KaTeX audit pass** — now that the DOMContentLoaded fix is deployed,
-  scan all 5 KaTeX pages (power-thermal, adc-dac, i2c, high-speed-rf, bode)
-  to confirm inline `$...$` math renders correctly after hard-refresh.
+- [x] **KaTeX audit pass** — all 5 pages verified:
+  - `power-thermal.html` — had bug: `\,^\circ` (thin-space + superscript) is a KaTeX
+    parse error. Fixed by replacing `\,^\circ` with `\,°` (Unicode degree symbol) in
+    7 places. Deployed in commit 2a0c53c. All 5 math-blocks now render.
+  - `i2c.html`, `high-speed-rf.html`, `adc-dac.html`, `bode.html` — all rendering
+    correctly, confirmed via `.katex` DOM element count.
+  **KaTeX note**: never use `\,^\circ` — always use `\,°` or `\degree` for °C/°F.
 
 - [ ] **Per-lesson references section** — user requested references at the
   bottom of each individual lesson page (not just cluster index). Need to
@@ -23,12 +27,25 @@ Last updated: 2026-05-28
   Requires knowing which specific textbook chapters each lesson draws from;
   ask user or leave as a template with TODOs.
 
-- [ ] **KiCad circuit replacements (5 SVGs)** — KiCad 10.0.3 confirmed installed at
-  `C:\Program Files\KiCad\10.0\bin\kicad-cli.exe`. Targets:
-  - `gpio.html` — Push-pull + open-drain output circuits
-  - `power-thermal.html` — Buck converter hot loop
-  - `can.html` — CAN bus with 120Ω termination resistors
-  - `i2c.html` — Open-drain pull-up bus topology (multiple devices + resistors)
+## Assessed — Keep as SVG (KiCad not appropriate for these)
+
+KiCad (`kicad-cli sch export svg`) is confirmed working (v10.0.3).
+It is the right tool for **new** circuit-level schematics in the Circuits cluster.
+The following were reviewed and are best kept as hand-coded SVG:
+- `gpio.html` — Push-pull + open-drain output circuits: already clean inline SVGs
+  with correct MOSFET symbols (gate-on-left convention). KiCad would add a bulk-dot
+  and package circle that clutter an educational diagram.
+- `power-thermal.html` — Buck converter hot loop: this is a PCB **layout view**
+  (showing hot-loop area, component placement), not a schematic. KiCad exports
+  schematics, not layout views.
+- `can.html` — CAN bus termination: bus **topology diagram** (line + tapped nodes +
+  resistor boxes). Not a circuit schematic.
+- `i2c.html` — I2C open-drain bus topology: same — bus topology with device boxes.
+  The pull-up resistor sizing KaTeX equations are the math content; the SVG bus
+  diagram does not need KiCad treatment.
+
+Reserve KiCad for: transistor-level schematics in the Circuits cluster; new
+power/RF circuit schematics where IEEE symbol accuracy matters.
 
 ## Assessed — Keep as SVG (Mermaid not appropriate)
 
@@ -113,15 +130,13 @@ Mermaid cannot replicate their layout, custom shapes, or semantic content:
   `<img>`. Not flagged as broken but may have layout issues similar to the
   output-mode SVGs that were redrawn. Review if user reports problems.
 
-- **KiCad for schematics — pending install**: user is installing KiCad; will
-  confirm when ready. Plan: use `kicad-cli sch export svg` for ALL circuit
-  schematics going forward — Circuits cluster AND any Embedded diagrams that
-  warrant it (GPIO output stages, power topologies, etc.). Hand-coded SVG is
-  the fallback only while KiCad is unavailable.
-  Expected CLI path: `C:\Program Files\KiCad\10.0\bin\kicad-cli.exe`
-  Export command: `kicad-cli sch export svg --output <dir> <file>.kicad_sch`
-  Once confirmed, also add a note to CLAUDE.md under Visuals.
+- **KiCad — CONFIRMED**: KiCad 10.0.3 installed at
+  `C:\Program Files\KiCad\10.0\bin\kicad-cli.exe`. Note added to CLAUDE.md.
+  Use for NEW transistor-level circuit schematics (Circuits cluster).
+  Not appropriate for topology/layout diagrams (see "Assessed" section above).
 
-- **Diagrams strategy (settled)**: WaveDrom for digital timing diagrams;
-  hand-coded SVG for circuit schematics, analog waveforms, and anything needing
-  custom markers or complex layout; Plotly for interactive math plots.
+- **Diagrams strategy (settled)**: Mermaid for state machines / flowcharts /
+  sequence diagrams; WaveDrom for digital timing diagrams; KiCad for new
+  transistor-level circuit schematics; hand-coded SVG for topology diagrams,
+  analog waveforms, layout views, anything needing custom markers or complex
+  layout; Plotly for interactive math plots.

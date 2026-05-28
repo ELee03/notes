@@ -538,6 +538,14 @@ CMU_ClockEnable(cmuClock_GPIO,   true);</div>
         of EM4 would negate any power saving.
       </div>
 
+      <!-- ── References ──────────────────────────────────────── -->
+      <div class="section-head">References</div>
+      <ul class="prose" style="padding-left:1.4em;font-size:13.5px;color:#5a6a7a;">
+        <li style="margin-bottom:6px;">J. Yiu, <em>The Definitive Guide to ARM Cortex-M3 and Cortex-M4 Processors</em> (3rd ed.) — covers the Cortex-M memory model, MPU, flash wait states, and bit-banding; the foundation for understanding the SRAM layout described in this lesson.</li>
+        <li style="margin-bottom:6px;">Silicon Labs, <em>EFR32xG21 Wireless Gecko Reference Manual</em> — CMU chapter for clock tree detail (oscillators, muxes, prescalers, CMU registers) and EMU chapter for energy mode transitions and EM0–EM4 wakeup sources.</li>
+        <li style="margin-bottom:6px;">M. White, <em>Making Embedded Systems</em> (2nd ed.) — Chapter on creating systems discusses startup code, linker scripts, and the .data/.bss initialisation that creates the SRAM layout at boot.</li>
+      </ul>
+
       <!-- ── Nav ───────────────────────────────────────────── -->
       <div class="lesson-nav">
         <a href="mcu-architecture.html" class="lesson-nav-btn">← Lesson 1: MCU Architecture</a>

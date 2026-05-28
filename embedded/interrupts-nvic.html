@@ -505,6 +505,14 @@ void main(void) {
         introducing latency jitter that can break timing-sensitive protocols.
       </div>
 
+      <!-- ── References ──────────────────────────────────────── -->
+      <div class="section-head">References</div>
+      <ul class="prose" style="padding-left:1.4em;font-size:13.5px;color:#5a6a7a;">
+        <li style="margin-bottom:6px;">J. Yiu, <em>The Definitive Guide to ARM Cortex-M3 and Cortex-M4 Processors</em> (3rd ed.) — the authoritative source for the Cortex-M exception model, vector table, NVIC registers, exception stacking (what gets pushed and why), tail-chaining, and the EXC_RETURN mechanism.</li>
+        <li style="margin-bottom:6px;">M. White, <em>Making Embedded Systems</em> (2nd ed.) — Chapter 5 covers interrupt-driven design patterns, ISR/main-loop communication, and guidelines for keeping ISRs short and re-entrant.</li>
+        <li style="margin-bottom:6px;">Silicon Labs, <em>EFR32xG21 Wireless Gecko Reference Manual</em> — interrupt controller integration, peripheral IRQ numbers, and NVIC priority assignments for EFR32 peripherals.</li>
+      </ul>
+
       <!-- ── Nav ───────────────────────────────────────────── -->
       <div class="lesson-nav">
         <a href="memory-clocks.html" class="lesson-nav-btn">← Lesson 2: Memory &amp; Clocks</a>
