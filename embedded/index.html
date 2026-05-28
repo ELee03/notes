@@ -59,7 +59,7 @@
       <div class="nav-section">
         <div class="nav-label">PCB Design</div>
         <a href="layout.html" class="nav-item">16 · Layout Fundamentals</a>
-        <span class="nav-item planned">17 · Mixed-Signal Layout</span>
+        <a href="mixed-signal.html" class="nav-item">17 · Mixed-Signal Layout</a>
         <span class="nav-item planned">18 · Power &amp; Thermal</span>
         <span class="nav-item planned">19 · High-Speed &amp; RF</span>
       </div>
@@ -175,15 +175,9 @@
         <span class="lesson-row-desc">PCB layer stackup (2-layer vs 4-layer), return current path and why ground plane slots cause EMI, bulk vs local decoupling capacitor placement (100 nF ceramics at each VDD pin), via stitching, clearance/creepage/board-edge keepout rules.</span>
       </div>
 
-      <div class="course-block">
-        <div class="course-block-code">Lesson 17 · Mixed-Signal Layout</div>
-        <div class="course-block-name">Analog/Digital Partitioning</div>
-        <div class="course-block-desc">
-          Separating analog and digital domains, ADC and DAC layout (AVDD/DVDD
-          isolation, reference bypass, input filtering), instrumentation amplifier
-          placement for biosensor front-ends, guarding high-impedance nodes, and
-          managing digital noise coupling into analog circuitry.
-        </div>
+      <div class="lesson-row">
+        <a href="mixed-signal.html" class="lesson-row-title">17 · Mixed-Signal Layout</a>
+        <span class="lesson-row-desc">Analog/digital floorplanning, single continuous ground plane (why split planes are wrong), AVDD/VREF bypass, ADC input trace routing, InAmp layout for biosensors, guard rings for high-impedance nodes, capacitive/inductive/common-impedance coupling and ferrite bead filtering.</span>
       </div>
 
       <div class="course-block">

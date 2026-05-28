@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mixed-Signal Layout — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Architecture &amp; Internals</div>
+        <a href="mcu-architecture.html" class="nav-item">1 · MCU Architecture</a>
+        <a href="memory-clocks.html" class="nav-item">2 · Memory &amp; Clock Systems</a>
+        <a href="interrupts-nvic.html" class="nav-item">3 · Interrupts &amp; the NVIC</a>
+        <a href="dma.html" class="nav-item">4 · DMA</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Peripherals</div>
+        <a href="gpio.html" class="nav-item">5 · GPIO</a>
+        <a href="timers-pwm.html" class="nav-item">6 · Timers &amp; PWM</a>
+        <a href="adc-dac.html" class="nav-item">7 · ADC &amp; DAC</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Protocols</div>
+        <a href="uart.html" class="nav-item">8 · UART</a>
+        <a href="spi.html" class="nav-item">9 · SPI</a>
+        <a href="i2c.html" class="nav-item">10 · I2C</a>
+        <a href="can.html" class="nav-item">11 · CAN Bus</a>
+        <a href="usb.html" class="nav-item">12 · USB Fundamentals</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Firmware</div>
+        <a href="bare-metal.html" class="nav-item">13 · Bare-Metal Patterns</a>
+        <a href="rtos.html" class="nav-item">14 · RTOS Concepts</a>
+        <a href="debug.html" class="nav-item">15 · Debugging &amp; Test</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">PCB Design</div>
+        <a href="layout.html" class="nav-item">16 · Layout Fundamentals</a>
+        <a href="mixed-signal.html" class="nav-item active">17 · Mixed-Signal Layout</a>
+        <span class="nav-item planned">18 · Power &amp; Thermal</span>
+        <span class="nav-item planned">19 · High-Speed &amp; RF</span>
+      </div>
+
+      <hr class="sidebar-rule">
+
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#the-problem" class="nav-item">The noise problem</a>
+        <a href="#floorplanning" class="nav-item">Floorplanning</a>
+        <a href="#ground-plane" class="nav-item">Ground plane strategy</a>
+        <a href="#adc-layout" class="nav-item">ADC &amp; reference layout</a>
+        <a href="#guarding" class="nav-item">Guard rings</a>
+        <a href="#coupling" class="nav-item">Coupling mechanisms</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Embedded Systems</a>
+        <span class="sep">›</span>
+        <span>17 · Mixed-Signal Layout</span>
+      </div>
+
+      <div class="lesson-title">17 · Mixed-Signal Layout</div>
+      <div class="lesson-meta">Analog–Digital Partitioning · ADC Layout · Reference Bypass · Guard Rings</div>
+
+      <div class="prose">
+        Mixed-signal PCBs contain both digital circuits (MCU, memories, digital
+        logic) and analog circuits (ADC inputs, amplifiers, sensors, voltage
+        references). The challenge is that digital circuits are inherently noisy —
+        they switch at high frequencies, draw pulsed current, and couple energy
+        into nearby conductors — while analog circuits are inherently sensitive.
+        A sensor measuring a 1 mV ECG signal on a board with a 3.3 V digital
+        supply switching at 50 MHz is trying to resolve signals a million times
+        smaller than the interference. Mixed-signal layout is the discipline of
+        keeping these two worlds from corrupting each other.
+      </div>
+
+      <hr class="lesson-rule">
+
+      <!-- ── The Noise Problem ──────────────────────────────── -->
+      <div class="section-head" id="the-problem">The Noise Problem</div>
+
+      <div class="prose">
+        Digital noise enters the analog signal path through three main mechanisms:
+      </div>
+
+      <ul class="prose" style="margin-top:0; padding-left:1.4em;">
+        <li style="margin-bottom:8px;"><strong>Ground bounce.</strong>
+          Every digital switching event drives return current through the ground
+          plane's finite impedance (recall: at high frequency, impedance is
+          inductive, not just resistive). This creates tiny voltage differences
+          across the ground plane — ground bounce. If the analog circuit's
+          reference point (GND pin, reference input) sits at a different potential
+          than the digital circuit's GND, even by 100 µV, it directly corrupts
+          any analog measurement at that level.</li>
+        <li style="margin-bottom:8px;"><strong>Supply coupling.</strong>
+          If the analog VDD and digital VDD share a power rail, digital switching
+          noise appears on the analog supply and couples into the amplifier's
+          output through its power supply rejection ratio (PSRR). Most op-amps
+          have 60–80 dB PSRR at DC, falling to 20 dB or less at 10 MHz — so
+          high-frequency supply noise gets through almost unattenuated.</li>
+        <li style="margin-bottom:8px;"><strong>Trace coupling.</strong>
+          A digital trace running near an analog trace forms a capacitor. A
+          clock line toggling at 3.3 V into 0.5 pF of parasitic capacitance
+          injects dV/dt × C = 1e9 × 0.5e-12 = 0.5 mA pulses into the analog
+          trace. At a 10 kΩ node impedance that's 5 V — an absurd coupling
+          on a sensitive analog line.</li>
+      </ul>
+
+      <!-- ── Floorplanning ───────────────────────────────────── -->
+      <div class="section-head" id="floorplanning">Floorplanning</div>
+
+      <div class="prose">
+        The most effective noise reduction technique is separation at the
+        component placement level, before routing begins. This is called
+        <strong>floorplanning</strong>: dividing the board into distinct zones
+        and placing components entirely within their zone.
+      </div>
+
+      <!-- Mixed-signal floorplan SVG -->
+      <svg viewBox="0 0 620 260" xmlns="http://www.w3.org/2000/svg"
+           style="width:100%;max-width:620px;display:block;margin:20px auto 8px;">
+        <rect width="620" height="260" fill="#f5f5f2" rx="6"/>
+
+        <!-- Board outline -->
+        <rect x="20" y="20" width="580" height="220" rx="6" fill="white" stroke="#c0c8d0" stroke-width="2"/>
+
+        <!-- Analog zone -->
+        <rect x="30" y="30" width="200" height="200" rx="4" fill="#fff8f0" stroke="#c8a020" stroke-width="1.5" stroke-dasharray="5,3"/>
+        <text x="130" y="50" text-anchor="middle" fill="#7a5010" font-family="IBM Plex Sans" font-size="11" font-weight="600">Analog Zone</text>
+
+        <!-- Components in analog zone -->
+        <!-- Sensor -->
+        <rect x="45" y="65" width="70" height="40" rx="4" fill="white" stroke="#c8a020" stroke-width="1.5"/>
+        <text x="80" y="83" text-anchor="middle" fill="#1a2840" font-family="IBM Plex Sans" font-size="10" font-weight="600">Sensor</text>
+        <text x="80" y="97" text-anchor="middle" fill="#7a8a9a" font-family="IBM Plex Mono" font-size="9">electrodes</text>
+
+        <!-- InAmp -->
+        <rect x="140" y="65" width="75" height="40" rx="4" fill="white" stroke="#c8a020" stroke-width="1.5"/>
+        <text x="177" y="83" text-anchor="middle" fill="#1a2840" font-family="IBM Plex Sans" font-size="10" font-weight="600">InAmp</text>
+        <text x="177" y="97" text-anchor="middle" fill="#7a8a9a" font-family="IBM Plex Mono" font-size="9">INA128</text>
+
+        <!-- VREF -->
+        <rect x="45" y="130" width="70" height="36" rx="4" fill="white" stroke="#c8a020" stroke-width="1.5"/>
+        <text x="80" y="151" text-anchor="middle" fill="#1a2840" font-family="IBM Plex Sans" font-size="10" font-weight="600">VREF</text>
+        <text x="80" y="162" text-anchor="middle" fill="#7a8a9a" font-family="IBM Plex Mono" font-size="9">2.5 V</text>
+
+        <!-- LPF -->
+        <rect x="140" y="130" width="75" height="36" rx="4" fill="white" stroke="#c8a020" stroke-width="1.5"/>
+        <text x="177" y="151" text-anchor="middle" fill="#1a2840" font-family="IBM Plex Sans" font-size="10" font-weight="600">Anti-alias</text>
+        <text x="177" y="162" text-anchor="middle" fill="#7a8a9a" font-family="IBM Plex Mono" font-size="9">RC filter</text>
+
+        <!-- Signal path arrows within analog zone -->
+        <line x1="115" y1="85" x2="140" y2="85" stroke="#c8a020" stroke-width="1.5" marker-end="url(#arr-a)"/>
+        <line x1="215" y1="100" x2="215" y2="126" stroke="#c8a020" stroke-width="1.5" marker-end="url(#arr-a)"/>
+        <line x1="215" y1="148" x2="230" y2="148" stroke="#c8a020" stroke-width="1.5"/>
+
+        <!-- Digital zone -->
+        <rect x="260" y="30" width="330" height="200" rx="4" fill="#f0f4f8" stroke="#3a6a8a" stroke-width="1.5" stroke-dasharray="5,3"/>
+        <text x="425" y="50" text-anchor="middle" fill="#1a3860" font-family="IBM Plex Sans" font-size="11" font-weight="600">Digital Zone</text>
+
+        <!-- MCU -->
+        <rect x="310" y="65" width="110" height="80" rx="4" fill="white" stroke="#3a6a8a" stroke-width="1.5"/>
+        <text x="365" y="101" text-anchor="middle" fill="#1a2840" font-family="IBM Plex Sans" font-size="11" font-weight="600">MCU</text>
+        <text x="365" y="117" text-anchor="middle" fill="#3a6a8a" font-family="IBM Plex Mono" font-size="9">EFR32</text>
+        <text x="365" y="130" text-anchor="middle" fill="#3a6a8a" font-family="IBM Plex Mono" font-size="9">ADC0 inside</text>
+
+        <!-- Flash / other digital IC -->
+        <rect x="450" y="65" width="120" height="50" rx="4" fill="white" stroke="#3a6a8a" stroke-width="1.5"/>
+        <text x="510" y="88" text-anchor="middle" fill="#1a2840" font-family="IBM Plex Sans" font-size="10" font-weight="600">Flash / SRAM</text>
+        <text x="510" y="103" text-anchor="middle" fill="#7a8a9a" font-family="IBM Plex Mono" font-size="9">SPI/QSPI</text>
+
+        <!-- Connector -->
+        <rect x="450" y="140" width="120" height="40" rx="4" fill="white" stroke="#3a6a8a" stroke-width="1.5"/>
+        <text x="510" y="163" text-anchor="middle" fill="#1a2840" font-family="IBM Plex Sans" font-size="10" font-weight="600">J-Link / USB</text>
+
+        <!-- Boundary crossing arrow with filter -->
+        <line x1="230" y1="148" x2="308" y2="148" stroke="#7a8a9a" stroke-width="1.5" stroke-dasharray="4,2"/>
+        <circle cx="269" cy="148" r="8" fill="white" stroke="#e08030" stroke-width="1.5"/>
+        <text x="269" y="151" text-anchor="middle" fill="#c05050" font-family="IBM Plex Mono" font-size="9">F</text>
+        <text x="269" y="170" text-anchor="middle" fill="#c05050" font-family="IBM Plex Sans" font-size="9">filter at boundary</text>
+
+        <!-- Zone boundary line -->
+        <line x1="248" y1="25" x2="248" y2="235" stroke="#9aabb8" stroke-width="1" stroke-dasharray="2,4"/>
+
+        <!-- Labels -->
+        <text x="248" y="248" text-anchor="middle" fill="#9aabb8" font-family="IBM Plex Sans" font-size="9" font-style="italic">partition boundary</text>
+
+        <!-- Arrowhead marker -->
+        <defs>
+          <marker id="arr-a" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <polygon points="0 0, 6 3, 0 6" fill="#c8a020"/>
+          </marker>
+        </defs>
+      </svg>
+      <div class="prose" style="font-size:12.5px;color:#5a6a7a;text-align:center;margin-top:0;margin-bottom:20px;">
+        Analog components cluster on one side; digital components on the other. Any signal crossing the partition boundary passes through a filter. Never route digital traces through the analog zone.
+      </div>
+
+      <div class="prose">
+        Floorplanning rules:
+      </div>
+
+      <ul class="prose" style="margin-top:0; padding-left:1.4em;">
+        <li style="margin-bottom:6px;">Place all analog components (sensors, amplifiers, VREF, ADC input passives) on one side of the board. Place all digital components on the other.</li>
+        <li style="margin-bottom:6px;">The MCU, which contains both digital logic and an ADC, sits at the boundary — as close to the analog section as its package allows, with its analog pins (VDD_ANA, VREF, ADC inputs) facing the analog zone and its digital pins (GPIO, UART, SPI) facing the digital zone.</li>
+        <li style="margin-bottom:6px;">Any signal that must cross the analog/digital boundary should be filtered. An active signal crosses as a digitised output from the ADC (already digital at that point), not as an analog voltage.</li>
+        <li style="margin-bottom:6px;">Never route a digital clock, PWM output, or switching supply trace through the analog zone, even if it would be shorter.</li>
+      </ul>
+
+      <!-- ── Ground Plane Strategy ───────────────────────────── -->
+      <div class="section-head" id="ground-plane">Ground Plane Strategy</div>
+
+      <div class="prose">
+        The traditional advice — "split the analog ground plane from the digital
+        ground plane" — is now understood to be incorrect in most designs. The
+        classic split-plane approach creates exactly the problem it tries to solve:
+        any signal that crosses the split forces return current to take a long
+        detour, creating a large current loop and substantial radiated EMI.
+      </div>
+
+      <div class="prose">
+        The correct approach, validated by Henry Ott and Analog Devices, is a
+        <strong>single, continuous ground plane</strong> beneath the entire board.
+        The key insight is that if you have done the floorplanning correctly, the
+        digital return currents never need to flow through the analog region —
+        they return directly beneath their source traces on the digital side of the
+        plane. The ground plane does not need to be split to prevent this.
+      </div>
+
+      <div class="prose">
+        The one case where a split makes sense is when there is significant
+        galvanic isolation between two grounds (mains-connected medical equipment,
+        motor drives with high common-mode voltages). In that case, isolate the
+        plane and connect at exactly one point — a <em>star point</em> — so there
+        is no ground loop.
+      </div>
+
+      <div class="callout">
+        <strong>When connecting AGND and DGND on the same PCB:</strong>
+        If the MCU has separate AGND and DGND pins (some ADC-equipped MCUs do),
+        join them at a single point as close to the MCU as possible — directly
+        beneath the IC, via a 0 Ω resistor or ferrite bead in the ground connection.
+        Do not rely on the ground plane to connect them with multiple paths, which
+        creates ground loops.
+      </div>
+
+      <!-- ── ADC & Reference Layout ─────────────────────────── -->
+      <div class="section-head" id="adc-layout">ADC &amp; Reference Layout</div>
+
+      <div class="prose">
+        The ADC is the most layout-sensitive component in a mixed-signal board.
+        Every millivolt of noise on its supply, reference, or input appears
+        directly in the conversion result. Key rules:
+      </div>
+
+      <div class="prose">
+        <strong>AVDD and DVDD bypass.</strong>
+        Most ADC-equipped MCUs (including the EFR32) have separate AVDD (analog
+        supply) and DVDD (digital supply) pins. Each must have its own decoupling
+        capacitor, placed as close to the pin as possible. Do not merge the two
+        supply bypass paths. AVDD should also have a bulk capacitor (1–10 µF)
+        at the regulator output to the analog section.
+      </div>
+
+      <div class="prose">
+        <strong>VREF bypass.</strong>
+        The ADC's reference voltage is its measurement standard. Any noise on VREF
+        appears as direct measurement error. Bypass VREF with a large ceramic
+        (1–10 µF) and a small ceramic (10–100 nF), both placed as close to the
+        VREF pin as possible. The large capacitor filters low-frequency power
+        supply noise; the small one handles high-frequency transients.
+        The VREF trace should be short and routed away from any digital
+        switching traces.
+      </div>
+
+      <div class="prose">
+        <strong>ADC input trace.</strong>
+        The analog input to the ADC should be:
+      </div>
+
+      <ul class="prose" style="margin-top:0; padding-left:1.4em;">
+        <li style="margin-bottom:5px;">As short as possible from the antialiasing filter to the ADC pin.</li>
+        <li style="margin-bottom:5px;">Routed entirely within the analog zone — never in the digital zone.</li>
+        <li style="margin-bottom:5px;">Shielded from digital traces by ground traces on each side (a guard trace at GND potential, not a guard ring — that's different).</li>
+        <li style="margin-bottom:5px;">Never run parallel to a digital signal, especially a clock.</li>
+        <li style="margin-bottom:5px;">The RC antialiasing filter (typically R = 1–10 kΩ, C = 1–10 nF, chosen to give ≥10× the ADC sample rate) should be at the entry point of the analog zone, before the trace runs to the ADC.</li>
+      </ul>
+
+      <div class="prose">
+        <strong>Instrumentation amplifier layout (biosensor front-ends).</strong>
+        Biosensors (ECG, EEG, EMG) produce signals of 10 µV to 10 mV from
+        electrodes with source impedances of 1–100 kΩ. The instrumentation
+        amplifier (InAmp) that amplifies these signals has extremely high input
+        impedance (typically &gt;10⁹ Ω differential, &gt;10¹⁰ Ω common-mode).
+        Layout rules for InAmps:
+      </div>
+
+      <ul class="prose" style="margin-top:0; padding-left:1.4em;">
+        <li style="margin-bottom:6px;"><strong>Keep the input traces short.</strong>
+          The input pins of an InAmp are the most sensitive nodes on the board.
+          The gain-setting resistor R_G must be placed as close as possible to
+          the gain pins (within 2–3 mm for high gain factors).</li>
+        <li style="margin-bottom:6px;"><strong>Differential pair routing.</strong>
+          Route IN+ and IN− as a matching pair, side-by-side, the same length.
+          Mismatched length or routing creates differential-to-common-mode
+          conversion that degrades CMRR.</li>
+        <li style="margin-bottom:6px;"><strong>Reference pin placement.</strong>
+          The REF pin of the InAmp sets the output midpoint voltage. Drive it from
+          a low-impedance source (buffered voltage divider or VREF output). Any
+          noise on REF appears at the output.</li>
+      </ul>
+
+      <!-- ── Guard Rings ─────────────────────────────────────── -->
+      <div class="section-head" id="guarding">Guard Rings</div>
+
+      <div class="prose">
+        A <strong>guard ring</strong> is a copper trace that surrounds a
+        high-impedance node and is driven to the same potential as that node. It
+        intercepts surface leakage currents — tiny currents that flow along the
+        PCB surface between conductors due to surface contamination, humidity, or
+        flux residue — before they reach the sensitive node.
+      </div>
+
+      <!-- Guard ring top-view SVG -->
+      <svg viewBox="0 0 480 200" xmlns="http://www.w3.org/2000/svg"
+           style="width:100%;max-width:480px;display:block;margin:20px auto 8px;">
+        <rect width="480" height="200" fill="#f5f5f2" rx="6"/>
+
+        <!-- Board surface background -->
+        <rect x="20" y="20" width="440" height="160" rx="5" fill="#e8e4d8" opacity="0.5"/>
+        <text x="240" y="16" text-anchor="middle" fill="#7a7060" font-family="IBM Plex Sans" font-size="10" font-style="italic">PCB surface (top view)</text>
+
+        <!-- Outer GND copper -->
+        <rect x="30" y="30" width="420" height="140" rx="4" fill="#40a060" opacity="0.15" stroke="#40a060" stroke-width="1"/>
+        <text x="240" y="184" text-anchor="middle" fill="#2a6040" font-family="IBM Plex Mono" font-size="9">surrounding GND copper</text>
+
+        <!-- Guard ring -->
+        <rect x="120" y="60" width="240" height="90" rx="6" fill="none" stroke="#c8a020" stroke-width="4"/>
+        <text x="165" y="56" text-anchor="middle" fill="#7a5010" font-family="IBM Plex Sans" font-size="10" font-weight="600">Guard ring</text>
+        <text x="165" y="66" dy="4" text-anchor="middle" fill="#9a7020" font-family="IBM Plex Mono" font-size="9">(driven = signal potential)</text>
+
+        <!-- High-Z trace in center -->
+        <line x1="150" y1="105" x2="330" y2="105" stroke="#3a6a8a" stroke-width="3"/>
+        <circle cx="155" cy="105" r="6" fill="white" stroke="#3a6a8a" stroke-width="1.5"/>
+        <text x="155" y="92" text-anchor="middle" fill="#1a4060" font-family="IBM Plex Sans" font-size="9">photodiode</text>
+        <circle cx="330" cy="105" r="6" fill="white" stroke="#3a6a8a" stroke-width="1.5"/>
+        <text x="330" y="92" text-anchor="middle" fill="#1a4060" font-family="IBM Plex Sans" font-size="9">InAmp IN+</text>
+        <text x="240" y="99" text-anchor="middle" fill="#1a4060" font-family="IBM Plex Mono" font-size="9">high-Z signal trace</text>
+
+        <!-- Leakage arrow showing interception -->
+        <path d="M 60 105 C 80 85 110 80 120 100" fill="none" stroke="#c05050" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#arr-leak)"/>
+        <text x="70" y="78" fill="#c05050" font-family="IBM Plex Sans" font-size="9">leakage</text>
+        <text x="70" y="89" fill="#c05050" font-family="IBM Plex Sans" font-size="9">current</text>
+        <text x="127" y="120" fill="#c05050" font-family="IBM Plex Sans" font-size="9">intercepted</text>
+        <text x="127" y="130" fill="#c05050" font-family="IBM Plex Sans" font-size="9">by ring</text>
+
+        <defs>
+          <marker id="arr-leak" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <polygon points="0 0, 6 3, 0 6" fill="#c05050"/>
+          </marker>
+        </defs>
+      </svg>
+      <div class="prose" style="font-size:12.5px;color:#5a6a7a;text-align:center;margin-top:0;margin-bottom:20px;">
+        The guard ring is driven to the same voltage as the signal, so no voltage difference exists between the ring and the trace — leakage current finds no driving force to reach the trace.
+      </div>
+
+      <div class="prose">
+        The guard ring must be <strong>driven</strong> — connected to a low-impedance
+        source at the same potential as the guarded node, not to GND. For a unity-gain
+        buffer output: the output drives the ring, and the high-impedance input
+        (from the sensor) is inside the ring. The ring intercepts leakage that would
+        otherwise flow into the input. On both sides of the board, add guard rings
+        on both the top and bottom copper layers and stitch them together with vias.
+      </div>
+
+      <div class="callout">
+        <strong>When guard rings are necessary.</strong>
+        Guard rings are needed when the source impedance exceeds ~10 MΩ, or when
+        measuring currents below ~1 nA. Typical applications: transimpedance
+        amplifiers for photodiodes, pH electrode measurements, charge amplifiers
+        for piezoelectric sensors, patch-clamp amplifiers. For standard 10–100 kΩ
+        biosensor sources (ECG electrodes), guard rings on the PCB are not usually
+        necessary — cable shielding and differential measurement are more effective.
+      </div>
+
+      <!-- ── Coupling Mechanisms ─────────────────────────────── -->
+      <div class="section-head" id="coupling">Coupling Mechanisms &amp; Mitigation</div>
+
+      <div class="prose">
+        Understanding precisely how digital noise couples into analog circuitry
+        lets you address each mechanism at its source:
+      </div>
+
+      <div class="prose">
+        <strong>Capacitive coupling (electric field).</strong>
+        Two traces separated by distance d over a dielectric form a capacitor
+        C ≈ ε₀ε_r × A/d. A 10 MHz clock trace running 5 mm parallel to an analog
+        trace at 0.5 mm separation on FR4 has roughly 0.1–0.5 pF of coupling.
+        At 10 MHz with a 3.3 V swing, injected noise current = V × 2πfC ≈ 20–100 µA
+        into the analog node. <strong>Mitigation:</strong> maximize separation;
+        route on different layers with a GND reference plane in between; never
+        run digital and analog traces parallel on adjacent layers.
+      </div>
+
+      <div class="prose">
+        <strong>Inductive coupling (magnetic field).</strong>
+        A current loop radiates a magnetic field that induces voltage in any
+        nearby loop. Loop area is the dominant factor: a 10 mm² switching current
+        loop from a 100 mA, 10 ns edge generates substantial field within ~5 cm.
+        <strong>Mitigation:</strong> minimize switching loop area (keep bypass caps
+        close to switcher); keep analog signal loops small; orient analog trace
+        loops perpendicular to digital current loops.
+      </div>
+
+      <div class="prose">
+        <strong>Common-impedance coupling.</strong>
+        The single most impactful coupling mechanism at the PCB level. Digital
+        return currents flow through the shared ground plane impedance, creating
+        ΔV = I × Z_ground voltage differences that appear at analog reference
+        points. <strong>Mitigation:</strong> good floorplanning ensures digital
+        return currents flow on the digital side of the plane, away from analog
+        references; single-point ground connection between AGND and DGND prevents
+        circulating ground loop currents.
+      </div>
+
+      <div class="prose">
+        <strong>Supply rail coupling.</strong>
+        Even a well-regulated supply has finite output impedance. High-frequency
+        current steps from digital switching pull down the rail voltage momentarily.
+        <strong>Mitigation:</strong> ferrite bead + capacitor LC filter between
+        the digital supply and the analog supply branch (LDO or RC filter feeding
+        AVDD separately from the main 3.3 V rail). The ferrite bead's high
+        impedance at switching frequencies blocks high-frequency noise from
+        crossing from digital to analog supply.
+      </div>
+
+      <div class="code-block"><pre><!-- Ferrite bead filter: digital 3.3V → analog 3.3V -->
+<!-- Schematic / layout topology: -->
+<!-- 3V3_DIG ─── [ferrite bead] ─── 3V3_ANA -->
+<!--                        |              | -->
+<!--                    [100 nF]       [1 µF] + [100 nF] -->
+<!--                        |              | -->
+<!--                       GND           GND -->
+
+<!-- Ferrite bead selection: -->
+<!-- Choose one rated for impedance >100 Ω at the switching frequency -->
+<!-- (100 MHz for a 10 MHz clock with harmonics). -->
+<!-- Example: Murata BLM18AG601SN1 — 600 Ω at 100 MHz, 200 mA rated. -->
+<!-- Check DC current capacity: ferrite beads saturate! -->
+<!-- At 100 mA AVDD current, a bead saturating at 50 mA → useless. --></pre></div>
+
+      <hr class="lesson-rule">
+
+      <div class="lesson-nav">
+        <a href="layout.html" class="lesson-nav-btn">← 16 · Layout Fundamentals</a>
+        <a href="power-thermal.html" class="lesson-nav-btn">18 · Power &amp; Thermal →</a>
+      </div>
+
+    </div><!-- /main -->
+
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+</body>
+</html>
