@@ -8,6 +8,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../style.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/wavedrom@3.1.0/wavedrom.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() { WaveDrom.ProcessAll(); });
+  </script>
 </head>
 <body>
 
@@ -354,50 +358,24 @@
         can overwrite each other in the FIFO (overrun error).
       </div>
 
-      <!-- SVG: RTS/CTS timing -->
-      <svg viewBox="0 0 820 200" style="width:100%;max-width:820px;display:block;margin:24px auto 8px;" role="img" aria-label="RTS/CTS hardware flow control timing: TX data, RTS, and CTS signal timing showing paused transmission when receiver buffer fills">
-
-        <!-- Labels -->
-        <text x="50" y="38" font-family="IBM Plex Sans,sans-serif" font-size="11" fill="#5a6a7a" text-anchor="end">TX data</text>
-        <text x="50" y="90" font-family="IBM Plex Sans,sans-serif" font-size="11" fill="#5a6a7a" text-anchor="end">RTS</text>
-        <text x="50" y="142" font-family="IBM Plex Sans,sans-serif" font-size="11" fill="#5a6a7a" text-anchor="end">CTS</text>
-        <text x="50" y="156" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#9aabb8" text-anchor="end">(at sender)</text>
-
-        <!-- Time axis -->
-        <line x1="60" y1="175" x2="800" y2="175" stroke="#c0cdd6" stroke-width="1"/>
-        <text x="795" y="183" font-family="IBM Plex Sans,sans-serif" font-size="9" fill="#9aabb8">t</text>
-
-        <!-- TX data: active (bytes flowing) then paused then resumed -->
-        <!-- TX active: 60→400, paused: 400→560, resumed: 560→800 -->
-        <rect x="60" y="22" width="340" height="28" rx="2" fill="#3a6a8a" opacity="0.7"/>
-        <text x="230" y="39" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#fff" text-anchor="middle">transmitting bytes…</text>
-        <rect x="400" y="22" width="160" height="28" rx="2" fill="#dde6ec"/>
-        <text x="480" y="39" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#7a8a9a" text-anchor="middle">paused</text>
-        <rect x="560" y="22" width="240" height="28" rx="2" fill="#3a6a8a" opacity="0.7"/>
-        <text x="680" y="39" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#fff" text-anchor="middle">transmitting bytes…</text>
-
-        <!-- RTS (sender asserts = buffer can accept): active HIGH, deasserted at 400, reasserted at 560 -->
-        <!-- RTS asserted = receiver ready / sender wants to send; convention varies; show common active-low -->
-        <!-- Show RTS low (asserted) = OK to send, high = stop -->
-        <polyline points="60,74 400,74 400,106 560,106 560,74 800,74"
-                  stroke="#7ab8d4" stroke-width="2" fill="none"/>
-        <text x="200" y="68" font-family="IBM Plex Mono,monospace" font-size="9" fill="#3a6a8a" text-anchor="middle">CTS_N = LOW (OK to send)</text>
-        <text x="480" y="120" font-family="IBM Plex Mono,monospace" font-size="9" fill="#e04040" text-anchor="middle">CTS_N = HIGH (pause)</text>
-
-        <!-- CTS (at sender, mirrors remote RTS with small delay) -->
-        <polyline points="60,126 412,126 412,158 572,158 572,126 800,126"
-                  stroke="#7ab8d4" stroke-width="2" fill="none" stroke-dasharray="5,3"/>
-        <text x="700" y="122" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#9aabb8">(propagation delay)</text>
-
-        <!-- Annotations -->
-        <line x1="400" y1="14" x2="400" y2="170" stroke="#e04040" stroke-width="1.5" stroke-dasharray="4,3"/>
-        <text x="402" y="12" font-family="IBM Plex Mono,monospace" font-size="9" fill="#e04040">RX FIFO full</text>
-
-        <line x1="560" y1="14" x2="560" y2="170" stroke="#5a8a5a" stroke-width="1.5" stroke-dasharray="4,3"/>
-        <text x="562" y="12" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a8a5a">RX FIFO drained</text>
-
-      </svg>
-      <div style="text-align:center;font-size:12px;color:#9aabb8;margin-bottom:24px;">RTS/CTS hardware flow control. When the receiver's FIFO fills, it deasserts its RTS line; the sender sees CTS go inactive (after propagation delay) and pauses transmission.</div>
+      <!-- WaveDrom: RTS/CTS timing -->
+      <div style="width:100%;overflow-x:auto;margin:24px auto 8px;">
+        <script type="WaveDrom">
+        {
+          "signal": [
+            { "name": "TX",    "wave": "=.....=..=.....",
+                               "data": ["transmitting…", "paused", "transmitting…"] },
+            {},
+            { "name": "RTS_N", "wave": "0.....1..0....." },
+            { "name": "CTS_N", "wave": "0......1..0...." }
+          ],
+          "head": { "text": "RTS/CTS hardware flow control (active-low)" },
+          "foot": { "text": "RX FIFO full → RTS_N HIGH → CTS_N HIGH after prop. delay → TX pauses. FIFO drains → both return LOW → TX resumes." },
+          "config": { "hscale": 2 }
+        }
+        </script>
+      </div>
+      <div style="text-align:center;font-size:12px;color:#9aabb8;margin-bottom:24px;">RTS_N driven by the receiver; CTS_N seen by the sender (same wire, two names). The 1-unit lag on CTS_N represents the line propagation delay.</div>
 
       <div class="prose">
         <strong>Hardware flow control (RTS/CTS)</strong> uses two extra wires. The
