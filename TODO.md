@@ -1,7 +1,7 @@
 # Claude Agent TODO
 <!-- Keep this file updated as work progresses. Read it at the start of every session. -->
 
-Last updated: 2026-05-28 (session 2)
+Last updated: 2026-05-28 (session 3)
 
 ---
 
@@ -11,7 +11,7 @@ Last updated: 2026-05-28 (session 2)
 
 ---
 
-## Pending — Embedded cluster visual/math pass
+## Completed This Session — Embedded cluster visual/math pass
 
 - [x] **KaTeX audit pass** — all 5 pages verified:
   - `power-thermal.html` — had bug: `\,^\circ` (thin-space + superscript) is a KaTeX
@@ -21,11 +21,11 @@ Last updated: 2026-05-28 (session 2)
     correctly, confirmed via `.katex` DOM element count.
   **KaTeX note**: never use `\,^\circ` — always use `\,°` or `\degree` for °C/°F.
 
-- [ ] **Per-lesson references section** — user requested references at the
-  bottom of each individual lesson page (not just cluster index). Need to
-  decide whether to use a static list or the `renderBooks` dynamic approach.
-  Requires knowing which specific textbook chapters each lesson draws from;
-  ask user or leave as a template with TODOs.
+- [x] **Per-lesson references section** — added to all 19 embedded lessons.
+  Format: `<div class="section-head">References</div>` + `<ul class="prose" ...>`
+  with 3 references per lesson. 10 lessons already had them; added to the 9 that
+  were missing (mcu-architecture, memory-clocks, interrupts-nvic, rtos, debug,
+  layout, mixed-signal, power-thermal, high-speed-rf). Deployed in commit 2dab308.
 
 ## Assessed — Keep as SVG (KiCad not appropriate for these)
 
