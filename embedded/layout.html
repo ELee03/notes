@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Layout Fundamentals — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Architecture &amp; Internals</div>
+        <a href="mcu-architecture.html" class="nav-item">1 · MCU Architecture</a>
+        <a href="memory-clocks.html" class="nav-item">2 · Memory &amp; Clock Systems</a>
+        <a href="interrupts-nvic.html" class="nav-item">3 · Interrupts &amp; the NVIC</a>
+        <a href="dma.html" class="nav-item">4 · DMA</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Peripherals</div>
+        <a href="gpio.html" class="nav-item">5 · GPIO</a>
+        <a href="timers-pwm.html" class="nav-item">6 · Timers &amp; PWM</a>
+        <a href="adc-dac.html" class="nav-item">7 · ADC &amp; DAC</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Protocols</div>
+        <a href="uart.html" class="nav-item">8 · UART</a>
+        <a href="spi.html" class="nav-item">9 · SPI</a>
+        <a href="i2c.html" class="nav-item">10 · I2C</a>
+        <a href="can.html" class="nav-item">11 · CAN Bus</a>
+        <a href="usb.html" class="nav-item">12 · USB Fundamentals</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Firmware</div>
+        <a href="bare-metal.html" class="nav-item">13 · Bare-Metal Patterns</a>
+        <a href="rtos.html" class="nav-item">14 · RTOS Concepts</a>
+        <a href="debug.html" class="nav-item">15 · Debugging &amp; Test</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">PCB Design</div>
+        <a href="layout.html" class="nav-item active">16 · Layout Fundamentals</a>
+        <span class="nav-item planned">17 · Mixed-Signal Layout</span>
+        <span class="nav-item planned">18 · Power &amp; Thermal</span>
+        <span class="nav-item planned">19 · High-Speed &amp; RF</span>
+      </div>
+
+      <hr class="sidebar-rule">
+
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#pcb-basics" class="nav-item">PCB basics</a>
+        <a href="#stackup" class="nav-item">Layer stackup</a>
+        <a href="#ground-planes" class="nav-item">Ground planes &amp; return current</a>
+        <a href="#decoupling" class="nav-item">Decoupling capacitors</a>
+        <a href="#via-stitching" class="nav-item">Via stitching</a>
+        <a href="#mechanical" class="nav-item">Mechanical design rules</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Embedded Systems</a>
+        <span class="sep">›</span>
+        <span>16 · Layout Fundamentals</span>
+      </div>
+
+      <div class="lesson-title">16 · Layout Fundamentals</div>
+      <div class="lesson-meta">Stackup · Ground Planes · Return Current · Decoupling · Via Stitching</div>
+
+      <div class="prose">
+        PCB layout is where electrical engineering meets geometry. The schematic
+        defines what is connected; the layout defines <em>how</em> those connections
+        are physically realised — and the physical realisation adds parasitics that
+        the schematic ignores: trace inductance, via capacitance, return current
+        loops, and coupling between adjacent conductors. Getting layout right means
+        understanding these parasitics and routing so they work for you, not
+        against you.
+      </div>
+
+      <hr class="lesson-rule">
+
+      <!-- ── PCB Basics ──────────────────────────────────────── -->
+      <div class="section-head" id="pcb-basics">PCB Basics</div>
+
+      <div class="prose">
+        A PCB (printed circuit board) is a laminated sandwich of conductive copper
+        layers separated by dielectric substrate. The most common substrate is
+        FR4 — a woven fibreglass cloth impregnated with epoxy resin. FR4 has a
+        relative permittivity (dielectric constant) of roughly εᵣ ≈ 4.3 at 1 GHz,
+        which matters for signal velocity and impedance calculations.
+      </div>
+
+      <div class="prose">
+        Copper weight is specified in oz/ft² — standard boards use 1 oz copper
+        (35 µm thick). Traces are formed by etching away unwanted copper from
+        a clad layer. <strong>Vias</strong> are drilled holes with plated copper
+        walls that connect traces on different layers.
+      </div>
+
+      <div class="prose">
+        Via types by drill technique:
+      </div>
+
+      <ul class="prose" style="margin-top:0; padding-left:1.4em;">
+        <li style="margin-bottom:5px;"><strong>Through-hole via</strong> — drilled through the entire board; cheapest to manufacture, connects any two layers.</li>
+        <li style="margin-bottom:5px;"><strong>Blind via</strong> — drilled from one surface but doesn't exit the other side; connects a surface layer to an inner layer.</li>
+        <li style="margin-bottom:5px;"><strong>Buried via</strong> — connects two inner layers only, invisible from either surface; most expensive, used in high-density designs.</li>
+        <li style="margin-bottom:5px;"><strong>Microvia</strong> — laser-drilled, very small diameter (typically &lt;0.15 mm); used in HDI (high-density interconnect) boards for routing under BGAs.</li>
+      </ul>
+
+      <!-- ── Layer Stackup ───────────────────────────────────── -->
+      <div class="section-head" id="stackup">Layer Stackup</div>
+
+      <div class="prose">
+        The choice of how many layers to use and what to put on each one is called
+        the <strong>stackup</strong>. It is one of the most consequential design
+        decisions for signal integrity, EMC, and cost.
+      </div>
+
+      <!-- 2-layer vs 4-layer cross-section SVG -->
+      <svg viewBox="0 0 620 280" xmlns="http://www.w3.org/2000/svg"
+           style="width:100%;max-width:620px;display:block;margin:20px auto 8px;">
+        <rect width="620" height="280" fill="#f5f5f2" rx="6"/>
+
+        <!-- ── 2-LAYER ── -->
+        <text x="150" y="26" text-anchor="middle" fill="#1a2840" font-family="IBM Plex Sans" font-size="13" font-weight="600">2-Layer Board</text>
+
+        <!-- Layer labels 2-layer -->
+        <text x="18" y="62" fill="#3a6a8a" font-family="IBM Plex Mono" font-size="10">Top Cu</text>
+        <text x="18" y="98" fill="#5a7a9a" font-family="IBM Plex Mono" font-size="10">FR4</text>
+        <text x="18" y="134" fill="#3a6a8a" font-family="IBM Plex Mono" font-size="10">Bot Cu</text>
+
+        <!-- 2-layer stack -->
+        <!-- Top copper -->
+        <rect x="72" y="46" width="155" height="16" rx="2" fill="#c8a020" opacity="0.85"/>
+        <text x="149" y="58" text-anchor="middle" fill="white" font-family="IBM Plex Mono" font-size="9">Signal + partial GND/PWR</text>
+        <!-- FR4 core -->
+        <rect x="72" y="62" width="155" height="54" rx="0" fill="#e0dac0" opacity="0.7"/>
+        <text x="149" y="93" text-anchor="middle" fill="#5a5020" font-family="IBM Plex Sans" font-size="10" font-style="italic">FR4 core ~1.6 mm</text>
+        <!-- Bottom copper -->
+        <rect x="72" y="116" width="155" height="16" rx="2" fill="#c8a020" opacity="0.85"/>
+        <text x="149" y="128" text-anchor="middle" fill="white" font-family="IBM Plex Mono" font-size="9">Signal + partial GND/PWR</text>
+
+        <!-- Issues annotation -->
+        <text x="72" y="158" fill="#c05050" font-family="IBM Plex Sans" font-size="10">⚠ GND and PWR compete with signal</text>
+        <text x="72" y="172" fill="#c05050" font-family="IBM Plex Sans" font-size="10">⚠ No controlled impedance without fills</text>
+        <text x="72" y="186" fill="#c05050" font-family="IBM Plex Sans" font-size="10">⚠ Return current path disrupted</text>
+
+        <!-- ── 4-LAYER ── -->
+        <text x="460" y="26" text-anchor="middle" fill="#1a2840" font-family="IBM Plex Sans" font-size="13" font-weight="600">4-Layer Board</text>
+
+        <!-- Layer labels 4-layer -->
+        <text x="320" y="54" fill="#3a6a8a" font-family="IBM Plex Mono" font-size="10">L1 Signal</text>
+        <text x="320" y="84" fill="#2a6040" font-family="IBM Plex Mono" font-size="10">L2 GND</text>
+        <text x="320" y="114" fill="#5a2860" font-family="IBM Plex Mono" font-size="10">L3 PWR</text>
+        <text x="320" y="144" fill="#3a6a8a" font-family="IBM Plex Mono" font-size="10">L4 Signal</text>
+
+        <!-- 4-layer stack: L1 -->
+        <rect x="380" y="38" width="200" height="14" rx="2" fill="#c8a020" opacity="0.85"/>
+        <text x="480" y="49" text-anchor="middle" fill="white" font-family="IBM Plex Mono" font-size="9">Signal traces (top side)</text>
+        <!-- Prepreg between L1 and L2 -->
+        <rect x="380" y="52" width="200" height="14" rx="0" fill="#e8e0c0" opacity="0.6"/>
+        <text x="480" y="62" text-anchor="middle" fill="#7a6a40" font-family="IBM Plex Mono" font-size="8">prepreg</text>
+        <!-- L2 GND -->
+        <rect x="380" y="66" width="200" height="16" rx="0" fill="#40a060" opacity="0.75"/>
+        <text x="480" y="78" text-anchor="middle" fill="white" font-family="IBM Plex Mono" font-size="9">GND plane (solid copper)</text>
+        <!-- FR4 core between L2 and L3 -->
+        <rect x="380" y="82" width="200" height="28" rx="0" fill="#e0dac0" opacity="0.6"/>
+        <text x="480" y="100" text-anchor="middle" fill="#5a5020" font-family="IBM Plex Sans" font-size="9" font-style="italic">FR4 core</text>
+        <!-- L3 PWR -->
+        <rect x="380" y="110" width="200" height="16" rx="0" fill="#8040c0" opacity="0.6"/>
+        <text x="480" y="122" text-anchor="middle" fill="white" font-family="IBM Plex Mono" font-size="9">PWR plane (split if multiple rails)</text>
+        <!-- Prepreg between L3 and L4 -->
+        <rect x="380" y="126" width="200" height="14" rx="0" fill="#e8e0c0" opacity="0.6"/>
+        <text x="480" y="136" text-anchor="middle" fill="#7a6a40" font-family="IBM Plex Mono" font-size="8">prepreg</text>
+        <!-- L4 Signal -->
+        <rect x="380" y="140" width="200" height="14" rx="2" fill="#c8a020" opacity="0.85"/>
+        <text x="480" y="151" text-anchor="middle" fill="white" font-family="IBM Plex Mono" font-size="9">Signal traces (bottom side)</text>
+
+        <!-- Benefits annotation -->
+        <text x="380" y="180" fill="#2a5a30" font-family="IBM Plex Sans" font-size="10">✓ Solid GND and PWR planes</text>
+        <text x="380" y="194" fill="#2a5a30" font-family="IBM Plex Sans" font-size="10">✓ Controlled impedance: Z₀ = f(h, w, εᵣ)</text>
+        <text x="380" y="208" fill="#2a5a30" font-family="IBM Plex Sans" font-size="10">✓ Return current stays under trace</text>
+        <text x="380" y="222" fill="#2a5a30" font-family="IBM Plex Sans" font-size="10">✓ EMI self-shielding between planes</text>
+
+        <!-- Divider -->
+        <line x1="300" y1="20" x2="300" y2="260" stroke="#d0d8e0" stroke-width="1" stroke-dasharray="4,3"/>
+      </svg>
+      <div class="prose" style="font-size:12.5px;color:#5a6a7a;text-align:center;margin-top:0;margin-bottom:20px;">
+        4-layer stackup dedicates the inner layers entirely to power and ground, leaving signal layers sandwiched between reference planes for controlled impedance and return current management.
+      </div>
+
+      <div class="prose">
+        The classic 4-layer stackup for a mixed digital/analog design is
+        <strong>SIG / GND / PWR / SIG</strong> (top to bottom). The two signal
+        layers are each adjacent to a solid reference plane — critical for
+        impedance control and return current management. The GND and PWR planes are
+        tightly coupled to each other, forming a low-inductance parallel-plate
+        capacitor that provides high-frequency bypassing across the entire board
+        area.
+      </div>
+
+      <div class="prose">
+        For cost-sensitive 2-layer boards: run GND as a solid pour on one side and
+        signal on the other. Accept higher loop inductance. Route sensitive signals
+        (crystal, ADC inputs, RF) away from noisy digital signals. 2-layer is
+        appropriate for simple, low-frequency boards; use 4-layer for anything
+        above ~50 MHz or with a sensitive analog front-end.
+      </div>
+
+      <!-- ── Ground Planes & Return Current ─────────────────── -->
+      <div class="section-head" id="ground-planes">Ground Planes &amp; Return Current</div>
+
+      <div class="prose">
+        The single most important concept in PCB layout is <strong>return current
+        path</strong>. Every signal current needs a return path back to its source.
+        At DC and low frequencies, return current takes the path of least
+        resistance — which may meander anywhere through the ground plane. At high
+        frequencies, return current takes the path of least <em>inductance</em>,
+        which is directly beneath the signal trace on the adjacent reference plane.
+      </div>
+
+      <!-- Return current path SVG -->
+      <svg viewBox="0 0 620 200" xmlns="http://www.w3.org/2000/svg"
+           style="width:100%;max-width:620px;display:block;margin:20px auto 8px;">
+        <rect width="620" height="200" fill="#f5f5f2" rx="6"/>
+
+        <!-- Signal trace (top layer) -->
+        <text x="20" y="42" fill="#1a2840" font-family="IBM Plex Mono" font-size="10">Signal layer</text>
+        <rect x="20" y="48" width="580" height="12" rx="1" fill="#e8e0c0" opacity="0.5"/>
+        <!-- Trace itself -->
+        <rect x="80" y="50" width="430" height="8" rx="2" fill="#c8a020" opacity="0.9"/>
+        <!-- Arrow showing signal current direction -->
+        <defs>
+          <marker id="arr-sig" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+            <polygon points="0 0, 7 3.5, 0 7" fill="#c8a020"/>
+          </marker>
+          <marker id="arr-ret-good" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+            <polygon points="0 0, 7 3.5, 0 7" fill="#2a6080"/>
+          </marker>
+          <marker id="arr-ret-bad" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+            <polygon points="0 0, 7 3.5, 0 7" fill="#c05050"/>
+          </marker>
+        </defs>
+        <line x1="100" y1="54" x2="480" y2="54" stroke="#c8a020" stroke-width="1.5" marker-end="url(#arr-sig)"/>
+        <text x="285" y="46" text-anchor="middle" fill="#7a6010" font-family="IBM Plex Sans" font-size="10">signal current →</text>
+
+        <!-- GND plane (inner layer) -->
+        <text x="20" y="88" fill="#1a2840" font-family="IBM Plex Mono" font-size="10">GND plane</text>
+        <rect x="20" y="94" width="580" height="30" rx="1" fill="#40a060" opacity="0.2"/>
+        <rect x="20" y="94" width="580" height="30" rx="1" fill="none" stroke="#40a060" stroke-width="1.5"/>
+
+        <!-- Good return current: tight, under trace -->
+        <path d="M 480 94 C 480 85 100 85 100 94" fill="none" stroke="#2a6080" stroke-width="2" marker-end="url(#arr-ret-good)" stroke-dasharray="none"/>
+        <text x="285" y="83" text-anchor="middle" fill="#1a5070" font-family="IBM Plex Sans" font-size="10" font-weight="500">← high-freq return: tight loop under trace (low inductance)</text>
+
+        <!-- Bad: split plane forces long detour -->
+        <!-- Simulate a slot in the GND plane -->
+        <rect x="250" y="96" width="80" height="26" rx="2" fill="#f5f5f2" stroke="#f5f5f2" stroke-width="1"/>
+        <text x="290" y="113" text-anchor="middle" fill="#c05050" font-family="IBM Plex Mono" font-size="9">SLOT</text>
+
+        <!-- Forced detour current path -->
+        <path d="M 480 130 C 500 145 500 165 290 165 C 80 165 60 145 100 130" fill="none" stroke="#c05050" stroke-width="2" marker-end="url(#arr-ret-bad)" stroke-dasharray="5,3"/>
+        <text x="290" y="158" text-anchor="middle" fill="#c05050" font-family="IBM Plex Sans" font-size="10">← forced return detour around slot — large loop → EMI &amp; crosstalk</text>
+
+        <!-- Plane slot indicator line -->
+        <line x1="250" y1="92" x2="250" y2="125" stroke="#c05050" stroke-width="1.5" stroke-dasharray="3,2"/>
+        <line x1="330" y1="92" x2="330" y2="125" stroke="#c05050" stroke-width="1.5" stroke-dasharray="3,2"/>
+      </svg>
+      <div class="prose" style="font-size:12.5px;color:#5a6a7a;text-align:center;margin-top:0;margin-bottom:20px;">
+        A slot or split in the GND plane forces return current to take a long detour, creating a large current loop — the primary source of conducted and radiated EMI in digital PCBs.
+      </div>
+
+      <div class="prose">
+        The practical rules that follow from this:
+      </div>
+
+      <ul class="prose" style="margin-top:0; padding-left:1.4em;">
+        <li style="margin-bottom:6px;"><strong>Never cut slots through the ground plane under a signal trace.</strong>
+          Board outlines, connector cutouts, mounting holes, and power plane splits must not cross under any trace that matters. If a signal must cross a plane split, add a bypass capacitor bridging the split at the crossing point.</li>
+        <li style="margin-bottom:6px;"><strong>Keep power plane splits away from sensitive signals.</strong>
+          On the GND plane, ideally there are no splits at all. On a PWR plane with multiple rails, route high-speed signals around split boundaries, not across them.</li>
+        <li style="margin-bottom:6px;"><strong>Via placement matters.</strong>
+          When a signal transitions layers via a via, the return current must also transition — it does so through a nearby GND via (see Via Stitching below). Place GND vias adjacent to signal vias for any layer change on a fast signal.</li>
+      </ul>
+
+      <!-- ── Decoupling Capacitors ───────────────────────────── -->
+      <div class="section-head" id="decoupling">Decoupling Capacitors</div>
+
+      <div class="prose">
+        Digital logic draws current in sharp bursts as gates switch. The supply
+        rail cannot respond instantly — the PCB trace and via to the power supply
+        have inductance, causing the local VDD voltage to droop during switching.
+        <strong>Decoupling capacitors</strong> (bypass caps) are local charge
+        reservoirs placed at each IC's power pins; they supply the burst current
+        instantly from nearby storage while the supply rail recovers.
+      </div>
+
+      <div class="prose">
+        There are two categories:
+      </div>
+
+      <ul class="prose" style="margin-top:0; padding-left:1.4em;">
+        <li style="margin-bottom:8px;">
+          <strong>Bulk capacitors (10–100 µF):</strong> electrolytic or tantalum;
+          placed near the power entry point (voltage regulator output, connector
+          pin). They handle slower, larger transients — like an MCU waking from
+          sleep and drawing 20 mA suddenly. Their self-resonant frequency is below
+          1 MHz, so they are not effective at high frequencies.
+        </li>
+        <li style="margin-bottom:8px;">
+          <strong>Local bypass capacitors (100 nF ceramic X5R/X7R):</strong>
+          placed as close as possible to each VDD pin of each IC — ideally within
+          1–2 mm. Their low ESL makes them effective at 10–300 MHz. Every VDD pin
+          on every IC gets its own 100 nF capacitor. Add a 10 nF in parallel for
+          higher-frequency ICs (ADCs, RF, oscillators).
+        </li>
+      </ul>
+
+      <!-- Decoupling capacitor placement SVG -->
+      <svg viewBox="0 0 620 200" xmlns="http://www.w3.org/2000/svg"
+           style="width:100%;max-width:620px;display:block;margin:20px auto 8px;">
+        <rect width="620" height="200" fill="#f5f5f2" rx="6"/>
+
+        <!-- Power entry area -->
+        <rect x="20" y="60" width="80" height="80" rx="5" fill="white" stroke="#9aabb8" stroke-width="1.5"/>
+        <text x="60" y="95" text-anchor="middle" fill="#1a2840" font-family="IBM Plex Sans" font-size="11" font-weight="600">Vreg</text>
+        <text x="60" y="110" text-anchor="middle" fill="#5a7a9a" font-family="IBM Plex Mono" font-size="9">3.3 V</text>
+
+        <!-- Bulk cap -->
+        <rect x="130" y="78" width="48" height="44" rx="5" fill="#fdf0e0" stroke="#c8a020" stroke-width="1.5"/>
+        <text x="154" y="99" text-anchor="middle" fill="#6a5010" font-family="IBM Plex Sans" font-size="11" font-weight="600">47 µF</text>
+        <text x="154" y="113" text-anchor="middle" fill="#6a5010" font-family="IBM Plex Mono" font-size="9">bulk</text>
+
+        <!-- Power rail trace -->
+        <line x1="100" y1="100" x2="130" y2="100" stroke="#8040c0" stroke-width="2.5"/>
+        <line x1="178" y1="100" x2="250" y2="100" stroke="#8040c0" stroke-width="2.5"/>
+        <line x1="250" y1="100" x2="600" y2="100" stroke="#8040c0" stroke-width="1.5"/>
+        <text x="320" y="93" text-anchor="middle" fill="#5a2860" font-family="IBM Plex Mono" font-size="9">VDD trace</text>
+
+        <!-- GND rail -->
+        <line x1="100" y1="140" x2="600" y2="140" stroke="#40a060" stroke-width="1.5"/>
+        <text x="320" y="153" text-anchor="middle" fill="#1a5030" font-family="IBM Plex Mono" font-size="9">GND plane</text>
+
+        <!-- Bulk cap to GND -->
+        <line x1="154" y1="122" x2="154" y2="140" stroke="#40a060" stroke-width="1.5"/>
+
+        <!-- IC 1 -->
+        <rect x="300" y="55" width="90" height="60" rx="5" fill="white" stroke="#3a6a8a" stroke-width="1.5"/>
+        <text x="345" y="82" text-anchor="middle" fill="#1a2840" font-family="IBM Plex Sans" font-size="11" font-weight="600">IC</text>
+        <text x="345" y="97" text-anchor="middle" fill="#3a6a8a" font-family="IBM Plex Mono" font-size="9">EFR32</text>
+        <!-- VDD pin connection -->
+        <line x1="300" y1="80" x2="280" y2="80" stroke="#8040c0" stroke-width="1.5"/>
+        <line x1="280" y1="80" x2="280" y2="100" stroke="#8040c0" stroke-width="1.5"/>
+        <!-- Local bypass cap right next to VDD pin -->
+        <rect x="246" y="68" width="34" height="24" rx="4" fill="#e0f0ff" stroke="#3a6a8a" stroke-width="1.5"/>
+        <text x="263" y="83" text-anchor="middle" fill="#1a4060" font-family="IBM Plex Sans" font-size="9" font-weight="600">100n</text>
+        <!-- Cap to GND -->
+        <line x1="263" y1="92" x2="263" y2="140" stroke="#40a060" stroke-width="1.5"/>
+        <!-- Cap to VDD trace -->
+        <line x1="263" y1="68" x2="263" y2="100" stroke="#8040c0" stroke-width="1.5"/>
+        <text x="248" y="62" text-anchor="middle" fill="#3a6a8a" font-family="IBM Plex Sans" font-size="9">close!</text>
+
+        <!-- IC 2 -->
+        <rect x="470" y="55" width="80" height="60" rx="5" fill="white" stroke="#3a6a8a" stroke-width="1.5"/>
+        <text x="510" y="82" text-anchor="middle" fill="#1a2840" font-family="IBM Plex Sans" font-size="11" font-weight="600">IC</text>
+        <text x="510" y="97" text-anchor="middle" fill="#3a6a8a" font-family="IBM Plex Mono" font-size="9">sensor</text>
+        <!-- VDD pin connection -->
+        <line x1="470" y1="78" x2="450" y2="78" stroke="#8040c0" stroke-width="1.5"/>
+        <line x1="450" y1="78" x2="450" y2="100" stroke="#8040c0" stroke-width="1.5"/>
+        <!-- Local bypass cap -->
+        <rect x="430" y="62" width="34" height="24" rx="4" fill="#e0f0ff" stroke="#3a6a8a" stroke-width="1.5"/>
+        <text x="447" y="77" text-anchor="middle" fill="#1a4060" font-family="IBM Plex Sans" font-size="9" font-weight="600">100n</text>
+        <line x1="447" y1="86" x2="447" y2="140" stroke="#40a060" stroke-width="1.5"/>
+        <line x1="447" y1="62" x2="447" y2="100" stroke="#8040c0" stroke-width="1.5"/>
+      </svg>
+      <div class="prose" style="font-size:12.5px;color:#5a6a7a;text-align:center;margin-top:0;margin-bottom:20px;">
+        One bulk cap at the regulator output handles large slow transients; individual 100 nF ceramics sit as close as possible to each IC's VDD pin for high-frequency bypassing.
+      </div>
+
+      <div class="prose">
+        Placement and routing of bypass caps matters as much as their value:
+      </div>
+
+      <ul class="prose" style="margin-top:0; padding-left:1.4em;">
+        <li style="margin-bottom:6px;"><strong>Caps must be between the via and the IC pin,</strong> not the other way around. The via to the power plane should be as close to the capacitor as possible. An IC pin → trace → via → cap configuration puts trace inductance between the cap and the pin and defeats the purpose.</li>
+        <li style="margin-bottom:6px;"><strong>Place the cap on the same layer as the IC pin</strong> where possible, so no via is needed in the bypass path at all.</li>
+        <li style="margin-bottom:6px;"><strong>Minimise the loop area</strong> of the bypass path: VDD via → capacitor → GND via must be as small as possible. A cap placed 5 mm away from the IC pin, with long traces on both sides, adds significant inductance and is nearly useless at 100 MHz.</li>
+        <li style="margin-bottom:6px;"><strong>Value selection:</strong> 100 nF X7R 0402 is the standard local bypass capacitor. X5R and X7R dielectrics maintain capacitance over temperature and DC bias; avoid Y5V/Z5U which lose 80% of capacitance at rated voltage.</li>
+      </ul>
+
+      <!-- ── Via Stitching ───────────────────────────────────── -->
+      <div class="section-head" id="via-stitching">Via Stitching</div>
+
+      <div class="prose">
+        <strong>Via stitching</strong> is the practice of placing a grid or row of
+        GND vias at regular intervals to electrically connect ground pours or planes
+        on different layers. It serves two related purposes:
+      </div>
+
+      <ul class="prose" style="margin-top:0; padding-left:1.4em;">
+        <li style="margin-bottom:6px;"><strong>Plane continuity across layers.</strong>
+          Even with a solid GND plane on L2, the top-layer copper pour (GND fill)
+          is a separate conductor until tied down with vias. Without stitching vias,
+          the surface GND pour can float at high frequencies, picking up noise and
+          radiating. Stitch vias every ~5–8 mm across the pour.</li>
+        <li style="margin-bottom:6px;"><strong>Return current via at layer transitions.</strong>
+          When a signal via transitions from L1 to L3, the return current must also
+          change layers. It does so through the nearest GND via. Place a GND via
+          within 0.5–1 mm of every signal via on a fast net.</li>
+        <li style="margin-bottom:6px;"><strong>EMI shielding borders.</strong>
+          A row of closely spaced stitching vias along the edge of a sensitive region
+          (e.g., around an RF antenna area or a high-speed clock region) creates a
+          low-impedance fence that reduces common-mode emissions crossing the boundary.</li>
+      </ul>
+
+      <div class="callout">
+        <strong>Via stitching spacing.</strong>
+        A row of stitching vias acts as a fence with a cut-off frequency below which
+        it is effective. Spacing between vias should be less than λ/20 at the highest
+        frequency of concern. For a 100 MHz clock with harmonics to 500 MHz,
+        λ/20 in FR4 (εᵣ ≈ 4.3) is about 14 mm — stitch at ≤10 mm for margin.
+      </div>
+
+      <!-- ── Mechanical Design Rules ────────────────────────── -->
+      <div class="section-head" id="mechanical">Mechanical Design Rules</div>
+
+      <div class="prose">
+        PCB fabrication and assembly impose minimum dimensions that must be respected
+        in the layout. The key rules:
+      </div>
+
+      <div class="prose">
+        <strong>Clearance</strong> (copper-to-copper spacing) is the minimum distance
+        between two conductors on the same layer. For standard PCB fabrication, the
+        minimum trace width and clearance is 0.1 mm (4 mil), though 0.15 mm
+        (6 mil) is more reliable from budget fabs. Clearance violations cause shorts.
+      </div>
+
+      <div class="prose">
+        <strong>Creepage</strong> (surface distance) applies to high-voltage designs
+        (mains-connected circuits, isolated supplies). It is the minimum distance
+        along the board surface between conductors at different potentials.
+        Creepage requirements come from safety standards (IEC 60950, IEC 62368)
+        and depend on working voltage, pollution degree, and insulation class.
+        For a 230 V mains circuit, creepage on a basic insulation requirement may
+        be 2–6 mm. Board slots are cut between primary and secondary-side copper to
+        extend the creepage path.
+      </div>
+
+      <div class="prose">
+        <strong>Board edge keepout</strong> is a region near the board perimeter
+        where no copper is placed. The minimum is typically 0.3–0.5 mm from the
+        physical edge. The V-score (scoring for snap-apart panels) and routing
+        operations can crack or delaminate copper that is too close to the edge.
+        For through-hole connectors and mounting hardware, check mechanical
+        interference between the component body and the board edge.
+      </div>
+
+      <div class="prose">
+        <strong>Drill-to-copper clearance:</strong>
+        Via and through-hole drill positions have tolerances (±0.1 mm is typical).
+        Maintain a minimum annular ring of 0.15 mm around each via to ensure the
+        pad is not drilled through. In your CAD tool this is usually enforced by
+        the DRC (design rule check) automatically.
+      </div>
+
+      <div class="callout">
+        <strong>DRC before Gerber export.</strong>
+        Every PCB CAD tool (KiCad, Altium, Eagle) has a design rule check that
+        catches clearance violations, missing connections (airwires), unconnected
+        net branches, and annular ring violations. Run DRC and resolve all errors
+        before generating Gerber files for fabrication. Fab houses also run their
+        own DRC and will reject boards with clearance violations.
+      </div>
+
+      <hr class="lesson-rule">
+
+      <div class="lesson-nav">
+        <a href="debug.html" class="lesson-nav-btn">← 15 · Debugging &amp; Test</a>
+        <a href="mixed-signal.html" class="lesson-nav-btn">17 · Mixed-Signal Layout →</a>
+      </div>
+
+    </div><!-- /main -->
+
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+</body>
+</html>
