@@ -1,0 +1,119 @@
+<svg viewBox="0 0 680 360" xmlns="http://www.w3.org/2000/svg" style="width:680px;">
+  <defs>
+    <marker id="arr" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+      <polygon points="0 0, 7 3.5, 0 7" fill="#c8a020"/>
+    </marker>
+    <marker id="arr-gray" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+      <polygon points="0 0, 7 3.5, 0 7" fill="#7a8a9a"/>
+    </marker>
+    <marker id="arr-red" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+      <polygon points="0 0, 7 3.5, 0 7" fill="#c05050"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="680" height="360" fill="#f7f7f4" rx="6"/>
+
+  <!-- Board outline -->
+  <rect x="12" y="12" width="656" height="320" rx="8" fill="white" stroke="#c0ccd8" stroke-width="1.5"/>
+
+  <!-- Analog zone  x=24..310  (286 wide) -->
+  <rect x="24" y="24" width="286" height="296" rx="6" fill="#fffcf0"
+        stroke="#c8a020" stroke-width="1.5" stroke-dasharray="7,4"/>
+  <text x="167" y="48" text-anchor="middle" font-family="sans-serif" font-size="15"
+        font-weight="700" fill="#7a5010">Analog Zone</text>
+
+  <!-- Digital zone  x=370..656  (286 wide) -->
+  <rect x="370" y="24" width="286" height="296" rx="6" fill="#f0f4f8"
+        stroke="#3a6a8a" stroke-width="1.5" stroke-dasharray="7,4"/>
+  <text x="513" y="48" text-anchor="middle" font-family="sans-serif" font-size="15"
+        font-weight="700" fill="#1a3860">Digital Zone</text>
+
+  <!-- Partition boundary  x=340 (centre of 310→370 gap) -->
+  <line x1="340" y1="20" x2="340" y2="322" stroke="#9aabb8" stroke-width="1"
+        stroke-dasharray="4,6"/>
+  <text x="340" y="344" text-anchor="middle" font-family="sans-serif" font-size="9"
+        fill="#9aabb8" font-style="italic">partition boundary</text>
+
+  <!-- ── Analog components ────────────────────────────────────────── -->
+  <!-- Sensor  x=44..180  y=68..130 -->
+  <rect x="44" y="68" width="136" height="62" rx="5" fill="white"
+        stroke="#c8a020" stroke-width="1.3"/>
+  <text x="112" y="96" text-anchor="middle" font-family="sans-serif" font-size="13"
+        font-weight="700" fill="#1a2840">Sensor</text>
+  <text x="112" y="114" text-anchor="middle" font-family="monospace" font-size="10"
+        fill="#7a8a9a">electrodes</text>
+
+  <!-- InAmp  x=190..286  y=68..130 -->
+  <rect x="190" y="68" width="110" height="62" rx="5" fill="white"
+        stroke="#c8a020" stroke-width="1.3"/>
+  <text x="245" y="96" text-anchor="middle" font-family="sans-serif" font-size="13"
+        font-weight="700" fill="#1a2840">InAmp</text>
+  <text x="245" y="114" text-anchor="middle" font-family="monospace" font-size="10"
+        fill="#7a8a9a">INA128</text>
+
+  <!-- VREF  x=44..150  y=168..230 -->
+  <rect x="44" y="168" width="106" height="62" rx="5" fill="white"
+        stroke="#c8a020" stroke-width="1.3"/>
+  <text x="97" y="196" text-anchor="middle" font-family="sans-serif" font-size="13"
+        font-weight="700" fill="#1a2840">VREF</text>
+  <text x="97" y="214" text-anchor="middle" font-family="monospace" font-size="10"
+        fill="#7a8a9a">2.5 V</text>
+
+  <!-- Anti-alias  x=165..295  y=168..230 -->
+  <rect x="165" y="168" width="130" height="62" rx="5" fill="white"
+        stroke="#c8a020" stroke-width="1.3"/>
+  <text x="230" y="196" text-anchor="middle" font-family="sans-serif" font-size="13"
+        font-weight="700" fill="#1a2840">Anti-alias</text>
+  <text x="230" y="214" text-anchor="middle" font-family="monospace" font-size="10"
+        fill="#7a8a9a">RC filter</text>
+
+  <!-- Signal arrows in analog zone -->
+  <!-- Sensor → InAmp -->
+  <line x1="180" y1="99" x2="188" y2="99" stroke="#c8a020" stroke-width="1.5"
+        marker-end="url(#arr)"/>
+  <!-- InAmp down → Anti-alias -->
+  <line x1="245" y1="130" x2="245" y2="166" stroke="#c8a020" stroke-width="1.5"
+        marker-end="url(#arr)"/>
+  <!-- Anti-alias right → boundary -->
+  <line x1="295" y1="199" x2="320" y2="199" stroke="#7a8a9a" stroke-width="1.5"
+        stroke-dasharray="4,3"/>
+
+  <!-- ── Filter circle in gap ─────────────────────────────────────── -->
+  <circle cx="340" cy="199" r="16" fill="white" stroke="#e08030" stroke-width="2"/>
+  <text x="340" y="204" text-anchor="middle" font-family="monospace" font-size="11"
+        font-weight="700" fill="#c05050">F</text>
+
+  <!-- Filter → MCU -->
+  <line x1="356" y1="199" x2="370" y2="199" stroke="#7a8a9a" stroke-width="1.5"
+        marker-end="url(#arr-gray)"/>
+
+  <!-- ── Digital components ───────────────────────────────────────── -->
+  <!-- MCU  x=382..536  y=68..268 -->
+  <rect x="382" y="68" width="154" height="200" rx="6" fill="white"
+        stroke="#3a6a8a" stroke-width="1.5"/>
+  <text x="459" y="162" text-anchor="middle" font-family="sans-serif" font-size="15"
+        font-weight="700" fill="#1a2840">MCU</text>
+  <text x="459" y="182" text-anchor="middle" font-family="monospace" font-size="10"
+        fill="#3a6a8a">EFR32 / ADC0</text>
+
+  <!-- Flash  x=550..644  y=68..138 -->
+  <rect x="550" y="68" width="94" height="70" rx="5" fill="white"
+        stroke="#3a6a8a" stroke-width="1.3"/>
+  <text x="597" y="100" text-anchor="middle" font-family="sans-serif" font-size="12"
+        font-weight="700" fill="#1a2840">Flash / SRAM</text>
+  <text x="597" y="118" text-anchor="middle" font-family="monospace" font-size="10"
+        fill="#7a8a9a">SPI / QSPI</text>
+
+  <!-- J-Link  x=544..648  y=158..228 -->
+  <rect x="544" y="158" width="106" height="62" rx="5" fill="white"
+        stroke="#3a6a8a" stroke-width="1.3"/>
+  <text x="597" y="194" text-anchor="middle" font-family="sans-serif" font-size="11"
+        font-weight="700" fill="#1a2840">J-Link / USB</text>
+
+  <!-- "filter at boundary" callout — drawn last so it sits above all boxes -->
+  <line x1="340" y1="215" x2="340" y2="248" stroke="#c05050" stroke-width="1"
+        marker-end="url(#arr-red)"/>
+  <text x="340" y="265" text-anchor="middle" font-family="sans-serif" font-size="10"
+        font-style="italic" fill="#c05050">filter at boundary</text>
+</svg>
