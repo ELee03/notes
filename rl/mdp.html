@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="rl-interactive.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
@@ -70,6 +71,8 @@
         <a href="#grid-world" class="nav-item">Grid world example</a>
         <a href="#policies" class="nav-item">Goals and policies</a>
         <a href="#value-preview" class="nav-item">Value functions (preview)</a>
+        <a href="#recycling-robot" class="nav-item">Recycling robot example</a>
+        <a href="#dynamics-explorer" class="nav-item">Dynamics explorer</a>
       </div>
     </div>
 
@@ -420,6 +423,200 @@
         It is a self-consistency condition — $v_\pi$ is the unique function that satisfies
         it. Lesson 4 derives this equation fully and shows how to use it.
       </div>
+
+      <!-- ── Recycling robot ───────────────────────────────────────── -->
+      <div class="section-head" id="recycling-robot">Worked example: the recycling robot</div>
+
+      <div class="prose">
+        The following MDP (adapted from S&amp;B §3.7) shows how to go from a verbal
+        problem description to a fully specified transition function $p(s',r \mid s, a)$.
+      </div>
+
+      <div class="prose">
+        <strong>Setup.</strong> A mobile robot collects empty cans. Its battery can be
+        <em>high</em> or <em>low</em>. From high battery it can <em>search</em>
+        (active, finds more cans but may drain the battery) or <em>wait</em>
+        (passive, conserves power). From low battery it can also <em>recharge</em>
+        (return to base, no cans collected). Searching from low battery risks running
+        completely flat, requiring a rescue with penalty $-3$.
+      </div>
+
+      <div class="prose">
+        Parameters: $\alpha$ = prob of staying high when searching from high;
+        $\beta$ = prob of staying low when searching from low. Rewards:
+        $r_\text{search} = 2$, $r_\text{wait} = 1$.
+        Using $\alpha = 0.7$, $\beta = 0.4$:
+      </div>
+
+      <div class="example-block">
+        <div class="ex-title">Transition table — p(s′, r | s, a) with α = 0.7, β = 0.4</div>
+        <table class="int-table" style="margin-top:0;">
+          <thead><tr>
+            <th>s</th><th>a</th><th>s′</th>
+            <th>p(s′ | s,a)</th><th>r(s,a,s′)</th>
+          </tr></thead>
+          <tbody>
+            <tr><td style="text-align:left;">high</td><td style="text-align:left;">search</td><td style="text-align:left;">high</td><td>0.70</td><td>2</td></tr>
+            <tr style="background:#f8f9fb;"><td style="text-align:left;">high</td><td style="text-align:left;">search</td><td style="text-align:left;">low</td><td>0.30</td><td>2</td></tr>
+            <tr><td style="text-align:left;">high</td><td style="text-align:left;">wait</td><td style="text-align:left;">high</td><td>1.00</td><td>1</td></tr>
+            <tr style="background:#f8f9fb;"><td style="text-align:left;">low</td><td style="text-align:left;">search</td><td style="text-align:left;">high</td><td>0.60</td><td>−3</td></tr>
+            <tr><td style="text-align:left;">low</td><td style="text-align:left;">search</td><td style="text-align:left;">low</td><td>0.40</td><td>2</td></tr>
+            <tr style="background:#f8f9fb;"><td style="text-align:left;">low</td><td style="text-align:left;">wait</td><td style="text-align:left;">low</td><td>1.00</td><td>1</td></tr>
+            <tr><td style="text-align:left;">low</td><td style="text-align:left;">recharge</td><td style="text-align:left;">high</td><td>1.00</td><td>0</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="prose">
+        From this table, derive the <strong>expected reward</strong> $r(s,a)$ for each
+        state-action pair using $r(s,a) = \sum_{s'} p(s' \mid s,a)\, r(s,a,s')$:
+      </div>
+
+      <div class="example-block">
+        <div class="ex-title">Computing r(s, a) from the transition table</div>
+        <table class="int-table" style="margin-top:0;">
+          <thead><tr>
+            <th>s</th><th>a</th><th>Calculation</th><th>r(s, a)</th>
+          </tr></thead>
+          <tbody>
+            <tr>
+              <td style="text-align:left;">high</td><td style="text-align:left;">search</td>
+              <td style="text-align:left;font-size:11.5px;">0.70 × 2 + 0.30 × 2</td>
+              <td style="font-weight:600;">2.00</td>
+            </tr>
+            <tr style="background:#f8f9fb;">
+              <td style="text-align:left;">high</td><td style="text-align:left;">wait</td>
+              <td style="text-align:left;font-size:11.5px;">1.00 × 1</td>
+              <td style="font-weight:600;">1.00</td>
+            </tr>
+            <tr>
+              <td style="text-align:left;">low</td><td style="text-align:left;">search</td>
+              <td style="text-align:left;font-size:11.5px;">0.60 × (−3) + 0.40 × 2</td>
+              <td style="font-weight:600; color:#c04040;">−1.00</td>
+            </tr>
+            <tr style="background:#f8f9fb;">
+              <td style="text-align:left;">low</td><td style="text-align:left;">wait</td>
+              <td style="text-align:left;font-size:11.5px;">1.00 × 1</td>
+              <td style="font-weight:600;">1.00</td>
+            </tr>
+            <tr>
+              <td style="text-align:left;">low</td><td style="text-align:left;">recharge</td>
+              <td style="text-align:left;font-size:11.5px;">1.00 × 0</td>
+              <td style="font-weight:600;">0.00</td>
+            </tr>
+          </tbody>
+        </table>
+        <div style="margin-top:10px;font-size:12.5px;color:#4a5a6a;line-height:1.65;">
+          <strong>Key insight:</strong> searching from a <em>low</em> battery yields
+          $r(\text{low}, \text{search}) = -1.0$ on average — negative, despite a
+          reward of $+2$ when it succeeds — because the rescue penalty $-3$ is
+          heavily weighted by the 60% chance of running flat. Searching from
+          <em>high</em> battery always gives $+2$ regardless of where you end up.
+          This asymmetry drives the optimal policy: always search from high, never
+          from low.
+        </div>
+      </div>
+
+      <!-- ── Dynamics explorer ──────────────────────────────────────── -->
+      <div class="section-head" id="dynamics-explorer">Explorer: dynamics parameters</div>
+
+      <div class="prose">
+        Adjust $\alpha$, $\beta$, and the reward values to see how the expected
+        rewards $r(s,a)$ change. This is what it looks like to "tune" an MDP's
+        parameters — the transition structure stays the same but the agent's
+        incentives shift.
+      </div>
+
+      <div class="interactive">
+        <div class="int-title">Recycling robot — parameter explorer</div>
+        <div class="int-controls">
+          <span class="int-label"><strong>α</strong> (prob stay-high when searching from high) =</span>
+          <input id="ialpha" type="range" min="0.05" max="0.95" step="0.05" value="0.70"
+                 style="width:130px;" oninput="mdpUpdate()">
+          <span class="int-label" id="ialpha-val"
+                style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:#1a2840;min-width:3em;">0.70</span>
+        </div>
+        <div class="int-controls">
+          <span class="int-label"><strong>β</strong> (prob stay-low when searching from low) =</span>
+          <input id="ibeta" type="range" min="0.05" max="0.95" step="0.05" value="0.40"
+                 style="width:130px;" oninput="mdpUpdate()">
+          <span class="int-label" id="ibeta-val"
+                style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:#1a2840;min-width:3em;">0.40</span>
+        </div>
+        <div class="int-controls">
+          <span class="int-label"><strong>r_search</strong> =</span>
+          <input id="irsearch" type="number" value="2" step="0.5" style="width:60px;padding:3px 5px;font-family:'IBM Plex Mono',monospace;font-size:12px;border:1px solid #b8d0e0;border-radius:3px;" oninput="mdpUpdate()">
+          <span class="int-label" style="margin-left:12px;"><strong>r_wait</strong> =</span>
+          <input id="irwait"   type="number" value="1" step="0.5" style="width:60px;padding:3px 5px;font-family:'IBM Plex Mono',monospace;font-size:12px;border:1px solid #b8d0e0;border-radius:3px;" oninput="mdpUpdate()">
+          <span class="int-label" style="margin-left:12px;"><strong>r_rescue</strong> =</span>
+          <input id="irrescue" type="number" value="-3" step="0.5" style="width:60px;padding:3px 5px;font-family:'IBM Plex Mono',monospace;font-size:12px;border:1px solid #b8d0e0;border-radius:3px;" oninput="mdpUpdate()">
+        </div>
+        <table class="int-table">
+          <thead><tr>
+            <th>s</th><th>a</th>
+            <th>p(s′ | s,a) breakdown</th>
+            <th>r(s, a)</th>
+          </tr></thead>
+          <tbody id="mdp-tbody"></tbody>
+        </table>
+        <div class="int-stat" style="margin-top:10px;font-size:12px;line-height:1.8;">
+          Optimal action from <strong>high</strong>:
+          <span id="mdp-opt-high" style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:#3a6a8a;">—</span>
+          &nbsp;&nbsp;|&nbsp;&nbsp;
+          Optimal action from <strong>low</strong>:
+          <span id="mdp-opt-low" style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:#3a6a8a;">—</span>
+        </div>
+      </div>
+
+      <script>
+      function mdpUpdate() {
+        var alpha   = parseFloat(document.getElementById('ialpha').value);
+        var beta    = parseFloat(document.getElementById('ibeta').value);
+        var rs      = parseFloat(document.getElementById('irsearch').value)  || 0;
+        var rw      = parseFloat(document.getElementById('irwait').value)    || 0;
+        var rr      = parseFloat(document.getElementById('irrescue').value)  || 0;
+
+        document.getElementById('ialpha-val').textContent = alpha.toFixed(2);
+        document.getElementById('ibeta-val').textContent  = beta.toFixed(2);
+
+        var rows = [
+          { s:'high', a:'search',   calc: alpha.toFixed(2)+' × '+rs.toFixed(1)+' + '+(1-alpha).toFixed(2)+' × '+rs.toFixed(1),
+            r: alpha*rs + (1-alpha)*rs },
+          { s:'high', a:'wait',     calc: '1.00 × '+rw.toFixed(1),
+            r: rw },
+          { s:'low',  a:'search',   calc: (1-beta).toFixed(2)+' × ('+rr.toFixed(1)+') + '+beta.toFixed(2)+' × '+rs.toFixed(1),
+            r: (1-beta)*rr + beta*rs },
+          { s:'low',  a:'wait',     calc: '1.00 × '+rw.toFixed(1),
+            r: rw },
+          { s:'low',  a:'recharge', calc: '1.00 × 0',
+            r: 0 }
+        ];
+
+        var html = '';
+        for (var i = 0; i < rows.length; i++) {
+          var x = rows[i];
+          var rcolor = x.r < 0 ? 'color:#c04040;' : (x.r === 0 ? 'color:#7a8a9a;' : '');
+          html += '<tr' + (i%2===1?' style="background:#f8f9fb;"':'') + '>'
+            + '<td style="text-align:left;">' + x.s + '</td>'
+            + '<td style="text-align:left;">' + x.a + '</td>'
+            + '<td style="text-align:left;font-size:11.5px;">' + x.calc + '</td>'
+            + '<td style="font-weight:600;' + rcolor + '">' + x.r.toFixed(3) + '</td>'
+            + '</tr>';
+        }
+        document.getElementById('mdp-tbody').innerHTML = html;
+
+        // Best action from high: search vs wait
+        var rHigh  = { search: alpha*rs+(1-alpha)*rs, wait: rw };
+        var rLow   = { search: (1-beta)*rr+beta*rs, wait: rw, recharge: 0 };
+        var optH = rHigh.search >= rHigh.wait ? 'search' : 'wait';
+        var bestLow = 'recharge', bestLowVal = 0;
+        if (rLow.search > bestLowVal) { bestLow = 'search'; bestLowVal = rLow.search; }
+        if (rLow.wait   > bestLowVal) { bestLow = 'wait';   bestLowVal = rLow.wait;   }
+        document.getElementById('mdp-opt-high').textContent = optH;
+        document.getElementById('mdp-opt-low').textContent  = bestLow;
+      }
+      document.addEventListener('DOMContentLoaded', mdpUpdate);
+      </script>
 
       <hr class="lesson-rule">
 

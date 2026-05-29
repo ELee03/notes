@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="rl-interactive.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
@@ -70,6 +71,7 @@
         <a href="#episodic" class="nav-item">Episodic vs continuing</a>
         <a href="#policies" class="nav-item">Policies</a>
         <a href="#challenges" class="nav-item">What makes RL hard</a>
+        <a href="#worked-example" class="nav-item">Worked example</a>
       </div>
     </div>
 
@@ -271,6 +273,114 @@
         can help. $\gamma = 1$ is valid for episodic tasks with guaranteed termination
         but requires careful handling.
       </div>
+
+      <!-- ── Worked example ────────────────────────────────────────── -->
+      <div class="section-head" id="worked-example">Worked example: computing returns</div>
+
+      <div class="prose">
+        Consider a 5-step episode: an agent navigates a grid world, moving north
+        four times before reaching a terminal state. Each non-terminal step gives
+        reward $R = -1$; the terminal transition gives $R = 0$. With $\gamma = 0.9$,
+        apply the recursive formula $G_t = R_{t+1} + \gamma G_{t+1}$
+        <em>starting from the end</em> and working backward.
+      </div>
+
+      <div class="example-block">
+        <div class="ex-title">5-step episode · γ = 0.9</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#3a4a5a;margin-bottom:14px;line-height:1.9;">
+          S<sub>0</sub> &xrarr;<sup style="font-size:9px">−1</sup> S<sub>1</sub>
+          &xrarr;<sup style="font-size:9px">−1</sup> S<sub>2</sub>
+          &xrarr;<sup style="font-size:9px">−1</sup> S<sub>3</sub>
+          &xrarr;<sup style="font-size:9px">−1</sup> S<sub>4</sub>
+          &xrarr;<sup style="font-size:9px">0</sup> terminal
+        </div>
+        <table class="int-table" style="margin-top:0;">
+          <thead><tr>
+            <th style="text-align:center;">t</th>
+            <th>R<sub>t+1</sub></th>
+            <th>γ · G<sub>t+1</sub></th>
+            <th>G<sub>t</sub> = R<sub>t+1</sub> + γ G<sub>t+1</sub></th>
+          </tr></thead>
+          <tbody>
+            <tr><td>4</td><td>0</td><td>0.9 × 0 = 0.000</td><td>0.000</td></tr>
+            <tr><td>3</td><td>−1</td><td>0.9 × 0 = 0.000</td><td>−1.000</td></tr>
+            <tr><td>2</td><td>−1</td><td>0.9 × (−1) = −0.900</td><td>−1.900</td></tr>
+            <tr><td>1</td><td>−1</td><td>0.9 × (−1.9) = −1.710</td><td>−2.710</td></tr>
+            <tr style="background:#ddeef8;font-weight:600;"><td>0</td><td>−1</td><td>0.9 × (−2.71) = −2.439</td><td>−3.439</td></tr>
+          </tbody>
+        </table>
+        <div style="margin-top:10px;font-size:12.5px;color:#4a5a6a;line-height:1.6;">
+          <strong>G<sub>0</sub> = −3.439.</strong> Compare to the undiscounted sum
+          $(−1) + (−1) + (−1) + (−1) + 0 = -4$. Discounting with $\gamma = 0.9$ makes
+          the return $-3.439$ — those distant $-1$ penalties shrink because reward
+          further in the future counts for less. The agent starting here has a slightly
+          "better" (less negative) return under discounting than under plain summing.
+        </div>
+      </div>
+
+      <div class="interactive" id="gamma-explorer">
+        <div class="int-title">Explorer — adjust γ and rewards</div>
+        <div style="font-size:13px;color:#4a5a6a;margin-bottom:14px;font-family:'IBM Plex Sans',sans-serif;">
+          Edit the 5 rewards in the episode and move the $\gamma$ slider to see how
+          the return at each time step changes. $R_5$ is the last reward (terminal transition).
+        </div>
+        <div class="int-controls">
+          <span class="int-label" style="font-weight:600;">Rewards R<sub>1</sub>…R<sub>5</sub>:</span>
+          <div class="reward-inputs">
+            <input id="rw0" type="number" value="-1" step="0.5" oninput="rlUpdateReturn()">
+            <input id="rw1" type="number" value="-1" step="0.5" oninput="rlUpdateReturn()">
+            <input id="rw2" type="number" value="-1" step="0.5" oninput="rlUpdateReturn()">
+            <input id="rw3" type="number" value="-1" step="0.5" oninput="rlUpdateReturn()">
+            <input id="rw4" type="number" value="0"  step="0.5" oninput="rlUpdateReturn()">
+          </div>
+        </div>
+        <div class="int-controls">
+          <span class="int-label" style="font-weight:600;">γ =</span>
+          <input id="gslider" type="range" min="0" max="0.99" step="0.01" value="0.90"
+                 style="width:160px;" oninput="rlUpdateReturn()">
+          <span class="int-label" id="gval"
+                style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:#1a2840;min-width:3em;">0.90</span>
+        </div>
+        <table class="int-table">
+          <thead><tr>
+            <th style="text-align:center;">t</th>
+            <th>R<sub>t+1</sub></th>
+            <th>γ · G<sub>t+1</sub></th>
+            <th>G<sub>t</sub></th>
+          </tr></thead>
+          <tbody id="rtbody"></tbody>
+        </table>
+        <div class="int-stat" style="margin-top:10px;">
+          Return from the start: G<sub>0</sub> = <span id="G0val">—</span>
+        </div>
+      </div>
+
+      <script>
+      function rlUpdateReturn() {
+        var gamma = parseFloat(document.getElementById('gslider').value);
+        document.getElementById('gval').textContent = gamma.toFixed(2);
+        var R = [];
+        for (var i = 0; i < 5; i++) {
+          var v = parseFloat(document.getElementById('rw' + i).value);
+          R.push(isNaN(v) ? 0 : v);
+        }
+        var G = [0, 0, 0, 0, 0, 0]; // G[5]=0 (after terminal)
+        for (var t = 4; t >= 0; t--) G[t] = R[t] + gamma * G[t + 1];
+        var rows = '';
+        for (var t2 = 4; t2 >= 0; t2--) {
+          var hi = (t2 === 0) ? 'background:#ddeef8;font-weight:600;' : '';
+          rows += '<tr style="' + hi + '">'
+            + '<td>' + t2 + '</td>'
+            + '<td>' + R[t2].toFixed(2) + '</td>'
+            + '<td>' + (gamma * G[t2 + 1]).toFixed(3) + '</td>'
+            + '<td>' + G[t2].toFixed(3) + '</td>'
+            + '</tr>';
+        }
+        document.getElementById('rtbody').innerHTML = rows;
+        document.getElementById('G0val').textContent = G[0].toFixed(4);
+      }
+      document.addEventListener('DOMContentLoaded', rlUpdateReturn);
+      </script>
 
       <!-- ── Episodic vs continuing ──────────────────────────────── -->
       <div class="section-head" id="episodic">Episodic vs continuing tasks</div>
