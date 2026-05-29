@@ -11,6 +11,12 @@ Last updated: 2026-05-28 (session 3)
 
 ---
 
+## Pending
+
+- [ ] **Full diagram audit — all embedded pages** — visually inspect every diagram across all 19 lessons. Fix anything that looks off (rough schemdraw SVGs, layout issues, inconsistent style). Known starting point: `gpio.html` input-mode diagrams (`_gpio_floating.svg`, `_gpio_pullup.svg`, `_gpio_pulldown.svg`) — thick gold zigzag schemdraw resistors, need redrawing as clean hand-coded inline SVGs to match site aesthetic. Check all other pages for similar issues.
+
+---
+
 ## Completed This Session — Embedded cluster visual/math pass
 
 - [x] **KaTeX audit pass** — all 5 pages verified:

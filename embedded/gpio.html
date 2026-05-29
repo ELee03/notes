@@ -249,23 +249,83 @@
         and in which direction.
       </div>
 
-      <!-- input modes: schemdraw-generated SVGs -->
+      <!-- input modes: hand-coded inline SVGs -->
       <div style="display:flex;justify-content:center;gap:40px;margin:24px auto;flex-wrap:wrap;align-items:flex-start;">
+
+        <!-- ── Floating ── -->
         <div style="text-align:center;">
           <div style="font-weight:600;font-size:13px;color:#1a2840;margin-bottom:8px;">Floating</div>
-          <img src="_gpio_floating.svg" style="max-width:200px;width:100%;display:block;margin:0 auto;" alt="Floating input: pin connects directly to input buffer with no pull resistor">
+          <svg viewBox="0 0 175 70" style="max-width:175px;width:100%;display:block;margin:0 auto;" role="img" aria-label="Floating input: PIN connects directly to input buffer with no pull resistor">
+            <text x="22" y="39" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#3a6a8a">PIN</text>
+            <line x1="22" y1="35" x2="68" y2="35" stroke="#1a2840" stroke-width="2"/>
+            <polygon points="68,15 68,55 110,35" fill="none" stroke="#1a2840" stroke-width="2" stroke-linejoin="round"/>
+            <line x1="110" y1="35" x2="148" y2="35" stroke="#1a2840" stroke-width="2"/>
+            <text x="152" y="39" font-family="IBM Plex Mono,monospace" font-size="10" fill="#3a6a8a">IN</text>
+          </svg>
           <div style="font-size:11px;color:#5a6a7a;margin-top:10px;">No defined logic level<br>when pin is unconnected</div>
         </div>
+
+        <!-- ── Pull-up ── -->
         <div style="text-align:center;">
           <div style="font-weight:600;font-size:13px;color:#1a2840;margin-bottom:8px;">Pull-up</div>
-          <img src="_gpio_pullup.svg" style="max-width:200px;width:100%;display:block;margin:0 auto;" alt="Pull-up input: VDD through pull-up resistor to node, pin at node, input buffer after node">
+          <svg viewBox="0 0 192 122" style="max-width:192px;width:100%;display:block;margin:0 auto;" role="img" aria-label="Pull-up input: VDD through pull-up resistor to PIN node, input buffer drives IN">
+            <!-- VDD -->
+            <text x="76" y="14" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="10" fill="#5a6a7a">VDD</text>
+            <line x1="76" y1="16" x2="76" y2="30" stroke="#1a2840" stroke-width="2"/>
+            <!-- Pull-up resistor (box symbol) -->
+            <rect x="64" y="30" width="24" height="36" rx="3" fill="#f5f5f2" stroke="#c8a020" stroke-width="1.5"/>
+            <text x="91" y="47" font-family="IBM Plex Mono,monospace" font-size="9" fill="#c8a020">R</text>
+            <text x="95" y="53" font-family="IBM Plex Mono,monospace" font-size="7" fill="#c8a020">pu</text>
+            <!-- Wire resistor to node -->
+            <line x1="76" y1="66" x2="76" y2="82" stroke="#1a2840" stroke-width="2"/>
+            <!-- PIN node -->
+            <circle cx="76" cy="85" r="3" fill="#1a2840"/>
+            <!-- PIN stub left -->
+            <line x1="76" y1="85" x2="22" y2="85" stroke="#1a2840" stroke-width="2"/>
+            <text x="22" y="89" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#3a6a8a">PIN</text>
+            <!-- Wire node to buffer -->
+            <line x1="79" y1="85" x2="118" y2="85" stroke="#1a2840" stroke-width="2"/>
+            <!-- Input buffer triangle -->
+            <polygon points="118,65 118,105 158,85" fill="none" stroke="#1a2840" stroke-width="2" stroke-linejoin="round"/>
+            <!-- Wire buffer to IN -->
+            <line x1="158" y1="85" x2="170" y2="85" stroke="#1a2840" stroke-width="2"/>
+            <text x="174" y="89" font-family="IBM Plex Mono,monospace" font-size="10" fill="#3a6a8a">IN</text>
+          </svg>
           <div style="font-size:11px;color:#5a6a7a;margin-top:10px;">Default HIGH. Unconnected pin reads 1.<br>Button pulls to GND.</div>
         </div>
+
+        <!-- ── Pull-down ── -->
         <div style="text-align:center;">
           <div style="font-weight:600;font-size:13px;color:#1a2840;margin-bottom:8px;">Pull-down</div>
-          <img src="_gpio_pulldown.svg" style="max-width:200px;width:100%;display:block;margin:0 auto;" alt="Pull-down input: pin at node, input buffer after node, pull-down resistor from node to GND">
+          <svg viewBox="0 0 192 148" style="max-width:192px;width:100%;display:block;margin:0 auto;" role="img" aria-label="Pull-down input: PIN node feeds input buffer to IN; pull-down resistor from node to GND">
+            <!-- PIN node -->
+            <circle cx="76" cy="55" r="3" fill="#1a2840"/>
+            <!-- PIN stub left -->
+            <line x1="76" y1="55" x2="22" y2="55" stroke="#1a2840" stroke-width="2"/>
+            <text x="22" y="59" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#3a6a8a">PIN</text>
+            <!-- Wire node to buffer -->
+            <line x1="79" y1="55" x2="118" y2="55" stroke="#1a2840" stroke-width="2"/>
+            <!-- Input buffer triangle -->
+            <polygon points="118,35 118,75 158,55" fill="none" stroke="#1a2840" stroke-width="2" stroke-linejoin="round"/>
+            <!-- Wire buffer to IN -->
+            <line x1="158" y1="55" x2="170" y2="55" stroke="#1a2840" stroke-width="2"/>
+            <text x="174" y="59" font-family="IBM Plex Mono,monospace" font-size="10" fill="#3a6a8a">IN</text>
+            <!-- Wire node to pull-down resistor -->
+            <line x1="76" y1="58" x2="76" y2="72" stroke="#1a2840" stroke-width="2"/>
+            <!-- Pull-down resistor (box symbol) -->
+            <rect x="64" y="72" width="24" height="36" rx="3" fill="#f5f5f2" stroke="#c8a020" stroke-width="1.5"/>
+            <text x="91" y="89" font-family="IBM Plex Mono,monospace" font-size="9" fill="#c8a020">R</text>
+            <text x="95" y="95" font-family="IBM Plex Mono,monospace" font-size="7" fill="#c8a020">pd</text>
+            <!-- Wire resistor to GND -->
+            <line x1="76" y1="108" x2="76" y2="122" stroke="#1a2840" stroke-width="2"/>
+            <!-- GND symbol -->
+            <line x1="62" y1="122" x2="90" y2="122" stroke="#1a2840" stroke-width="2"/>
+            <line x1="67" y1="127" x2="85" y2="127" stroke="#1a2840" stroke-width="1.5"/>
+            <line x1="72" y1="132" x2="80" y2="132" stroke="#1a2840" stroke-width="1"/>
+          </svg>
           <div style="font-size:11px;color:#5a6a7a;margin-top:10px;">Default LOW. Button drives to VDD.</div>
         </div>
+
       </div>
       <div style="text-align:center;font-size:12px;color:#9aabb8;margin-bottom:24px;">Internal pull resistors (typically 40–100 kΩ) prevent floating inputs from picking up noise when no external signal is connected.</div>
 
