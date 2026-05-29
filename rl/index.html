@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reinforcement Learning — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Foundations</div>
+        <a href="rl-problem.html" class="nav-item">1 · The RL Problem</a>
+        <a href="bandits.html" class="nav-item">2 · Multi-Armed Bandits</a>
+        <a href="mdp.html" class="nav-item">3 · Markov Decision Processes</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Core Theory</div>
+        <span class="nav-item planned">4 · Value Functions &amp; Bellman</span>
+        <span class="nav-item planned">5 · Dynamic Programming</span>
+        <span class="nav-item planned">6 · Monte Carlo Methods</span>
+        <span class="nav-item planned">7 · Temporal Difference Learning</span>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Scaling Up</div>
+        <span class="nav-item planned">8 · Function Approximation</span>
+        <span class="nav-item planned">9 · Policy Gradient Methods</span>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <span>Reinforcement Learning</span>
+      </div>
+
+      <div class="lesson-title">Reinforcement Learning</div>
+      <div class="lesson-meta">Agent · Environment · Policy · Value Functions · MDPs · Dynamic Programming · Q-Learning · Policy Gradients</div>
+
+      <div class="prose">
+        Reinforcement learning is the study of how an agent learns to make decisions
+        by interacting with an environment. Unlike supervised learning — where a teacher
+        provides labeled examples — the agent receives only a reward signal indicating
+        how well it is doing, and must figure out on its own which actions led to good
+        outcomes. Unlike unsupervised learning, the goal is not to find structure in data
+        but to maximize cumulative reward over time.
+      </div>
+
+      <div class="prose">
+        This cluster builds the subject from the ground up: starting with the RL problem
+        itself, through the formal framework of Markov decision processes, to the core
+        algorithms (dynamic programming, Monte Carlo, temporal difference) and finally
+        to the modern function approximation and policy gradient methods that underpin
+        deep RL. The primary reference is Sutton &amp; Barto, supplemented by Broucke's
+        course notes for connections to adaptive control and optimal control theory.
+      </div>
+
+      <div class="section-head">Lessons</div>
+
+      <table class="lesson-list">
+        <thead>
+          <tr>
+            <th style="width:3em;">#</th>
+            <th>Lesson</th>
+            <th>Key concepts</th>
+          </tr>
+        </thead>
+        <tbody>
+
+          <tr style="background:#f0f6fa;">
+            <td colspan="3" style="padding:6px 10px;font-size:11px;font-weight:600;color:#3a6a8a;letter-spacing:0.06em;text-transform:uppercase;">
+              Part I — Foundations
+            </td>
+          </tr>
+
+          <tr class="lesson-row">
+            <td>1</td>
+            <td><a href="rl-problem.html">The RL Problem</a></td>
+            <td>Agent · environment interface · reward hypothesis · return · discounting · episodic vs continuing · policy</td>
+          </tr>
+          <tr class="lesson-row">
+            <td>2</td>
+            <td><a href="bandits.html">Multi-Armed Bandits</a></td>
+            <td>Exploration vs exploitation · action values · ε-greedy · optimistic init · UCB · gradient bandit · nonstationarity</td>
+          </tr>
+          <tr class="lesson-row">
+            <td>3</td>
+            <td><a href="mdp.html">Markov Decision Processes</a></td>
+            <td>State · action · transition dynamics · Markov property · grid world · policy · value function preview</td>
+          </tr>
+
+          <tr style="background:#f0f6fa;">
+            <td colspan="3" style="padding:6px 10px;font-size:11px;font-weight:600;color:#3a6a8a;letter-spacing:0.06em;text-transform:uppercase;">
+              Part II — Core Theory
+            </td>
+          </tr>
+
+          <tr class="lesson-row planned">
+            <td>4</td>
+            <td>Value Functions &amp; Bellman Equations</td>
+            <td>V<sub>π</sub> · Q<sub>π</sub> · Bellman expectation · Bellman optimality · backup diagrams</td>
+          </tr>
+          <tr class="lesson-row planned">
+            <td>5</td>
+            <td>Dynamic Programming</td>
+            <td>Policy evaluation · policy improvement theorem · policy iteration · value iteration · known model</td>
+          </tr>
+          <tr class="lesson-row planned">
+            <td>6</td>
+            <td>Monte Carlo Methods</td>
+            <td>Model-free from episodes · first-visit vs every-visit · MC control · importance sampling · off-policy</td>
+          </tr>
+          <tr class="lesson-row planned">
+            <td>7</td>
+            <td>Temporal Difference Learning</td>
+            <td>TD(0) · TD error · SARSA · Q-learning · n-step TD · unifying MC and DP</td>
+          </tr>
+
+          <tr style="background:#f0f6fa;">
+            <td colspan="3" style="padding:6px 10px;font-size:11px;font-weight:600;color:#3a6a8a;letter-spacing:0.06em;text-transform:uppercase;">
+              Part III — Scaling Up
+            </td>
+          </tr>
+
+          <tr class="lesson-row planned">
+            <td>8</td>
+            <td>Function Approximation</td>
+            <td>Parametric value functions · gradient TD · the deadly triad · semi-gradient methods</td>
+          </tr>
+          <tr class="lesson-row planned">
+            <td>9</td>
+            <td>Policy Gradient Methods</td>
+            <td>REINFORCE · baseline subtraction · actor-critic · advantage functions · policy gradient theorem</td>
+          </tr>
+
+        </tbody>
+      </table>
+
+      <div class="section-head">References</div>
+      <ul class="book-list" id="cluster-refs"></ul>
+
+      <div class="course-block" style="margin-top:16px;">
+        <strong>Related courses:</strong>
+        ECE 411 (Adaptive Control and RL, UofT) follows Broucke's notes and covers this
+        material from a control-theoretic angle — LQR, policy gradients, and Q-learning
+        within a unified optimal control framework.
+      </div>
+
+    </div><!-- /main -->
+
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+<script src="../books-render.js"></script>
+<script>
+  renderBooks({ containerId: 'cluster-refs', clusterId: 'rl', jsonPath: '../books.json' });
+</script>
+
+</body>
+</html>

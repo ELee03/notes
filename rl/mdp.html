@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Markov Decision Processes — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$',  right: '$',  display: false}
+        ],
+        throwOnError: false
+      });
+    });
+  </script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Foundations</div>
+        <a href="rl-problem.html" class="nav-item">1 · The RL Problem</a>
+        <a href="bandits.html" class="nav-item">2 · Multi-Armed Bandits</a>
+        <a href="mdp.html" class="nav-item active">3 · Markov Decision Processes</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Core Theory</div>
+        <span class="nav-item planned">4 · Value Functions &amp; Bellman</span>
+        <span class="nav-item planned">5 · Dynamic Programming</span>
+        <span class="nav-item planned">6 · Monte Carlo Methods</span>
+        <span class="nav-item planned">7 · Temporal Difference Learning</span>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Scaling Up</div>
+        <span class="nav-item planned">8 · Function Approximation</span>
+        <span class="nav-item planned">9 · Policy Gradient Methods</span>
+      </div>
+
+      <hr class="sidebar-rule">
+
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#adding-state" class="nav-item">Adding state</a>
+        <a href="#formal-mdp" class="nav-item">Formal definition</a>
+        <a href="#markov-property" class="nav-item">The Markov property</a>
+        <a href="#grid-world" class="nav-item">Grid world example</a>
+        <a href="#policies" class="nav-item">Goals and policies</a>
+        <a href="#value-preview" class="nav-item">Value functions (preview)</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Reinforcement Learning</a>
+        <span class="sep">›</span>
+        <span>3 · Markov Decision Processes</span>
+      </div>
+
+      <div class="lesson-title">3 · Markov Decision Processes</div>
+      <div class="lesson-meta">State · Action · Transition Dynamics · Markov Property · Policy · Value Functions</div>
+
+      <div class="prose">
+        The bandit problem captures exploration and exploitation but has no notion of
+        state: each decision is independent, and today's choice has no effect on what
+        will be available tomorrow. Most interesting problems are not like this. The
+        move you make in chess changes the board. The acceleration you apply to a car
+        changes its velocity. The treatment you administer to a patient changes their
+        physiology. To reason about these problems, we need the full RL framework:
+        the <strong>Markov Decision Process</strong>.
+      </div>
+
+      <!-- ── Adding state ───────────────────────────────────────── -->
+      <div class="section-head" id="adding-state">Adding state to the bandit</div>
+
+      <div class="prose">
+        In the bandit problem, the agent always faces the same $k$ arms. There is no
+        context — no information about what happened before or what might happen next.
+        The agent simply picks an arm and gets a reward.
+      </div>
+
+      <div class="prose">
+        Now imagine a <em>contextual</em> version: the agent sees a <strong>state</strong>
+        $S_t$ before choosing. In one state the best arm might be arm 3; in another,
+        arm 5. The optimal action depends on the context. But there is still no
+        sequential structure — the choice in state $S_t$ doesn't change what state
+        comes next.
+      </div>
+
+      <div class="prose">
+        A full MDP adds the final ingredient: actions affect the next state. The
+        choice of $A_t$ in state $S_t$ determines, stochastically, both the reward
+        $R_{t+1}$ and the next state $S_{t+1}$. Now the agent must reason about
+        consequences that unfold over many steps — how today's choice shapes tomorrow's
+        options.
+      </div>
+
+      <!-- ── Formal definition ───────────────────────────────────── -->
+      <div class="section-head" id="formal-mdp">Formal definition</div>
+
+      <div class="prose">
+        A finite MDP is a tuple $(\mathcal{S},\, \mathcal{A},\, p,\, \gamma)$ where:
+      </div>
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:8px;">$\mathcal{S}$ — finite set of <strong>states</strong></li>
+        <li style="margin-bottom:8px;">$\mathcal{A}$ — finite set of <strong>actions</strong>
+          (sometimes $\mathcal{A}(s)$ if the action set depends on state)</li>
+        <li style="margin-bottom:8px;">$p$ — the <strong>dynamics function</strong>, a probability distribution
+          over next states and rewards given current state and action</li>
+        <li style="margin-bottom:8px;">$\gamma \in [0,1)$ — the <strong>discount factor</strong></li>
+      </ul>
+
+      <div class="prose">
+        Everything about the environment's behaviour is encoded in the
+        <strong>four-argument dynamics function</strong>:
+      </div>
+
+      <div class="math-block">
+        $$p(s', r \mid s, a) = \Pr\{S_t = s',\, R_t = r \mid S_{t-1} = s,\, A_{t-1} = a\}$$
+      </div>
+
+      <div class="prose">
+        This single function defines the complete rules of the environment. From it,
+        you can derive any quantity you need:
+      </div>
+
+      <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:24px;">
+        <thead>
+          <tr style="background:#eef4f8;">
+            <th style="padding:7px 10px;border:1px solid #d0dae0;font-weight:600;">Derived quantity</th>
+            <th style="padding:7px 10px;border:1px solid #d0dae0;font-weight:600;">Formula</th>
+            <th style="padding:7px 10px;border:1px solid #d0dae0;font-weight:600;">Meaning</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">State-transition probabilities</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;font-family:'IBM Plex Mono',monospace;font-size:12px;">$p(s' \mid s,a) = \sum_r p(s',r \mid s,a)$</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">Prob of landing in $s'$ regardless of reward</td>
+          </tr>
+          <tr style="background:#f8f9fb;">
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">Expected reward</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;font-family:'IBM Plex Mono',monospace;font-size:12px;">$r(s,a) = \sum_r r \sum_{s'} p(s',r \mid s,a)$</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">Mean reward from taking $a$ in $s$</td>
+          </tr>
+          <tr>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">Expected reward given transition</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;font-family:'IBM Plex Mono',monospace;font-size:12px;">$r(s,a,s') = \frac{\sum_r r\, p(s',r \mid s,a)}{p(s' \mid s,a)}$</td>
+            <td style="padding:6px 10px;border:1px solid #e0e8ed;">Mean reward given the specific transition $s \to s'$</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="prose">
+        In practice, most environments are specified through $r(s,a)$ and $p(s'|s,a)$
+        separately, or defined by a simulation. But mathematically, $p(s',r|s,a)$
+        contains all of it.
+      </div>
+
+      <!-- ── Markov property ────────────────────────────────────── -->
+      <div class="section-head" id="markov-property">The Markov property</div>
+
+      <div class="prose">
+        The definition above conditions $p$ on only the <em>most recent</em> state and
+        action: $S_{t-1}$ and $A_{t-1}$. It does not look further back into history.
+        This is the <strong>Markov property</strong>:
+      </div>
+
+      <div class="math-block">
+        $$\Pr\{S_t, R_t \mid S_{t-1}, A_{t-1}, S_{t-2}, A_{t-2}, \ldots\}
+          = \Pr\{S_t, R_t \mid S_{t-1}, A_{t-1}\}$$
+      </div>
+
+      <div class="prose">
+        The future is independent of the past, given the present. The current state
+        $S_{t-1}$ is a <em>sufficient statistic</em> for everything that has happened
+        — it captures all information from history that is relevant to predicting the
+        future.
+      </div>
+
+      <div class="prose">
+        This assumption is what makes MDPs tractable. If the future depended on the
+        entire history, any algorithm would need to keep track of arbitrarily long
+        sequences. The Markov property lets you discard history and act on the current
+        state alone.
+      </div>
+
+      <div class="callout">
+        <strong>When the Markov property fails.</strong> Real environments are often
+        not fully Markov — a single observation may not summarise all the relevant
+        history. In a card game, the current hand does not tell you what cards have
+        already been played. In robot locomotion, a position snapshot does not give
+        velocity. These are <em>partially observable MDPs</em> (POMDPs). The standard
+        workaround is to augment the state: track enough history (velocity + position,
+        a count of played cards) until the augmented state <em>is</em> approximately
+        Markov. Deep RL often uses recurrent networks (LSTMs) to learn what to include
+        in the effective state.
+      </div>
+
+      <!-- ── Grid world example ─────────────────────────────────── -->
+      <div class="section-head" id="grid-world">Grid world: a concrete MDP</div>
+
+      <div class="prose">
+        Abstract definitions become easier to reason about with a running example.
+        S&amp;B's standard example is a 4×4 grid world. Each cell is a state. At every
+        non-terminal state, the agent can take one of four actions: up, down, left,
+        right. The two shaded cells (top-left and bottom-right) are <strong>terminal
+        states</strong> — the episode ends when the agent reaches either one. Every
+        non-terminal step incurs a reward of $-1$; reaching a terminal state gives 0.
+        If an action would move the agent off the grid, it stays in place.
+      </div>
+
+      <!-- SVG: 4×4 grid world -->
+      <svg viewBox="0 0 510 370" style="width:100%;max-width:510px;display:block;margin:24px auto 8px;"
+           role="img" aria-label="4×4 grid world MDP: 16 states in a grid, terminal states at top-left (0,0) and bottom-right (3,3), agent shown in state (2,1)">
+
+        <defs>
+          <marker id="arr-act" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <polygon points="0 0,6 3,0 6" fill="#3a6a8a"/>
+          </marker>
+        </defs>
+
+        <!-- Grid background -->
+        <rect x="50" y="20" width="288" height="288" rx="3" fill="#f8f9fb" stroke="#c0cdd6" stroke-width="1.5"/>
+
+        <!-- Grid cells (row=0..3, col=0..3), cell size = 72px, start at x=50, y=20 -->
+
+        <!-- Terminal: (0,0) -->
+        <rect x="50" y="20" width="72" height="72" fill="#d4ead4" stroke="#5a8a5a" stroke-width="1.5"/>
+        <text x="86" y="55" font-family="IBM Plex Sans,sans-serif" font-size="12" font-weight="600" fill="#2a5a2a" text-anchor="middle">T</text>
+        <text x="86" y="72" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a8a5a" text-anchor="middle">(0,0)</text>
+
+        <!-- Regular cells — row 0 -->
+        <rect x="122" y="20" width="72" height="72" fill="white" stroke="#c0cdd6" stroke-width="1"/>
+        <text x="158" y="61" font-family="IBM Plex Mono,monospace" font-size="9" fill="#9aabb8" text-anchor="middle">(0,1)</text>
+        <rect x="194" y="20" width="72" height="72" fill="white" stroke="#c0cdd6" stroke-width="1"/>
+        <text x="230" y="61" font-family="IBM Plex Mono,monospace" font-size="9" fill="#9aabb8" text-anchor="middle">(0,2)</text>
+        <rect x="266" y="20" width="72" height="72" fill="white" stroke="#c0cdd6" stroke-width="1"/>
+        <text x="302" y="61" font-family="IBM Plex Mono,monospace" font-size="9" fill="#9aabb8" text-anchor="middle">(0,3)</text>
+
+        <!-- Row 1 -->
+        <rect x="50" y="92" width="72" height="72" fill="white" stroke="#c0cdd6" stroke-width="1"/>
+        <text x="86" y="133" font-family="IBM Plex Mono,monospace" font-size="9" fill="#9aabb8" text-anchor="middle">(1,0)</text>
+        <rect x="122" y="92" width="72" height="72" fill="white" stroke="#c0cdd6" stroke-width="1"/>
+        <text x="158" y="133" font-family="IBM Plex Mono,monospace" font-size="9" fill="#9aabb8" text-anchor="middle">(1,1)</text>
+        <rect x="194" y="92" width="72" height="72" fill="white" stroke="#c0cdd6" stroke-width="1"/>
+        <text x="230" y="133" font-family="IBM Plex Mono,monospace" font-size="9" fill="#9aabb8" text-anchor="middle">(1,2)</text>
+        <rect x="266" y="92" width="72" height="72" fill="white" stroke="#c0cdd6" stroke-width="1"/>
+        <text x="302" y="133" font-family="IBM Plex Mono,monospace" font-size="9" fill="#9aabb8" text-anchor="middle">(1,3)</text>
+
+        <!-- Row 2 -->
+        <rect x="50" y="164" width="72" height="72" fill="white" stroke="#c0cdd6" stroke-width="1"/>
+        <text x="86" y="205" font-family="IBM Plex Mono,monospace" font-size="9" fill="#9aabb8" text-anchor="middle">(2,0)</text>
+        <!-- Cell (2,1) — agent here -->
+        <rect x="122" y="164" width="72" height="72" fill="#eef4f8" stroke="#7ab8d4" stroke-width="1.5"/>
+        <!-- Action arrows at (2,1) center (158, 200) -->
+        <line x1="158" y1="192" x2="158" y2="180" stroke="#3a6a8a" stroke-width="1.3" marker-end="url(#arr-act)"/>
+        <line x1="158" y1="208" x2="158" y2="220" stroke="#3a6a8a" stroke-width="1.3" marker-end="url(#arr-act)"/>
+        <line x1="148" y1="200" x2="136" y2="200" stroke="#3a6a8a" stroke-width="1.3" marker-end="url(#arr-act)"/>
+        <line x1="168" y1="200" x2="180" y2="200" stroke="#3a6a8a" stroke-width="1.3" marker-end="url(#arr-act)"/>
+        <!-- Agent dot -->
+        <circle cx="158" cy="200" r="7" fill="#3a6a8a" opacity="0.9"/>
+        <text x="158" y="204" font-family="IBM Plex Sans,sans-serif" font-size="8" fill="white" text-anchor="middle" font-weight="600">A</text>
+
+        <rect x="194" y="164" width="72" height="72" fill="white" stroke="#c0cdd6" stroke-width="1"/>
+        <text x="230" y="205" font-family="IBM Plex Mono,monospace" font-size="9" fill="#9aabb8" text-anchor="middle">(2,2)</text>
+        <rect x="266" y="164" width="72" height="72" fill="white" stroke="#c0cdd6" stroke-width="1"/>
+        <text x="302" y="205" font-family="IBM Plex Mono,monospace" font-size="9" fill="#9aabb8" text-anchor="middle">(2,3)</text>
+
+        <!-- Row 3 -->
+        <rect x="50" y="236" width="72" height="72" fill="white" stroke="#c0cdd6" stroke-width="1"/>
+        <text x="86" y="277" font-family="IBM Plex Mono,monospace" font-size="9" fill="#9aabb8" text-anchor="middle">(3,0)</text>
+        <rect x="122" y="236" width="72" height="72" fill="white" stroke="#c0cdd6" stroke-width="1"/>
+        <text x="158" y="277" font-family="IBM Plex Mono,monospace" font-size="9" fill="#9aabb8" text-anchor="middle">(3,1)</text>
+        <rect x="194" y="236" width="72" height="72" fill="white" stroke="#c0cdd6" stroke-width="1"/>
+        <text x="230" y="277" font-family="IBM Plex Mono,monospace" font-size="9" fill="#9aabb8" text-anchor="middle">(3,2)</text>
+
+        <!-- Terminal: (3,3) -->
+        <rect x="266" y="236" width="72" height="72" fill="#d4ead4" stroke="#5a8a5a" stroke-width="1.5"/>
+        <text x="302" y="271" font-family="IBM Plex Sans,sans-serif" font-size="12" font-weight="600" fill="#2a5a2a" text-anchor="middle">T</text>
+        <text x="302" y="288" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a8a5a" text-anchor="middle">(3,3)</text>
+
+        <!-- Annotations (right side) -->
+        <rect x="358" y="20" width="142" height="120" rx="4" fill="#f5f5f2" stroke="#d0dae0" stroke-width="1"/>
+        <text x="429" y="40" font-family="IBM Plex Sans,sans-serif" font-size="10.5" fill="#3a6a8a" text-anchor="middle" font-weight="600">Reward structure</text>
+        <text x="370" y="58" font-family="IBM Plex Sans,sans-serif" font-size="10" fill="#5a6a7a">R = −1</text>
+        <text x="370" y="72" font-family="IBM Plex Sans,sans-serif" font-size="10" fill="#5a6a7a">per non-terminal step</text>
+        <text x="370" y="92" font-family="IBM Plex Sans,sans-serif" font-size="10" fill="#5a6a7a">R = 0</text>
+        <text x="370" y="106" font-family="IBM Plex Sans,sans-serif" font-size="10" fill="#5a6a7a">at terminal states</text>
+        <text x="370" y="126" font-family="IBM Plex Sans,sans-serif" font-size="10" fill="#5a6a7a">(episode ends)</text>
+
+        <rect x="358" y="158" width="142" height="90" rx="4" fill="#f5f5f2" stroke="#d0dae0" stroke-width="1"/>
+        <text x="429" y="178" font-family="IBM Plex Sans,sans-serif" font-size="10.5" fill="#3a6a8a" text-anchor="middle" font-weight="600">Actions</text>
+        <text x="370" y="196" font-family="IBM Plex Sans,sans-serif" font-size="10" fill="#5a6a7a">↑ ↓ ← →  at every</text>
+        <text x="370" y="210" font-family="IBM Plex Sans,sans-serif" font-size="10" fill="#5a6a7a">non-terminal state</text>
+        <text x="370" y="230" font-family="IBM Plex Sans,sans-serif" font-size="10" fill="#5a6a7a">Off-grid → stay in place</text>
+
+        <!-- Agent legend -->
+        <circle cx="368" cy="278" r="7" fill="#3a6a8a" opacity="0.9"/>
+        <text x="368" y="282" font-family="IBM Plex Sans,sans-serif" font-size="8" fill="white" text-anchor="middle" font-weight="600">A</text>
+        <text x="380" y="282" font-family="IBM Plex Sans,sans-serif" font-size="10" fill="#5a6a7a">Agent at (2,1)</text>
+
+        <!-- Terminal legend -->
+        <rect x="358" y="296" width="14" height="14" rx="2" fill="#d4ead4" stroke="#5a8a5a" stroke-width="1"/>
+        <text x="380" y="307" font-family="IBM Plex Sans,sans-serif" font-size="10" fill="#5a6a7a">Terminal state</text>
+
+      </svg>
+      <div style="text-align:center;font-size:12px;color:#9aabb8;margin-bottom:24px;">
+        The 4×4 grid world. States are cell positions; actions are the four compass
+        directions. The goal is to reach a terminal state in as few steps as possible
+        (minimising total $-1$ penalties = maximising total reward).
+      </div>
+
+      <div class="prose">
+        The optimal strategy — the optimal policy $\pi^*$ — is to take the shortest
+        path from any state to the nearest terminal. States near the terminals are
+        valuable (few steps to go); states far away are worth less. Quantifying this
+        intuition precisely is exactly what <strong>value functions</strong> do, which
+        we will define formally in Lesson 4.
+      </div>
+
+      <!-- ── Goals and policies ──────────────────────────────────── -->
+      <div class="section-head" id="policies">Goals and policies</div>
+
+      <div class="prose">
+        With state in the picture, a <strong>policy</strong> must specify what to do in
+        every state, not just "which arm to pull next." A stochastic policy is a
+        conditional distribution over actions given states:
+      </div>
+
+      <div class="math-block">
+        $$\pi(a \mid s) = \Pr\{A_t = a \mid S_t = s\}$$
+      </div>
+
+      <div class="prose">
+        The agent's goal is to find the policy that maximises the expected discounted
+        return from every state it might start in. We say a policy $\pi'$
+        is <strong>at least as good as</strong> $\pi$ if its expected return is
+        greater than or equal to $\pi$'s from every state:
+      </div>
+
+      <div class="math-block">
+        $$\pi' \geq \pi \iff v_{\pi'}(s) \geq v_\pi(s) \quad \text{for all } s \in \mathcal{S}$$
+      </div>
+
+      <div class="prose">
+        A key theorem: for any finite MDP, at least one <strong>optimal policy</strong>
+        $\pi^*$ exists that is simultaneously at least as good as all other policies
+        from every state. This is not obvious — it is possible that policy $A$ beats
+        policy $B$ in some states but not others, making it seem like no single
+        "best" policy could exist. The theorem says the partial ordering can always
+        be resolved.
+      </div>
+
+      <!-- ── Value functions preview ─────────────────────────────── -->
+      <div class="section-head" id="value-preview">Value functions — a preview</div>
+
+      <div class="prose">
+        To find $\pi^*$, we need a way to evaluate how good a state (or state-action
+        pair) is under a given policy. The <strong>state-value function</strong>
+        $v_\pi(s)$ answers: "if I follow policy $\pi$ starting from state $s$, what
+        return should I expect?"
+      </div>
+
+      <div class="math-block">
+        $$v_\pi(s) = \mathbb{E}_\pi\bigl[G_t \;\big|\; S_t = s\bigr]
+          = \mathbb{E}_\pi\!\left[\sum_{k=0}^{\infty} \gamma^k R_{t+k+1} \;\bigg|\; S_t = s\right]$$
+      </div>
+
+      <div class="prose">
+        The <strong>action-value function</strong> $q_\pi(s,a)$ is the expected return
+        from taking action $a$ in state $s$, then following $\pi$:
+      </div>
+
+      <div class="math-block">
+        $$q_\pi(s, a) = \mathbb{E}_\pi\bigl[G_t \;\big|\; S_t = s,\; A_t = a\bigr]$$
+      </div>
+
+      <div class="prose">
+        These two functions are the central objects of RL. If we could compute them
+        exactly, finding $\pi^*$ would be trivial: in each state, take the action with
+        the highest $q_\pi(s,a)$. The challenge is that we usually cannot compute them
+        exactly — we must estimate them from experience. That is what Lessons 4–7
+        are about.
+      </div>
+
+      <div class="callout">
+        <strong>Notice the recursive structure.</strong> Substituting $G_t = R_{t+1} +
+        \gamma G_{t+1}$ into the definition of $v_\pi(s)$ yields:
+        $$v_\pi(s) = \mathbb{E}_\pi\bigl[R_{t+1} + \gamma v_\pi(S_{t+1}) \;\big|\; S_t = s\bigr]$$
+        This is the <strong>Bellman expectation equation</strong>: the value of a state
+        equals the expected immediate reward plus the discounted value of the next state.
+        It is a self-consistency condition — $v_\pi$ is the unique function that satisfies
+        it. Lesson 4 derives this equation fully and shows how to use it.
+      </div>
+
+      <hr class="lesson-rule">
+
+      <div class="section-head">References</div>
+      <ul class="prose" style="padding-left:1.4em;font-size:13.5px;color:#5a6a7a;">
+        <li style="margin-bottom:6px;">R. S. Sutton &amp; A. G. Barto, <em>Reinforcement Learning: An Introduction</em>
+          (2nd ed.) — Chapter 3 (Finite MDPs): Sections 3.1–3.8 cover the agent-environment
+          interface, the dynamics function, the Markov property, the grid world example
+          (Example 3.5), goals and rewards, returns, policies, and value functions.
+          The grid world optimal value function is computed in Example 3.8.</li>
+      </ul>
+
+      <div class="lesson-nav">
+        <a href="bandits.html" class="lesson-nav-btn">← Lesson 2: Multi-Armed Bandits</a>
+        <a href="index.html" class="lesson-nav-btn">Back to Reinforcement Learning</a>
+        <span class="lesson-nav-btn disabled">Lesson 4: Value Functions →</span>
+      </div>
+
+    </div><!-- /main -->
+
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+</body>
+</html>

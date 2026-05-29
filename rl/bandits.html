@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multi-Armed Bandits — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$',  right: '$',  display: false}
+        ],
+        throwOnError: false
+      });
+    });
+  </script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Foundations</div>
+        <a href="rl-problem.html" class="nav-item">1 · The RL Problem</a>
+        <a href="bandits.html" class="nav-item active">2 · Multi-Armed Bandits</a>
+        <a href="mdp.html" class="nav-item">3 · Markov Decision Processes</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Core Theory</div>
+        <span class="nav-item planned">4 · Value Functions &amp; Bellman</span>
+        <span class="nav-item planned">5 · Dynamic Programming</span>
+        <span class="nav-item planned">6 · Monte Carlo Methods</span>
+        <span class="nav-item planned">7 · Temporal Difference Learning</span>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Scaling Up</div>
+        <span class="nav-item planned">8 · Function Approximation</span>
+        <span class="nav-item planned">9 · Policy Gradient Methods</span>
+      </div>
+
+      <hr class="sidebar-rule">
+
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#setup" class="nav-item">The bandit problem</a>
+        <a href="#action-values" class="nav-item">Action values</a>
+        <a href="#incremental" class="nav-item">Incremental estimation</a>
+        <a href="#epsilon-greedy" class="nav-item">ε-greedy</a>
+        <a href="#optimism" class="nav-item">Optimistic initial values</a>
+        <a href="#ucb" class="nav-item">Upper-Confidence-Bound</a>
+        <a href="#gradient" class="nav-item">Gradient bandit</a>
+        <a href="#nonstationary" class="nav-item">Nonstationary problems</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Reinforcement Learning</a>
+        <span class="sep">›</span>
+        <span>2 · Multi-Armed Bandits</span>
+      </div>
+
+      <div class="lesson-title">2 · Multi-Armed Bandits</div>
+      <div class="lesson-meta">Exploration · Exploitation · Action Values · ε-greedy · UCB · Gradient Bandit</div>
+
+      <div class="prose">
+        Before tackling RL with state transitions and long-horizon credit assignment,
+        it pays to study a simpler problem that isolates the most fundamental challenge:
+        the <strong>exploration-exploitation dilemma</strong>. The multi-armed bandit
+        is that problem. It has no state, no delayed consequences, no sequences of
+        decisions — just the pure question of how to act when you are learning from
+        your own actions.
+      </div>
+
+      <!-- ── The bandit problem ──────────────────────────────────── -->
+      <div class="section-head" id="setup">The <em>k</em>-armed bandit problem</div>
+
+      <div class="prose">
+        Imagine $k$ slot machines (the "arms"). Each arm $a \in \{1, \ldots, k\}$
+        has an unknown probability distribution over rewards. When you pull arm $a$,
+        you receive a reward sampled from that distribution. You have a fixed budget
+        of $T$ pulls. How do you allocate them to maximise total reward?
+      </div>
+
+      <div class="prose">
+        The difficulty is that you do not know the reward distributions in advance.
+        You can only learn them by pulling arms and observing what comes back. But every
+        pull spent learning (exploring) is a pull not spent on the best arm you currently
+        know about (exploiting). This is the dilemma in its purest form.
+      </div>
+
+      <!-- SVG: 5 bandit arms — true values vs estimates -->
+      <svg viewBox="0 0 620 310" style="width:100%;max-width:620px;display:block;margin:24px auto 8px;"
+           role="img" aria-label="5 bandit arms: grey bars show true expected reward q*(a), blue bars show current estimates Qt(a). Arm 3 has the highest true value but arm 5 appears highest to the agent.">
+
+        <defs>
+          <marker id="arr-b" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <polygon points="0 0,6 3,0 6" fill="#e04040"/>
+          </marker>
+          <marker id="arr-b2" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <polygon points="0 0,6 3,0 6" fill="#3a6a8a"/>
+          </marker>
+        </defs>
+
+        <!-- Y axis -->
+        <line x1="55" y1="20" x2="55" y2="240" stroke="#c0cdd6" stroke-width="1.5"/>
+        <!-- X axis -->
+        <line x1="55" y1="240" x2="565" y2="240" stroke="#c0cdd6" stroke-width="1.5"/>
+
+        <!-- Y grid + labels (0, 0.5, 1.0, 1.5, 2.0, 2.5) -->
+        <!-- y_bottom=240, y_top=20, range=220px for 0..2.5 → scale=88px/unit -->
+        <text x="48" y="244" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a6a7a" text-anchor="end">0</text>
+        <line x1="53" y1="196" x2="57" y2="196" stroke="#c0cdd6" stroke-width="1"/>
+        <text x="48" y="199" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a6a7a" text-anchor="end">0.5</text>
+        <line x1="53" y1="152" x2="57" y2="152" stroke="#c0cdd6" stroke-width="1"/>
+        <text x="48" y="155" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a6a7a" text-anchor="end">1.0</text>
+        <line x1="53" y1="108" x2="57" y2="108" stroke="#c0cdd6" stroke-width="1"/>
+        <text x="48" y="111" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a6a7a" text-anchor="end">1.5</text>
+        <line x1="53" y1="64" x2="57" y2="64" stroke="#c0cdd6" stroke-width="1"/>
+        <text x="48" y="67" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a6a7a" text-anchor="end">2.0</text>
+        <line x1="53" y1="20" x2="57" y2="20" stroke="#c0cdd6" stroke-width="1"/>
+        <text x="48" y="23" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a6a7a" text-anchor="end">2.5</text>
+
+        <!-- Y-axis label -->
+        <text x="14" y="140" font-family="IBM Plex Sans,sans-serif" font-size="10" fill="#5a6a7a"
+              text-anchor="middle" transform="rotate(-90,14,140)">reward value</text>
+
+        <!-- ── Arm 1: q*=1.4→ top=116, Qt=1.2→ top=134 ── -->
+        <!-- True (grey): x=80, w=22 -->
+        <rect x="80" y="116" width="22" height="124" rx="2" fill="#b0c0cc" opacity="0.8"/>
+        <!-- Estimate (blue): x=106, w=22 -->
+        <rect x="106" y="134" width="22" height="106" rx="2" fill="#3a6a8a" opacity="0.75"/>
+        <text x="107" y="258" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#5a6a7a" text-anchor="middle">a=1</text>
+
+        <!-- ── Arm 2: q*=0.8→ top=169, Qt=1.0→ top=152 ── -->
+        <rect x="185" y="169" width="22" height="71" rx="2" fill="#b0c0cc" opacity="0.8"/>
+        <rect x="211" y="152" width="22" height="88" rx="2" fill="#3a6a8a" opacity="0.75"/>
+        <text x="212" y="258" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#5a6a7a" text-anchor="middle">a=2</text>
+
+        <!-- ── Arm 3: q*=2.1→ top=55, Qt=1.9→ top=73 ── TRUE BEST -->
+        <rect x="290" y="55" width="22" height="185" rx="2" fill="#b0c0cc" opacity="0.8"/>
+        <rect x="316" y="73" width="22" height="167" rx="2" fill="#3a6a8a" opacity="0.75"/>
+        <text x="317" y="258" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#5a6a7a" text-anchor="middle">a=3</text>
+        <!-- True optimal annotation -->
+        <text x="301" y="46" font-family="IBM Plex Sans,sans-serif" font-size="9.5" fill="#5a8a5a" text-anchor="middle" font-weight="600">true best ★</text>
+
+        <!-- ── Arm 4: q*=1.1→ top=143, Qt=0.7→ top=178 ── -->
+        <rect x="395" y="143" width="22" height="97" rx="2" fill="#b0c0cc" opacity="0.8"/>
+        <rect x="421" y="178" width="22" height="62" rx="2" fill="#3a6a8a" opacity="0.75"/>
+        <text x="422" y="258" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#5a6a7a" text-anchor="middle">a=4</text>
+
+        <!-- ── Arm 5: q*=1.7→ top=90, Qt=2.0→ top=64 ── GREEDY CHOICE -->
+        <rect x="500" y="90" width="22" height="150" rx="2" fill="#b0c0cc" opacity="0.8"/>
+        <rect x="526" y="64" width="22" height="176" rx="2" fill="#3a6a8a" opacity="0.95"/>
+        <text x="527" y="258" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#5a6a7a" text-anchor="middle">a=5</text>
+        <!-- Greedy choice annotation -->
+        <line x1="537" y1="62" x2="537" y2="40" stroke="#e04040" stroke-width="1.2" stroke-dasharray="3,2"/>
+        <text x="537" y="33" font-family="IBM Plex Sans,sans-serif" font-size="9.5" fill="#e04040" text-anchor="middle" font-weight="600">greedy ↑</text>
+
+        <!-- Legend -->
+        <rect x="200" y="275" width="14" height="12" rx="2" fill="#b0c0cc" opacity="0.8"/>
+        <text x="218" y="285" font-family="IBM Plex Sans,sans-serif" font-size="10" fill="#5a6a7a">true q*(a)  (unknown)</text>
+        <rect x="350" y="275" width="14" height="12" rx="2" fill="#3a6a8a" opacity="0.75"/>
+        <text x="368" y="285" font-family="IBM Plex Sans,sans-serif" font-size="10" fill="#5a6a7a">current Qt(a)  (agent's estimate)</text>
+
+      </svg>
+      <div style="text-align:center;font-size:12px;color:#9aabb8;margin-bottom:24px;">
+        The agent's estimates $Q_t(a)$ can diverge from the true values $q_*(a)$.
+        A greedy agent picks arm 5 (highest estimate), but arm 3 is actually optimal.
+        This is why exploration is necessary.
+      </div>
+
+      <!-- ── Action values ──────────────────────────────────────── -->
+      <div class="section-head" id="action-values">Action values</div>
+
+      <div class="prose">
+        The <strong>true value</strong> of an action is the expected reward when that
+        action is taken:
+      </div>
+
+      <div class="math-block">
+        $$q_*(a) = \mathbb{E}[R_t \mid A_t = a]$$
+      </div>
+
+      <div class="prose">
+        If we knew $q_*(a)$ for all arms, the problem would be trivial — always pull
+        the arm with the highest value. We do not know these values. We estimate them.
+        The simplest estimate is the <strong>sample average</strong>: the mean of all
+        rewards received from arm $a$ so far.
+      </div>
+
+      <div class="math-block">
+        $$Q_t(a) = \frac{\text{sum of rewards when } a \text{ was taken}}{N_t(a)}$$
+      </div>
+
+      <div class="prose">
+        where $N_t(a)$ is the number of times arm $a$ has been pulled before time $t$.
+        By the law of large numbers, $Q_t(a) \to q_*(a)$ as $N_t(a) \to \infty$. The
+        problem is getting enough pulls of each arm to make the estimates reliable —
+        which conflicts with exploiting the best arm you currently know about.
+      </div>
+
+      <!-- ── Incremental estimation ──────────────────────────────── -->
+      <div class="section-head" id="incremental">Incremental estimation and the update rule</div>
+
+      <div class="prose">
+        Computing a running average by summing all past rewards and dividing is
+        wasteful — it requires storing all past rewards. Instead, use the incremental
+        update rule. After receiving the $n$-th reward $R_n$ from arm $a$:
+      </div>
+
+      <div class="math-block">
+        $$Q_{n+1} = Q_n + \frac{1}{n}\bigl[R_n - Q_n\bigr]$$
+      </div>
+
+      <div class="prose">
+        This form deserves attention. The term $R_n - Q_n$ is the <strong>error</strong>:
+        the difference between what we just observed and what we expected. We move our
+        estimate toward the observation by a fraction $\frac{1}{n}$ of that error.
+        The same structure — estimate += step_size × error — appears in nearly
+        every RL update rule in this cluster.
+      </div>
+
+      <div class="math-block">
+        $$\text{NewEstimate} \leftarrow \text{OldEstimate} + \alpha \bigl[\underbrace{R_n}_{\text{target}} - \underbrace{Q_n}_{\text{estimate}}\bigr]$$
+      </div>
+
+      <div class="callout">
+        <strong>This update rule is the template for RL.</strong> The target is the
+        thing we observed (or a better estimate we will derive later). The estimate is
+        our current belief. The step size $\alpha$ controls how fast we move toward
+        the target. In the bandit case $\alpha = 1/n$; in TD learning (Lesson 7)
+        $\alpha$ becomes a constant, and the target changes to incorporate future value.
+        But the form is always the same.
+      </div>
+
+      <!-- ── ε-greedy ────────────────────────────────────────────── -->
+      <div class="section-head" id="epsilon-greedy">ε-greedy action selection</div>
+
+      <div class="prose">
+        The simplest approach to balancing exploration and exploitation is
+        <strong>ε-greedy</strong>: most of the time, select the action with the highest
+        current estimate (the greedy action); with probability $\varepsilon$, select a
+        random action uniformly from all arms.
+      </div>
+
+      <div class="math-block">
+        $$A_t = \begin{cases}
+          \arg\max_a Q_t(a) & \text{with probability } 1 - \varepsilon \\
+          \text{random arm} & \text{with probability } \varepsilon
+        \end{cases}$$
+      </div>
+
+      <div class="prose">
+        Over time, as $N_t(a)$ grows for all arms, the estimates improve, and the
+        greedy choice increasingly aligns with the true optimal. ε-greedy guarantees
+        that every arm is pulled infinitely often, so $Q_t(a) \to q_*(a)$ for all $a$.
+      </div>
+
+      <div class="prose">
+        The parameter $\varepsilon$ controls the tradeoff. Small $\varepsilon$ (e.g. 0.01)
+        exploits heavily and learns slowly; large $\varepsilon$ (e.g. 0.1) explores more
+        aggressively but wastes pulls on suboptimal arms even after the best has been
+        found. A common refinement is to decrease $\varepsilon$ over time as confidence
+        in the estimates grows.
+      </div>
+
+      <!-- ── Optimistic initial values ──────────────────────────── -->
+      <div class="section-head" id="optimism">Optimistic initial values</div>
+
+      <div class="prose">
+        A simple trick that encourages early exploration: initialise all estimates
+        $Q_1(a)$ to a value <em>higher</em> than any reward you expect to observe.
+        For example, if all rewards lie in $[0, 1]$, initialise $Q_1(a) = 5$.
+      </div>
+
+      <div class="prose">
+        The effect: every arm looks excellent initially. The agent picks greedily, is
+        disappointed by the actual reward (which is less than 5), and its estimate for
+        that arm falls. It then turns to another arm that still looks good (because it
+        hasn't been tried yet). This forces the agent to try every arm early in the
+        experiment before settling. No $\varepsilon$ parameter needed — the optimism
+        does the work.
+      </div>
+
+      <div class="prose">
+        The limitation: the initial optimism fades over time. Once all arms have been
+        tried enough times, estimates converge to their true values and the optimism
+        effect disappears. For <em>nonstationary</em> environments where $q_*(a)$ drifts
+        over time, reinitialising periodically is needed — but constant $\varepsilon$ is
+        usually more robust.
+      </div>
+
+      <!-- ── UCB ─────────────────────────────────────────────────── -->
+      <div class="section-head" id="ucb">Upper-Confidence-Bound (UCB) action selection</div>
+
+      <div class="prose">
+        ε-greedy treats all non-greedy arms equally — it explores uniformly at random.
+        But not all uncertainty is equal. An arm that has never been tried is far more
+        uncertain than one pulled 1000 times with a consistent reward. It makes sense
+        to direct exploration toward arms where our uncertainty is high.
+      </div>
+
+      <div class="prose">
+        The <strong>Upper-Confidence-Bound</strong> method does exactly this. Select
+        the arm with the highest <em>upper confidence bound</em>: the estimate plus a
+        term that grows with uncertainty.
+      </div>
+
+      <div class="math-block">
+        $$A_t = \arg\max_a \left[ Q_t(a) + c\,\sqrt{\frac{\ln t}{N_t(a)}} \right]$$
+      </div>
+
+      <div class="prose">
+        The second term is the confidence interval half-width. It is large when $N_t(a)$
+        is small (the arm has been pulled rarely — high uncertainty) and shrinks as the
+        arm is pulled more. The $\ln t$ in the numerator grows slowly, meaning that even
+        well-tried arms keep getting a small exploration bonus as time goes on — ensuring
+        no arm is ignored forever.
+      </div>
+
+      <div class="prose">
+        The parameter $c > 0$ controls the width of the confidence interval. This
+        formula comes from concentration inequalities (Hoeffding's inequality) and is
+        mathematically principled — not just a heuristic. UCB algorithms can be shown
+        to achieve near-optimal regret in the bandit setting.
+      </div>
+
+      <div class="callout">
+        <strong>UCB intuition.</strong> Imagine bidding on a search engine ad slot where
+        click-through rates are unknown. Arms with few impressions have wide confidence
+        intervals: the true rate could be much higher than our estimate. UCB says: give
+        those arms a chance proportional to how uncertain we are about them — not just
+        because we hope they're good, but because we genuinely don't know.
+      </div>
+
+      <!-- ── Gradient bandit ─────────────────────────────────────── -->
+      <div class="section-head" id="gradient">Gradient bandit algorithms</div>
+
+      <div class="prose">
+        The methods so far estimate action <em>values</em> and derive a policy from them.
+        A different approach learns a numerical <strong>preference</strong> $H_t(a)$
+        directly for each arm and selects actions according to a softmax distribution:
+      </div>
+
+      <div class="math-block">
+        $$\pi_t(a) = \frac{e^{H_t(a)}}{\sum_{b} e^{H_t(b)}}$$
+      </div>
+
+      <div class="prose">
+        Preferences are updated after each reward using stochastic gradient ascent on
+        expected reward. For the selected arm $A_t$ with reward $R_t$ and baseline
+        $\bar{R}_t$ (the running average of all rewards):
+      </div>
+
+      <div class="math-block">
+        $$H_{t+1}(A_t) = H_t(A_t) + \alpha(R_t - \bar{R}_t)(1 - \pi_t(A_t))$$
+        $$H_{t+1}(a) = H_t(a) - \alpha(R_t - \bar{R}_t)\pi_t(a) \quad \text{for all } a \neq A_t$$
+      </div>
+
+      <div class="prose">
+        The baseline $\bar{R}_t$ is critical: it makes the update <em>relative</em>
+        to the agent's recent average performance. If $R_t > \bar{R}_t$ (better than
+        usual), the selected arm's preference increases; if $R_t < \bar{R}_t$, it
+        decreases. This directly anticipates the <em>advantage</em> concept in policy
+        gradient methods (Lesson 9).
+      </div>
+
+      <!-- ── Nonstationary ───────────────────────────────────────── -->
+      <div class="section-head" id="nonstationary">Nonstationary problems</div>
+
+      <div class="prose">
+        All the methods above implicitly assume that $q_*(a)$ is fixed. Many real problems
+        are <strong>nonstationary</strong>: reward distributions drift over time. The best
+        search ad today may not be the best next month; the best network route changes with
+        load. Sample averages fail here — they give equal weight to a reward from 10,000
+        steps ago as to one from last step.
+      </div>
+
+      <div class="prose">
+        The fix is to use a <strong>constant step size</strong> $\alpha \in (0, 1]$
+        instead of $1/n$:
+      </div>
+
+      <div class="math-block">
+        $$Q_{n+1} = Q_n + \alpha(R_n - Q_n)$$
+      </div>
+
+      <div class="prose">
+        Expanding this recursion reveals that it is an <em>exponential recency-weighted
+        average</em> — past rewards are weighted by $(1-\alpha)^k$ where $k$ is their
+        age. Recent rewards dominate; old ones fade exponentially. With $\alpha = 0.1$,
+        a reward from 10 steps ago has weight $(0.9)^{10} \approx 0.35$; from 50 steps
+        ago, $(0.9)^{50} \approx 0.005$. The agent effectively forgets its distant past
+        and stays responsive to recent changes.
+      </div>
+
+      <hr class="lesson-rule">
+
+      <div class="section-head">References</div>
+      <ul class="prose" style="padding-left:1.4em;font-size:13.5px;color:#5a6a7a;">
+        <li style="margin-bottom:6px;">R. S. Sutton &amp; A. G. Barto, <em>Reinforcement Learning: An Introduction</em>
+          (2nd ed.) — Chapter 2 covers the entire bandit problem: action-value methods
+          (2.1–2.4), UCB (2.7), gradient bandits (2.8), and a comparison of all methods
+          (2.10). The incremental update derivation is in Section 2.4.</li>
+      </ul>
+
+      <div class="lesson-nav">
+        <a href="rl-problem.html" class="lesson-nav-btn">← Lesson 1: The RL Problem</a>
+        <a href="index.html" class="lesson-nav-btn">Back to Reinforcement Learning</a>
+        <a href="mdp.html" class="lesson-nav-btn">Lesson 3: Markov Decision Processes →</a>
+      </div>
+
+    </div><!-- /main -->
+
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+</body>
+</html>

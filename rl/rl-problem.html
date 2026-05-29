@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The RL Problem — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$',  right: '$',  display: false}
+        ],
+        throwOnError: false
+      });
+    });
+  </script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Foundations</div>
+        <a href="rl-problem.html" class="nav-item active">1 · The RL Problem</a>
+        <a href="bandits.html" class="nav-item">2 · Multi-Armed Bandits</a>
+        <a href="mdp.html" class="nav-item">3 · Markov Decision Processes</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Core Theory</div>
+        <span class="nav-item planned">4 · Value Functions &amp; Bellman</span>
+        <span class="nav-item planned">5 · Dynamic Programming</span>
+        <span class="nav-item planned">6 · Monte Carlo Methods</span>
+        <span class="nav-item planned">7 · Temporal Difference Learning</span>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Scaling Up</div>
+        <span class="nav-item planned">8 · Function Approximation</span>
+        <span class="nav-item planned">9 · Policy Gradient Methods</span>
+      </div>
+
+      <hr class="sidebar-rule">
+
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#what-is-rl" class="nav-item">What is RL?</a>
+        <a href="#interface" class="nav-item">Agent-environment interface</a>
+        <a href="#returns" class="nav-item">Rewards and returns</a>
+        <a href="#episodic" class="nav-item">Episodic vs continuing</a>
+        <a href="#policies" class="nav-item">Policies</a>
+        <a href="#challenges" class="nav-item">What makes RL hard</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Reinforcement Learning</a>
+        <span class="sep">›</span>
+        <span>1 · The RL Problem</span>
+      </div>
+
+      <div class="lesson-title">1 · The RL Problem</div>
+      <div class="lesson-meta">Agent · Environment · Reward · Return · Discounting · Policy</div>
+
+      <div class="prose">
+        Before any algorithms, before any equations, there is a situation: something
+        is trying to achieve a goal by taking actions in a world it does not fully control.
+        A chess engine choosing moves. A robot learning to walk. A heating system deciding
+        when to turn on. In each case, the actor receives feedback on how well it is doing,
+        and over time — through trial and error — it gets better. This is the problem
+        reinforcement learning is built to solve.
+      </div>
+
+      <!-- ── What is RL? ─────────────────────────────────────────── -->
+      <div class="section-head" id="what-is-rl">What is reinforcement learning?</div>
+
+      <div class="prose">
+        Reinforcement learning is a framework for learning from interaction. An
+        <strong>agent</strong> takes <strong>actions</strong> in an <strong>environment</strong>
+        and receives a <strong>reward</strong> signal in return. The agent's goal is to
+        learn a strategy — a <strong>policy</strong> — that maximises the total reward
+        it accumulates over time.
+      </div>
+
+      <div class="prose">
+        Three features distinguish RL from other machine learning paradigms:
+      </div>
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:8px;"><strong>No supervisor, only a reward signal.</strong> In supervised learning,
+          a teacher provides the correct answer for each input. In RL there is no
+          correct answer — only a scalar signal saying "this went well" or "this went
+          badly," usually arriving long after the actions that caused it.</li>
+        <li style="margin-bottom:8px;"><strong>Feedback is delayed.</strong> In a game of chess, you only know who
+          won at the end. The reward from winning cannot be attributed to any single
+          move — it is the consequence of a long sequence of decisions. This is the
+          <em>credit assignment problem</em>: which actions deserve credit for the
+          final outcome?</li>
+        <li style="margin-bottom:8px;"><strong>The agent's actions change what it sees.</strong> Each action affects
+          the state of the environment, which determines what actions become available
+          next. An agent that learns to play video games changes the game state with
+          every button press. This feedback loop means the data the agent trains on
+          depends on the policy it is currently running — a circular dependency with
+          no equivalent in supervised learning.</li>
+      </ul>
+
+      <!-- ── Agent-environment interface ───────────────────────────── -->
+      <div class="section-head" id="interface">The agent-environment interface</div>
+
+      <div class="prose">
+        The formal setup is a discrete-time loop. At each time step $t = 0, 1, 2, \ldots$:
+        the agent observes the current <strong>state</strong> $S_t$, selects an
+        <strong>action</strong> $A_t$, and the environment responds with a
+        <strong>reward</strong> $R_{t+1}$ and a new state $S_{t+1}$. This cycle repeats
+        indefinitely (or until a terminal condition).
+      </div>
+
+      <!-- SVG: agent-environment loop -->
+      <svg viewBox="0 0 700 240" style="width:100%;max-width:700px;display:block;margin:24px auto 8px;"
+           role="img" aria-label="Agent-environment loop: agent sends action to environment, environment returns next state and reward">
+        <defs>
+          <marker id="arr-rl" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+            <polygon points="0 0,7 3.5,0 7" fill="#3a6a8a"/>
+          </marker>
+          <marker id="arr-rl-g" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+            <polygon points="0 0,7 3.5,0 7" fill="#5a8a5a"/>
+          </marker>
+        </defs>
+
+        <!-- Agent box -->
+        <rect x="30" y="85" width="155" height="82" rx="6" fill="#eef4f8" stroke="#7ab8d4" stroke-width="1.5"/>
+        <text x="107" y="117" font-family="IBM Plex Sans,sans-serif" font-size="14" font-weight="600" fill="#1a2840" text-anchor="middle">Agent</text>
+        <text x="107" y="135" font-family="IBM Plex Mono,monospace" font-size="10.5" fill="#3a6a8a" text-anchor="middle">π(a | s)</text>
+        <text x="107" y="152" font-family="IBM Plex Sans,sans-serif" font-size="10" fill="#7a8a9a" text-anchor="middle">selects actions</text>
+
+        <!-- Environment box -->
+        <rect x="515" y="85" width="155" height="82" rx="6" fill="#eef4f8" stroke="#7ab8d4" stroke-width="1.5"/>
+        <text x="592" y="113" font-family="IBM Plex Sans,sans-serif" font-size="14" font-weight="600" fill="#1a2840" text-anchor="middle">Environment</text>
+        <text x="592" y="131" font-family="IBM Plex Mono,monospace" font-size="10.5" fill="#3a6a8a" text-anchor="middle">p(s′, r | s, a)</text>
+        <text x="592" y="148" font-family="IBM Plex Sans,sans-serif" font-size="10" fill="#7a8a9a" text-anchor="middle">produces states</text>
+        <text x="592" y="162" font-family="IBM Plex Sans,sans-serif" font-size="10" fill="#7a8a9a" text-anchor="middle">and rewards</text>
+
+        <!-- Action path: agent top → arc over → env top (blue) -->
+        <polyline points="107,85 107,48 592,48 592,85"
+                  stroke="#3a6a8a" stroke-width="1.8" fill="none"
+                  stroke-linejoin="round" marker-end="url(#arr-rl)"/>
+        <text x="350" y="36" font-family="IBM Plex Mono,monospace" font-size="12" fill="#3a6a8a"
+              text-anchor="middle" font-weight="500">A<tspan dy="3" font-size="9">t</tspan><tspan dy="-3">  (action)</tspan></text>
+
+        <!-- State + Reward path: env bottom → arc under → agent bottom (green) -->
+        <polyline points="592,167 592,208 107,208 107,167"
+                  stroke="#5a8a5a" stroke-width="1.8" fill="none"
+                  stroke-linejoin="round" marker-end="url(#arr-rl-g)"/>
+        <text x="350" y="228" font-family="IBM Plex Mono,monospace" font-size="11.5" fill="#5a8a5a"
+              text-anchor="middle" font-weight="500">S<tspan dy="3" font-size="9">t+1</tspan><tspan dy="-3">  (state)   ·   R</tspan><tspan dy="3" font-size="9">t+1</tspan><tspan dy="-3">  (reward)</tspan></text>
+      </svg>
+      <div style="text-align:center;font-size:12px;color:#9aabb8;margin-bottom:24px;">
+        At each step <em>t</em>: the agent observes $S_t$ and selects $A_t$; the environment
+        responds with reward $R_{t+1}$ and next state $S_{t+1}$.
+      </div>
+
+      <div class="prose">
+        This loop generates a <strong>trajectory</strong>:
+      </div>
+
+      <div class="math-block">
+        $$S_0,\; A_0,\; R_1,\; S_1,\; A_1,\; R_2,\; S_2,\; A_2,\; R_3,\; \ldots$$
+      </div>
+
+      <div class="prose">
+        The reward $R_{t+1}$ is indexed one step ahead of the action $A_t$ that caused it —
+        the environment responds to $A_t$ by producing $R_{t+1}$. This subscript convention
+        is consistent throughout Sutton &amp; Barto and is worth internalising early.
+      </div>
+
+      <div class="callout">
+        <strong>What counts as the "environment"?</strong> The boundary between agent
+        and environment is not necessarily the agent's physical body. It is the boundary
+        of what the agent can directly control. A robot's motor controller might be
+        considered part of the agent; the physics of the floor it walks on is the
+        environment. The boundary is a design choice that depends on what problem
+        you want the agent to learn.
+      </div>
+
+      <!-- ── Rewards and returns ─────────────────────────────────── -->
+      <div class="section-head" id="returns">Rewards and returns</div>
+
+      <div class="prose">
+        The <strong>reward hypothesis</strong> is the central thesis of RL: all goals
+        can be described as the maximisation of the expected cumulative reward signal.
+        This is a bold claim — it says that whatever "success" means in a given problem,
+        you can encode it as a scalar reward function, and an agent that maximises
+        cumulative reward will achieve it.
+      </div>
+
+      <div class="prose">
+        The agent's goal is therefore to maximise the <strong>return</strong> $G_t$,
+        defined as the sum of rewards from time $t$ onward. For a task with a natural
+        endpoint (a game, an episode), the return is simply the sum of all future rewards:
+      </div>
+
+      <div class="math-block">
+        $$G_t = R_{t+1} + R_{t+2} + R_{t+3} + \cdots + R_T$$
+      </div>
+
+      <div class="prose">
+        where $T$ is the terminal time step. For tasks that run indefinitely, this sum
+        might diverge. The solution is <strong>discounting</strong>: multiply each future
+        reward by a factor $\gamma^k$ where $\gamma \in [0, 1)$ is the <em>discount rate</em>
+        and $k$ is how many steps in the future it arrives.
+      </div>
+
+      <div class="math-block">
+        $$G_t = \sum_{k=0}^{\infty} \gamma^k R_{t+k+1} = R_{t+1} + \gamma R_{t+2} + \gamma^2 R_{t+3} + \cdots$$
+      </div>
+
+      <div class="prose">
+        Discounting has two practical effects. First, it ensures the sum converges
+        (as long as rewards are bounded): a geometric series with ratio $\gamma < 1$
+        always converges. Second, it encodes a preference for reward sooner rather than
+        later — a reward one step away is worth $\gamma$ times a reward zero steps away.
+        At $\gamma = 0$ the agent is purely myopic (only cares about the next reward);
+        as $\gamma \to 1$ the agent becomes more far-sighted.
+      </div>
+
+      <div class="prose">
+        The return satisfies a crucial <strong>recursive relationship</strong> that
+        underpins almost every RL algorithm:
+      </div>
+
+      <div class="math-block">
+        $$G_t = R_{t+1} + \gamma G_{t+1}$$
+      </div>
+
+      <div class="prose">
+        This says: the return from step $t$ is the immediate reward plus the discounted
+        return from step $t+1$. This one-step decomposition is the seed of the Bellman
+        equations — it lets you reason about long-horizon returns without summing
+        infinitely many rewards directly.
+      </div>
+
+      <div class="callout">
+        <strong>Choosing $\gamma$.</strong> In practice, $\gamma$ is a hyperparameter
+        you set. Values around 0.95–0.99 are common for tasks where long-term consequences
+        matter (robot locomotion, game playing). For problems with short horizons or where
+        speed of learning matters more than optimality, lower values (0.9 or even 0.5)
+        can help. $\gamma = 1$ is valid for episodic tasks with guaranteed termination
+        but requires careful handling.
+      </div>
+
+      <!-- ── Episodic vs continuing ──────────────────────────────── -->
+      <div class="section-head" id="episodic">Episodic vs continuing tasks</div>
+
+      <div class="prose">
+        <strong>Episodic tasks</strong> have a natural terminal state that ends the
+        interaction. A game of chess ends when someone wins or the board is drawn; a
+        robot trying to stand up ends when it falls or reaches some target pose. Each
+        complete interaction from start to terminal state is an <em>episode</em>.
+        Episodes are independent — the agent starts fresh each time. The return formula
+        uses a finite sum up to $T$.
+      </div>
+
+      <div class="prose">
+        <strong>Continuing tasks</strong> have no terminal state. A heating system runs
+        indefinitely; a recommendation engine is always on. Here the finite-sum return
+        diverges, making discounting essential. The discounted return formula with
+        $\gamma < 1$ is the standard tool for continuing tasks.
+      </div>
+
+      <div class="prose">
+        S&amp;B provides a unified notation: a terminal state can be treated as an
+        absorbing state that transitions only to itself with zero reward, allowing the
+        discounted-sum formula to handle both cases without modification.
+      </div>
+
+      <!-- ── Policies ───────────────────────────────────────────── -->
+      <div class="section-head" id="policies">Policies</div>
+
+      <div class="prose">
+        A <strong>policy</strong> $\pi$ is the agent's strategy — a mapping from states
+        to actions (or, more generally, from states to probability distributions over
+        actions). A <em>deterministic policy</em> assigns exactly one action to each
+        state: $\pi(s) = a$. A <em>stochastic policy</em> assigns a probability
+        to each action:
+      </div>
+
+      <div class="math-block">
+        $$\pi(a \mid s) = \Pr\{A_t = a \mid S_t = s\}$$
+      </div>
+
+      <div class="prose">
+        Stochastic policies are essential for exploration — if the agent always does
+        the same thing in each state, it will never discover that other actions might
+        be better. The goal of RL is to find the <strong>optimal policy</strong>
+        $\pi^*$: the policy that maximises the expected return from every state.
+      </div>
+
+      <!-- ── What makes RL hard ─────────────────────────────────── -->
+      <div class="section-head" id="challenges">What makes RL hard</div>
+
+      <div class="prose">
+        Two fundamental tensions make RL genuinely difficult, and they recur throughout
+        every algorithm in this cluster.
+      </div>
+
+      <div class="prose">
+        <strong>The credit assignment problem.</strong> When a reward arrives, it is
+        not immediately clear which past action (or combination of actions) caused it.
+        A reward at step 100 might trace back to a critical decision at step 12. Every
+        RL algorithm is, at its core, a solution to this problem: a method for
+        distributing credit (or blame) backward through time to the actions that
+        mattered.
+      </div>
+
+      <div class="prose">
+        <strong>The exploration-exploitation dilemma.</strong> To maximise reward,
+        the agent should take the action it currently believes is best (exploitation).
+        But to learn which actions are best, it must sometimes try actions it hasn't
+        tried before (exploration). These are in direct conflict — every action spent
+        exploring is a missed opportunity to exploit what has already been learned.
+        The next lesson (Multi-Armed Bandits) isolates this tension in the simplest
+        possible setting before adding state and long-horizon credit assignment.
+      </div>
+
+      <hr class="lesson-rule">
+
+      <div class="section-head">References</div>
+      <ul class="prose" style="padding-left:1.4em;font-size:13.5px;color:#5a6a7a;">
+        <li style="margin-bottom:6px;">R. S. Sutton &amp; A. G. Barto, <em>Reinforcement Learning: An Introduction</em>
+          (2nd ed.) — Chapter 1 (Introduction) and Chapter 3 (Finite MDPs, Sections 3.1–3.4):
+          the agent-environment interface, returns, discounting, and policies are all
+          defined here. The reward hypothesis is discussed in Section 3.2.</li>
+      </ul>
+
+      <div class="lesson-nav">
+        <span class="lesson-nav-btn disabled">← Start of cluster</span>
+        <a href="index.html" class="lesson-nav-btn">Back to Reinforcement Learning</a>
+        <a href="bandits.html" class="lesson-nav-btn">Lesson 2: Multi-Armed Bandits →</a>
+      </div>
+
+    </div><!-- /main -->
+
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+</body>
+</html>
