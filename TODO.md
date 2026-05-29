@@ -1,7 +1,7 @@
 # Claude Agent TODO
 <!-- Keep this file updated as work progresses. Read it at the start of every session. -->
 
-Last updated: 2026-05-28 (session 3)
+Last updated: 2026-05-29 (session 4)
 
 ---
 
@@ -13,11 +13,25 @@ Last updated: 2026-05-28 (session 3)
 
 ## Pending
 
-- [ ] **Full diagram audit — all embedded pages** — visually inspect every diagram across all 19 lessons. Fix anything that looks off (rough schemdraw SVGs, layout issues, inconsistent style). Known starting point: `gpio.html` input-mode diagrams (`_gpio_floating.svg`, `_gpio_pullup.svg`, `_gpio_pulldown.svg`) — thick gold zigzag schemdraw resistors, need redrawing as clean hand-coded inline SVGs to match site aesthetic. Check all other pages for similar issues.
+*(nothing pending)*
 
 ---
 
-## Completed This Session — Embedded cluster visual/math pass
+## Completed This Session — Full diagram audit + GPIO input-mode fix
+
+- [x] **Full diagram audit** — visually confirmed all 19 lessons across all diagram types
+  (Mermaid, WaveDrom, SVG, Plotly). Only issue found: gpio.html input-mode diagrams.
+
+- [x] **gpio.html input-mode diagrams** — replaced 3 schemdraw `<img>` tags
+  (`_gpio_floating.svg`, `_gpio_pullup.svg`, `_gpio_pulldown.svg`) with clean
+  hand-coded inline SVGs. Style matches output-mode diagrams: navy `#1a2840` lines,
+  rectangular amber `#c8a020` resistor boxes (IEC style), IBM Plex Mono labels,
+  buffer triangles pointing right. Deployed in commit 1f0f1fd. DOM-verified via
+  JS: 3 SVGs with correct polygon (buffer) + rect (resistor) elements live on page.
+
+---
+
+## Completed Previous Session — Embedded cluster visual/math pass
 
 - [x] **KaTeX audit pass** — all 5 pages verified:
   - `power-thermal.html` — had bug: `\,^\circ` (thin-space + superscript) is a KaTeX
@@ -131,10 +145,6 @@ Mermaid cannot replicate their layout, custom shapes, or semantic content:
 ---
 
 ## Known Issues / Decisions Pending
-
-- **GPIO input modes (floating/pull-up/pull-down)**: schemdraw SVGs loaded via
-  `<img>`. Not flagged as broken but may have layout issues similar to the
-  output-mode SVGs that were redrawn. Review if user reports problems.
 
 - **KiCad — CONFIRMED**: KiCad 10.0.3 installed at
   `C:\Program Files\KiCad\10.0\bin\kicad-cli.exe`. Note added to CLAUDE.md.
