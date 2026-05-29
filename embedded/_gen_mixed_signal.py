@@ -4,7 +4,7 @@ import matplotlib.patches as mpatches
 
 fig, ax = plt.subplots(figsize=(10, 5))
 ax.set_xlim(0, 10)
-ax.set_ylim(0, 5)
+ax.set_ylim(-0.3, 5)
 ax.set_aspect('equal')
 ax.axis('off')
 fig.patch.set_facecolor('#f7f7f4')
@@ -34,7 +34,7 @@ ax.text(7.35, 4.42, 'Digital Zone', ha='center', va='center',
 BND_X = 4.35
 ax.axvline(x=BND_X, ymin=0.2/5, ymax=4.6/5,
     color='#9aabb8', lw=1.0, linestyle=(0, (3, 5)), zorder=2)
-ax.text(BND_X, 0.05, 'partition boundary', ha='center', va='bottom',
+ax.text(BND_X, -0.1, 'partition boundary', ha='center', va='top',
     fontsize=8.5, color='#9aabb8', style='italic')
 
 

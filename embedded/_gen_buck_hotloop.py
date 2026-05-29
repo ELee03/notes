@@ -76,7 +76,7 @@ ax.text(REG_L - 0.1, VIN_Y + 0.22, 'VIN', ha='right', va='bottom',
     fontsize=9, color='#5a7a9a', family='monospace', zorder=6)
 ax.text(REG_L - 0.1, GND_Y - 0.22, 'GND', ha='right', va='top',
     fontsize=9, color='#5a7a9a', family='monospace', zorder=6)
-ax.text(REG_R + 0.12, SW_Y, 'SW', ha='left', va='center',
+ax.text(REG_R + 0.12, SW_Y + 0.22, 'SW', ha='left', va='bottom',
     fontsize=9, color='#5a7a9a', family='monospace', zorder=6)
 
 # ── SW trace → inductor → C_OUT ────────────────────────────────────────────
