@@ -41,6 +41,13 @@
 
     <div class="sidebar">
       <div class="nav-section">
+        <div class="nav-label">Prerequisites</div>
+        <a href="rl-problem.html" class="nav-item">1 · The RL Problem</a>
+        <span class="nav-item planned">Probability · Expectation &amp; E[·]</span>
+        <span class="nav-item planned">Probability · Conditional probability</span>
+      </div>
+
+      <div class="nav-section">
         <div class="nav-label">Foundations</div>
         <a href="rl-problem.html" class="nav-item">1 · The RL Problem</a>
         <a href="bandits.html" class="nav-item active">2 · Multi-Armed Bandits</a>
@@ -49,16 +56,16 @@
 
       <div class="nav-section">
         <div class="nav-label">Core Theory</div>
-        <span class="nav-item planned">4 · Value Functions &amp; Bellman</span>
-        <span class="nav-item planned">5 · Dynamic Programming</span>
-        <span class="nav-item planned">6 · Monte Carlo Methods</span>
-        <span class="nav-item planned">7 · Temporal Difference Learning</span>
+        <a href="value-functions.html" class="nav-item">4 · Value Functions &amp; Bellman</a>
+        <a href="dp.html" class="nav-item">5 · Dynamic Programming</a>
+        <a href="monte-carlo.html" class="nav-item">6 · Monte Carlo Methods</a>
+        <a href="td-learning.html" class="nav-item">7 · Temporal Difference Learning</a>
       </div>
 
       <div class="nav-section">
         <div class="nav-label">Scaling Up</div>
-        <span class="nav-item planned">8 · Function Approximation</span>
-        <span class="nav-item planned">9 · Policy Gradient Methods</span>
+        <a href="function-approx.html" class="nav-item">8 · Function Approximation</a>
+        <a href="policy-gradients.html" class="nav-item">9 · Policy Gradient Methods</a>
       </div>
 
       <hr class="sidebar-rule">
@@ -75,6 +82,8 @@
         <a href="#nonstationary" class="nav-item">Nonstationary problems</a>
         <a href="#worked-example" class="nav-item">Worked example</a>
         <a href="#simulator" class="nav-item">Simulator</a>
+        <a href="#food-for-thought" class="nav-item">Food for thought</a>
+        <a href="#pitfalls" class="nav-item">Common pitfalls</a>
       </div>
     </div>
 
@@ -90,6 +99,40 @@
 
       <div class="lesson-title">2 · Multi-Armed Bandits</div>
       <div class="lesson-meta">Exploration · Exploitation · Action Values · ε-greedy · UCB · Gradient Bandit</div>
+
+      <div class="notation-box">
+        <div class="notation-box-title">Notation used in this lesson</div>
+        <table class="notation-table">
+          <tr>
+            <td>$q_*(a)$</td>
+            <td>True (unknown) expected reward of arm $a$</td>
+          </tr>
+          <tr>
+            <td>$Q_t(a)$</td>
+            <td>Agent's estimate of $q_*(a)$ after $t$ steps</td>
+          </tr>
+          <tr>
+            <td>$N_t(a)$</td>
+            <td>Number of times arm $a$ has been pulled before step $t$</td>
+          </tr>
+          <tr>
+            <td>$\mathbb{E}[\cdot]$</td>
+            <td>Expected value — the long-run average of a random quantity</td>
+          </tr>
+          <tr>
+            <td>$\mathbb{E}[X \mid Y]$</td>
+            <td>Expected value of $X$ given that $Y$ has occurred (conditional expectation)</td>
+          </tr>
+          <tr>
+            <td>$\pi_t(a)$</td>
+            <td>Probability of selecting arm $a$ at step $t$ (in gradient bandit)</td>
+          </tr>
+          <tr>
+            <td>$\bar{R}_t$</td>
+            <td>Running average of all rewards received up to step $t$ (baseline)</td>
+          </tr>
+        </table>
+      </div>
 
       <div class="prose">
         Before tackling RL with state transitions and long-horizon credit assignment,
@@ -666,6 +709,71 @@
         redraw(null);
       })();
       </script>
+
+      <!-- ── Food for thought ──────────────────────────────────── -->
+      <div class="section-head" id="food-for-thought">Food for thought</div>
+
+      <div class="fft-block">
+        <div class="fft-title">Reflection questions — no answers given</div>
+        <ol>
+          <li>UCB achieves near-optimal <em>regret</em> — the total reward lost by not always
+            pulling the true best arm. If you ran ε-greedy ($\varepsilon = 0.1$) and UCB-1 side
+            by side on the same 5-armed bandit for 1000 steps, which would you expect to accumulate
+            more total reward? Why — and does your answer depend on the spread of the true values?</li>
+          <li>The gradient bandit increases the selected arm's preference when $R_t > \bar{R}_t$
+            and decreases it when $R_t < \bar{R}_t$. The update is doing stochastic gradient ascent
+            on expected reward — but the algorithm never explicitly computes a gradient. How is this
+            possible? What is the algorithm actually differentiating with respect to?</li>
+          <li>Suppose the true best arm has very high variance: rewards range from $-10$ to $+10$
+            with a mean of 1.5, while all other arms give exactly 1.0. How would high variance affect
+            UCB compared to ε-greedy? Which converges to the correct answer faster, and why?</li>
+        </ol>
+      </div>
+
+      <!-- ── Common pitfalls ───────────────────────────────────── -->
+      <div class="section-head" id="pitfalls">Common pitfalls</div>
+
+      <div class="pitfalls-block">
+        <div class="pitfalls-title">Mistakes worth knowing about in advance</div>
+        <ul>
+          <li><span class="pitfall-name">Using 1/n step size for nonstationary problems.</span>
+            The sample-average step size $\alpha = 1/n$ converges to zero, which means the agent
+            <em>stops updating</em> once it has seen enough data. For a nonstationary bandit where
+            $q_*(a)$ drifts over time, this is disastrous — use a constant $\alpha$ so the agent
+            stays responsive to recent rewards.</li>
+          <li><span class="pitfall-name">Treating $Q_t(a)$ as the true value.</span>
+            $Q_t(a)$ is the agent's <em>estimate</em> of $q_*(a)$, not the truth. The gap between
+            them is exactly what makes exploration necessary. Never act as if your current estimate
+            is guaranteed correct — that is the greedy trap.</li>
+          <li><span class="pitfall-name">Thinking small ε means the agent is nearly optimal.</span>
+            Even $\varepsilon = 0.01$ means 1% of pulls are random <em>forever</em>. Over a long
+            horizon, that is thousands of pulls wasted on arms the agent already knows are suboptimal.
+            For finite-horizon problems, the exploration cost accumulates and ε-greedy has no
+            mechanism to reduce it over time (unless you anneal ε explicitly).</li>
+          <li><span class="pitfall-name">Removing the baseline from gradient bandits.</span>
+            The update rule still converges <em>in expectation</em> without the baseline, but with
+            much higher variance. The baseline $\bar{R}_t$ acts as a control variate: by making the
+            update relative to recent performance, it cancels out noise that isn't informative about
+            which arms are genuinely better. Removing it is like turning off variance reduction in
+            a Monte Carlo estimator.</li>
+        </ul>
+      </div>
+
+      <!-- ── Connects to ────────────────────────────────────────── -->
+      <div class="connects-to">
+        <div class="connects-to-label">Connects to</div>
+        <ul>
+          <li><strong>Probability Theory</strong> — the convergence $Q_t(a) \to q_*(a)$ as
+            $N_t(a) \to \infty$ follows from the law of large numbers; the UCB confidence bound
+            is derived from Hoeffding's inequality.</li>
+          <li><strong>Optimization · Stochastic Gradient Ascent</strong> — the gradient bandit
+            update is stochastic gradient ascent on expected reward; this is the direct precursor
+            to policy gradient methods (Lesson 9), which extend the same idea to full MDPs.</li>
+          <li><strong>RL · Policy Gradient Methods</strong> (Lesson 9) — the baseline subtraction
+            in gradient bandits is the bandit analog of advantage functions in actor-critic
+            algorithms; the softmax policy is the bandit analog of a stochastic policy over states.</li>
+        </ul>
+      </div>
 
       <hr class="lesson-rule">
 

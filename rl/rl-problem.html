@@ -41,6 +41,12 @@
 
     <div class="sidebar">
       <div class="nav-section">
+        <div class="nav-label">Prerequisites</div>
+        <span class="nav-item planned">Calculus · Series &amp; summation</span>
+        <span class="nav-item planned">Probability · Basic probability</span>
+      </div>
+
+      <div class="nav-section">
         <div class="nav-label">Foundations</div>
         <a href="rl-problem.html" class="nav-item active">1 · The RL Problem</a>
         <a href="bandits.html" class="nav-item">2 · Multi-Armed Bandits</a>
@@ -49,16 +55,16 @@
 
       <div class="nav-section">
         <div class="nav-label">Core Theory</div>
-        <span class="nav-item planned">4 · Value Functions &amp; Bellman</span>
-        <span class="nav-item planned">5 · Dynamic Programming</span>
-        <span class="nav-item planned">6 · Monte Carlo Methods</span>
-        <span class="nav-item planned">7 · Temporal Difference Learning</span>
+        <a href="value-functions.html" class="nav-item">4 · Value Functions &amp; Bellman</a>
+        <a href="dp.html" class="nav-item">5 · Dynamic Programming</a>
+        <a href="monte-carlo.html" class="nav-item">6 · Monte Carlo Methods</a>
+        <a href="td-learning.html" class="nav-item">7 · Temporal Difference Learning</a>
       </div>
 
       <div class="nav-section">
         <div class="nav-label">Scaling Up</div>
-        <span class="nav-item planned">8 · Function Approximation</span>
-        <span class="nav-item planned">9 · Policy Gradient Methods</span>
+        <a href="function-approx.html" class="nav-item">8 · Function Approximation</a>
+        <a href="policy-gradients.html" class="nav-item">9 · Policy Gradient Methods</a>
       </div>
 
       <hr class="sidebar-rule">
@@ -72,6 +78,8 @@
         <a href="#policies" class="nav-item">Policies</a>
         <a href="#challenges" class="nav-item">What makes RL hard</a>
         <a href="#worked-example" class="nav-item">Worked example</a>
+        <a href="#food-for-thought" class="nav-item">Food for thought</a>
+        <a href="#pitfalls" class="nav-item">Common pitfalls</a>
       </div>
     </div>
 
@@ -454,6 +462,68 @@
         exploring is a missed opportunity to exploit what has already been learned.
         The next lesson (Multi-Armed Bandits) isolates this tension in the simplest
         possible setting before adding state and long-horizon credit assignment.
+      </div>
+
+      <!-- ── Food for thought ──────────────────────────────────── -->
+      <div class="section-head" id="food-for-thought">Food for thought</div>
+
+      <div class="fft-block">
+        <div class="fft-title">Reflection questions — no answers given</div>
+        <ol>
+          <li>The <strong>reward hypothesis</strong> claims any goal can be encoded as a scalar reward
+            signal. Is this actually true? Can you think of a goal that might be difficult or
+            impossible to capture faithfully this way — without creating unintended agent behaviour?</li>
+          <li>If you added a constant $c$ to every reward $R_t$, would the optimal policy change?
+            What about multiplying every reward by a positive constant? What if the constant were
+            negative? Think through the effect on $G_t$ and on the ordering of policies.</li>
+          <li>Discounting with $\gamma < 1$ ensures the infinite sum $G_t$ converges (as long as rewards
+            are bounded). But $\gamma = 1$ is also used in practice for episodic tasks. Why doesn't
+            the return diverge in that case — and when might $\gamma = 1$ cause problems even for
+            tasks that do terminate?</li>
+        </ol>
+      </div>
+
+      <!-- ── Common pitfalls ───────────────────────────────────── -->
+      <div class="section-head" id="pitfalls">Common pitfalls</div>
+
+      <div class="pitfalls-block">
+        <div class="pitfalls-title">Mistakes worth knowing about in advance</div>
+        <ul>
+          <li><span class="pitfall-name">The reward subscript convention.</span> Reward $R_{t+1}$
+            is the reward that arrives <em>after</em> action $A_t$ is taken — it is indexed one step
+            ahead. The environment <em>responds</em> to $(S_t, A_t)$ by producing $(S_{t+1}, R_{t+1})$.
+            Confusing $R_t$ with $R_{t+1}$ scrambles all the bookkeeping and makes the recursion
+            $G_t = R_{t+1} + \gamma G_{t+1}$ look wrong.</li>
+          <li><span class="pitfall-name">Return ≠ reward.</span> $G_t$ is the cumulative sum of
+            <em>all future rewards</em>, not just the next one. Maximising $R_{t+1}$ is myopic and
+            often produces bad long-run behaviour (the agent takes a short-term gain that forecloses
+            better future options). The actual goal is always to maximise the expected return.</li>
+          <li><span class="pitfall-name">Discounting ≠ ignoring the future.</span> $\gamma = 0.99$
+            still gives substantial weight to rewards hundreds of steps out. Discounting encodes a
+            <em>relative</em> preference for sooner rewards, not indifference to distant ones. Only
+            $\gamma = 0$ produces a purely myopic agent.</li>
+          <li><span class="pitfall-name">Reward shaping can backfire.</span> Adding intermediate
+            "progress" rewards to guide the agent often causes unintended behaviour: the agent finds
+            ways to collect the intermediate rewards without actually achieving the goal (<em>reward
+            hacking</em>). A reward signal should measure <em>what</em> you want achieved, not
+            <em>how</em> you expect it to be achieved.</li>
+        </ul>
+      </div>
+
+      <!-- ── Connects to ────────────────────────────────────────── -->
+      <div class="connects-to">
+        <div class="connects-to-label">Connects to</div>
+        <ul>
+          <li><strong>Probability Theory</strong> — expectation $\mathbb{E}[\cdot]$ and conditional
+            distributions appear in every subsequent lesson; the Bellman equations (Lesson 4) are
+            statements about expected values under a policy.</li>
+          <li><strong>Calculus · Series</strong> — the discounted return
+            $G_t = \sum_{k=0}^\infty \gamma^k R_{t+k+1}$ converges by the geometric series formula;
+            bounding the return requires this.</li>
+          <li><strong>Control Theory</strong> — the RL objective (maximise expected cumulative
+            reward) is the stochastic version of optimal control (minimise a cost functional);
+            LQR is a special case of RL for linear systems with quadratic costs.</li>
+        </ul>
       </div>
 
       <hr class="lesson-rule">

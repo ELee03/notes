@@ -41,6 +41,15 @@
 
     <div class="sidebar">
       <div class="nav-section">
+        <div class="nav-label">Prerequisites</div>
+        <a href="rl-problem.html" class="nav-item">1 · The RL Problem</a>
+        <a href="bandits.html" class="nav-item">2 · Multi-Armed Bandits</a>
+        <span class="nav-item planned">Probability · Conditional probability</span>
+        <span class="nav-item planned">Probability · Expectation &amp; E[·]</span>
+        <span class="nav-item planned">Probability · Joint distributions</span>
+      </div>
+
+      <div class="nav-section">
         <div class="nav-label">Foundations</div>
         <a href="rl-problem.html" class="nav-item">1 · The RL Problem</a>
         <a href="bandits.html" class="nav-item">2 · Multi-Armed Bandits</a>
@@ -49,16 +58,16 @@
 
       <div class="nav-section">
         <div class="nav-label">Core Theory</div>
-        <span class="nav-item planned">4 · Value Functions &amp; Bellman</span>
-        <span class="nav-item planned">5 · Dynamic Programming</span>
-        <span class="nav-item planned">6 · Monte Carlo Methods</span>
-        <span class="nav-item planned">7 · Temporal Difference Learning</span>
+        <a href="value-functions.html" class="nav-item">4 · Value Functions &amp; Bellman</a>
+        <a href="dp.html" class="nav-item">5 · Dynamic Programming</a>
+        <a href="monte-carlo.html" class="nav-item">6 · Monte Carlo Methods</a>
+        <a href="td-learning.html" class="nav-item">7 · Temporal Difference Learning</a>
       </div>
 
       <div class="nav-section">
         <div class="nav-label">Scaling Up</div>
-        <span class="nav-item planned">8 · Function Approximation</span>
-        <span class="nav-item planned">9 · Policy Gradient Methods</span>
+        <a href="function-approx.html" class="nav-item">8 · Function Approximation</a>
+        <a href="policy-gradients.html" class="nav-item">9 · Policy Gradient Methods</a>
       </div>
 
       <hr class="sidebar-rule">
@@ -73,6 +82,8 @@
         <a href="#value-preview" class="nav-item">Value functions (preview)</a>
         <a href="#recycling-robot" class="nav-item">Recycling robot example</a>
         <a href="#dynamics-explorer" class="nav-item">Dynamics explorer</a>
+        <a href="#food-for-thought" class="nav-item">Food for thought</a>
+        <a href="#pitfalls" class="nav-item">Common pitfalls</a>
       </div>
     </div>
 
@@ -88,6 +99,46 @@
 
       <div class="lesson-title">3 · Markov Decision Processes</div>
       <div class="lesson-meta">State · Action · Transition Dynamics · Markov Property · Policy · Value Functions</div>
+
+      <div class="notation-box">
+        <div class="notation-box-title">Notation used in this lesson</div>
+        <table class="notation-table">
+          <tr>
+            <td>$\mathcal{S},\, \mathcal{A}$</td>
+            <td>Sets of all states and actions (calligraphic notation for sets)</td>
+          </tr>
+          <tr>
+            <td>$p(s', r \mid s, a)$</td>
+            <td>Joint probability of transitioning to state $s'$ and receiving reward $r$,
+              given current state $s$ and action $a$ — the complete dynamics function</td>
+          </tr>
+          <tr>
+            <td>$p(s' \mid s, a)$</td>
+            <td>Marginal probability of next state — equals $\sum_r p(s',r \mid s,a)$</td>
+          </tr>
+          <tr>
+            <td>$\Pr\{E\}$</td>
+            <td>Probability of event $E$</td>
+          </tr>
+          <tr>
+            <td>$\Pr\{E \mid F\}$</td>
+            <td>Conditional probability of $E$ given that $F$ has occurred</td>
+          </tr>
+          <tr>
+            <td>$\mathbb{E}_\pi[\cdot \mid \cdot]$</td>
+            <td>Expected value conditioned on an event, when the agent follows policy $\pi$</td>
+          </tr>
+          <tr>
+            <td>$\sum_r$</td>
+            <td>Sum over all possible reward values (marginalises out the reward)</td>
+          </tr>
+          <tr>
+            <td>$v_\pi(s),\; q_\pi(s,a)$</td>
+            <td>State-value and action-value functions under policy $\pi$ (previewed here,
+              defined fully in Lesson 4)</td>
+          </tr>
+        </table>
+      </div>
 
       <div class="prose">
         The bandit problem captures exploration and exploitation but has no notion of
@@ -618,6 +669,77 @@
       document.addEventListener('DOMContentLoaded', mdpUpdate);
       </script>
 
+      <!-- ── Food for thought ──────────────────────────────────── -->
+      <div class="section-head" id="food-for-thought">Food for thought</div>
+
+      <div class="fft-block">
+        <div class="fft-title">Reflection questions — no answers given</div>
+        <ol>
+          <li>In blackjack, the state "my current hand" does not capture which cards have already
+            been played. Does this mean blackjack is not an MDP — or is it? How would you augment
+            the state so that the game <em>is</em> Markov? Is there always a way to do this?</li>
+          <li>If you doubled all rewards in an MDP, would the optimal policy $\pi^*$ change?
+            Would the value functions $v_{\pi^*}(s)$ change? Are these two questions the same
+            or different?</li>
+          <li>The Bellman equation says $v_\pi(s) = \mathbb{E}_\pi[R + \gamma v_\pi(S')]$,
+            which defines $v_\pi$ in terms of itself — it looks circular. Why does a unique
+            solution exist? What mathematical condition on $\gamma$ makes this work, and what
+            goes wrong if that condition fails?</li>
+        </ol>
+      </div>
+
+      <!-- ── Common pitfalls ───────────────────────────────────── -->
+      <div class="section-head" id="pitfalls">Common pitfalls</div>
+
+      <div class="pitfalls-block">
+        <div class="pitfalls-title">Mistakes worth knowing about in advance</div>
+        <ul>
+          <li><span class="pitfall-name">Confusing $p(s' \mid s,a)$ with $p(s',r \mid s,a)$.</span>
+            The first is the <em>marginal</em> transition probability (summed over all reward values);
+            the second is the <em>joint</em> distribution over next states and rewards together.
+            They are related by $p(s' \mid s,a) = \sum_r p(s',r \mid s,a)$. Most algorithms
+            work with the marginal for transition logic and the expected reward $r(s,a)$ for
+            value estimation — computing one from the other requires this marginalisation.</li>
+          <li><span class="pitfall-name">Thinking the Markov property means the agent must ignore history.</span>
+            The Markov property is a statement about the <em>environment's dynamics</em>, not
+            the agent's memory. The dynamics function $p(s',r \mid s,a)$ depends only on the
+            current state — but the agent is free to maintain a complete history of observations
+            and use it to inform its policy. The property merely says that <em>the environment
+            does not need that history to determine what happens next</em>.</li>
+          <li><span class="pitfall-name">Confusing $r(s,a)$ and $r(s,a,s')$.</span>
+            The expected reward $r(s,a) = \sum_{s'} p(s' \mid s,a)\, r(s,a,s')$ is averaged
+            over all possible next states. The reward $r(s,a,s')$ is specific to a particular
+            transition. These differ whenever the reward depends on where you end up
+            (e.g., reaching a terminal state may give a different reward than a non-terminal step
+            from the same action). Using one in place of the other produces incorrect value estimates.</li>
+          <li><span class="pitfall-name">Forgetting that terminal states are absorbing.</span>
+            In episodic MDPs, the episode ends the moment the agent reaches a terminal state —
+            no further actions are taken and no more rewards are received. Value functions are
+            defined as $v_\pi(\text{terminal}) = 0$ by convention, not as undefined. The return
+            from a terminal state is zero, not some large negative or positive number.</li>
+        </ul>
+      </div>
+
+      <!-- ── Connects to ────────────────────────────────────────── -->
+      <div class="connects-to">
+        <div class="connects-to-label">Connects to</div>
+        <ul>
+          <li><strong>Probability Theory</strong> — the dynamics function $p(s',r \mid s,a)$
+            is a joint conditional distribution; computing $r(s,a)$ and $p(s' \mid s,a)$
+            requires marginalisation. Lesson 4's Bellman equations are expectations over
+            this distribution, and understanding them requires fluency with conditional
+            expectations.</li>
+          <li><strong>Control Theory</strong> — the MDP is a stochastic generalisation of the
+            state-space model $x_{t+1} = f(x_t, u_t) + \text{noise}$; $\mathcal{S}$ and
+            $\mathcal{A}$ correspond to the state and input spaces, and $p$ corresponds to the
+            plant dynamics. Optimal control and RL solve the same underlying problem with
+            different mathematical tools.</li>
+          <li><strong>Linear Algebra</strong> — for finite state-action spaces, the transition
+            dynamics form a tensor that can be written as a family of matrices. Lesson 5's
+            Dynamic Programming exploits this matrix structure to compute value functions exactly.</li>
+        </ul>
+      </div>
+
       <hr class="lesson-rule">
 
       <div class="section-head">References</div>
@@ -632,7 +754,7 @@
       <div class="lesson-nav">
         <a href="bandits.html" class="lesson-nav-btn">← Lesson 2: Multi-Armed Bandits</a>
         <a href="index.html" class="lesson-nav-btn">Back to Reinforcement Learning</a>
-        <span class="lesson-nav-btn disabled">Lesson 4: Value Functions →</span>
+        <a href="value-functions.html" class="lesson-nav-btn">Lesson 4: Value Functions →</a>
       </div>
 
     </div><!-- /main -->

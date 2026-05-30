@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Monte Carlo Methods — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="rl-interactive.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$',  right: '$',  display: false}
+        ],
+        throwOnError: false
+      });
+    });
+  </script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Prerequisites</div>
+        <a href="dp.html" class="nav-item">5 · Dynamic Programming</a>
+        <span class="nav-item planned">Probability · Sample mean &amp; LLN</span>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Foundations</div>
+        <a href="rl-problem.html" class="nav-item">1 · The RL Problem</a>
+        <a href="bandits.html" class="nav-item">2 · Multi-Armed Bandits</a>
+        <a href="mdp.html" class="nav-item">3 · Markov Decision Processes</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Core Theory</div>
+        <a href="value-functions.html" class="nav-item">4 · Value Functions &amp; Bellman</a>
+        <a href="dp.html" class="nav-item">5 · Dynamic Programming</a>
+        <a href="monte-carlo.html" class="nav-item active">6 · Monte Carlo Methods</a>
+        <a href="td-learning.html" class="nav-item">7 · Temporal Difference Learning</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Scaling Up</div>
+        <a href="function-approx.html" class="nav-item">8 · Function Approximation</a>
+        <a href="policy-gradients.html" class="nav-item">9 · Policy Gradient Methods</a>
+      </div>
+
+      <hr class="sidebar-rule">
+
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#mc-idea" class="nav-item">The MC idea</a>
+        <a href="#mc-prediction" class="nav-item">MC prediction</a>
+        <a href="#first-visit" class="nav-item">First vs every-visit</a>
+        <a href="#mc-control" class="nav-item">MC control</a>
+        <a href="#epsilon-soft" class="nav-item">ε-soft on-policy MC</a>
+        <a href="#off-policy" class="nav-item">Off-policy MC</a>
+        <a href="#importance-sampling" class="nav-item">Importance sampling</a>
+        <a href="#worked-examples" class="nav-item">Worked examples</a>
+        <a href="#interactive" class="nav-item">Interactive explorer</a>
+        <a href="#mc-vs-dp" class="nav-item">MC vs DP</a>
+        <a href="#food-for-thought" class="nav-item">Food for thought</a>
+        <a href="#pitfalls" class="nav-item">Common pitfalls</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Reinforcement Learning</a>
+        <span class="sep">›</span>
+        <span>6 · Monte Carlo Methods</span>
+      </div>
+
+      <div class="lesson-title">6 · Monte Carlo Methods</div>
+      <div class="lesson-meta">Model-Free Learning · Episode Returns · First-Visit MC · MC Control · Importance Sampling</div>
+
+      <div class="prose">
+        Dynamic programming gives you exact value functions — but only if you already know
+        the transition dynamics $p(s',r \mid s,a)$. For most real problems that model is unavailable:
+        you can interact with the environment and observe what happens, but you cannot enumerate
+        all outcomes and their probabilities. Monte Carlo methods solve this by learning directly
+        from experience. Run complete episodes, observe the returns, and average. No model
+        required — just data from the world.
+      </div>
+
+      <!-- ── Notation recap ────────────────────────────────────── -->
+      <div class="notation-box">
+        <div class="notation-box-title">Notation used in this lesson</div>
+        <table class="notation-table">
+          <tr>
+            <td>$G_t$</td>
+            <td>Discounted return from step $t$: $G_t = R_{t+1} + \gamma R_{t+2} + \gamma^2 R_{t+3} + \cdots$</td>
+          </tr>
+          <tr>
+            <td>$T$</td>
+            <td>Terminal time step — when the episode ends</td>
+          </tr>
+          <tr>
+            <td>$\mathcal{T}(s)$</td>
+            <td>Set of all time steps at which state $s$ was visited (across all episodes)</td>
+          </tr>
+          <tr>
+            <td>$N(s)$</td>
+            <td>Number of times state $s$ has been (first) visited; used as denominator in running average</td>
+          </tr>
+          <tr>
+            <td>$b$</td>
+            <td>Behavior policy — the policy actually used to generate episodes (may differ from $\pi$)</td>
+          </tr>
+          <tr>
+            <td>$\rho_{t:T-1}$</td>
+            <td>Importance sampling ratio: $\prod_{k=t}^{T-1} \dfrac{\pi(A_k \mid S_k)}{b(A_k \mid S_k)}$</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- ── The MC idea ───────────────────────────────────────── -->
+      <div class="section-head" id="mc-idea">The Monte Carlo idea</div>
+
+      <div class="prose">
+        Recall Lesson 2. To estimate $q_*(a)$ — the expected reward of action $a$ — you simply
+        pulled that arm many times and averaged the rewards. No model of the slot machine was needed;
+        repeated sampling and the law of large numbers did the work.
+      </div>
+
+      <div class="prose">
+        Monte Carlo prediction is the same idea, applied to complete episodes. The value
+        $v_\pi(s)$ is by definition the expected discounted return starting from $s$ under $\pi$:
+        $$v_\pi(s) = \mathbb{E}_\pi[G_t \mid S_t = s]$$
+        If you observe many returns from episodes that visited $s$, their average converges to
+        this expectation. That is MC prediction in one sentence.
+      </div>
+
+      <div class="callout">
+        <strong>What makes MC different from DP:</strong> DP uses the Bellman equation to
+        bootstrap — it updates $V(s)$ from $V(s')$ without waiting for the episode to end.
+        MC waits for the whole episode, then uses the actual return $G_t$ (not an estimated
+        one). No model, no bootstrapping — but you must wait until the episode terminates.
+        This means MC is only applicable to <em>episodic</em> tasks.
+      </div>
+
+      <!-- ── MC Prediction ─────────────────────────────────────── -->
+      <div class="section-head" id="mc-prediction">MC prediction: estimating $v_\pi$</div>
+
+      <div class="prose">
+        Given a policy $\pi$, the goal is to estimate $v_\pi(s)$ for all states $s$.
+        The algorithm is straightforward:
+      </div>
+
+      <ol class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:10px;">Initialize $V(s) = 0$ and $N(s) = 0$ for all $s$.</li>
+        <li style="margin-bottom:10px;">Generate an episode by following $\pi$:
+          $S_0, A_0, R_1, S_1, A_1, R_2, \ldots, S_{T-1}, A_{T-1}, R_T$.</li>
+        <li style="margin-bottom:10px;">For each state $s$ that appeared in the episode,
+          compute the return $G_t$ from the time $t$ it was visited.</li>
+        <li style="margin-bottom:10px;">Update the running average:
+          $N(s) \leftarrow N(s)+1$, then $V(s) \leftarrow V(s) + \frac{1}{N(s)}[G_t - V(s)]$.</li>
+        <li>Repeat from step 2.</li>
+      </ol>
+
+      <div class="prose">
+        The update in step 4 is the incremental sample-mean formula — exactly the same
+        rule used to update action-value estimates in the bandit algorithm. Here the
+        "observation" is the full return $G_t$, and the "count" $N(s)$ is the number of
+        times $s$ has been sampled. As $N(s) \to \infty$, $V(s) \to v_\pi(s)$ by the
+        law of large numbers.
+      </div>
+
+      <div class="prose">
+        The update can also be written with a fixed step size $\alpha$ instead of $1/N(s)$:
+        $$V(S_t) \leftarrow V(S_t) + \alpha[G_t - V(S_t)]$$
+        The $1/N$ version gives equal weight to all past returns (appropriate for
+        stationary environments). Fixed $\alpha$ gives more weight to recent returns
+        (appropriate when the environment — or the policy — is changing).
+      </div>
+
+      <!-- ── First-visit vs every-visit ────────────────────────── -->
+      <div class="section-head" id="first-visit">First-visit vs every-visit</div>
+
+      <div class="prose">
+        A single episode may visit the same state multiple times — for instance, a random
+        walk through a grid world might loop back. This creates an ambiguity: how many
+        times do you count that state?
+      </div>
+
+      <div class="prose">
+        <strong>First-visit MC</strong> counts only the first occurrence of each state in
+        each episode. If state $s$ appears at $t = 3$ and again at $t = 9$, only the
+        return from $t = 3$ is used. The returns across different episodes are then averaged.
+      </div>
+
+      <div class="prose">
+        <strong>Every-visit MC</strong> counts every occurrence. Both the return from $t = 3$
+        and from $t = 9$ are included in the average for $V(s)$.
+      </div>
+
+      <div class="prose">
+        Both converge to $v_\pi(s)$ with enough episodes. First-visit has cleaner theoretical
+        properties (the returns used are i.i.d.), while every-visit extracts more data per
+        episode. In practice the difference is minor. The lesson primarily uses first-visit MC.
+      </div>
+
+      <div class="callout">
+        <strong>Efficient computation of returns:</strong> Rather than computing $G_t$ forward
+        from each step (which would be $O(T^2)$), compute backwards in a single pass. Start
+        at $t = T-1$ with $G = 0$. At each step moving backward: $G \leftarrow \gamma G + R_{t+1}$.
+        This gives $G_t$ at each $t$ in $O(T)$ total. Then record the first occurrence of
+        each state as you pass through.
+      </div>
+
+      <!-- ── MC Control ─────────────────────────────────────────── -->
+      <div class="section-head" id="mc-control">MC control: finding an optimal policy</div>
+
+      <div class="prose">
+        Prediction estimates $v_\pi$ for a fixed policy. Control means improving the policy
+        toward optimality. The GPI structure from Lesson 5 applies here too: alternate between
+        evaluation and improvement.
+      </div>
+
+      <div class="prose">
+        But there is a complication. Policy improvement in DP was:
+        $$\pi'(s) = \arg\max_a \sum_{s',r} p(s',r \mid s,a)[r + \gamma v_\pi(s')]$$
+        This requires the model $p$ to look one step ahead. Without a model, you cannot
+        extract a better policy from $v_\pi(s)$ alone — you need $q_\pi(s,a)$.
+      </div>
+
+      <div class="prose">
+        <strong>Solution: estimate $Q(s,a)$ instead of $V(s)$.</strong> Apply the same
+        MC averaging idea to action-value pairs:
+        $$Q(s,a) \leftarrow Q(s,a) + \alpha[G_t - Q(s,a)]$$
+        where $G_t$ is the return following the visit to $(s,a)$. Now policy improvement
+        is model-free: $\pi'(s) = \arg\max_a Q(s,a)$.
+      </div>
+
+      <div class="prose">
+        There is a second complication: to estimate $Q(s,a)$ accurately, every
+        state-action pair must be visited frequently. But if the policy is deterministic,
+        it will never take the non-greedy actions — those $Q(s,a)$ values are never updated.
+        Two solutions exist:
+      </div>
+
+      <div class="prose">
+        <strong>Exploring starts.</strong> Mandate that every episode starts from a
+        randomly chosen $(s_0, a_0)$ pair, with each pair having nonzero probability of
+        being selected. This guarantees that in the limit, every pair is visited infinitely
+        often. Unrealistic (you cannot usually choose your starting position arbitrarily),
+        but useful as a theoretical baseline.
+      </div>
+
+      <div class="prose">
+        <strong>ε-soft policies.</strong> Instead of a deterministic policy, use an
+        ε-soft policy: every action has probability at least $\varepsilon / |\mathcal{A}(s)|$.
+        The greedy action gets probability $1 - \varepsilon + \varepsilon / |\mathcal{A}(s)|$.
+        The agent always has some chance of exploring. This is covered in the next section.
+      </div>
+
+      <!-- ── ε-soft on-policy ────────────────────────────────────── -->
+      <div class="section-head" id="epsilon-soft">ε-soft on-policy MC control</div>
+
+      <div class="prose">
+        An ε-soft policy is a generalization of $\varepsilon$-greedy from Lesson 2.
+        Formally: for all $s$ and $a$, $\pi(a \mid s) \geq \varepsilon / |\mathcal{A}(s)|$.
+        The greedy action takes the remaining probability mass.
+      </div>
+
+      <div class="prose">
+        The on-policy MC control algorithm with ε-soft policies:
+      </div>
+
+      <ol class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:10px;">Initialize $Q(s,a)$ arbitrarily, $N(s,a) = 0$. Set $\pi$ to any ε-soft policy.</li>
+        <li style="margin-bottom:10px;">Generate an episode under $\pi$.</li>
+        <li style="margin-bottom:10px;">For each $(s,a)$ pair in the episode (first-visit),
+          update $Q(s,a)$ using the return $G_t$ from that visit.</li>
+        <li style="margin-bottom:10px;">Update $\pi$ to be ε-greedy with respect to current $Q$:
+          take the greedy action with probability $1-\varepsilon+\varepsilon/|\mathcal{A}(s)|$,
+          and each other action with probability $\varepsilon/|\mathcal{A}(s)|$.</li>
+        <li>Repeat from step 2.</li>
+      </ol>
+
+      <div class="prose">
+        This converges to the optimal policy among all ε-soft policies — which is the best
+        you can do while maintaining ε-exploration. It is not quite $\pi^*$ (the hard-greedy
+        optimal policy), but it approaches $\pi^*$ as $\varepsilon \to 0$. In practice,
+        decaying $\varepsilon$ over time lets the algorithm converge toward the true optimum.
+      </div>
+
+      <div class="callout">
+        <strong>⟶ Worth thinking through:</strong> Why does policy improvement still work
+        when switching from $\pi$ to its ε-greedy version? You might expect that adding
+        random exploration could hurt. The key insight is that for ε-soft policies, the
+        policy improvement theorem generalizes: every ε-greedy policy with respect to $Q_\pi$
+        is at least as good as $\pi$ itself (both are ε-soft, so the comparison is valid).
+        Work through the one-step proof of this — it mirrors the original policy improvement
+        theorem exactly.
+      </div>
+
+      <!-- ── Off-policy MC ───────────────────────────────────────── -->
+      <div class="section-head" id="off-policy">Off-policy MC</div>
+
+      <div class="prose">
+        On-policy methods learn the value of the policy being followed. A more powerful
+        separation is possible: use one policy $b$ (the <em>behavior policy</em>) to
+        generate data, while learning about a different policy $\pi$ (the <em>target policy</em>).
+        This is <strong>off-policy learning</strong>.
+      </div>
+
+      <div class="prose">
+        Off-policy is important for several reasons:
+      </div>
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:8px;"><strong>Learning from prior data.</strong> If you have
+          logs of episodes generated by some old policy (or a human expert), you can extract
+          value estimates for a new policy $\pi$ without running any new episodes.</li>
+        <li style="margin-bottom:8px;"><strong>Aggressive exploration while learning a safe policy.</strong>
+          Let $b$ be highly exploratory (even uniform random), while $\pi$ is the greedy policy
+          you are trying to improve. You can explore freely without compromising the policy you deploy.</li>
+        <li style="margin-bottom:8px;"><strong>Learning multiple policies simultaneously</strong>
+          from a single stream of experience.</li>
+      </ul>
+
+      <div class="prose">
+        The requirement for off-policy MC: $b$ must be <em>soft</em> enough to cover $\pi$ —
+        that is, for any action $\pi$ would take, $b$ must sometimes take it too.
+        Formally: $\pi(a \mid s) > 0 \Rightarrow b(a \mid s) > 0$.
+      </div>
+
+      <!-- ── Importance sampling ─────────────────────────────────── -->
+      <div class="section-head" id="importance-sampling">Importance sampling</div>
+
+      <div class="prose">
+        The challenge is that episodes are generated by $b$, but we want to estimate
+        $v_\pi(s) = \mathbb{E}_\pi[G_t \mid S_t = s]$ — an expectation under $\pi$.
+        We cannot just average the returns from $b$-generated episodes, because those
+        returns were produced by a different policy and have the wrong distribution.
+      </div>
+
+      <div class="prose">
+        <strong>Importance sampling</strong> fixes this by re-weighting each return.
+        The key identity: if you want $\mathbb{E}_\pi[X]$ but can only sample under $b$,
+        $$\mathbb{E}_\pi[X] = \mathbb{E}_b\!\left[\frac{\pi(X)}{b(X)} \cdot X\right]$$
+        where $\pi(X)/b(X)$ is the ratio of how likely $X$ is under $\pi$ vs under $b$.
+        For a trajectory starting at $S_t$ with actions $A_t, \ldots, A_{T-1}$:
+      </div>
+
+      <div class="math-block">
+        $$\rho_{t:T-1} = \prod_{k=t}^{T-1} \frac{\pi(A_k \mid S_k)}{b(A_k \mid S_k)}$$
+      </div>
+
+      <div class="prose">
+        $\rho_{t:T-1}$ is the <strong>importance sampling ratio</strong>: how much more (or less)
+        likely this specific sequence of actions was under $\pi$ than under $b$.
+        Then:
+      </div>
+
+      <div class="math-block">
+        $$\mathbb{E}_b[\rho_{t:T-1} \cdot G_t \mid S_t = s] = v_\pi(s)$$
+      </div>
+
+      <div class="prose">
+        So we can estimate $v_\pi(s)$ by collecting returns $G_t$ under $b$, multiplying
+        each by $\rho_{t:T-1}$, and averaging.
+      </div>
+
+      <div class="prose">
+        Two variants differ in how they average:
+      </div>
+
+      <div class="prose">
+        <strong>Ordinary importance sampling:</strong>
+        $$V(s) = \frac{\displaystyle\sum_{t \in \mathcal{T}(s)} \rho_{t:T(t)-1}\, G_t}{|\mathcal{T}(s)|}$$
+        This is an unbiased estimator of $v_\pi(s)$. However, $\rho$ can be very large when
+        $b$ and $\pi$ disagree a lot, making this estimator high-variance — sometimes catastrophically so.
+      </div>
+
+      <div class="prose">
+        <strong>Weighted importance sampling:</strong>
+        $$V(s) = \frac{\displaystyle\sum_{t \in \mathcal{T}(s)} \rho_{t:T(t)-1}\, G_t}{\displaystyle\sum_{t \in \mathcal{T}(s)} \rho_{t:T(t)-1}}$$
+        This normalizes the weights so they sum to 1. The estimator is biased (converges at
+        a slightly slower rate for any finite number of episodes), but its variance is bounded
+        — in practice, much better behaved.
+      </div>
+
+      <div class="callout">
+        <strong>The variance problem.</strong> $\rho_{t:T-1}$ is a product over many steps.
+        If $\pi$ and $b$ disagree even slightly at each step, the product grows or shrinks
+        exponentially with episode length. In a 50-step episode, if $\rho$ at each step is 1.1
+        on average, $\rho_{0:49} \approx 1.1^{50} \approx 117$. Weighted IS mitigates this;
+        per-decision importance sampling (which we do not cover here) provides further
+        variance reduction. For very long episodes or large policy differences, off-policy
+        MC becomes impractical — Temporal Difference methods (Lesson 7) handle this much better.
+      </div>
+
+      <!-- ── Worked examples ─────────────────────────────────────── -->
+      <div class="section-head" id="worked-examples">Worked examples</div>
+
+      <div class="prose" style="font-weight:600; color:#2a3a4a; margin-bottom:6px;">
+        Example 1 — Tracing first-visit MC on the 4×4 grid
+      </div>
+
+      <div class="prose">
+        Use the same 4×4 grid world from Lesson 5: states $\{0, 1, \ldots, 15\}$ numbered
+        row-major, terminals at 0 (top-left) and 15 (bottom-right), reward $-1$ on all
+        transitions, $\gamma = 1$. Start with $V(s) = 0$ everywhere.
+      </div>
+
+      <!-- SVG: grid with numbering -->
+      <svg viewBox="0 0 340 100" style="width:100%;max-width:360px;display:block;margin:18px auto 10px;font-family:'IBM Plex Sans',sans-serif;">
+        <rect x="10" y="10" width="80" height="80" rx="4" fill="#c8e8c4" stroke="#6aa06a" stroke-width="1.5"/>
+        <text x="50" y="43" text-anchor="middle" font-size="11" fill="#2a4a2a">0</text>
+        <text x="50" y="58" text-anchor="middle" font-size="10" fill="#2a4a2a">terminal</text>
+        <rect x="95" y="10" width="80" height="80" rx="4" fill="#f0f4f7" stroke="#c0d0dc" stroke-width="1"/>
+        <text x="135" y="55" text-anchor="middle" font-size="11" fill="#5a6a7a">1</text>
+        <rect x="180" y="10" width="80" height="80" rx="4" fill="#f0f4f7" stroke="#c0d0dc" stroke-width="1"/>
+        <text x="220" y="55" text-anchor="middle" font-size="11" fill="#5a6a7a">2</text>
+        <rect x="265" y="10" width="80" height="80" rx="4" fill="#f0f4f7" stroke="#c0d0dc" stroke-width="1"/>
+        <text x="305" y="55" text-anchor="middle" font-size="11" fill="#5a6a7a">3</text>
+        <!-- Row label -->
+        <text x="5" y="55" text-anchor="end" font-size="9" fill="#9aabb8">row 0</text>
+      </svg>
+      <p class="prose" style="font-size:12.5px;color:#5a6a7a;margin-top:-4px;text-align:center;">
+        States 0–15; only the top row shown. Terminal 0 (top-left) is shaded green.
+        Terminal 15 (bottom-right) is also shaded green in the full grid.
+      </p>
+
+      <div class="prose">
+        <strong>Episode 1:</strong> Start at state 10. Random actions lead to the path:
+        $10 \xrightarrow{N} 6 \xrightarrow{N} 2 \xrightarrow{E} 3 \xrightarrow{S} 7 \xrightarrow{S} 11 \xrightarrow{S} 15$
+        (terminal). Each step gives reward $-1$.
+      </div>
+
+      <div class="prose">
+        Computing returns backward ($G = \gamma G + R_{t+1}$, starting from $G = 0$ at the terminal):
+      </div>
+
+      <div style="overflow-x:auto;margin:12px 0 20px;">
+        <table style="width:100%;border-collapse:collapse;font-size:13px;">
+          <thead>
+            <tr style="background:#f0f4f7;">
+              <th style="padding:7px 12px;text-align:center;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.05em;color:#3a5a78;">$t$</th>
+              <th style="padding:7px 12px;text-align:center;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.05em;color:#3a5a78;">$S_t$</th>
+              <th style="padding:7px 12px;text-align:center;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.05em;color:#3a5a78;">$R_{t+1}$</th>
+              <th style="padding:7px 12px;text-align:center;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.05em;color:#3a5a78;">$G_t$</th>
+              <th style="padding:7px 12px;text-align:left;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.05em;color:#3a5a78;">$V(S_t)$ after update</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">5</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">11</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">−1</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;font-family:'IBM Plex Mono',monospace;">−1</td><td style="padding:6px 12px;border-bottom:1px solid #e8eef2;">$V(11) = -1$</td></tr>
+            <tr style="background:#f8fafb;"><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">4</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">7</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">−1</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;font-family:'IBM Plex Mono',monospace;">−2</td><td style="padding:6px 12px;border-bottom:1px solid #e8eef2;">$V(7) = -2$</td></tr>
+            <tr><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">3</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">3</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">−1</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;font-family:'IBM Plex Mono',monospace;">−3</td><td style="padding:6px 12px;border-bottom:1px solid #e8eef2;">$V(3) = -3$</td></tr>
+            <tr style="background:#f8fafb;"><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">2</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">2</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">−1</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;font-family:'IBM Plex Mono',monospace;">−4</td><td style="padding:6px 12px;border-bottom:1px solid #e8eef2;">$V(2) = -4$</td></tr>
+            <tr><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">1</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">6</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">−1</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;font-family:'IBM Plex Mono',monospace;">−5</td><td style="padding:6px 12px;border-bottom:1px solid #e8eef2;">$V(6) = -5$</td></tr>
+            <tr style="background:#f8fafb;"><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">0</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">10</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">−1</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;font-family:'IBM Plex Mono',monospace;">−6</td><td style="padding:6px 12px;border-bottom:1px solid #e8eef2;">$V(10) = -6$</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="prose">
+        <strong>Episode 2:</strong> Start at state 5. Path: $5 \xrightarrow{E} 6 \xrightarrow{S} 10 \xrightarrow{S} 14 \xrightarrow{E} 15$ (terminal).
+      </div>
+
+      <div class="prose">
+        Returns: $G_3 = -1$ (state 14), $G_2 = -2$ (state 10), $G_1 = -3$ (state 6), $G_0 = -4$ (state 5).
+      </div>
+
+      <div class="prose">
+        Updates:
+      </div>
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li>$V(5)$: first visit, $N(5)=1$. $V(5) \leftarrow -4$.</li>
+        <li>$V(6)$: second visit (first was in episode 1). $N(6)=2$. $V(6) \leftarrow \frac{-5 + (-3)}{2} = -4$.</li>
+        <li>$V(10)$: second visit. $N(10)=2$. $V(10) \leftarrow \frac{-6 + (-2)}{2} = -4$.</li>
+        <li>$V(14)$: first visit. $N(14)=1$. $V(14) \leftarrow -1$.</li>
+      </ul>
+
+      <div class="prose">
+        After just two episodes, states near the terminal corners already have accurate estimates
+        ($V(11) = V(14) = -1$, which equals the true distance to the nearest terminal).
+        States farther in (like 10) have noisier estimates — they converge slower because
+        they appear in fewer episode trajectories, and when they do appear, their return depends
+        on the random walk taken from that point.
+      </div>
+
+      <div class="prose" style="font-weight:600;color:#2a3a4a;margin-bottom:6px;margin-top:24px;">
+        Example 2 — Importance sampling calculation
+      </div>
+
+      <div class="prose">
+        Suppose you are in a 2-action MDP. The behavior policy is $b(a=\text{left} \mid s) = 0.5$,
+        $b(a=\text{right} \mid s) = 0.5$. The target policy is $\pi(a=\text{left} \mid s) = 1.0$
+        (deterministic left). A 3-step episode under $b$ takes actions (left, left, right).
+        Compute the importance sampling ratio.
+      </div>
+
+      <div class="prose">
+        $$\rho_{0:2} = \frac{\pi(\text{left})}{b(\text{left})} \cdot \frac{\pi(\text{left})}{b(\text{left})} \cdot \frac{\pi(\text{right})}{b(\text{right})} = \frac{1.0}{0.5} \cdot \frac{1.0}{0.5} \cdot \frac{0.0}{0.5} = 0$$
+      </div>
+
+      <div class="prose">
+        The ratio is zero because $\pi$ would never take the third action (right). This episode is
+        irrelevant for estimating $v_\pi$ — it followed a path that $\pi$ would never follow, so
+        its return carries zero weight. Only episodes where <em>every</em> action taken is
+        consistent with $\pi$ contribute nonzero weight.
+      </div>
+
+      <div class="prose">
+        Now suppose all three actions were left: $\rho_{0:2} = (1/0.5)^3 = 8$. This episode's
+        return gets multiplied by 8 — it counts heavily because $\pi$ would always take this
+        path, but $b$ only took it by chance.
+      </div>
+
+      <!-- ── Interactive ─────────────────────────────────────────── -->
+      <div class="section-head" id="interactive">Interactive: MC value estimator</div>
+
+      <div class="prose">
+        The grid below runs first-visit MC under a uniform random policy on the 4×4 grid world
+        (terminals at corners 0 and 15, reward $-1$ per step). Watch how value estimates evolve
+        as episodes accumulate — compare the rate of convergence to the DP sweeps in Lesson 5.
+      </div>
+
+      <div class="interactive" style="margin:24px 0;">
+        <div class="int-title">First-Visit MC — 4×4 Grid World</div>
+
+        <div style="display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start;margin-bottom:16px;">
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <label style="font-size:12.5px;color:#5a6a7a;">
+              Discount $\gamma$:
+              <span id="mc-gamma-val" style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:#1a2840;">1.00</span>
+            </label>
+            <input type="range" id="mc-gamma" min="0.5" max="1.0" step="0.05" value="1.0"
+              style="width:180px;" oninput="document.getElementById('mc-gamma-val').textContent=parseFloat(this.value).toFixed(2);">
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <span style="font-size:12.5px;color:#5a6a7a;">Episodes: <span id="mc-ep-count" style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:#1a2840;">0</span></span>
+            <span style="font-size:12.5px;color:#5a6a7a;">Last episode length: <span id="mc-ep-len" style="font-family:'IBM Plex Mono',monospace;color:#3a6a8a;">—</span></span>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;">
+          <button onclick="mcRun(1)" style="padding:7px 14px;background:#3a6a8a;color:white;border:none;border-radius:4px;font-family:'IBM Plex Sans',sans-serif;font-size:13px;cursor:pointer;">Run 1 episode</button>
+          <button onclick="mcRun(10)" style="padding:7px 14px;background:#3a6a8a;color:white;border:none;border-radius:4px;font-family:'IBM Plex Sans',sans-serif;font-size:13px;cursor:pointer;">Run 10</button>
+          <button onclick="mcRun(100)" style="padding:7px 14px;background:#3a6a8a;color:white;border:none;border-radius:4px;font-family:'IBM Plex Sans',sans-serif;font-size:13px;cursor:pointer;">Run 100</button>
+          <button onclick="mcRun(1000)" style="padding:7px 14px;background:#3a6a8a;color:white;border:none;border-radius:4px;font-family:'IBM Plex Sans',sans-serif;font-size:13px;cursor:pointer;">Run 1 000</button>
+          <button onclick="mcReset()" style="padding:7px 14px;background:#e8eef2;color:#2a3a4a;border:none;border-radius:4px;font-family:'IBM Plex Sans',sans-serif;font-size:13px;cursor:pointer;">Reset</button>
+        </div>
+
+        <svg id="mc-grid" viewBox="0 0 360 360" style="width:100%;max-width:400px;display:block;margin:0 auto;"></svg>
+
+        <p style="font-size:11.5px;color:#7a8a9a;text-align:center;margin-top:8px;">
+          Each cell shows $V(s)$ (top) and visit count (bottom). Last episode path highlighted in amber.
+          Terminals are green. Color intensity indicates value magnitude.
+        </p>
+      </div>
+
+      <script>
+      (function() {
+        const GRID = 4, N = 16;
+        const TERMINALS = new Set([0, 15]);
+        const DIRS = [{dr:-1,dc:0},{dr:0,dc:1},{dr:1,dc:0},{dr:0,dc:-1}];
+
+        let V, retSum, retCount, epCount, lastPath;
+
+        function mcResetState() {
+          V = new Array(N).fill(0);
+          retSum = new Array(N).fill(0);
+          retCount = new Array(N).fill(0);
+          epCount = 0;
+          lastPath = [];
+        }
+
+        function stepFn(s, a) {
+          const r = Math.floor(s/GRID), c = s%GRID;
+          const nr = r+DIRS[a].dr, nc = c+DIRS[a].dc;
+          if (nr<0||nr>=GRID||nc<0||nc>=GRID) return s;
+          return nr*GRID+nc;
+        }
+
+        function runEp(gamma) {
+          // Start from random non-terminal
+          let s;
+          do { s = Math.floor(Math.random()*N); } while (TERMINALS.has(s));
+
+          const traj = [];
+          let maxSteps = 1000;
+          while (!TERMINALS.has(s) && maxSteps-->0) {
+            const a = Math.floor(Math.random()*4);
+            const sn = stepFn(s, a);
+            traj.push({s, r:-1});
+            s = sn;
+          }
+
+          // Backward pass: first-visit MC
+          // Going backward and overwriting = last overwrite is earliest time step = first visit
+          const fvG = new Map();
+          let G = 0;
+          for (let t=traj.length-1; t>=0; t--) {
+            G = gamma*G + traj[t].r;
+            fvG.set(traj[t].s, G);
+          }
+
+          for (const [st, g] of fvG) {
+            retSum[st] += g;
+            retCount[st]++;
+            V[st] = retSum[st]/retCount[st];
+          }
+
+          epCount++;
+          lastPath = traj.map(x=>x.s);
+          return traj.length;
+        }
+
+        window.mcRun = function(n) {
+          const gamma = parseFloat(document.getElementById('mc-gamma').value);
+          let lastLen = 0;
+          for (let i=0; i<n; i++) lastLen = runEp(gamma);
+          document.getElementById('mc-ep-count').textContent = epCount.toLocaleString();
+          document.getElementById('mc-ep-len').textContent = lastLen;
+          mcRenderFn();
+        };
+
+        window.mcReset = function() {
+          mcResetState();
+          document.getElementById('mc-ep-count').textContent = '0';
+          document.getElementById('mc-ep-len').textContent = '—';
+          mcRenderFn();
+        };
+
+        function mcRenderFn() {
+          const CELL = 80, PAD = 20;
+          const svg = document.getElementById('mc-grid');
+          const lastSet = new Set(lastPath);
+
+          // Find value range for color scaling
+          let vmin = Infinity, vmax = -Infinity;
+          for (let s=0; s<N; s++) {
+            if (!TERMINALS.has(s) && retCount[s]>0) {
+              if (V[s]<vmin) vmin=V[s];
+              if (V[s]>vmax) vmax=V[s];
+            }
+          }
+          if (!isFinite(vmin)) vmin = -1; vmax = 0;
+
+          let html = '';
+          for (let s=0; s<N; s++) {
+            const row=Math.floor(s/GRID), col=s%GRID;
+            const x=PAD+col*CELL, y=PAD+row*CELL;
+            let fill, textColor='#1a2840';
+            if (TERMINALS.has(s)) {
+              fill='#c8e8c4';
+            } else if (lastSet.has(s) && epCount>0) {
+              // amber for last episode path
+              fill='#fff0c0';
+            } else if (retCount[s]===0) {
+              fill='#f0f4f7';
+            } else {
+              // blue scale: more negative = darker blue
+              const t = vmin===vmax ? 0.5 : (V[s]-vmin)/(vmax-vmin);
+              // t=0 → most negative → darkest blue
+              // t=1 → closest to 0 → lightest
+              const r0=232, g0=244, b0=250; // light
+              const r1=58, g1=106, b1=138;  // dark blue
+              const r=Math.round(r1+(r0-r1)*t);
+              const g=Math.round(g1+(g0-g1)*t);
+              const b=Math.round(b1+(b0-b1)*t);
+              fill='rgb('+r+','+g+','+b+')';
+              if (t<0.5) textColor='#e8f0f5';
+            }
+
+            html+='<rect x="'+x+'" y="'+y+'" width="'+(CELL-4)+'" height="'+(CELL-4)+'" rx="4" fill="'+fill+'" stroke="#c0d0dc" stroke-width="1"/>';
+
+            if (TERMINALS.has(s)) {
+              html+='<text x="'+(x+CELL/2-2)+'" y="'+(y+CELL/2-8)+'" text-anchor="middle" font-size="12" fill="#2a4a2a" font-family="IBM Plex Sans,sans-serif">'+s+'</text>';
+              html+='<text x="'+(x+CELL/2-2)+'" y="'+(y+CELL/2+6)+'" text-anchor="middle" font-size="10" fill="#2a4a2a" font-family="IBM Plex Sans,sans-serif">term</text>';
+            } else {
+              const vStr = retCount[s]>0 ? V[s].toFixed(1) : '—';
+              html+='<text x="'+(x+CELL/2-2)+'" y="'+(y+CELL/2-6)+'" text-anchor="middle" font-size="13" fill="'+textColor+'" font-family="IBM Plex Mono,monospace" font-weight="500">'+vStr+'</text>';
+              html+='<text x="'+(x+CELL/2-2)+'" y="'+(y+CELL/2+10)+'" text-anchor="middle" font-size="10" fill="'+textColor+'" font-family="IBM Plex Sans,sans-serif" opacity="0.75">n='+retCount[s]+'</text>';
+            }
+          }
+          svg.innerHTML = html;
+        }
+
+        mcResetState();
+        mcRenderFn();
+      })();
+      </script>
+
+      <!-- ── MC vs DP ───────────────────────────────────────────── -->
+      <div class="section-head" id="mc-vs-dp">Monte Carlo vs Dynamic Programming</div>
+
+      <div style="overflow-x:auto;margin:12px 0 24px;">
+        <table style="width:100%;border-collapse:collapse;font-size:13.5px;">
+          <thead>
+            <tr style="background:#f0f4f7;">
+              <th style="padding:8px 14px;text-align:left;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;">Property</th>
+              <th style="padding:8px 14px;text-align:left;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;">DP</th>
+              <th style="padding:8px 14px;text-align:left;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;">Monte Carlo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;font-weight:500;">Model required?</td>
+              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Yes — needs $p(s',r|s,a)$ explicitly</td>
+              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">No — learns from sampled episodes</td>
+            </tr>
+            <tr style="background:#f8fafb;">
+              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;font-weight:500;">Bootstrapping?</td>
+              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Yes — updates $V(s)$ using $V(s')$</td>
+              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">No — uses actual return $G_t$</td>
+            </tr>
+            <tr>
+              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;font-weight:500;">Applies to</td>
+              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Episodic and continuing tasks</td>
+              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Episodic tasks only</td>
+            </tr>
+            <tr style="background:#f8fafb;">
+              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;font-weight:500;">Update timing</td>
+              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">After each step (sweep over all states)</td>
+              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">After each complete episode</td>
+            </tr>
+            <tr>
+              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;font-weight:500;">Bias</td>
+              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Biased (depends on $V$ initialization) until convergence</td>
+              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Unbiased (first-visit) — true sample mean</td>
+            </tr>
+            <tr style="background:#f8fafb;">
+              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;font-weight:500;">Variance</td>
+              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Low (bootstraps from neighbors)</td>
+              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">High (full episode return is noisy)</td>
+            </tr>
+            <tr>
+              <td style="padding:8px 14px;font-weight:500;">State coverage</td>
+              <td style="padding:8px 14px;">Visits every state every sweep</td>
+              <td style="padding:8px 14px;">Only visits states on sampled trajectories</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="prose">
+        The bias-variance tradeoff is a recurring theme: DP bootstraps, which introduces bias
+        (the estimate depends on other potentially wrong estimates) but reduces variance.
+        MC uses true returns, which is unbiased but noisier. Temporal Difference learning
+        (Lesson 7) sits between these extremes, bootstrapping like DP but from incomplete
+        episodes like MC.
+      </div>
+
+      <!-- ── Food for thought ────────────────────────────────────── -->
+      <div class="section-head" id="food-for-thought">Food for thought</div>
+
+      <div class="fft-block">
+        <div class="fft-title">Reflection questions — no answers given</div>
+        <ol>
+          <li>First-visit MC is unbiased — the expected value of the estimate is exactly
+            $v_\pi(s)$ regardless of how $V$ was initialized. Every-visit MC is also
+            unbiased in the limit, but subtly biased for finite samples. Why? (Hint: think
+            about what happens when a state appears twice in one episode and what the two
+            returns represent relative to the definition of $v_\pi(s)$.)</li>
+          <li>In the importance sampling derivation, the ratio $\rho_{t:T-1}$ only involves
+            the <em>actions</em> taken ($\pi(A_k|S_k)/b(A_k|S_k)$), not the transition
+            probabilities $p(s'|s,a)$. Why does the state transition probability cancel out?
+            What assumption about the environment makes this cancellation valid?</li>
+          <li>Suppose the environment has very long episodes — thousands of steps to reach
+            a terminal. How does this affect the relative performance of MC vs. DP (assuming
+            DP had a model)? What about very short episodes of 2–3 steps?</li>
+        </ol>
+      </div>
+
+      <!-- ── Common pitfalls ─────────────────────────────────────── -->
+      <div class="section-head" id="pitfalls">Common pitfalls</div>
+
+      <div class="pitfalls-block">
+        <div class="pitfalls-title">Mistakes worth knowing about in advance</div>
+        <ul>
+          <li><span class="pitfall-name">Applying MC to continuing tasks.</span>
+            MC requires complete episodes to compute $G_t$. For continuing tasks (no natural
+            terminal state — e.g. a robot that runs forever), there is no episode to average
+            over. DP and TD methods handle this naturally; MC does not. Before reaching for MC,
+            check that your task is episodic.</li>
+          <li><span class="pitfall-name">Computing returns forward instead of backward.</span>
+            Computing $G_t = R_{t+1} + \gamma R_{t+2} + \cdots$ forward for each $t$ costs
+            $O(T^2)$ per episode. The backward pass ($G \leftarrow \gamma G + R_{t+1}$) gives
+            all returns in $O(T)$. This is not a conceptual error, but failing to use the
+            backward pass makes large episodes very slow.</li>
+          <li><span class="pitfall-name">Confusing on-policy and off-policy settings.</span>
+            In on-policy MC, you evaluate the policy you are following. In off-policy MC, you
+            evaluate $\pi$ while following $b$ — and must apply importance sampling. Forgetting
+            to weight returns by $\rho$ in an off-policy setting produces biased estimates
+            that converge to $v_b$, not $v_\pi$.</li>
+          <li><span class="pitfall-name">Ignoring the coverage requirement.</span>
+            Off-policy MC requires that $b$ covers $\pi$: wherever $\pi$ chooses an action,
+            $b$ must sometimes choose it too. If $b$ never takes some action that $\pi$ would,
+            $\rho$ will always be zero for those trajectories and you get no signal about the
+            value of those states under $\pi$. This is an algorithmic failure, not just
+            high variance.</li>
+          <li><span class="pitfall-name">Expecting off-policy MC to work well with long episodes.</span>
+            The importance sampling ratio $\rho_{t:T-1}$ is a product over potentially many steps.
+            Even small per-step discrepancies between $\pi$ and $b$ make this product extreme —
+            causing estimates to have enormous variance or collapse to near-zero. Off-policy MC
+            is practical mainly for short episodes or when $\pi \approx b$. For longer horizons,
+            use off-policy TD (Lesson 7) instead.</li>
+        </ul>
+      </div>
+
+      <!-- ── Connects to ──────────────────────────────────────────── -->
+      <div class="connects-to">
+        <div class="connects-to-label">Connects to</div>
+        <ul>
+          <li><strong>RL · Multi-Armed Bandits</strong> (Lesson 2) — the sample-average update
+            $Q \leftarrow Q + \frac{1}{N}[R-Q]$ in bandits is exactly MC prediction for
+            a single-state problem with one step per episode. Every concept in this lesson
+            is a direct generalization of that simpler setting.</li>
+          <li><strong>Probability Theory · Law of Large Numbers</strong> — the convergence
+            guarantee for MC prediction follows directly from the LLN: the sample mean
+            converges almost surely to the expectation as $N \to \infty$. The rate of convergence
+            is governed by the variance of $G_t$, which is why high-variance episodes
+            (long trajectories, large rewards) slow down convergence.</li>
+          <li><strong>RL · Temporal Difference Learning</strong> (Lesson 7) — TD unifies
+            the DP and MC approaches: it bootstraps like DP but does not need a model,
+            and it updates every step rather than waiting for episode completion. Many of the
+            limitations of MC (episodic-only, high variance, no bootstrapping) are directly
+            addressed by TD.</li>
+        </ul>
+      </div>
+
+      <hr class="lesson-rule">
+
+      <div class="section-head">References</div>
+      <ul class="prose" style="padding-left:1.4em;font-size:13.5px;color:#5a6a7a;">
+        <li style="margin-bottom:6px;">R. S. Sutton &amp; A. G. Barto, <em>Reinforcement Learning: An Introduction</em>
+          (2nd ed.) — Chapter 5: MC prediction (5.1), first-visit and every-visit (5.1),
+          MC control with exploring starts (5.3), on-policy MC (5.4), off-policy and
+          importance sampling (5.5–5.6). The blackjack example (Example 5.1) is an ideal
+          place to build intuition for MC prediction on a problem with a tractable state space.</li>
+      </ul>
+
+      <div class="lesson-nav">
+        <a href="dp.html" class="lesson-nav-btn">← Lesson 5: Dynamic Programming</a>
+        <a href="index.html" class="lesson-nav-btn">Back to Reinforcement Learning</a>
+        <a href="td-learning.html" class="lesson-nav-btn">Lesson 7: Temporal Difference →</a>
+      </div>
+
+    </div><!-- /main -->
+
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+</body>
+</html>

@@ -119,3 +119,125 @@
   color: #2a3a4a;
 }
 .reward-inputs input:focus { outline: none; border-color: #3a6a8a; }
+
+/* ── Notation reference box ─────────────────────────── */
+.notation-box {
+  background: #eef4f8;
+  border: 1px solid #b8d4e4;
+  border-radius: 6px;
+  padding: 14px 18px;
+  margin: 20px 0 28px;
+}
+.notation-box-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  color: #3a6a8a;
+  margin-bottom: 8px;
+  font-family: 'IBM Plex Sans', sans-serif;
+}
+.notation-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+.notation-table td {
+  padding: 3px 0;
+  vertical-align: top;
+}
+.notation-table td:first-child {
+  width: 30%;
+  font-family: 'IBM Plex Mono', monospace;
+  color: #2a4868;
+  font-weight: 500;
+  padding-right: 12px;
+}
+.notation-table td:last-child {
+  font-family: 'IBM Plex Sans', sans-serif;
+  color: #4a5a6a;
+  line-height: 1.5;
+}
+
+/* ── Food for thought ───────────────────────────────── */
+.fft-block {
+  background: #faf8f2;
+  border-left: 3px solid #b89040;
+  border-radius: 0 4px 4px 0;
+  padding: 16px 18px;
+  margin: 24px 0;
+}
+.fft-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  color: #7a6020;
+  margin-bottom: 10px;
+  font-family: 'IBM Plex Sans', sans-serif;
+}
+.fft-block ol {
+  margin: 0;
+  padding-left: 1.4em;
+  font-size: 13.5px;
+  color: #3a3a2a;
+  line-height: 1.75;
+}
+.fft-block li { margin-bottom: 10px; }
+.fft-block li:last-child { margin-bottom: 0; }
+
+/* ── Common pitfalls ────────────────────────────────── */
+.pitfalls-block {
+  background: #fdf8f8;
+  border-left: 3px solid #c07070;
+  border-radius: 0 4px 4px 0;
+  padding: 16px 18px;
+  margin: 24px 0;
+}
+.pitfalls-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  color: #8a4040;
+  margin-bottom: 10px;
+  font-family: 'IBM Plex Sans', sans-serif;
+}
+.pitfalls-block ul {
+  margin: 0;
+  padding-left: 1.4em;
+  font-size: 13.5px;
+  color: #3a2a2a;
+  line-height: 1.75;
+}
+.pitfalls-block li { margin-bottom: 10px; }
+.pitfalls-block li:last-child { margin-bottom: 0; }
+.pitfall-name { font-weight: 600; color: #8a4040; }
+
+/* ── Connects to ────────────────────────────────────── */
+.connects-to {
+  font-size: 13px;
+  color: #5a6a7a;
+  border-left: 3px solid #c0d4de;
+  border-radius: 0 4px 4px 0;
+  background: #f8fafb;
+  padding: 12px 16px;
+  margin: 24px 0;
+  line-height: 1.75;
+}
+.connects-to-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  color: #7a8a9a;
+  margin-bottom: 6px;
+  font-family: 'IBM Plex Sans', sans-serif;
+}
+.connects-to ul {
+  margin: 0;
+  padding-left: 1.2em;
+}
+.connects-to li { margin-bottom: 6px; }
+.connects-to li:last-child { margin-bottom: 0; }
+.connects-to strong { color: #3a5a78; }

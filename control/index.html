@@ -8,6 +8,51 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../style.css">
+  <style>
+    table.lesson-list {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+      margin: 0 0 24px;
+    }
+    table.lesson-list tr.lesson-row {
+      display: table-row;
+    }
+    table.lesson-list thead th {
+      padding: 7px 12px;
+      text-align: left;
+      background: #f0f4f7;
+      border-bottom: 2px solid #c0dae8;
+      font-weight: 600;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #3a5a78;
+      white-space: nowrap;
+    }
+    table.lesson-list thead th:first-child { width: 2.5em; text-align: center; }
+    table.lesson-list thead th:nth-child(2) { width: 26%; }
+    table.lesson-list td {
+      padding: 9px 12px;
+      vertical-align: top;
+      border-bottom: 1px solid #e8eef2;
+      color: #2a3a4a;
+    }
+    table.lesson-list td:first-child {
+      text-align: center;
+      color: #9aabb8;
+      font-size: 12px;
+      font-family: 'IBM Plex Mono', monospace;
+    }
+    table.lesson-list tr.lesson-row td a {
+      color: #2a4868;
+      font-weight: 500;
+      text-decoration: none;
+    }
+    table.lesson-list tr.lesson-row td a:hover { color: #3a6a8a; }
+    table.lesson-list tr.lesson-row.planned td,
+    table.lesson-list tr.lesson-row.planned td a { color: #a8b8c4; }
+  </style>
 </head>
 <body>
 
@@ -27,13 +72,33 @@
     <div class="sidebar">
 
       <div class="nav-section">
-        <div class="nav-label">Lessons</div>
-        <a href="bode.html" class="nav-item">1 · Second-Order Systems</a>
-        <span class="nav-item planned">2 · Root Locus</span>
-        <span class="nav-item planned">3 · Nyquist &amp; Stability</span>
-        <span class="nav-item planned">4 · PID Design</span>
-        <span class="nav-item planned">5 · State-Space</span>
-        <span class="nav-item planned">6 · Controllability &amp; Observability</span>
+        <div class="nav-label">Foundations</div>
+        <span class="nav-item planned">1 · The Control Problem</span>
+        <span class="nav-item planned">2 · Dynamical Systems &amp; Transfer Functions</span>
+        <a href="bode.html" class="nav-item">3 · Second-Order Systems</a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Frequency Domain</div>
+        <span class="nav-item planned">4 · Routh-Hurwitz Stability</span>
+        <span class="nav-item planned">5 · Root Locus</span>
+        <span class="nav-item planned">6 · Nyquist &amp; Stability Margins</span>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Classical Design</div>
+        <span class="nav-item planned">7 · PID Control</span>
+        <span class="nav-item planned">8 · Lead-Lag Compensators</span>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">State Space</div>
+        <span class="nav-item planned">9 · State-Space Representation</span>
+        <span class="nav-item planned">10 · State Response</span>
+        <span class="nav-item planned">11 · Controllability &amp; Observability</span>
+        <span class="nav-item planned">12 · State Feedback &amp; Pole Placement</span>
+        <span class="nav-item planned">13 · Linear Quadratic Regulator</span>
+        <span class="nav-item planned">14 · Observers &amp; Separation Principle</span>
       </div>
 
     </div><!-- /sidebar -->
@@ -47,73 +112,148 @@
       </div>
 
       <div class="lesson-title">Control Theory</div>
-      <div class="lesson-meta">Feedback Systems · Frequency Domain · State Space</div>
+      <div class="lesson-meta">Feedback · Stability · Frequency Domain · State Space · Optimal Control</div>
 
       <div class="prose">
-        How to make systems do what you want. Control theory gives you the language
-        to reason about stability, performance, and robustness — from a thermostat to
-        a spacecraft attitude controller.
+        How do you make a system do what you want — reliably, even when it is disturbed,
+        even when your model is imperfect? Control theory gives you the language and the
+        tools to answer that question. From a thermostat to an aircraft autopilot to a
+        robot arm, the same core ideas recur: feedback, stability, and the tradeoff between
+        performance and robustness.
       </div>
 
-      <hr class="lesson-rule">
+      <div class="prose">
+        This cluster builds control theory from first principles. It covers classical
+        frequency-domain methods (Bode, Nyquist, root locus, PID) and the modern
+        state-space approach (controllability, observability, LQR, and observers),
+        ending with the separation principle that lets you design state feedback and
+        state estimation independently. The primary references are Franklin, Powell &amp;
+        Emami-Naeini and Ogata, supplemented by Broucke's ECE356/557 course notes.
+      </div>
 
       <div class="section-head">Lessons</div>
 
-      <div class="section-head">Lessons</div>
+      <table class="lesson-list">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Lesson</th>
+            <th>Key concepts</th>
+          </tr>
+        </thead>
+        <tbody>
 
-      <ul class="lesson-list">
-        <li class="lesson-row">
-          <span class="lesson-num">01</span>
-          <a href="bode.html">Second-Order Systems</a>
-          <span class="lesson-status">published</span>
-        </li>
-        <li class="lesson-row planned">
-          <span class="lesson-num">02</span>
-          <span class="lesson-title-text">Root Locus</span>
-          <span class="lesson-status">coming soon</span>
-        </li>
-        <li class="lesson-row planned">
-          <span class="lesson-num">03</span>
-          <span class="lesson-title-text">Nyquist &amp; Stability</span>
-          <span class="lesson-status">coming soon</span>
-        </li>
-        <li class="lesson-row planned">
-          <span class="lesson-num">04</span>
-          <span class="lesson-title-text">PID Design</span>
-          <span class="lesson-status">coming soon</span>
-        </li>
-        <li class="lesson-row planned">
-          <span class="lesson-num">05</span>
-          <span class="lesson-title-text">State-Space Representation</span>
-          <span class="lesson-status">coming soon</span>
-        </li>
-        <li class="lesson-row planned">
-          <span class="lesson-num">06</span>
-          <span class="lesson-title-text">Controllability &amp; Observability</span>
-          <span class="lesson-status">coming soon</span>
-        </li>
-      </ul>
+          <tr style="background:#f0f6fa;">
+            <td colspan="3" style="padding:6px 10px;font-size:11px;font-weight:600;color:#3a6a8a;letter-spacing:0.06em;text-transform:uppercase;">
+              Part I — Foundations
+            </td>
+          </tr>
 
-      <hr class="lesson-rule">
+          <tr class="lesson-row planned">
+            <td>1</td>
+            <td>The Control Problem</td>
+            <td>Open vs closed loop · feedback · block diagram algebra · plant/controller/sensor · stability vs performance · why feedback helps (and when it hurts)</td>
+          </tr>
+          <tr class="lesson-row planned">
+            <td>2</td>
+            <td>Dynamical Systems &amp; Transfer Functions</td>
+            <td>ODEs as systems · Laplace transform (brief review) · transfer function $G(s)$ · poles and zeros · DC gain · first-order step response · system type and steady-state error</td>
+          </tr>
+          <tr class="lesson-row">
+            <td>3</td>
+            <td><a href="bode.html">Second-Order Systems</a></td>
+            <td>Standard form · damping ratio $\zeta$ and natural frequency $\omega_n$ · underdamped/overdamped/critically damped · step response peaks and settling time · Bode magnitude and phase plots</td>
+          </tr>
+
+          <tr style="background:#f0f6fa;">
+            <td colspan="3" style="padding:6px 10px;font-size:11px;font-weight:600;color:#3a6a8a;letter-spacing:0.06em;text-transform:uppercase;">
+              Part II — Frequency Domain
+            </td>
+          </tr>
+
+          <tr class="lesson-row planned">
+            <td>4</td>
+            <td>Routh-Hurwitz Stability</td>
+            <td>Characteristic polynomial · Routh array · necessary and sufficient conditions for stability · special cases (zero rows, imaginary-axis poles) · stability margins from the array</td>
+          </tr>
+          <tr class="lesson-row planned">
+            <td>5</td>
+            <td>Root Locus</td>
+            <td>Closed-loop poles as gain varies · construction rules (angles, asymptotes, breakaway) · design specifications on the s-plane · lag/lead locus · practical design via root locus</td>
+          </tr>
+          <tr class="lesson-row planned">
+            <td>6</td>
+            <td>Nyquist Criterion &amp; Stability Margins</td>
+            <td>Nyquist plot · encirclement theorem · gain margin · phase margin · closed-loop stability from open-loop data · relationship to Bode · robustness interpretation</td>
+          </tr>
+
+          <tr style="background:#f0f6fa;">
+            <td colspan="3" style="padding:6px 10px;font-size:11px;font-weight:600;color:#3a6a8a;letter-spacing:0.06em;text-transform:uppercase;">
+              Part III — Classical Control Design
+            </td>
+          </tr>
+
+          <tr class="lesson-row planned">
+            <td>7</td>
+            <td>PID Control</td>
+            <td>Proportional · integral · derivative actions · steady-state error elimination · derivative kick · integral windup · Ziegler-Nichols tuning · anti-windup strategies · practical implementation</td>
+          </tr>
+          <tr class="lesson-row planned">
+            <td>8</td>
+            <td>Lead-Lag Compensators</td>
+            <td>Phase lead for speed and bandwidth · phase lag for steady-state accuracy · combined lead-lag · frequency domain design procedure · comparison to PID</td>
+          </tr>
+
+          <tr style="background:#f0f6fa;">
+            <td colspan="3" style="padding:6px 10px;font-size:11px;font-weight:600;color:#3a6a8a;letter-spacing:0.06em;text-transform:uppercase;">
+              Part IV — State Space
+            </td>
+          </tr>
+
+          <tr class="lesson-row planned">
+            <td>9</td>
+            <td>State-Space Representation</td>
+            <td>$\dot{x} = Ax + Bu$, $y = Cx + Du$ · state variables · conversion to/from transfer function · minimal realisation · eigenvalues as poles · modal decomposition</td>
+          </tr>
+          <tr class="lesson-row planned">
+            <td>10</td>
+            <td>State Response &amp; Matrix Exponential</td>
+            <td>Matrix exponential $e^{At}$ · homogeneous and forced response · modes · Cayley-Hamilton theorem · Jordan form connection · computing $e^{At}$ in practice</td>
+          </tr>
+          <tr class="lesson-row planned">
+            <td>11</td>
+            <td>Controllability &amp; Observability</td>
+            <td>Controllability Gramian and matrix rank test · PBH test · physical meaning · observability duality · Kalman decomposition · uncontrollable and unobservable modes</td>
+          </tr>
+          <tr class="lesson-row planned">
+            <td>12</td>
+            <td>State Feedback &amp; Pole Placement</td>
+            <td>Full-state feedback $u = -Kx$ · closed-loop eigenvalue assignment · Ackermann's formula · comparison to root locus · reference tracking and feedforward</td>
+          </tr>
+          <tr class="lesson-row planned">
+            <td>13</td>
+            <td>Linear Quadratic Regulator (LQR)</td>
+            <td>Optimal control formulation · quadratic cost $J = \int (x^TQx + u^TRu)\,dt$ · algebraic Riccati equation · Q/R weight tuning · why LQR beats arbitrary pole placement</td>
+          </tr>
+          <tr class="lesson-row planned">
+            <td>14</td>
+            <td>Observers &amp; The Separation Principle</td>
+            <td>Luenberger observer · observer gain design · error dynamics · duality with controllability · output feedback via estimated state · separation principle · Kalman filter preview</td>
+          </tr>
+
+        </tbody>
+      </table>
 
       <div class="section-head">References</div>
-
-      <div class="prose" style="font-size:13.5px; color:#5a6a7a;">
-        These notes draw on several sources. Listed for context, not as prerequisites.
-      </div>
-
-      <div class="section-head" style="margin-top:16px;">Textbooks</div>
       <ul class="book-list" id="cluster-refs"></ul>
 
-      <div class="section-head" style="margin-top:16px;">Related courses</div>
-      <div class="prose" style="font-size:13px; color:#7a8a9a;">
-        ECE356 (Systems Control) and ECE557 (Advanced Topics) at the University of Toronto
-        cover this material across two terms. Some course notes from those offerings
-        are referenced where relevant.
+      <div class="course-block" style="margin-top:16px;">
+        <strong>Related courses:</strong>
+        ECE356 (Systems Control) and ECE557 (Linear Control Theory) at the University of Toronto
+        cover this material across two terms — ECE356 focuses on classical frequency-domain methods
+        (Parts I–III) and ECE557 on the state-space approach (Part IV). Broucke's ECE557 notes
+        connect LQR and observers to optimal control theory and provide the bridge to RL (ECE411).
       </div>
-
-      <script src="../books-render.js"></script>
-      <script>renderBooks({ containerId: 'cluster-refs', clusterId: 'control', jsonPath: '../books.json' });</script>
 
     </div><!-- /main -->
 
@@ -124,6 +264,9 @@
   <span>elee03.github.io/notes</span>
   <span>Est. MMXXVI</span>
 </footer>
+
+<script src="../books-render.js"></script>
+<script>renderBooks({ containerId: 'cluster-refs', clusterId: 'control', jsonPath: '../books.json' });</script>
 
 </body>
 </html>
