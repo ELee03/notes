@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>State Response &amp; Matrix Exponential — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$',  right: '$',  display: false}
+        ],
+        throwOnError: false
+      });
+      srInit();
+    });
+  </script>
+  <style>
+    .widget-card {
+      background: #f0f4f7;
+      border: 1px solid #c0d0dc;
+      border-radius: 6px;
+      padding: 20px 22px;
+      margin: 24px 0;
+    }
+    .widget-title {
+      font-size: 12.5px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #3a5a78;
+      margin-bottom: 16px;
+    }
+    .sim-btn {
+      padding: 7px 14px;
+      background: #3a6a8a;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 13px;
+      cursor: pointer;
+      margin-right: 6px;
+      margin-bottom: 6px;
+    }
+    .sim-btn.secondary { background: #e8eef2; color: #2a3a4a; }
+    .sim-btn.active { background: #2a5070; }
+    /* Matrix display */
+    .mat-display {
+      display: inline-block;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 13px;
+      background: #f0f6fa;
+      border: 1px solid #b8d0e0;
+      border-radius: 4px;
+      padding: 8px 14px;
+      margin: 6px 4px;
+      vertical-align: middle;
+    }
+    /* notation */
+    .notation-table td:first-child {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 13px;
+      white-space: nowrap;
+      padding-right: 14px;
+      color: #2a4868;
+      vertical-align: top;
+    }
+    .notation-table td { padding: 4px 8px; vertical-align: top; font-size: 13.5px; }
+    /* preset select */
+    .sr-preset-btn {
+      padding: 5px 10px;
+      background: #e8eef2;
+      color: #2a3a4a;
+      border: 1px solid #c0d0dc;
+      border-radius: 4px;
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 12px;
+      cursor: pointer;
+      margin: 3px;
+    }
+    .sr-preset-btn:hover { background: #d8e8f0; }
+    .slider-row {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 6px; font-size: 13px;
+    }
+    .slider-row label { width: 60px; flex-shrink: 0; }
+    .slider-row input[type=range] { flex: 1; }
+    .slider-row .sv { font-family: 'IBM Plex Mono', monospace; width: 52px; text-align: right; }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Foundations</div>
+        <a href="control-problem.html" class="nav-item">1 · The Control Problem</a>
+        <a href="transfer-functions.html" class="nav-item">2 · Dynamical Systems &amp; Transfer Functions</a>
+        <a href="bode.html" class="nav-item">3 · Second-Order Systems</a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-label">Frequency Domain</div>
+        <a href="routh.html" class="nav-item">4 · Routh-Hurwitz Stability</a>
+        <a href="root-locus.html" class="nav-item">5 · Root Locus</a>
+        <a href="nyquist.html" class="nav-item">6 · Nyquist &amp; Stability Margins</a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-label">Classical Design</div>
+        <a href="pid.html" class="nav-item">7 · PID Control</a>
+        <a href="lead-lag.html" class="nav-item">8 · Lead-Lag Compensators</a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-label">State Space</div>
+        <a href="state-space.html" class="nav-item">9 · State-Space Representation</a>
+        <a href="state-response.html" class="nav-item active">10 · State Response</a>
+        <span class="nav-item planned">11 · Controllability &amp; Observability</span>
+        <span class="nav-item planned">12 · State Feedback &amp; Pole Placement</span>
+        <span class="nav-item planned">13 · Linear Quadratic Regulator</span>
+        <span class="nav-item planned">14 · Observers &amp; Separation Principle</span>
+      </div>
+      <hr class="sidebar-rule">
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#scalar-analogy" class="nav-item">Scalar analogy</a>
+        <a href="#matrix-exp" class="nav-item">The matrix exponential</a>
+        <a href="#computing" class="nav-item">Computing $e^{At}$</a>
+        <a href="#full-solution" class="nav-item">Full state response</a>
+        <a href="#ch-theorem" class="nav-item">Cayley-Hamilton theorem</a>
+        <a href="#jordan" class="nav-item">Jordan form &amp; repeated eigenvalues</a>
+        <a href="#interactive" class="nav-item">Interactive animator</a>
+        <a href="#worked-examples" class="nav-item">Worked examples</a>
+        <a href="#food-for-thought" class="nav-item">Food for thought</a>
+        <a href="#pitfalls" class="nav-item">Common pitfalls</a>
+      </div>
+    </div><!-- /sidebar -->
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Control Theory</a>
+        <span class="sep">›</span>
+        <span>Lesson 10</span>
+      </div>
+
+      <div class="lesson-title">State Response &amp; Matrix Exponential</div>
+      <div class="lesson-meta">Matrix Exponential · Homogeneous &amp; Forced Response · Cayley-Hamilton · Jordan Form</div>
+
+      <!-- Notation recap -->
+      <div class="callout" style="margin-top:20px;">
+        <strong>Notation</strong>
+        <table class="notation-table" style="margin-top:10px; border-collapse:collapse;">
+          <tr><td>$e^{At}$</td><td>Matrix exponential of $At$ — the fundamental solution matrix</td></tr>
+          <tr><td>$\Phi(t) = e^{At}$</td><td>State transition matrix (maps initial state to state at time $t$)</td></tr>
+          <tr><td>$\lambda_i, v_i$</td><td>Eigenvalue and eigenvector of $A$</td></tr>
+          <tr><td>$T = [v_1 \cdots v_n]$</td><td>Modal matrix (columns are eigenvectors)</td></tr>
+          <tr><td>$J$</td><td>Jordan normal form of $A$ — block-diagonal with Jordan blocks</td></tr>
+          <tr><td>$p(\lambda) = \det(\lambda I - A)$</td><td>Characteristic polynomial of $A$</td></tr>
+        </table>
+      </div>
+
+      <!-- ═══ SCALAR ANALOGY ═══ -->
+      <div class="section-head" id="scalar-analogy">Start with the scalar case</div>
+
+      <div class="prose">
+        Before dealing with matrices, recall what you know about the scalar ODE
+        $\dot{x} = ax$ with initial condition $x(0) = x_0$:
+      </div>
+
+      <div class="math-block">
+        $$x(t) = e^{at} x_0$$
+      </div>
+
+      <div class="prose">
+        The solution is an exponential that scales the initial condition. It decays if $a &lt; 0$,
+        grows if $a &gt; 0$, and oscillates without growth or decay if $a$ is purely imaginary.
+      </div>
+      <div class="prose">
+        The matrix case is the direct generalization. The key insight is that the number $a$
+        becomes the matrix $A$, and the scalar exponential $e^{at}$ becomes the matrix
+        exponential $e^{At}$ — defined in a way that preserves all the properties that make
+        exponentials useful.
+      </div>
+
+      <!-- ═══ MATRIX EXPONENTIAL ═══ -->
+      <div class="section-head" id="matrix-exp">The matrix exponential</div>
+
+      <div class="prose">
+        The matrix exponential is defined by the same power series as the scalar exponential:
+      </div>
+
+      <div class="math-block">
+        $$e^{At} = I + At + \frac{(At)^2}{2!} + \frac{(At)^3}{3!} + \cdots = \sum_{k=0}^{\infty} \frac{A^k t^k}{k!}$$
+      </div>
+
+      <div class="prose">
+        This series converges for all matrices $A$ and all $t$ — the same proof as for the
+        scalar case works (the series is absolutely convergent by the comparison test). So
+        $e^{At}$ is always well-defined.
+      </div>
+
+      <div class="prose">
+        <strong>It solves the state equation.</strong> Take any initial condition $x_0$ and
+        define $x(t) = e^{At} x_0$. Differentiating (the series converges uniformly, so
+        differentiation and summation commute):
+      </div>
+
+      <div class="math-block">
+        $$\frac{d}{dt}e^{At} = A + A^2 t + \frac{A^3 t^2}{2!} + \cdots = A\left(I + At + \frac{A^2 t^2}{2!} + \cdots\right) = A\, e^{At}$$
+      </div>
+
+      <div class="prose">
+        So $\dot{x}(t) = A\,e^{At}x_0 = Ax(t)$ ✓. And $x(0) = e^{A \cdot 0}x_0 = Ix_0 = x_0$ ✓. The matrix exponential solves the homogeneous state equation exactly.
+      </div>
+
+      <div class="callout">
+        <strong>Key properties of $e^{At}$:</strong>
+        <ul style="margin:10px 0 0; padding-left:20px;">
+          <li>$e^{A \cdot 0} = I$ &nbsp;(identity at $t=0$)</li>
+          <li>$\dfrac{d}{dt}e^{At} = Ae^{At} = e^{At}A$ &nbsp;(commutativity with $A$)</li>
+          <li>$(e^{At})^{-1} = e^{-At}$ &nbsp;(always invertible)</li>
+          <li>$e^{A(t+s)} = e^{At}e^{As}$ &nbsp;(semigroup property)</li>
+          <li>$e^{At}$ is <em>not</em> generally equal to $e^{Bt}e^{Ct}$ when $A = B + C$ unless $B$ and $C$ commute ($BC = CB$).</li>
+        </ul>
+      </div>
+
+      <!-- ═══ COMPUTING eAt ═══ -->
+      <div class="section-head" id="computing">Computing $e^{At}$</div>
+
+      <div class="prose">
+        The series definition is useful theoretically but impractical computationally.
+        There are three main methods:
+      </div>
+
+      <div class="prose">
+        <strong>Method 1: Eigendecomposition (diagonalizable $A$).</strong>
+        If $A = T\Lambda T^{-1}$ where $\Lambda = \text{diag}(\lambda_1, \ldots, \lambda_n)$, then:
+      </div>
+
+      <div class="math-block">
+        $$e^{At} = T\,e^{\Lambda t}\,T^{-1} = T \begin{bmatrix}e^{\lambda_1 t} & & \\ & \ddots & \\ & & e^{\lambda_n t}\end{bmatrix} T^{-1}$$
+      </div>
+
+      <div class="prose">
+        Proof: $(T\Lambda T^{-1})^k = T\Lambda^k T^{-1}$, so the series $\sum A^k t^k/k!$ collapses to $T(\sum \Lambda^k t^k/k!)T^{-1} = T e^{\Lambda t} T^{-1}$.
+      </div>
+
+      <div class="prose">
+        Since $\Lambda$ is diagonal, $e^{\Lambda t}$ is diagonal with entries $e^{\lambda_i t}$ — trivial to compute. The hard part is finding $T$ and $T^{-1}$ (i.e., the eigenvectors of $A$).
+      </div>
+
+      <div class="prose">
+        Expanding $e^{At} = T\,\text{diag}(e^{\lambda_i t})\,T^{-1}$ gives a sum of rank-1 outer products:
+      </div>
+
+      <div class="math-block">
+        $$e^{At} = \sum_{i=1}^{n} e^{\lambda_i t}\, v_i w_i^T$$
+      </div>
+
+      <div class="prose">
+        where $v_i$ are the right eigenvectors (columns of $T$) and $w_i^T$ are the
+        left eigenvectors (rows of $T^{-1}$). Each term $e^{\lambda_i t} v_i w_i^T$ is
+        the $i$-th <em>modal contribution</em> — a rank-1 matrix that decays (or grows)
+        at rate $\lambda_i$.
+      </div>
+
+      <div class="prose">
+        <strong>Method 2: Laplace transform.</strong>
+        From Lesson 9, taking the Laplace transform of $\dot{x} = Ax$ with $x(0) = x_0$:
+      </div>
+
+      <div class="math-block">
+        $$X(s) = (sI - A)^{-1}x_0 \implies x(t) = \mathcal{L}^{-1}\{(sI - A)^{-1}\}\,x_0$$
+      </div>
+
+      <div class="prose">
+        So $e^{At} = \mathcal{L}^{-1}\{(sI-A)^{-1}\}$. Each entry of $(sI-A)^{-1}$ is a
+        rational function of $s$; inverse Laplace transform gives sums of exponentials and
+        polynomials times exponentials. This method is practical for $n = 2$ or $n = 3$ by hand.
+      </div>
+
+      <div class="prose">
+        <strong>Method 3: Cayley-Hamilton reduction.</strong>
+        By Cayley-Hamilton (see next section), $e^{At}$ can be expressed as a polynomial of
+        degree $\leq n-1$ in $A$, with time-dependent scalar coefficients $\alpha_i(t)$:
+      </div>
+
+      <div class="math-block">
+        $$e^{At} = \alpha_0(t)I + \alpha_1(t)A + \cdots + \alpha_{n-1}(t)A^{n-1}$$
+      </div>
+
+      <div class="prose">
+        The coefficients $\alpha_i(t)$ are determined by evaluating this equation at the eigenvalues of $A$: substituting $e^{\lambda_i t} = \alpha_0(t) + \alpha_1(t)\lambda_i + \cdots + \alpha_{n-1}(t)\lambda_i^{n-1}$ gives $n$ equations for $n$ unknowns. For $n = 2$ this is a simple $2 \times 2$ linear system to solve.
+      </div>
+
+      <!-- ═══ FULL STATE RESPONSE ═══ -->
+      <div class="section-head" id="full-solution">The full state response</div>
+
+      <div class="prose">
+        With a nonzero input $u(t)$, the system is $\dot{x} = Ax + Bu$. The solution by
+        <em>variation of parameters</em> is:
+      </div>
+
+      <div class="math-block">
+        $$x(t) = \underbrace{e^{At}x_0}_{\text{homogeneous}} + \underbrace{\int_0^t e^{A(t-\tau)}Bu(\tau)\,d\tau}_{\text{particular (convolution)}}$$
+      </div>
+
+      <div class="prose">
+        The first term propagates the initial condition: wherever the state starts, $e^{At}$
+        moves it forward in time. The second term is a convolution: at each past time $\tau$,
+        the input $u(\tau)$ acted on the state through $B$, and $e^{A(t-\tau)}$ propagated
+        that effect forward to the present time $t$.
+      </div>
+
+      <div class="prose">
+        This is the matrix analog of the scalar first-order result $x(t) = e^{at}x_0 + \int_0^t e^{a(t-\tau)}bu(\tau)\,d\tau$, which you can also write as $x_0 e^{at}$ plus the convolution of the impulse response $h(t) = e^{at}b$ with the input $u(t)$.
+      </div>
+
+      <div class="callout">
+        <strong>Connection to the transfer function.</strong>
+        Taking the Laplace transform of the output $y(t) = Cx(t) + Du(t)$ with $x_0 = 0$:
+        $$Y(s) = C(sI-A)^{-1}BU(s) + DU(s) = G(s)U(s)$$
+        The transfer function $G(s) = C(sI-A)^{-1}B + D$ is the Laplace transform of the
+        matrix impulse response $h(t) = Ce^{At}B + D\delta(t)$. The state-space formulation
+        reveals the internal mechanism behind the "black-box" TF.
+      </div>
+
+      <div class="prose">
+        The output $y(t) = Cx(t) + Du(t)$ is:
+      </div>
+
+      <div class="math-block">
+        $$y(t) = Ce^{At}x_0 + \int_0^t Ce^{A(t-\tau)}Bu(\tau)\,d\tau + Du(t)$$
+      </div>
+
+      <!-- ═══ CAYLEY-HAMILTON ═══ -->
+      <div class="section-head" id="ch-theorem">Cayley-Hamilton theorem</div>
+
+      <div class="prose">
+        The <strong>Cayley-Hamilton theorem</strong> states: every square matrix satisfies
+        its own characteristic polynomial.
+      </div>
+
+      <div class="prose">
+        More precisely: if $p(\lambda) = \det(\lambda I - A) = \lambda^n + a_{n-1}\lambda^{n-1} + \cdots + a_1\lambda + a_0$
+        is the characteristic polynomial of $A$, then $p(A) = 0$:
+      </div>
+
+      <div class="math-block">
+        $$A^n + a_{n-1}A^{n-1} + \cdots + a_1 A + a_0 I = 0$$
+      </div>
+
+      <div class="prose">
+        This is not obvious — substituting a matrix for a scalar argument in a determinant
+        requires careful proof. But the result is powerful:
+      </div>
+      <ul class="prose" style="padding-left:22px; margin-top:0;">
+        <li style="margin-bottom:6px;"><strong>$A^n$ is expressible in terms of lower powers:</strong>
+          $A^n = -a_{n-1}A^{n-1} - \cdots - a_0 I$. Similarly, $A^{n+1} = A \cdot A^n$ can
+          be reduced, and so on. So any polynomial (or power series) in $A$ can be
+          reduced to a polynomial of degree $\leq n-1$.</li>
+        <li style="margin-bottom:6px;"><strong>$e^{At}$ is a degree-$(n-1)$ polynomial in $A$:</strong>
+          the infinite series collapses to a finite sum, with time-dependent coefficients
+          that depend on the eigenvalues.</li>
+        <li><strong>$(sI-A)^{-1}$:</strong> its entries are polynomials of degree $\leq n-1$
+          in $A$ divided by the characteristic polynomial — consistent with Cramer's rule.</li>
+      </ul>
+
+      <div class="prose">
+        <strong>Practical use:</strong> For a $2\times 2$ matrix, Cayley-Hamilton says $A^2 = (a_{11}+a_{22})A - (a_{11}a_{22}-a_{12}a_{21})I$. This means $e^{At} = \alpha_0(t)I + \alpha_1(t)A$, where $\alpha_0$ and $\alpha_1$ satisfy the system arising from evaluating $e^{\lambda t} = \alpha_0 + \alpha_1\lambda$ at the two eigenvalues.
+      </div>
+
+      <!-- ═══ JORDAN FORM ═══ -->
+      <div class="section-head" id="jordan">Jordan form and repeated eigenvalues</div>
+
+      <div class="prose">
+        When $A$ has repeated eigenvalues with insufficient independent eigenvectors (a
+        <em>defective</em> matrix), it cannot be diagonalized. Instead, $A$ is similar to
+        a <em>Jordan normal form</em>:
+      </div>
+
+      <div class="math-block">
+        $$A = P J P^{-1}, \qquad J = \begin{bmatrix}J_1 & & \\ & \ddots & \\ & & J_k\end{bmatrix}$$
+      </div>
+
+      <div class="prose">
+        Each Jordan block $J_i$ corresponds to an eigenvalue $\lambda_i$ with algebraic
+        multiplicity $m_i$:
+      </div>
+
+      <div class="math-block">
+        $$J_i = \begin{bmatrix}\lambda_i & 1 & & \\ & \lambda_i & \ddots & \\ & & \ddots & 1 \\ & & & \lambda_i\end{bmatrix} \in \mathbb{R}^{m_i \times m_i}$$
+      </div>
+
+      <div class="prose">
+        The matrix exponential of a Jordan block is:
+      </div>
+
+      <div class="math-block">
+        $$e^{J_i t} = e^{\lambda_i t}\begin{bmatrix}1 & t & \frac{t^2}{2!} & \cdots & \frac{t^{m_i-1}}{(m_i-1)!} \\ & 1 & t & \cdots & \frac{t^{m_i-2}}{(m_i-2)!} \\ & & \ddots & \ddots & \vdots \\ & & & 1 & t \\ & & & & 1\end{bmatrix}$$
+      </div>
+
+      <div class="prose">
+        The key feature: repeated eigenvalues generate <em>polynomial-times-exponential</em>
+        terms in the response. A Jordan block of size $m$ contributes terms up to $t^{m-1}e^{\lambda t}$.
+      </div>
+
+      <div class="callout">
+        <strong>Implication for stability.</strong>
+        Even if an eigenvalue has zero real part ($\text{Re}(\lambda) = 0$), a Jordan block
+        of size $\geq 2$ makes the response grow as $t \cdot e^{0 \cdot t} = t$ — unbounded!
+        So a system with eigenvalues on the imaginary axis is only marginally stable if all
+        Jordan blocks for those eigenvalues are $1 \times 1$ (i.e., the eigenvalue is a
+        simple eigenvalue). This is why the stability criterion is: all eigenvalues in the
+        <em>open</em> left half-plane (strict negative real part), not just the closed LHP.
+      </div>
+
+      <div class="prose">
+        For most physical systems encountered in control, $A$ is diagonalizable (distinct
+        eigenvalues or repeated eigenvalues with enough eigenvectors). Jordan form is important
+        theoretically and appears in degenerate cases like the double integrator ($\lambda = 0$,
+        multiplicity 2, Jordan block size 2), which gives the polynomial response $x(t) = x_0 + \dot{x}_0 t$ — a linearly growing mode.
+      </div>
+
+      <!-- ═══ INTERACTIVE ═══ -->
+      <div class="section-head" id="interactive">Interactive: state trajectory animator</div>
+
+      <div class="prose">
+        This animator shows how $x(t) = e^{At}x_0$ evolves for a second-order system.
+        Choose a system preset and initial condition, then press Play to watch the state
+        trajectory unfold simultaneously in the phase plane (left) and as time series (right).
+        The state transition matrix $e^{At}$ is computed by numerical integration.
+      </div>
+
+      <div class="widget-card">
+        <div class="widget-title">State Response Animator — $\dot{x} = Ax$</div>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px;">
+          <button class="sr-preset-btn" onclick="srPreset('stable-spiral')">Stable spiral</button>
+          <button class="sr-preset-btn" onclick="srPreset('stable-node')">Stable node</button>
+          <button class="sr-preset-btn" onclick="srPreset('underdamped')">Underdamped ($\zeta=0.2$)</button>
+          <button class="sr-preset-btn" onclick="srPreset('critically-damped')">Critically damped</button>
+          <button class="sr-preset-btn" onclick="srPreset('unstable-spiral')">Unstable spiral</button>
+          <button class="sr-preset-btn" onclick="srPreset('saddle')">Saddle point</button>
+          <button class="sr-preset-btn" onclick="srPreset('double-integrator')">Double integrator ($\lambda=0$)</button>
+        </div>
+
+        <div style="display:grid; grid-template-columns:280px 1fr; gap:14px; align-items:start;">
+          <!-- Left: controls + info -->
+          <div>
+            <div style="font-size:12px; color:#7a9ab0; margin-bottom:8px;">System matrix $A$:</div>
+            <div id="sr-A-display" style="font-family:'IBM Plex Mono',monospace; font-size:13px; background:#fff; border:1px solid #c8d8e4; border-radius:4px; padding:8px 12px; margin-bottom:10px; line-height:1.8;"></div>
+
+            <div class="slider-row">
+              <label>$x_1(0)$:</label>
+              <input type="range" id="sr-x10" min="-3" max="3" step="0.1" value="2.5" oninput="srReset()">
+              <span class="sv" id="sr-x10-v">2.5</span>
+            </div>
+            <div class="slider-row">
+              <label>$x_2(0)$:</label>
+              <input type="range" id="sr-x20" min="-3" max="3" step="0.1" value="0" oninput="srReset()">
+              <span class="sv" id="sr-x20-v">0.0</span>
+            </div>
+
+            <div style="margin-top:10px; display:flex; gap:6px;">
+              <button class="sim-btn" id="sr-play-btn" onclick="srTogglePlay()">▶ Play</button>
+              <button class="sim-btn secondary" onclick="srReset()">Reset</button>
+            </div>
+
+            <!-- State display -->
+            <div style="margin-top:12px; background:#fff; border:1px solid #c8d8e4; border-radius:5px; padding:10px 12px; font-family:'IBM Plex Mono',monospace; font-size:12.5px; line-height:1.9;">
+              <div style="font-size:11px; color:#7a9ab0; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:4px;">Current state</div>
+              <div>t = <span id="sr-t-val">0.000</span></div>
+              <div>x₁(t) = <span id="sr-x1-val">—</span></div>
+              <div>x₂(t) = <span id="sr-x2-val">—</span></div>
+              <div>|x(t)| = <span id="sr-norm-val">—</span></div>
+            </div>
+
+            <!-- Eigenvalues -->
+            <div style="margin-top:10px; background:#fff; border:1px solid #c8d8e4; border-radius:5px; padding:10px 12px; font-family:'IBM Plex Mono',monospace; font-size:12.5px; line-height:1.9;">
+              <div style="font-size:11px; color:#7a9ab0; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:4px;">Eigenvalues</div>
+              <div id="sr-eig1" style="color:#2a6a2a;">λ₁ = —</div>
+              <div id="sr-eig2" style="color:#2a6a2a;">λ₂ = —</div>
+            </div>
+          </div>
+
+          <!-- Right: phase plane + time plots -->
+          <div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+              <div>
+                <div style="font-size:11px; color:#7a9ab0; text-align:center; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.05em;">Phase plane</div>
+                <svg id="sr-phase-svg" width="100%" viewBox="0 0 220 220"
+                     style="display:block; background:#fff; border:1px solid #d0dce6; border-radius:4px;"></svg>
+              </div>
+              <div>
+                <div style="font-size:11px; color:#7a9ab0; text-align:center; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.05em;">Time series</div>
+                <svg id="sr-time-svg" width="100%" viewBox="0 0 220 220"
+                     style="display:block; background:#fff; border:1px solid #d0dce6; border-radius:4px;"></svg>
+              </div>
+            </div>
+            <div style="font-size:11.5px; color:#9aabb8; margin-top:6px; display:flex; gap:18px; justify-content:center;">
+              <span><svg width="18" height="10" style="vertical-align:middle;"><line x1="0" y1="5" x2="18" y2="5" stroke="#3a6a8a" stroke-width="2"/></svg> $x_1(t)$ (blue)</span>
+              <span><svg width="18" height="10" style="vertical-align:middle;"><line x1="0" y1="5" x2="18" y2="5" stroke="#e08030" stroke-width="2"/></svg> $x_2(t)$ (orange)</span>
+            </div>
+          </div>
+        </div>
+      </div><!-- /widget -->
+
+      <!-- ═══ WORKED EXAMPLES ═══ -->
+      <div class="section-head" id="worked-examples">Worked examples</div>
+
+      <!-- Example 1 -->
+      <div class="callout" style="border-color:#a0c8a0; background:#f4fbf4;">
+        <strong>Example 1 — $e^{At}$ via eigendecomposition.</strong><br>
+        $$A = \begin{bmatrix}-3 & 1 \\ 0 & -1\end{bmatrix}$$
+
+        Eigenvalues: $\lambda_1 = -1$ (from $s = -1$), $\lambda_2 = -3$ (from $s = -3$).
+
+        Eigenvectors:
+        <ul style="padding-left:20px;">
+          <li>$\lambda_1 = -1$: $(A + I)v = 0 \Rightarrow \begin{bmatrix}-2&1\\0&0\end{bmatrix}v = 0 \Rightarrow v_1 = \begin{bmatrix}1\\2\end{bmatrix}$</li>
+          <li>$\lambda_2 = -3$: $(A + 3I)v = 0 \Rightarrow \begin{bmatrix}0&1\\0&2\end{bmatrix}v = 0 \Rightarrow v_2 = \begin{bmatrix}1\\0\end{bmatrix}$</li>
+        </ul>
+
+        $T = \begin{bmatrix}1&1\\2&0\end{bmatrix}$, $T^{-1} = \frac{1}{-2}\begin{bmatrix}0&-1\\-2&1\end{bmatrix} = \begin{bmatrix}0&1/2\\1&-1/2\end{bmatrix}$
+
+        $$e^{At} = T\begin{bmatrix}e^{-t}&0\\0&e^{-3t}\end{bmatrix}T^{-1} = \begin{bmatrix}e^{-3t} & \frac{e^{-t}-e^{-3t}}{2} \\ 0 & e^{-t}\end{bmatrix}$$
+
+        <div style="margin-top:8px; font-size:13px; color:#4a6a4a;">Check: at $t=0$, $e^{A\cdot0} = I$ ✓. As $t\to\infty$, $e^{At}\to 0$ (stable) ✓.</div>
+      </div>
+
+      <!-- Example 2 -->
+      <div class="callout" style="border-color:#a0c8a0; background:#f4fbf4; margin-top:18px;">
+        <strong>Example 2 — $e^{At}$ via Laplace transform.</strong><br>
+        $$A = \begin{bmatrix}0 & 1 \\ -2 & -3\end{bmatrix}$$
+
+        $(sI-A)^{-1} = \frac{1}{s^2+3s+2}\begin{bmatrix}s+3&1\\-2&s\end{bmatrix} = \frac{1}{(s+1)(s+2)}\begin{bmatrix}s+3&1\\-2&s\end{bmatrix}$
+
+        Partial fractions for each entry:
+        $\dfrac{s+3}{(s+1)(s+2)} = \dfrac{2}{s+1} - \dfrac{1}{s+2}$, &emsp;
+        $\dfrac{1}{(s+1)(s+2)} = \dfrac{1}{s+1} - \dfrac{1}{s+2}$
+
+        $\dfrac{-2}{(s+1)(s+2)} = \dfrac{-2}{s+1} + \dfrac{2}{s+2}$, &emsp;
+        $\dfrac{s}{(s+1)(s+2)} = \dfrac{-1}{s+1} + \dfrac{2}{s+2}$
+
+        $$e^{At} = \begin{bmatrix}2e^{-t}-e^{-2t} & e^{-t}-e^{-2t} \\ -2e^{-t}+2e^{-2t} & -e^{-t}+2e^{-2t}\end{bmatrix}$$
+      </div>
+
+      <!-- Example 3 -->
+      <div class="callout" style="border-color:#a0c8a0; background:#f4fbf4; margin-top:18px;">
+        <strong>Example 3 — Cayley-Hamilton for $2\times 2$ matrix.</strong><br>
+        For $A = \begin{bmatrix}-1 & 2 \\ 0 & -3\end{bmatrix}$, find $e^{At}$ using Cayley-Hamilton.
+
+        Characteristic polynomial: $p(\lambda) = \lambda^2 + 4\lambda + 3 = (\lambda+1)(\lambda+3)$.
+        Eigenvalues: $\lambda_1 = -1$, $\lambda_2 = -3$.
+
+        By Cayley-Hamilton: $e^{At} = \alpha_0(t)I + \alpha_1(t)A$.
+
+        Evaluating at both eigenvalues:
+        $$e^{-t} = \alpha_0 + \alpha_1(-1), \qquad e^{-3t} = \alpha_0 + \alpha_1(-3)$$
+
+        Solving: $\alpha_1 = \frac{e^{-t} - e^{-3t}}{2}$, $\alpha_0 = e^{-t} - (-1)\alpha_1 = e^{-t} + \frac{e^{-t}-e^{-3t}}{2} = \frac{3e^{-t}-e^{-3t}}{2}$
+
+        $$e^{At} = \frac{3e^{-t}-e^{-3t}}{2}I + \frac{e^{-t}-e^{-3t}}{2}A = \begin{bmatrix}e^{-t} & e^{-t}-e^{-3t} \\ 0 & e^{-3t}\end{bmatrix}$$
+
+        <div style="margin-top:8px; font-size:13px; color:#4a6a4a;">
+          Check: at $t=0$: $e^{A\cdot 0} = I$ ✓. Differentiate and check $\dot{\Phi} = A\Phi$ at $t=0$: $\dot{\Phi}(0) = A$ ✓.
+        </div>
+      </div>
+
+      <!-- ═══ FOOD FOR THOUGHT ═══ -->
+      <div class="section-head" id="food-for-thought">Food for thought</div>
+      <ol class="prose" style="padding-left:22px;">
+        <li style="margin-bottom:10px;">
+          The scalar exponential $e^{at}$ decays if and only if $a &lt; 0$. The matrix
+          exponential $e^{At}$ decays (every entry goes to zero) if and only if all
+          eigenvalues of $A$ have strictly negative real parts. But the two conditions look
+          the same — why does the matrix case require strictly negative real parts while the
+          scalar case allows $a = 0$ for marginal stability (constant solution $x(t) = x_0$)?
+          (Hint: think about Jordan blocks.)
+        </li>
+        <li style="margin-bottom:10px;">
+          The Cayley-Hamilton theorem says $A$ satisfies its own characteristic polynomial.
+          Does this mean you can compute $e^{At}$ for any $n \times n$ matrix using only a
+          degree-$(n-1)$ polynomial in $A$? What does this imply about the computational
+          complexity of evaluating $e^{At}$ for a high-dimensional system?
+        </li>
+        <li>
+          The state response $x(t) = e^{At}x_0 + \int_0^t e^{A(t-\tau)}Bu(\tau)\,d\tau$
+          is exact for any LTI system. For a nonlinear system $\dot{x} = f(x, u)$, there
+          is no such closed form. The linear time-invariant assumption is doing a lot of
+          work here — what specifically does linearity buy you (superposition), and what does
+          time-invariance buy you (the convolution structure)?
+        </li>
+      </ol>
+
+      <!-- ═══ COMMON PITFALLS ═══ -->
+      <div class="section-head" id="pitfalls">Common pitfalls</div>
+      <ul class="prose" style="padding-left:22px;">
+        <li style="margin-bottom:8px;">
+          <strong>$e^{(A+B)t} \neq e^{At}e^{Bt}$ in general.</strong>
+          For scalars, $e^{(a+b)t} = e^{at}e^{bt}$ always. For matrices, this only holds
+          if $AB = BA$ (the matrices commute). If $A$ and $B$ don't commute, the Baker-Campbell-Hausdorff
+          formula applies, with correction terms involving commutators $[A,B] = AB - BA$.
+        </li>
+        <li style="margin-bottom:8px;">
+          <strong>Confusing algebraic and geometric multiplicity.</strong>
+          A repeated eigenvalue has algebraic multiplicity $\geq 2$ (appears multiple times as
+          a root). If it has geometric multiplicity equal to its algebraic multiplicity (enough
+          independent eigenvectors), the matrix is still diagonalizable. Only when geometric
+          multiplicity is less than algebraic multiplicity do Jordan blocks (and polynomial-times-exponential terms) appear.
+        </li>
+        <li style="margin-bottom:8px;">
+          <strong>Treating $(sI-A)^{-1}$ as a scalar fraction.</strong>
+          The formula $(sI-A)^{-1} = \text{adj}(sI-A)/\det(sI-A)$ is correct, but the
+          adjugate is an $n\times n$ matrix of polynomials — not a scalar numerator. Each
+          entry of $(sI-A)^{-1}$ has the same denominator ($\det(sI-A)$) but a different
+          polynomial numerator. When computing $e^{At}$ via Laplace transform, you must
+          invert each entry separately.
+        </li>
+        <li>
+          <strong>Zero eigenvalue ≠ stable.</strong>
+          A zero eigenvalue ($\lambda = 0$) corresponds to a mode that neither decays nor grows.
+          If it appears in a $1\times 1$ Jordan block, the mode is constant ($e^{0\cdot t} = 1$)
+          — marginally stable. If it appears in a $2\times 2$ or larger Jordan block, the mode
+          grows polynomially ($t, t^2, \ldots$) — unstable. The double integrator is the
+          archetypal example: $A = [0\;1; 0\;0]$ gives $e^{At} = [1\;t; 0\;1]$, which grows.
+        </li>
+      </ul>
+
+      <!-- ═══ CONNECTS TO ═══ -->
+      <div class="section-head">Connects to</div>
+      <div class="prose">
+        <a href="state-space.html">Lesson 9 (State-Space Representation)</a> — the model
+        $\dot{x} = Ax + Bu$ whose solution this lesson derives; eigenvalues of $A$ identified
+        there as poles.
+        ·
+        <span style="color:#7a9ab0;">Lesson 11 (Controllability &amp; Observability)</span> —
+        the question of which initial conditions can be driven to zero (controllability) and
+        which can be reconstructed from output measurements (observability). Both are answered
+        by examining how $e^{At}$, $B$, and $C$ interact.
+        ·
+        <span style="color:#7a9ab0;">Lesson 13 (LQR)</span> — the optimal state-feedback
+        problem minimizes $\int_0^\infty (x^TQx + u^TRu)\,dt$; the solution uses the
+        matrix exponential structure via the algebraic Riccati equation.
+        ·
+        <a href="../rl/index.html">Reinforcement Learning</a> — the state transition
+        $x_{t+1} = f(x_t, a_t)$ in RL is the discrete-time analog; linear RL systems use
+        $e^{A\Delta t}$ for the discrete transition matrix.
+      </div>
+
+      <!-- ═══ NAV ═══ -->
+      <div class="lesson-nav">
+        <a href="state-space.html" class="lesson-nav-btn">← Lesson 9: State-Space</a>
+        <a href="index.html" class="lesson-nav-btn">Back to Control Theory</a>
+        <span class="lesson-nav-btn disabled">Lesson 11: Controllability →</span>
+      </div>
+
+    </div><!-- /main -->
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+<script>
+// ─── State Response Animator ───────────────────────────────────────────────
+
+var srA = [[-1, 2], [-2, -1]]; // default: stable spiral
+var srRunning = false;
+var srAnimId = null;
+var srTraj = [];
+var srT = 0;
+var srDT = 0.02;
+var srTmax = 10;
+var srHistory = [];
+
+var PRESETS = {
+  'stable-spiral':    { a: [[-0.5, 2], [-2, -0.5]], label: 'Stable spiral', x0: [2.5, 0] },
+  'stable-node':      { a: [[-1, 0], [0, -3]], label: 'Stable node', x0: [2.5, 0] },
+  'underdamped':      { a: [[0, 1], [-1, -0.4]], label: 'Underdamped', x0: [2.5, 0] },
+  'critically-damped':{ a: [[0, 1], [-1, -2]], label: 'Critically damped', x0: [2.5, 0] },
+  'unstable-spiral':  { a: [[0.3, 2], [-2, 0.3]], label: 'Unstable spiral', x0: [0.3, 0.1] },
+  'saddle':           { a: [[1, 0], [0, -2]], label: 'Saddle', x0: [0.5, 2] },
+  'double-integrator':{ a: [[0, 1], [0, 0]], label: 'Double integrator', x0: [0, 1] }
+};
+
+function srInit() {
+  srPreset('stable-spiral');
+}
+
+function srPreset(key) {
+  var p = PRESETS[key];
+  srA = p.a;
+  document.getElementById('sr-x10').value = p.x0[0];
+  document.getElementById('sr-x20').value = p.x0[1];
+  srReset();
+}
+
+function srReset() {
+  if (srAnimId) { cancelAnimationFrame(srAnimId); srAnimId = null; }
+  srRunning = false;
+  document.getElementById('sr-play-btn').textContent = '▶ Play';
+
+  var x10 = parseFloat(document.getElementById('sr-x10').value);
+  var x20 = parseFloat(document.getElementById('sr-x20').value);
+  document.getElementById('sr-x10-v').textContent = x10.toFixed(1);
+  document.getElementById('sr-x20-v').textContent = x20.toFixed(1);
+
+  srT = 0;
+  srHistory = [{t: 0, x1: x10, x2: x20}];
+
+  // Update A display
+  var a = srA;
+  document.getElementById('sr-A-display').innerHTML =
+    '[' + a[0][0].toFixed(2) + ', ' + a[0][1].toFixed(2) + ']<br>' +
+    '[' + a[1][0].toFixed(2) + ', ' + a[1][1].toFixed(2) + ']';
+
+  // Compute and display eigenvalues
+  var tr = a[0][0] + a[1][1];
+  var det = a[0][0]*a[1][1] - a[0][1]*a[1][0];
+  var disc = (tr/2)*(tr/2) - det;
+  var e1El = document.getElementById('sr-eig1');
+  var e2El = document.getElementById('sr-eig2');
+  if (disc >= 0) {
+    var l1 = tr/2 + Math.sqrt(disc), l2 = tr/2 - Math.sqrt(disc);
+    e1El.textContent = 'λ₁ = ' + l1.toFixed(3);
+    e2El.textContent = 'λ₂ = ' + l2.toFixed(3);
+    e1El.style.color = l1 < 0 ? '#2a6a2a' : '#8a2020';
+    e2El.style.color = l2 < 0 ? '#2a6a2a' : '#8a2020';
+  } else {
+    var re = tr/2, im = Math.sqrt(-disc);
+    e1El.textContent = 'λ₁ = ' + re.toFixed(3) + ' + ' + im.toFixed(3) + 'j';
+    e2El.textContent = 'λ₂ = ' + re.toFixed(3) + ' − ' + im.toFixed(3) + 'j';
+    var col = re < 0 ? '#2a6a2a' : re > 0 ? '#8a2020' : '#7a5520';
+    e1El.style.color = col; e2El.style.color = col;
+  }
+
+  // Update state display
+  document.getElementById('sr-t-val').textContent = '0.000';
+  document.getElementById('sr-x1-val').textContent = x10.toFixed(3);
+  document.getElementById('sr-x2-val').textContent = x20.toFixed(3);
+  document.getElementById('sr-norm-val').textContent = Math.sqrt(x10*x10 + x20*x20).toFixed(3);
+
+  srRender();
+}
+
+function srTogglePlay() {
+  srRunning = !srRunning;
+  document.getElementById('sr-play-btn').textContent = srRunning ? '⏸ Pause' : '▶ Play';
+  if (srRunning) srAnimate();
+  else if (srAnimId) { cancelAnimationFrame(srAnimId); srAnimId = null; }
+}
+
+var srLastTime = null;
+function srAnimate(ts) {
+  if (!srRunning) return;
+  if (!srLastTime) srLastTime = ts;
+  var elapsed = (ts - srLastTime) / 1000; // seconds
+  srLastTime = ts;
+
+  // Advance simulation by elapsed real time * speed factor
+  var speed = 1.0;
+  var steps = Math.min(Math.round(elapsed * speed / srDT), 10);
+
+  var cur = srHistory[srHistory.length - 1];
+  var x1 = cur.x1, x2 = cur.x2;
+
+  for (var i = 0; i < steps; i++) {
+    if (srT >= srTmax) { srRunning = false; document.getElementById('sr-play-btn').textContent = '▶ Play'; break; }
+    var dx1 = srA[0][0]*x1 + srA[0][1]*x2;
+    var dx2 = srA[1][0]*x1 + srA[1][1]*x2;
+    x1 += srDT * dx1;
+    x2 += srDT * dx2;
+    srT += srDT;
+    srHistory.push({t: srT, x1: x1, x2: x2});
+    // Cap history length for performance
+    if (srHistory.length > 2000) srHistory.shift();
+  }
+
+  // Update display
+  document.getElementById('sr-t-val').textContent = srT.toFixed(3);
+  document.getElementById('sr-x1-val').textContent = x1.toFixed(4);
+  document.getElementById('sr-x2-val').textContent = x2.toFixed(4);
+  document.getElementById('sr-norm-val').textContent = Math.sqrt(x1*x1 + x2*x2).toFixed(4);
+
+  srRender();
+  if (srRunning) srAnimId = requestAnimationFrame(srAnimate);
+}
+
+function srRender() {
+  srRenderPhase();
+  srRenderTime();
+}
+
+function srRenderPhase() {
+  var svg = document.getElementById('sr-phase-svg');
+  var W = 220, H = 220, cx = W/2, cy = H/2, sc = 38;
+  function px(x) { return cx + x*sc; }
+  function py(y) { return cy - y*sc; }
+
+  var content = '';
+
+  // Grid
+  for (var g = -5; g <= 5; g++) {
+    if (g === 0) continue;
+    content += '<line x1="' + px(g).toFixed(0) + '" y1="0" x2="' + px(g).toFixed(0) + '" y2="' + H + '" stroke="#f0f0ee" stroke-width="1"/>';
+    content += '<line x1="0" y1="' + py(g).toFixed(0) + '" x2="' + W + '" y2="' + py(g).toFixed(0) + '" stroke="#f0f0ee" stroke-width="1"/>';
+  }
+  content += '<line x1="0" y1="' + cy + '" x2="' + W + '" y2="' + cy + '" stroke="#c8d4de" stroke-width="1"/>';
+  content += '<line x1="' + cx + '" y1="0" x2="' + cx + '" y2="' + H + '" stroke="#c8d4de" stroke-width="1"/>';
+  content += '<text x="' + (W-4) + '" y="' + (cy-4) + '" font-size="9" fill="#9aabb8" text-anchor="end">x₁</text>';
+  content += '<text x="' + (cx+3) + '" y="11" font-size="9" fill="#9aabb8">x₂</text>';
+
+  // Trajectory
+  var hist = srHistory;
+  if (hist.length > 1) {
+    // Color fades from gray to blue
+    var seg = '';
+    for (var i = 1; i < hist.length; i++) {
+      var t = i / hist.length;
+      var r = Math.round(58 + (58-58)*t), g2 = Math.round(106 + (106-106)*t), b = Math.round(138 + (138-138)*t);
+      var op = 0.3 + 0.7 * t;
+      seg += '<line x1="' + px(hist[i-1].x1).toFixed(1) + '" y1="' + py(hist[i-1].x2).toFixed(1) + '" x2="' + px(hist[i].x1).toFixed(1) + '" y2="' + py(hist[i].x2).toFixed(1) + '" stroke="#3a6a8a" stroke-width="1.5" opacity="' + op.toFixed(2) + '"/>';
+    }
+    content += seg;
+  }
+
+  // Initial condition dot
+  var x0 = hist[0];
+  content += '<circle cx="' + px(x0.x1).toFixed(1) + '" cy="' + py(x0.x2).toFixed(1) + '" r="3.5" fill="#8ab8d8" stroke="#3a6a8a" stroke-width="1"/>';
+
+  // Current point
+  if (hist.length > 0) {
+    var cur = hist[hist.length - 1];
+    content += '<circle cx="' + px(cur.x1).toFixed(1) + '" cy="' + py(cur.x2).toFixed(1) + '" r="4" fill="#3a6a8a"/>';
+  }
+
+  svg.innerHTML = content;
+}
+
+function srRenderTime() {
+  var svg = document.getElementById('sr-time-svg');
+  var W = 220, H = 220;
+  var lPad = 28, rPad = 8, tPad = 12, bPad = 22;
+
+  var hist = srHistory;
+  if (hist.length < 2) { svg.innerHTML = ''; return; }
+
+  // Axis ranges
+  var tShow = Math.max(srT, 2);
+  var allVals = [];
+  hist.forEach(function(p) { allVals.push(p.x1, p.x2); });
+  var yMin = Math.min.apply(null, allVals);
+  var yMax = Math.max.apply(null, allVals);
+  var yRange = yMax - yMin;
+  if (yRange < 0.5) { yRange = 0.5; yMin = (yMin+yMax)/2 - 0.25; yMax = yMin + 0.5; }
+  var yPad = yRange * 0.1;
+  yMin -= yPad; yMax += yPad;
+
+  function tx(t) { return lPad + t / tShow * (W - lPad - rPad); }
+  function ty(y) { return tPad + (yMax - y) / (yMax - yMin) * (H - tPad - bPad); }
+
+  var content = '';
+
+  // Grid: y=0
+  if (yMin < 0 && yMax > 0) {
+    content += '<line x1="' + lPad + '" y1="' + ty(0).toFixed(1) + '" x2="' + (W - rPad) + '" y2="' + ty(0).toFixed(1) + '" stroke="#d0d8e0" stroke-width="1"/>';
+  }
+  // Axes
+  content += '<line x1="' + lPad + '" y1="' + tPad + '" x2="' + lPad + '" y2="' + (H - bPad) + '" stroke="#c0ccd6" stroke-width="1"/>';
+  content += '<line x1="' + lPad + '" y1="' + (H - bPad) + '" x2="' + (W - rPad) + '" y2="' + (H - bPad) + '" stroke="#c0ccd6" stroke-width="1"/>';
+  content += '<text x="' + (W - rPad) + '" y="' + (H - bPad + 12) + '" font-size="9" fill="#9aabb8" text-anchor="end">t</text>';
+
+  // x1 path
+  var path1 = '', path2 = '';
+  for (var i = 0; i < hist.length; i++) {
+    var p = hist[i];
+    var x = tx(p.t), y1 = ty(p.x1), y2 = ty(p.x2);
+    path1 += (i === 0 ? 'M' : 'L') + x.toFixed(1) + ',' + y1.toFixed(1);
+    path2 += (i === 0 ? 'M' : 'L') + x.toFixed(1) + ',' + y2.toFixed(1);
+  }
+  content += '<path d="' + path1 + '" fill="none" stroke="#3a6a8a" stroke-width="1.5"/>';
+  content += '<path d="' + path2 + '" fill="none" stroke="#e08030" stroke-width="1.5"/>';
+
+  // Labels
+  content += '<text x="' + (lPad + 2) + '" y="' + (tPad + 8) + '" font-size="9" fill="#9aabb8">x₁,x₂</text>';
+
+  svg.innerHTML = content;
+}
+</script>
+
+</body>
+</html>
