@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>State Feedback &amp; Pole Placement — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$',  right: '$',  display: false}
+        ],
+        throwOnError: false
+      });
+      sfInit();
+    });
+  </script>
+  <style>
+    .widget-card {
+      background: #f0f4f7;
+      border: 1px solid #c0d0dc;
+      border-radius: 6px;
+      padding: 20px 22px;
+      margin: 24px 0;
+    }
+    .widget-title {
+      font-size: 12.5px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #3a5a78;
+      margin-bottom: 16px;
+    }
+    .notation-table td:first-child {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 13px;
+      white-space: nowrap;
+      padding-right: 14px;
+      color: #2a4868;
+      vertical-align: top;
+    }
+    .notation-table td { padding: 4px 8px; vertical-align: top; font-size: 13.5px; }
+    .slider-row {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 7px; font-size: 13px;
+    }
+    .slider-row label { width: 60px; flex-shrink: 0; font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #3a5a78; }
+    .slider-row input[type=range] { flex: 1; }
+    .slider-row .sv { font-family: 'IBM Plex Mono', monospace; width: 52px; text-align: right; font-size: 12.5px; }
+    .sf-panels { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 12px; }
+    .sf-panel-label { font-size: 11.5px; font-weight: 600; color: #3a5a78; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+    .sf-result-box {
+      background: #fff;
+      border: 1px solid #c8d8e4;
+      border-radius: 4px;
+      padding: 10px 14px;
+      margin-top: 10px;
+      font-size: 13px;
+      font-family: 'IBM Plex Mono', monospace;
+    }
+    .sf-result-box .lbl { font-size: 11px; font-family: 'IBM Plex Sans', sans-serif; color: #7a9ab0; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 3px; }
+    .sf-result-val { color: #1a3a5a; font-size: 14px; }
+    .step-stable { color: #2a6a2a; }
+    .step-unstable { color: #8a2020; }
+    /* Theorem / proof callout */
+    .theorem-box {
+      background: #e8f0f8;
+      border-left: 4px solid #3a6a8a;
+      border-radius: 0 5px 5px 0;
+      padding: 14px 18px;
+      margin: 18px 0;
+    }
+    .theorem-box .theorem-label {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.07em; color: #3a5a78; margin-bottom: 6px;
+    }
+    .formula-box {
+      background: #f7fafb;
+      border: 1px solid #c0d8e8;
+      border-radius: 5px;
+      padding: 16px 20px;
+      margin: 16px 0;
+      text-align: center;
+    }
+    /* comparison table */
+    table.comp-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+      margin: 16px 0;
+    }
+    table.comp-table th {
+      background: #eaf0f5;
+      padding: 8px 14px;
+      text-align: left;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #3a5a78;
+      border-bottom: 2px solid #c0d8e8;
+      font-weight: 600;
+    }
+    table.comp-table td {
+      padding: 8px 14px;
+      border-bottom: 1px solid #e4eef4;
+      vertical-align: top;
+      color: #2a3a4a;
+    }
+    table.comp-table tr:last-child td { border-bottom: none; }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Foundations</div>
+        <a href="control-problem.html" class="nav-item">1 · The Control Problem</a>
+        <a href="transfer-functions.html" class="nav-item">2 · Dynamical Systems &amp; Transfer Functions</a>
+        <a href="bode.html" class="nav-item">3 · Second-Order Systems</a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-label">Frequency Domain</div>
+        <a href="routh.html" class="nav-item">4 · Routh-Hurwitz Stability</a>
+        <a href="root-locus.html" class="nav-item">5 · Root Locus</a>
+        <a href="nyquist.html" class="nav-item">6 · Nyquist &amp; Stability Margins</a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-label">Classical Design</div>
+        <a href="pid.html" class="nav-item">7 · PID Control</a>
+        <a href="lead-lag.html" class="nav-item">8 · Lead-Lag Compensators</a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-label">State Space</div>
+        <a href="state-space.html" class="nav-item">9 · State-Space Representation</a>
+        <a href="state-response.html" class="nav-item">10 · State Response</a>
+        <a href="controllability.html" class="nav-item">11 · Controllability &amp; Observability</a>
+        <a href="state-feedback.html" class="nav-item active">12 · State Feedback &amp; Pole Placement</a>
+        <span class="nav-item planned">13 · Linear Quadratic Regulator</span>
+        <span class="nav-item planned">14 · Observers &amp; Separation Principle</span>
+      </div>
+      <hr class="sidebar-rule">
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#full-state-fb" class="nav-item">Full-state feedback</a>
+        <a href="#eigenvalue-assignment" class="nav-item">Eigenvalue assignment</a>
+        <a href="#direct-method" class="nav-item">Direct coefficient matching</a>
+        <a href="#ackermann" class="nav-item">Ackermann's formula</a>
+        <a href="#choosing-poles" class="nav-item">Choosing desired poles</a>
+        <a href="#reference-tracking" class="nav-item">Reference tracking</a>
+        <a href="#interactive" class="nav-item">Interactive pole placer</a>
+        <a href="#worked-examples" class="nav-item">Worked examples</a>
+        <a href="#food-for-thought" class="nav-item">Food for thought</a>
+        <a href="#pitfalls" class="nav-item">Common pitfalls</a>
+      </div>
+    </div><!-- /sidebar -->
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Control Theory</a>
+        <span class="sep">›</span>
+        <span>Lesson 12</span>
+      </div>
+
+      <div class="lesson-title">State Feedback &amp; Pole Placement</div>
+      <div class="lesson-meta">Full-State Feedback · Eigenvalue Assignment · Ackermann's Formula · Reference Tracking</div>
+
+      <!-- Big-picture hook -->
+      <div class="prose">
+        Suppose you could measure every state variable of a system at every instant.
+        Then instead of an external controller operating only on the output, you could
+        close the loop through the full internal state — and the dynamics of the closed-loop
+        system become yours to choose. Pole placement is the exact answer to the question:
+        <em>if controllability guarantees we can reach any state, what gain K turns that
+        freedom into freely-chosen eigenvalues?</em>
+      </div>
+
+      <!-- Notation recap -->
+      <div class="callout" style="margin-bottom:24px;">
+        <strong>Notation recap</strong>
+        <table class="notation-table" style="margin-top:8px;">
+          <tr><td>$A, B, C$</td><td>System matrices (state, input, output)</td></tr>
+          <tr><td>$K$</td><td>State-feedback gain vector (row vector, $1\times n$ for SISO)</td></tr>
+          <tr><td>$A_{cl}$</td><td>Closed-loop system matrix $A - BK$</td></tr>
+          <tr><td>$\mathcal{C}$</td><td>Controllability matrix $[B\ AB\ \cdots\ A^{n-1}B]$</td></tr>
+          <tr><td>$\varphi_d(s)$</td><td>Desired closed-loop characteristic polynomial</td></tr>
+          <tr><td>$N_r$</td><td>Reference feedforward gain (for steady-state tracking)</td></tr>
+        </table>
+      </div>
+
+      <!-- ── Full-State Feedback ─────────────────────────────── -->
+      <div id="full-state-fb"></div>
+      <div class="section-head">Full-State Feedback</div>
+
+      <div class="prose">
+        In classical control we fed back only the output $y = Cx$ — a scalar signal.
+        In state-space control we feed back the entire state vector $x(t)$, which contains
+        everything the system "knows" about its own history.
+        The control law is simply:
+      </div>
+
+      <div class="math-block">
+        $$u(t) = -Kx(t) + N_r\, r(t)$$
+      </div>
+
+      <div class="prose">
+        where $K \in \mathbb{R}^{1 \times n}$ is a row vector of gains and $r(t)$ is the
+        reference (set-point). For the moment ignore the $N_r$ term and set $r = 0$
+        to focus on stabilisation. The closed-loop state equation becomes:
+      </div>
+
+      <div class="math-block">
+        $$\dot{x} = Ax + Bu = Ax + B(-Kx) = (A - BK)\,x$$
+      </div>
+
+      <div class="prose">
+        The dynamics are now governed by the <em>closed-loop matrix</em>
+        $A_{cl} = A - BK$. The behaviour of the system — stability, speed, damping —
+        is determined entirely by the eigenvalues of $A - BK$.
+        The design question becomes: <strong>choose $K$ so that $\text{eig}(A - BK)$
+        equals a desired set of poles.</strong>
+      </div>
+
+      <div class="callout">
+        <strong>Why subtract?</strong> The sign convention $u = -Kx$ makes positive gains
+        stabilising for most plants (like a negative-feedback loop). If the $i$-th state
+        is positive and is destabilising, a positive $k_i$ feeds a negative correction
+        back into the input.
+      </div>
+
+      <!-- ── Eigenvalue Assignment Theorem ─────────────────────── -->
+      <div id="eigenvalue-assignment"></div>
+      <div class="section-head">Eigenvalue Assignment Theorem</div>
+
+      <div class="prose">
+        Controllability from Lesson 11 was about reachability — the ability to drive the
+        state anywhere with an appropriate input. It turns out this is exactly the condition
+        needed for arbitrary pole placement:
+      </div>
+
+      <div class="theorem-box">
+        <div class="theorem-label">Theorem — Pole Placement</div>
+        The eigenvalues of $A - BK$ can be assigned <em>arbitrarily</em> (any values,
+        subject only to complex poles appearing in conjugate pairs) if and only if
+        $(A, B)$ is <strong>controllable</strong>.
+      </div>
+
+      <div class="prose">
+        The "only if" direction is intuitive: an uncontrollable mode cannot be affected by
+        any input, so its eigenvalue is fixed regardless of $K$.
+        The "if" direction says that controllability is not just sufficient but
+        <em>exactly</em> sufficient — you get complete freedom over the spectrum of the
+        closed-loop system.
+      </div>
+
+      <div class="prose">
+        This is one of the central results of modern control theory. In classical
+        frequency-domain design (root locus, PID) you tune a scalar gain or a few
+        parameters and hope the poles end up where you want. With full-state feedback
+        you can place every pole exactly where you specify.
+      </div>
+
+      <!-- ── Direct Coefficient Matching ──────────────────────── -->
+      <div id="direct-method"></div>
+      <div class="section-head">Direct Coefficient Matching</div>
+
+      <div class="prose">
+        For low-order systems ($n = 2$ or $3$) the quickest route to $K$ is direct
+        coefficient matching: write the characteristic polynomial of $A - BK$ in terms
+        of the unknown gains, set it equal to the desired polynomial, and solve.
+      </div>
+
+      <div class="prose">
+        <strong>Example — double integrator.</strong> The double integrator
+        $\ddot{y} = u$ has state $x = [y,\,\dot{y}]^T$ and:
+      </div>
+
+      <div class="math-block">
+        $$A = \begin{bmatrix}0 & 1 \\ 0 & 0\end{bmatrix}, \quad
+          B = \begin{bmatrix}0 \\ 1\end{bmatrix}$$
+      </div>
+
+      <div class="prose">
+        With gain $K = [k_1,\;k_2]$ the closed-loop matrix is:
+      </div>
+
+      <div class="math-block">
+        $$A_{cl} = A - BK = \begin{bmatrix}0 & 1 \\ -k_1 & -k_2\end{bmatrix}$$
+      </div>
+
+      <div class="prose">
+        Its characteristic polynomial is:
+        $$\det(sI - A_{cl}) = s^2 + k_2\,s + k_1$$
+        Suppose the desired closed-loop characteristic polynomial is
+        $\varphi_d(s) = s^2 + 2\zeta\omega_n s + \omega_n^2$.
+        Matching coefficients gives:
+        $$k_1 = \omega_n^2, \qquad k_2 = 2\zeta\omega_n$$
+        The state-feedback gain directly programs the natural frequency and damping ratio of the closed-loop. For $\omega_n = 2\,\text{rad/s}$ and $\zeta = 0.7$: $k_1 = 4$, $k_2 = 2.8$.
+      </div>
+
+      <div class="callout">
+        Direct matching works cleanly for $n = 2$ and $n = 3$ but becomes tedious for
+        larger systems. Ackermann's formula automates it.
+      </div>
+
+      <!-- ── Ackermann's Formula ─────────────────────────────── -->
+      <div id="ackermann"></div>
+      <div class="section-head">Ackermann's Formula</div>
+
+      <div class="prose">
+        For a single-input system of order $n$, Ackermann's formula gives $K$ directly
+        from the controllability matrix and the desired polynomial:
+      </div>
+
+      <div class="formula-box">
+        $$\boxed{K = \mathbf{e}_n^T\,\mathcal{C}^{-1}\,\varphi_d(A)}$$
+      </div>
+
+      <div class="prose">
+        where:
+      </div>
+
+      <ul class="prose" style="margin-top: -8px; padding-left: 24px;">
+        <li>$\mathcal{C} = [B,\;AB,\;\ldots,\;A^{n-1}B]$ is the $n \times n$ controllability matrix</li>
+        <li>$\varphi_d(s) = (s - \lambda_1)(s - \lambda_2)\cdots(s - \lambda_n)$ is the desired characteristic polynomial</li>
+        <li>$\varphi_d(A) = A^n + \alpha_{n-1}A^{n-1} + \cdots + \alpha_1 A + \alpha_0 I$ is the polynomial <em>evaluated at the matrix</em> $A$</li>
+        <li>$\mathbf{e}_n^T = [0,\;0,\;\ldots,\;0,\;1]$ is the $n$-th standard basis row vector</li>
+      </ul>
+
+      <div class="prose">
+        The formula assumes $(A,B)$ is controllable (so $\mathcal{C}$ is invertible).
+        The product $\mathbf{e}_n^T \mathcal{C}^{-1}$ selects the last row of $\mathcal{C}^{-1}$;
+        right-multiplying by $\varphi_d(A)$ produces the gain vector.
+      </div>
+
+      <div class="prose">
+        <strong>Where does this come from?</strong> The derivation transforms the system
+        to <em>controllable canonical form</em>, where the characteristic polynomial
+        coefficients appear explicitly in the last row of $\tilde A$.
+        In that basis, choosing $\tilde K$ to shift those coefficients to the desired
+        values is trivial; the transformation back to the original coordinates yields
+        Ackermann's formula.
+      </div>
+
+      <div class="prose">
+        <strong>Example — verify the double integrator.</strong> With the double-integrator
+        matrices above:
+        $$\mathcal{C} = \begin{bmatrix}0 & 1 \\ 1 & 0\end{bmatrix},\quad
+          \mathcal{C}^{-1} = \begin{bmatrix}0 & 1 \\ 1 & 0\end{bmatrix}$$
+        $$\varphi_d(A) = A^2 + 2\zeta\omega_n A + \omega_n^2 I
+          = \begin{bmatrix}-\omega_n^2 & 2\zeta\omega_n \\ 0 & -\omega_n^2 + 0\end{bmatrix}
+          \ldots$$
+        Working it through (the algebra is straightforward) recovers $K = [\omega_n^2,\;2\zeta\omega_n]$,
+        exactly matching the direct method result. ✓
+      </div>
+
+      <div class="callout">
+        <strong>MATLAB / NumPy.</strong>
+        <span class="inline-code">K = acker(A, B, desired_poles)</span> (MATLAB) or
+        implement in Python:
+        <pre class="code-block" style="margin-top:8px;">import numpy as np
+from numpy.linalg import matrix_power, inv
+
+def ackermann(A, B, poles):
+    n = A.shape[0]
+    # Controllability matrix
+    C = np.hstack([matrix_power(A, i) @ B for i in range(n)])
+    # Desired characteristic polynomial coefficients
+    phi = np.poly(poles)          # returns [1, alpha_{n-1}, ..., alpha_0]
+    # Evaluate polynomial at A
+    phiA = np.zeros_like(A, dtype=float)
+    for i, c in enumerate(phi):
+        phiA += c * matrix_power(A, n - i)
+    en = np.zeros((1, n)); en[0, -1] = 1.0
+    return en @ inv(C) @ phiA</pre>
+      </div>
+
+      <!-- ── Choosing Desired Poles ──────────────────────────── -->
+      <div id="choosing-poles"></div>
+      <div class="section-head">Choosing Desired Poles</div>
+
+      <div class="prose">
+        Pole placement gives you complete freedom to put eigenvalues wherever you like
+        in the left half-plane. That freedom is only useful if you know <em>where to put them</em>.
+        A few principles guide the choice:
+      </div>
+
+      <div class="prose">
+        <strong>Dominant second-order poles.</strong> For an $n$-th-order system, often
+        the simplest strategy is to designate two poles as dominant —
+        placed at the complex location that gives the desired $\zeta$ and $\omega_n$
+        (from the second-order specifications of Lesson 3):
+        $$\lambda_{1,2} = -\zeta\omega_n \pm j\omega_n\sqrt{1-\zeta^2}$$
+        The remaining $n - 2$ poles are placed well to the left (say, $5\times$ to
+        $10\times$ farther from the imaginary axis), so they produce fast transients that
+        decay before the dominant poles matter. The closed-loop then behaves approximately
+        like the second-order system defined by the dominant pair.
+      </div>
+
+      <div class="prose">
+        <strong>Speed vs. control effort.</strong> Pushing poles further left speeds up
+        the response but demands larger $K$, which requires larger control signals.
+        Real actuators saturate. A gain $K$ that looks fine in simulation may
+        be physically unrealizable if it requires, say, a 50 V input to a 5 V system.
+        This is the central limitation of arbitrary pole placement — and the reason LQR
+        (Lesson 13) provides a principled tradeoff between speed and effort.
+      </div>
+
+      <div class="prose">
+        <strong>Real poles only.</strong> If you want no oscillation (overdamped response),
+        place all poles on the negative real axis. For tracking problems this is often
+        conservative; some damped oscillation ($\zeta \approx 0.7$) gives faster settling
+        without excessive overshoot.
+      </div>
+
+      <div class="prose">
+        <strong>Ill-conditioning warning.</strong> When desired poles are widely spread,
+        $\mathcal{C}^{-1}$ in Ackermann's formula can be numerically ill-conditioned.
+        For large $n$ or widely-spaced poles, use the more numerically stable Bass-Gura
+        or Heymann–method implementations. MATLAB's <span class="inline-code">place()</span>
+        (distinct from <span class="inline-code">acker()</span>) uses a robust algorithm.
+      </div>
+
+      <!-- ── Reference Tracking ─────────────────────────────── -->
+      <div id="reference-tracking"></div>
+      <div class="section-head">Reference Tracking</div>
+
+      <div class="prose">
+        State feedback $u = -Kx$ is a <em>regulator</em> — it drives $x \to 0$, which
+        means $y \to 0$. For a <em>servo</em> problem — tracking a nonzero reference
+        $r$ — we need to add reference input explicitly.
+      </div>
+
+      <div class="prose">
+        <strong>Feedforward gain $N_r$.</strong> The simplest fix is:
+        $$u = -Kx + N_r\,r$$
+        With this input the closed-loop dynamics are:
+        $$\dot{x} = (A - BK)x + BN_r\,r, \quad y = Cx$$
+        At steady state ($\dot{x} = 0$, $r = \text{const}$):
+        $$x_{ss} = -(A - BK)^{-1}\,BN_r\,r$$
+        $$y_{ss} = -C(A - BK)^{-1}BN_r\,r$$
+        For $y_{ss} = r$ we need:
+      </div>
+
+      <div class="formula-box">
+        $$N_r = \frac{1}{-C(A - BK)^{-1}B} = \frac{1}{C(BK - A)^{-1}B}$$
+      </div>
+
+      <div class="prose">
+        $N_r$ is a scalar (for single-output systems) computed from the closed-loop
+        DC gain. It works well when the plant model is accurate; any model error
+        creates a steady-state offset.
+      </div>
+
+      <div class="prose">
+        <strong>Integral action.</strong> A more robust strategy adds an integrator
+        state $z$ that accumulates the tracking error $e = r - y$:
+        $$\dot{z} = r - y = r - Cx$$
+        Augment the state to $\tilde{x} = [x^T,\;z]^T$ and design $K$ for the
+        augmented system $(\tilde{A}, \tilde{B})$:
+        $$\tilde{A} = \begin{bmatrix}A & 0 \\ -C & 0\end{bmatrix},\quad
+          \tilde{B} = \begin{bmatrix}B \\ 0\end{bmatrix}$$
+        The gain $\tilde{K} = [K_x,\;K_z]$ drives both the original states and the
+        integral error: $u = -K_x x - K_z z + \text{(reference feedforward)}$.
+        The integrator guarantees zero steady-state error even with constant
+        disturbances and model uncertainty — for the same reason integral action in
+        PID eliminates steady-state error (Lesson 7).
+      </div>
+
+      <div class="callout">
+        <strong>Which to use?</strong> $N_r$ is simple and works when the model is good.
+        Integral augmentation is more robust but increases system order by 1 and requires
+        care to avoid integrator windup. For disturbance rejection, integral action is
+        usually the better choice.
+      </div>
+
+      <!-- ── Comparison to Root Locus ──────────────────────────── -->
+      <div class="section-head">Comparison to Root Locus</div>
+
+      <div class="prose">
+        Root locus (Lesson 5) and pole placement are related but answer different questions:
+      </div>
+
+      <table class="comp-table">
+        <thead>
+          <tr>
+            <th>Property</th>
+            <th>Root Locus</th>
+            <th>Pole Placement (State Feedback)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Parameter</td>
+            <td>Scalar gain $K$</td>
+            <td>Gain vector $\mathbf{K}$ ($n$ free parameters)</td>
+          </tr>
+          <tr>
+            <td>Degrees of freedom</td>
+            <td>1 (slide along a fixed locus)</td>
+            <td>$n$ (place all $n$ poles independently)</td>
+          </tr>
+          <tr>
+            <td>Achievable poles</td>
+            <td>Points on the root locus only</td>
+            <td>Anywhere in $\mathbb{C}$ (if controllable)</td>
+          </tr>
+          <tr>
+            <td>Information required</td>
+            <td>Transfer function $G(s)$</td>
+            <td>Full state $x(t)$ at every instant</td>
+          </tr>
+          <tr>
+            <td>Design approach</td>
+            <td>Graphical; read gain from locus</td>
+            <td>Algebraic; solve for $K$ directly</td>
+          </tr>
+          <tr>
+            <td>Main limitation</td>
+            <td>Limited freedom over pole locations</td>
+            <td>Requires full state measurement</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="prose">
+        The requirement to measure every state is the key practical limitation of full-state
+        feedback. In many systems not all states are directly measurable — temperature inside
+        a wall, velocity of a gear train shaft. This motivates the observer (Lesson 14),
+        which reconstructs the state from output measurements, allowing state feedback
+        without direct state sensing.
+      </div>
+
+      <!-- ── Interactive ───────────────────────────────────────── -->
+      <div id="interactive"></div>
+      <div class="section-head">Interactive — Pole Placer</div>
+
+      <div class="prose">
+        The system below is a double integrator ($\ddot{y} = u$, or equivalently a unit
+        mass driven by a force input with no damping). The open-loop poles are at $s = 0, 0$.
+        Use the sliders to choose the desired closed-loop natural frequency and damping ratio.
+        The feedback gain and step response update in real time.
+      </div>
+
+      <div class="widget-card">
+        <div class="widget-title">Double-Integrator Pole Placer</div>
+
+        <div class="slider-row">
+          <label>$\omega_n$</label>
+          <input type="range" id="sf-wn" min="0.5" max="5" step="0.1" value="2">
+          <span class="sv" id="sf-wn-val">2.0</span>
+        </div>
+        <div class="slider-row">
+          <label>$\zeta$</label>
+          <input type="range" id="sf-zeta" min="0.1" max="1.5" step="0.05" value="0.7">
+          <span class="sv" id="sf-zeta-val">0.70</span>
+        </div>
+
+        <div class="sf-result-box" style="margin-bottom:10px;">
+          <div class="lbl">Feedback gain</div>
+          <div class="sf-result-val" id="sf-k-display">K = [4.00, 2.80]</div>
+        </div>
+        <div class="sf-result-box" style="margin-bottom:10px;">
+          <div class="lbl">Closed-loop poles</div>
+          <div class="sf-result-val" id="sf-poles-display">−1.40 ± 1.43j</div>
+        </div>
+
+        <div class="sf-panels">
+          <div>
+            <div class="sf-panel-label">$s$-plane</div>
+            <svg id="sf-splane" width="100%" viewBox="0 0 240 200" style="border:1px solid #c8d8e4;border-radius:4px;background:#fff;display:block;"></svg>
+          </div>
+          <div>
+            <div class="sf-panel-label">Step response (unit step in $r$)</div>
+            <svg id="sf-step" width="100%" viewBox="0 0 240 200" style="border:1px solid #c8d8e4;border-radius:4px;background:#fff;display:block;"></svg>
+          </div>
+        </div>
+
+        <div style="font-size:12px;color:#7a9ab0;margin-top:10px;">
+          Open-loop poles shown as ○ · Closed-loop poles shown as ×
+        </div>
+      </div>
+
+      <script>
+      function sfInit() {
+        var wnEl   = document.getElementById('sf-wn');
+        var zetaEl = document.getElementById('sf-zeta');
+        wnEl.addEventListener('input', sfUpdate);
+        zetaEl.addEventListener('input', sfUpdate);
+        sfUpdate();
+      }
+
+      function sfUpdate() {
+        var wn   = parseFloat(document.getElementById('sf-wn').value);
+        var zeta = parseFloat(document.getElementById('sf-zeta').value);
+
+        document.getElementById('sf-wn-val').textContent   = wn.toFixed(1);
+        document.getElementById('sf-zeta-val').textContent = zeta.toFixed(2);
+
+        // For double integrator A=[[0,1],[0,0]], B=[[0],[1]]
+        // K = [wn^2, 2*zeta*wn]  (direct coefficient matching)
+        var k1 = wn * wn;
+        var k2 = 2 * zeta * wn;
+        document.getElementById('sf-k-display').textContent =
+          'K = [' + k1.toFixed(3) + ', ' + k2.toFixed(3) + ']';
+
+        // Closed-loop poles: s^2 + k2*s + k1 = 0
+        var disc = k2*k2 - 4*k1;
+        var poleStr;
+        if (disc >= 0) {
+          var r1 = (-k2 + Math.sqrt(disc)) / 2;
+          var r2 = (-k2 - Math.sqrt(disc)) / 2;
+          poleStr = r1.toFixed(3) + ',  ' + r2.toFixed(3);
+        } else {
+          var re = -k2 / 2;
+          var im = Math.sqrt(-disc) / 2;
+          poleStr = re.toFixed(3) + ' ± ' + im.toFixed(3) + 'j';
+        }
+        document.getElementById('sf-poles-display').textContent = poleStr;
+
+        sfDrawSplane(wn, zeta, k1, k2, disc);
+        sfDrawStep(wn, zeta, k1, k2);
+      }
+
+      function sfDrawSplane(wn, zeta, k1, k2, disc) {
+        var svg = document.getElementById('sf-splane');
+        var W = 240, H = 200;
+        var cx = 130, cy = H/2;  // origin offset right to show more of left half-plane
+        var scale = 30;           // px per unit
+
+        var lines = '';
+        // Grid lines
+        for (var g = -4; g <= 2; g++) {
+          var px = cx + g*scale;
+          lines += '<line x1="'+px+'" y1="0" x2="'+px+'" y2="'+H+'" stroke="#e8eef2" stroke-width="1"/>';
+        }
+        for (var g = -3; g <= 3; g++) {
+          var py = cy + g*scale;
+          lines += '<line x1="0" y1="'+py+'" x2="'+W+'" y2="'+py+'" stroke="#e8eef2" stroke-width="1"/>';
+        }
+        // Axes
+        lines += '<line x1="0" y1="'+cy+'" x2="'+W+'" y2="'+cy+'" stroke="#9aabb8" stroke-width="1.2"/>';
+        lines += '<line x1="'+cx+'" y1="0" x2="'+cx+'" y2="'+H+'" stroke="#9aabb8" stroke-width="1.2"/>';
+        // Axis labels
+        lines += '<text x="'+(W-8)+'" y="'+(cy-5)+'" font-size="9" fill="#9aabb8" text-anchor="end">Re</text>';
+        lines += '<text x="'+(cx+5)+'" y="10" font-size="9" fill="#9aabb8">Im</text>';
+        // Origin label
+        lines += '<text x="'+(cx+3)+'" y="'+(cy+9)+'" font-size="8" fill="#aabbcc">0</text>';
+
+        // Open-loop poles at s=0 (double pole) — two overlapping circles
+        lines += '<circle cx="'+cx+'" cy="'+cy+'" r="7" fill="none" stroke="#9aabb8" stroke-width="1.5"/>';
+        lines += '<circle cx="'+(cx+3)+'" cy="'+cy+'" r="7" fill="none" stroke="#9aabb8" stroke-width="1.5"/>';
+
+        // Closed-loop poles
+        var clPoles = [];
+        if (disc >= 0) {
+          var r1 = (-k2 + Math.sqrt(disc)) / 2;
+          var r2 = (-k2 - Math.sqrt(disc)) / 2;
+          clPoles = [{re: r1, im: 0}, {re: r2, im: 0}];
+        } else {
+          var re = -k2 / 2;
+          var im = Math.sqrt(-disc) / 2;
+          clPoles = [{re: re, im: im}, {re: re, im: -im}];
+        }
+        var clColor = (clPoles[0].re < 0) ? '#2a6a2a' : '#8a2020';
+        clPoles.forEach(function(p) {
+          var px = cx + p.re * scale;
+          var py = cy - p.im * scale;
+          lines += '<line x1="'+(px-5)+'" y1="'+(py-5)+'" x2="'+(px+5)+'" y2="'+(py+5)+'" stroke="'+clColor+'" stroke-width="2"/>';
+          lines += '<line x1="'+(px+5)+'" y1="'+(py-5)+'" x2="'+(px-5)+'" y2="'+(py+5)+'" stroke="'+clColor+'" stroke-width="2"/>';
+        });
+
+        svg.innerHTML = lines;
+      }
+
+      function sfDrawStep(wn, zeta, k1, k2) {
+        var svg = document.getElementById('sf-step');
+        var W = 240, H = 200;
+        var tMax = 10;
+        var dt   = 0.05;
+        var N    = Math.round(tMax / dt);
+
+        // Simulate closed-loop step response using Euler integration
+        // System: x1_dot = x2, x2_dot = -k1*x1 - k2*x2 + Nr*r
+        // Nr = 1 / (-C*(A-BK)^-1 * B)  for C=[1,0]
+        // A-BK = [[0,1],[-k1,-k2]]
+        // DC gain = C*(A-BK)^-1*B = [1,0]*[[−k2,−1],[k1,0]]/(k1) * [0;1]... let's compute directly
+        // (A-BK)^-1 = (1/det)*adj, det = (0)(-k2) - (1)(-k1) = k1
+        // adj = [[-k2, -1],[k1, 0]]
+        // (A-BK)^-1 * B = (1/k1)*[[-k2,-1],[k1,0]]*[0;1] = (1/k1)*[-1;0]
+        // C*(A-BK)^-1*B = [1,0]*(1/k1)*[-1;0] = -1/k1
+        // Nr = 1 / (-(-1/k1)) = k1
+        var Nr = k1;
+
+        var x1 = 0, x2 = 0;
+        var pts = [];
+        for (var i = 0; i <= N; i++) {
+          var t = i * dt;
+          pts.push({t: t, y: x1});
+          var u = -k1*x1 - k2*x2 + Nr*1.0;  // r=1 unit step
+          x1 += dt * x2;
+          x2 += dt * u;
+        }
+
+        // Scale to SVG
+        var pad = {l:28, r:10, t:10, b:22};
+        var pw = W - pad.l - pad.r;
+        var ph = H - pad.t - pad.b;
+        var yMin = -0.2, yMax = 2.0;
+
+        function tx(t) { return pad.l + (t/tMax)*pw; }
+        function ty(y) { return pad.t + (1 - (y - yMin)/(yMax - yMin))*ph; }
+
+        var html = '';
+        // Grid
+        [0, 0.5, 1.0, 1.5].forEach(function(yg) {
+          var pg = ty(yg);
+          html += '<line x1="'+pad.l+'" y1="'+pg+'" x2="'+(pad.l+pw)+'" y2="'+pg+'" stroke="'+(yg===1.0?'#b0d0b0':'#eaeff2')+'" stroke-width="'+(yg===1.0?'1.2':'1')+'"/>';
+          html += '<text x="'+(pad.l-3)+'" y="'+(pg+3)+'" font-size="8" fill="#aabbcc" text-anchor="end">'+yg.toFixed(1)+'</text>';
+        });
+        // Axes
+        html += '<line x1="'+pad.l+'" y1="'+ty(0)+'" x2="'+(pad.l+pw)+'" y2="'+ty(0)+'" stroke="#9aabb8" stroke-width="1"/>';
+        html += '<line x1="'+pad.l+'" y1="'+pad.t+'" x2="'+pad.l+'" y2="'+(pad.t+ph)+'" stroke="#9aabb8" stroke-width="1"/>';
+        // Time labels
+        [0, 2, 4, 6, 8, 10].forEach(function(tl) {
+          html += '<text x="'+tx(tl)+'" y="'+(H-5)+'" font-size="8" fill="#aabbcc" text-anchor="middle">'+tl+'</text>';
+        });
+        html += '<text x="'+(pad.l+pw/2)+'" y="'+H+'" font-size="8" fill="#9aabb8" text-anchor="middle">t (s)</text>';
+
+        // Step response
+        var path = pts.map(function(p, i) {
+          var px = tx(p.t), py = Math.max(pad.t, Math.min(pad.t+ph, ty(p.y)));
+          return (i===0 ? 'M' : 'L') + px.toFixed(1) + ' ' + py.toFixed(1);
+        }).join(' ');
+        html += '<path d="'+path+'" stroke="#2a6a8a" stroke-width="1.8" fill="none"/>';
+
+        svg.innerHTML = html;
+      }
+      </script>
+
+      <!-- ── Worked Examples ──────────────────────────────────── -->
+      <div id="worked-examples"></div>
+      <div class="section-head">Worked Examples</div>
+
+      <div class="callout">
+        <strong>Example 1 — Stabilising an unstable system.</strong>
+        Consider the inverted pendulum linearised about the upright equilibrium:
+        $$\dot{x} = \begin{bmatrix}0 & 1 \\ 6 & 0\end{bmatrix}x + \begin{bmatrix}0 \\ 1\end{bmatrix}u$$
+        The open-loop poles are $s = \pm\sqrt{6} \approx \pm 2.45$ (one is in the right half-plane — unstable). We want to place the closed-loop poles at $-3 \pm 3j$.
+        <br><br>
+        <strong>Step 1.</strong> Check controllability:
+        $\mathcal{C} = [B,\;AB] = \begin{bmatrix}0 & 1 \\ 1 & 0\end{bmatrix}$,\;$\det\mathcal{C} = -1 \ne 0$. ✓
+        <br><br>
+        <strong>Step 2.</strong> Write $A_{cl} = A - BK$ with $K = [k_1,\;k_2]$:
+        $$A_{cl} = \begin{bmatrix}0 & 1 \\ 6-k_1 & -k_2\end{bmatrix}$$
+        Characteristic polynomial: $s^2 + k_2\,s + (k_1 - 6)$.
+        <br><br>
+        <strong>Step 3.</strong> Desired polynomial from poles $-3 \pm 3j$:
+        $(s+3-3j)(s+3+3j) = s^2 + 6s + 18$.
+        <br><br>
+        <strong>Step 4.</strong> Match: $k_2 = 6$, $k_1 - 6 = 18 \Rightarrow k_1 = 24$.
+        $$K = [24,\;6]$$
+      </div>
+
+      <div class="callout">
+        <strong>Example 2 — Third-order system via Ackermann.</strong>
+        $$A = \begin{bmatrix}0&1&0\\0&0&1\\-1&-2&-3\end{bmatrix},\quad B = \begin{bmatrix}0\\0\\1\end{bmatrix}$$
+        Place poles at $-2,\,-3,\,-4$.
+        <br><br>
+        <strong>Desired polynomial:</strong> $(s+2)(s+3)(s+4) = s^3 + 9s^2 + 26s + 24$,\;so $\varphi_d(A) = A^3 + 9A^2 + 26A + 24I$.
+        <br><br>
+        Note that the system is already in <em>controllable canonical form</em> — the
+        characteristic polynomial of $A$ is $s^3 + 3s^2 + 2s + 1$.
+        <br><br>
+        The controllability matrix is $\mathcal{C} = [B,\,AB,\,A^2B]$; direct computation gives
+        $\det\mathcal{C} = 1$, so $\mathcal{C}^{-1}$ exists.
+        Applying Ackermann's formula yields:
+        $$K = [24-1,\;26-2,\;9-3] = [23,\;24,\;6]$$
+        (The result subtracts the original coefficients from the desired ones, which
+        is exactly what happens in controllable canonical form.)
+      </div>
+
+      <div class="callout">
+        <strong>Example 3 — Computing $N_r$ for a motor.</strong>
+        A DC motor position control system has:
+        $$A = \begin{bmatrix}0 & 1 \\ 0 & -5\end{bmatrix},\quad B = \begin{bmatrix}0 \\ 10\end{bmatrix},\quad C = \begin{bmatrix}1 & 0\end{bmatrix}$$
+        Suppose state feedback places the poles giving $K = [4,\;1.5]$.
+        Find $N_r$ so the output tracks a constant reference.
+        <br><br>
+        $$A_{cl} = A - BK = \begin{bmatrix}0 & 1 \\ -40 & -20\end{bmatrix}$$
+        $$(A_{cl})^{-1} = \frac{1}{40}\begin{bmatrix}-20 & -1 \\ 40 & 0\end{bmatrix}$$
+        $$C(A_{cl})^{-1}B = [1,\;0]\cdot\frac{1}{40}\begin{bmatrix}-20 & -1 \\ 40 & 0\end{bmatrix}\begin{bmatrix}0\\10\end{bmatrix}$$
+        $$= [1,\;0]\cdot\frac{1}{40}\begin{bmatrix}-10\\0\end{bmatrix} = -\frac{10}{40} = -0.25$$
+        $$N_r = \frac{1}{-(-0.25)} = 4$$
+        So $u = -Kx + 4r$ gives unit DC gain: the motor position matches the reference at steady state.
+      </div>
+
+      <!-- ── Food for Thought ──────────────────────────────────── -->
+      <div id="food-for-thought"></div>
+      <div class="section-head">Food for Thought</div>
+
+      <ul class="prose">
+        <li>
+          If a system is controllable, you can place its poles anywhere. Does this mean
+          you can make a physical system respond arbitrarily fast? What stops you in practice?
+        </li>
+        <li>
+          State feedback with $N_r$ eliminates steady-state error only for constant
+          references and only if the model is exact. Why does adding an integrator state
+          (integral action) fix both limitations?
+        </li>
+        <li>
+          For the double integrator, $K = [\omega_n^2,\; 2\zeta\omega_n]$. The gains grow
+          with $\omega_n$. If you want the system to settle 10× faster, how do the gains scale?
+          What does this imply for the maximum achievable bandwidth?
+        </li>
+      </ul>
+
+      <!-- ── Common Pitfalls ───────────────────────────────────── -->
+      <div id="pitfalls"></div>
+      <div class="section-head">Common Pitfalls</div>
+
+      <ul class="prose">
+        <li>
+          <strong>Forgetting to check controllability first.</strong>
+          If the system is not controllable, Ackermann's formula will either throw a
+          singular-matrix error or, worse, silently return a wrong answer. Always verify
+          rank$(\mathcal{C}) = n$ before proceeding.
+        </li>
+        <li>
+          <strong>Placing poles too aggressively.</strong>
+          Choosing poles very far left increases $K$ dramatically. Large gains amplify
+          sensor noise, cause saturation, and can destabilise the system through
+          unmodelled high-frequency dynamics. LQR (Lesson 13) makes this tradeoff systematic.
+        </li>
+        <li>
+          <strong>Forgetting $N_r$.</strong>
+          A common error: design $K$ to place poles correctly, then apply $u = -Kx + r$
+          without computing $N_r$. The system is stable but the output will not track the
+          reference — it tracks $r$ divided by the closed-loop DC gain, which is generally
+          not 1. Always compute $N_r$ or use integral augmentation.
+        </li>
+        <li>
+          <strong>Real poles ≠ no oscillation in the output.</strong>
+          Even with all real closed-loop eigenvalues, if the system has zeros, the step
+          response can exhibit oscillation or undershoot. Eigenvalue placement controls
+          the poles, not the zeros — both shape the response.
+        </li>
+        <li>
+          <strong>Assuming full state is available.</strong>
+          Pole placement requires $x(t)$ at every instant. If you only measure the output $y$,
+          you cannot compute $Kx$ directly. The observer in Lesson 14 reconstructs $x$
+          from $y$, making output-feedback design possible.
+        </li>
+      </ul>
+
+      <!-- Connects to -->
+      <div class="course-block">
+        <strong>Connects to:</strong>
+        Lesson 11 (Controllability — the condition that makes pole placement possible) ·
+        Lesson 13 (LQR — optimal pole placement with a principled cost tradeoff) ·
+        Lesson 14 (Observers — reconstructing $x$ so state feedback can be implemented
+        from output measurements only) ·
+        Root Locus / Lesson 5 (classical counterpart — scalar gain along a fixed locus)
+      </div>
+
+      <!-- ── Prev/Next nav ─────────────────────────────────────── -->
+      <div class="lesson-nav">
+        <a href="controllability.html" class="lesson-nav-btn">← Lesson 11: Controllability</a>
+        <a href="index.html" class="lesson-nav-btn">Back to Control Theory</a>
+        <span class="lesson-nav-btn disabled">Lesson 13: LQR →</span>
+      </div>
+
+    </div><!-- /main -->
+
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+</body>
+</html>
