@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>State-Space Representation — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$',  right: '$',  display: false}
+        ],
+        throwOnError: false
+      });
+      ssInit();
+    });
+  </script>
+  <style>
+    .widget-card {
+      background: #f0f4f7;
+      border: 1px solid #c0d0dc;
+      border-radius: 6px;
+      padding: 20px 22px;
+      margin: 24px 0;
+    }
+    .widget-title {
+      font-size: 12.5px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #3a5a78;
+      margin-bottom: 16px;
+    }
+    .sim-btn {
+      padding: 7px 14px;
+      background: #3a6a8a;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 13px;
+      cursor: pointer;
+      margin-right: 6px;
+      margin-bottom: 6px;
+    }
+    .sim-btn.secondary { background: #e8eef2; color: #2a3a4a; }
+    /* State-space matrix display */
+    .ss-matrix-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin: 14px 0;
+    }
+    .ss-matrix-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 14px;
+      font-weight: 600;
+      color: #3a5a78;
+      min-width: 20px;
+    }
+    /* Eigenvalue display */
+    .eig-display {
+      background: #fff;
+      border: 1px solid #c8d8e4;
+      border-radius: 5px;
+      padding: 12px 16px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 13px;
+      line-height: 1.9;
+    }
+    .eig-stable   { color: #2a6a2a; }
+    .eig-unstable { color: #8a2020; }
+    .eig-marginal { color: #7a5520; }
+    /* Mode classification badge */
+    .mode-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 3px;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: 'IBM Plex Mono', monospace;
+    }
+    .mode-stable-node   { background: #d8f0d8; color: #2a5a2a; }
+    .mode-unstable-node { background: #f8d8d8; color: #7a2020; }
+    .mode-stable-spiral { background: #d8eaf8; color: #1a4070; }
+    .mode-unstable-spiral{ background: #fce8d8; color: #7a3010; }
+    .mode-saddle        { background: #f8f0d0; color: #6a5010; }
+    .mode-center        { background: #ece8f4; color: #4a3090; }
+    /* notation recap */
+    .notation-table td:first-child {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 13px;
+      white-space: nowrap;
+      padding-right: 16px;
+      color: #2a4868;
+      vertical-align: top;
+    }
+    .notation-table td { padding: 4px 8px; vertical-align: top; font-size: 13.5px; }
+    /* slider row */
+    .slider-row {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 6px; font-size: 13px;
+    }
+    .slider-row label { width: 38px; flex-shrink: 0; font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #3a5a78; }
+    .slider-row input[type=range] { flex: 1; }
+    .slider-row .sv { font-family: 'IBM Plex Mono', monospace; width: 44px; text-align: right; font-size: 12.5px; }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Foundations</div>
+        <a href="control-problem.html" class="nav-item">1 · The Control Problem</a>
+        <a href="transfer-functions.html" class="nav-item">2 · Dynamical Systems &amp; Transfer Functions</a>
+        <a href="bode.html" class="nav-item">3 · Second-Order Systems</a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-label">Frequency Domain</div>
+        <a href="routh.html" class="nav-item">4 · Routh-Hurwitz Stability</a>
+        <a href="root-locus.html" class="nav-item">5 · Root Locus</a>
+        <a href="nyquist.html" class="nav-item">6 · Nyquist &amp; Stability Margins</a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-label">Classical Design</div>
+        <a href="pid.html" class="nav-item">7 · PID Control</a>
+        <a href="lead-lag.html" class="nav-item">8 · Lead-Lag Compensators</a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-label">State Space</div>
+        <a href="state-space.html" class="nav-item active">9 · State-Space Representation</a>
+        <span class="nav-item planned">10 · State Response</span>
+        <span class="nav-item planned">11 · Controllability &amp; Observability</span>
+        <span class="nav-item planned">12 · State Feedback &amp; Pole Placement</span>
+        <span class="nav-item planned">13 · Linear Quadratic Regulator</span>
+        <span class="nav-item planned">14 · Observers &amp; Separation Principle</span>
+      </div>
+      <hr class="sidebar-rule">
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#beyond-tf" class="nav-item">Beyond transfer functions</a>
+        <a href="#equations" class="nav-item">The state equations</a>
+        <a href="#state-variables" class="nav-item">Choosing state variables</a>
+        <a href="#examples" class="nav-item">Physical examples</a>
+        <a href="#ode-to-ss" class="nav-item">ODE → state-space</a>
+        <a href="#ss-to-tf" class="nav-item">State-space → TF</a>
+        <a href="#eigenvalues" class="nav-item">Eigenvalues as poles</a>
+        <a href="#modal" class="nav-item">Modal decomposition</a>
+        <a href="#interactive" class="nav-item">Phase plane explorer</a>
+        <a href="#worked-examples" class="nav-item">Worked examples</a>
+        <a href="#food-for-thought" class="nav-item">Food for thought</a>
+        <a href="#pitfalls" class="nav-item">Common pitfalls</a>
+      </div>
+    </div><!-- /sidebar -->
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Control Theory</a>
+        <span class="sep">›</span>
+        <span>Lesson 9</span>
+      </div>
+
+      <div class="lesson-title">State-Space Representation</div>
+      <div class="lesson-meta">State Variables · Matrix Dynamics · Eigenvalues · Phase Plane · Modal Decomposition</div>
+
+      <!-- Notation recap -->
+      <div class="callout" style="margin-top:20px;">
+        <strong>Notation used in this lesson</strong>
+        <table class="notation-table" style="margin-top:10px; border-collapse:collapse;">
+          <tr><td>$x \in \mathbb{R}^n$</td><td>State vector — $n$ real-valued state variables</td></tr>
+          <tr><td>$u \in \mathbb{R}^m$</td><td>Input (control) vector — $m$ inputs</td></tr>
+          <tr><td>$y \in \mathbb{R}^p$</td><td>Output vector — $p$ measured outputs</td></tr>
+          <tr><td>$A,B,C,D$</td><td>System matrices ($n{\times}n$, $n{\times}m$, $p{\times}n$, $p{\times}m$)</td></tr>
+          <tr><td>$\lambda_i$</td><td>$i$-th eigenvalue of $A$ (may be complex)</td></tr>
+          <tr><td>$(sI - A)^{-1}$</td><td>Resolvent of $A$ — a matrix of rational functions of $s$</td></tr>
+          <tr><td>$\text{det}(sI-A)$</td><td>Characteristic polynomial of $A$ (degree $n$)</td></tr>
+        </table>
+      </div>
+
+      <!-- ═══ BEYOND TF ═══ -->
+      <div class="section-head" id="beyond-tf">Beyond transfer functions</div>
+
+      <div class="prose">
+        Transfer functions are a complete input-output description of a linear system. Given $G(s)$, you can compute the output for any input, draw Bode plots, find stability margins, and design controllers. But transfer functions hide everything that happens <em>inside</em> the system — the internal signals, the energy stored in capacitors and springs, the velocities of masses. For many control problems, you need access to those internal quantities:
+      </div>
+      <ul class="prose" style="padding-left:22px; margin-top:0;">
+        <li style="margin-bottom:6px;"><strong>State feedback</strong> (Lesson 12) — the controller reads every internal state and feeds it back. This requires knowing the states, not just the output.</li>
+        <li style="margin-bottom:6px;"><strong>Observers</strong> (Lesson 14) — when states can't be directly measured, you estimate them from the output. This requires a model of the internal dynamics.</li>
+        <li style="margin-bottom:6px;"><strong>Multi-input multi-output (MIMO) systems</strong> — a system with $m$ inputs and $p$ outputs has an $m \times p$ transfer function matrix. The state-space framework handles this naturally; working with TF matrices is cumbersome.</li>
+        <li><strong>Analysis and optimal control</strong> (Lesson 13) — questions of controllability, observability, and optimal gain selection all live in the state-space.</li>
+      </ul>
+      <div class="prose">
+        The state-space representation is the language of modern (post-1960) control theory. The classical frequency-domain tools you've seen so far are powerful for SISO design; the state-space is the foundation for everything beyond.
+      </div>
+
+      <!-- ═══ THE STATE EQUATIONS ═══ -->
+      <div class="section-head" id="equations">The state equations</div>
+
+      <div class="prose">
+        A linear time-invariant system is described by the pair of matrix equations:
+      </div>
+
+      <div class="math-block">
+        $$\dot{x}(t) = Ax(t) + Bu(t) \qquad \text{[state equation]}$$
+        $$y(t) = Cx(t) + Du(t) \qquad \text{[output equation]}$$
+      </div>
+
+      <div class="prose">
+        The first equation says: the rate of change of the state depends linearly on the
+        current state and the current input. The second says: the measured output is a linear
+        combination of the state and the input (the $D$ term is the direct feedthrough —
+        zero in most physical systems).
+      </div>
+
+      <div class="prose">
+        Together, the four matrices $(A, B, C, D)$ are a complete description of the system.
+        Given any initial state $x(0) = x_0$ and any input history $u(t)$, the output $y(t)$
+        is uniquely determined. That's the same information the transfer function contains —
+        but organized differently, with the internal dynamics explicit.
+      </div>
+
+      <div class="callout">
+        <strong>The key distinction between $A, B, C, D$:</strong>
+        <ul style="margin: 10px 0 0; padding-left:20px;">
+          <li>$A$ governs how states evolve due to the current state ("internal dynamics").</li>
+          <li>$B$ governs how the input drives the state ("how inputs enter the system").</li>
+          <li>$C$ selects which linear combinations of state are measured ("what sensors see").</li>
+          <li>$D$ is the direct feedthrough from input to output — physically, a system where input energy skips the dynamics entirely. For most mechanical and electrical systems, $D = 0$.</li>
+        </ul>
+      </div>
+
+      <!-- ═══ CHOOSING STATE VARIABLES ═══ -->
+      <div class="section-head" id="state-variables">Choosing state variables</div>
+
+      <div class="prose">
+        The <strong>state</strong> of a system is the minimal information needed to completely
+        predict its future behavior, given the future inputs. This is a physical concept
+        before it is a mathematical one — the right choice of state variables is usually
+        suggested by physics:
+      </div>
+
+      <table style="border-collapse:collapse; width:100%; font-size:13.5px; margin:16px 0;">
+        <thead>
+          <tr style="background:#f0f4f7;">
+            <th style="border:1px solid #d0dce6; padding:9px 12px; text-align:left; color:#3a5a78; font-size:11.5px; text-transform:uppercase; letter-spacing:0.05em;">System type</th>
+            <th style="border:1px solid #d0dce6; padding:9px 12px; text-align:left; color:#3a5a78; font-size:11.5px; text-transform:uppercase; letter-spacing:0.05em;">State variables</th>
+            <th style="border:1px solid #d0dce6; padding:9px 12px; text-align:left; color:#3a5a78; font-size:11.5px; text-transform:uppercase; letter-spacing:0.05em;">Physical reason</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="border:1px solid #d0dce6; padding:8px 12px;">Mechanical (spring-mass)</td>
+            <td style="border:1px solid #d0dce6; padding:8px 12px; font-family:'IBM Plex Mono',monospace; font-size:12.5px;">position $q$, velocity $\dot{q}$</td>
+            <td style="border:1px solid #d0dce6; padding:8px 12px;">Stores kinetic energy ($\frac{1}{2}m\dot{q}^2$) and potential energy ($\frac{1}{2}kq^2$) — both needed to predict future</td>
+          </tr>
+          <tr style="background:#f9fbfc;">
+            <td style="border:1px solid #d0dce6; padding:8px 12px;">Electrical (RLC)</td>
+            <td style="border:1px solid #d0dce6; padding:8px 12px; font-family:'IBM Plex Mono',monospace; font-size:12.5px;">capacitor voltages $v_C$, inductor currents $i_L$</td>
+            <td style="border:1px solid #d0dce6; padding:8px 12px;">Capacitors and inductors are energy-storage elements; resistors dissipate, no memory</td>
+          </tr>
+          <tr>
+            <td style="border:1px solid #d0dce6; padding:8px 12px;">Thermal</td>
+            <td style="border:1px solid #d0dce6; padding:8px 12px; font-family:'IBM Plex Mono',monospace; font-size:12.5px;">temperatures $T_i$</td>
+            <td style="border:1px solid #d0dce6; padding:8px 12px;">Thermal capacitance stores energy; knowing temperatures determines future heat flow</td>
+          </tr>
+          <tr style="background:#f9fbfc;">
+            <td style="border:1px solid #d0dce6; padding:8px 12px;">Fluid (tank)</td>
+            <td style="border:1px solid #d0dce6; padding:8px 12px; font-family:'IBM Plex Mono',monospace; font-size:12.5px;">fluid heights $h_i$</td>
+            <td style="border:1px solid #d0dce6; padding:8px 12px;">Height determines potential energy and outflow rate</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="prose">
+        <strong>Rule of thumb:</strong> For a system with $n$ independent energy-storage
+        elements (springs, masses, capacitors, inductors — counted by their degrees of
+        freedom), you need $n$ state variables. This matches the order of the differential
+        equation describing the system.
+      </div>
+      <div class="prose">
+        The choice is not unique — any invertible transformation of a valid state vector gives
+        another valid state vector. Different choices lead to different $(A, B, C, D)$ matrices
+        but the same input-output behavior. This is the basis of the <em>similarity
+        transformation</em> and the modal decomposition discussed below.
+      </div>
+
+      <!-- ═══ PHYSICAL EXAMPLES ═══ -->
+      <div class="section-head" id="examples">Physical examples</div>
+
+      <div class="prose">
+        <strong>Example A: Spring-mass-damper.</strong>
+        Newton's second law for a mass $m$ with spring constant $k$, damping $b$, and
+        applied force input $u(t)$:
+      </div>
+
+      <div class="math-block">
+        $$m\ddot{q} + b\dot{q} + kq = u$$
+      </div>
+
+      <div class="prose">
+        Choose $x_1 = q$ (position) and $x_2 = \dot{q}$ (velocity). Then:
+      </div>
+
+      <div class="math-block">
+        $$\dot{x}_1 = x_2, \qquad \dot{x}_2 = -\frac{k}{m}x_1 - \frac{b}{m}x_2 + \frac{1}{m}u$$
+      </div>
+
+      <div class="prose">
+        Writing in matrix form with output $y = q = x_1$:
+      </div>
+
+      <div class="math-block">
+        $$\dot{x} = \underbrace{\begin{bmatrix}0 & 1 \\ -k/m & -b/m\end{bmatrix}}_{A}x
+          + \underbrace{\begin{bmatrix}0 \\ 1/m\end{bmatrix}}_{B}u,
+          \qquad y = \underbrace{\begin{bmatrix}1 & 0\end{bmatrix}}_{C}x$$
+      </div>
+
+      <div class="prose">
+        The $A$ matrix captures everything about the internal dynamics. The first row
+        ($\dot{x}_1 = x_2$) just says "velocity is the derivative of position." The
+        second row encodes Newton's law for the acceleration: restoring force $-kx_1/m$
+        and damping $-bx_2/m$.
+      </div>
+
+      <div class="prose" style="margin-top:18px;">
+        <strong>Example B: Series RLC circuit.</strong>
+        A series circuit with resistor $R$, inductor $L$, capacitor $C$, and voltage source
+        $u(t)$. The KVL loop equation is $L\dot{i} + Ri + v_C = u$, and capacitor dynamics
+        give $\dot{v}_C = i/C$.
+      </div>
+      <div class="prose">
+        Choose $x_1 = v_C$, $x_2 = i_L = i$. Output: voltage across the capacitor, $y = v_C$.
+      </div>
+
+      <div class="math-block">
+        $$\dot{x} = \begin{bmatrix}0 & 1/C \\ -1/L & -R/L\end{bmatrix}x
+          + \begin{bmatrix}0 \\ 1/L\end{bmatrix}u,
+          \qquad y = \begin{bmatrix}1 & 0\end{bmatrix}x$$
+      </div>
+
+      <div class="prose">
+        Compare with the spring-mass-damper: the matrices are structurally identical, with
+        the correspondence $m \leftrightarrow L$, $k \leftrightarrow 1/C$, $b \leftrightarrow R$.
+        This is not a coincidence — both systems are second-order with one energy-storage
+        element in each "quadrature" (position/voltage, velocity/current). The state-space
+        formulation makes the analogy between mechanics and circuits explicit.
+      </div>
+
+      <!-- ═══ ODE → STATE-SPACE ═══ -->
+      <div class="section-head" id="ode-to-ss">Converting an ODE to state-space</div>
+
+      <div class="prose">
+        Given an $n$-th order ODE with no input derivatives:
+      </div>
+
+      <div class="math-block">
+        $$y^{(n)} + a_{n-1}y^{(n-1)} + \cdots + a_1\dot{y} + a_0 y = b_0 u$$
+      </div>
+
+      <div class="prose">
+        The <strong>phase variable</strong> (or <em>companion</em>) realization is the most
+        direct approach. Let $x_1 = y$, $x_2 = \dot{y}$, …, $x_n = y^{(n-1)}$. Then:
+      </div>
+
+      <div class="math-block">
+        $$\dot{x} = \underbrace{\begin{bmatrix}
+          0 & 1 & 0 & \cdots & 0 \\
+          0 & 0 & 1 & \cdots & 0 \\
+          \vdots & & & \ddots & \vdots \\
+          0 & 0 & 0 & \cdots & 1 \\
+          -a_0 & -a_1 & -a_2 & \cdots & -a_{n-1}
+        \end{bmatrix}}_{A_c} x
+        + \underbrace{\begin{bmatrix}0\\0\\\vdots\\0\\b_0\end{bmatrix}}_{B_c} u,
+        \qquad y = \underbrace{\begin{bmatrix}1 & 0 & \cdots & 0\end{bmatrix}}_{C_c} x$$
+      </div>
+
+      <div class="prose">
+        The matrix $A_c$ is the <em>companion matrix</em> of the characteristic polynomial.
+        Its bottom row is the negated coefficients of the ODE; the rest is a shift structure
+        (identity matrix shifted right). This form is useful theoretically, though not always
+        numerically well-conditioned.
+      </div>
+
+      <div class="callout">
+        <strong>What about input derivatives?</strong> When the ODE has terms like $\dot{u}$ or
+        $\ddot{u}$ on the right-hand side, the phase-variable trick breaks down (you can't
+        set $x_1 = y$ and differentiate without bringing derivatives of $u$ into the state
+        equation). The fix is a different realization: start from the transfer function
+        $G(s)$ and use the <em>observable canonical form</em> or <em>controllable canonical
+        form</em>. The companion matrix above is already the controllable canonical form for
+        the no-input-derivative case.
+      </div>
+
+      <!-- ═══ SS → TF ═══ -->
+      <div class="section-head" id="ss-to-tf">From state-space to transfer function</div>
+
+      <div class="prose">
+        Taking the Laplace transform of both state equations (zero initial conditions):
+      </div>
+
+      <div class="math-block">
+        $$sX(s) = AX(s) + BU(s) \implies X(s) = (sI - A)^{-1}BU(s)$$
+        $$Y(s) = CX(s) + DU(s) = \bigl[C(sI-A)^{-1}B + D\bigr]U(s)$$
+      </div>
+
+      <div class="prose">
+        So the transfer function is:
+      </div>
+
+      <div class="math-block">
+        $$G(s) = C(sI - A)^{-1}B + D$$
+      </div>
+
+      <div class="prose">
+        For a MIMO system, $G(s)$ is a $p \times m$ matrix of rational functions —
+        one entry for each input-output pair. For a SISO system, it reduces to a scalar.
+      </div>
+      <div class="prose">
+        The matrix $(sI - A)^{-1}$ is computed via the adjugate: $(sI-A)^{-1} = \text{adj}(sI-A)/\text{det}(sI-A)$.
+        The denominator $\text{det}(sI-A)$ is the characteristic polynomial of $A$ — a
+        polynomial of degree $n$ in $s$. This is where the poles come from.
+      </div>
+
+      <!-- ═══ EIGENVALUES AS POLES ═══ -->
+      <div class="section-head" id="eigenvalues">Eigenvalues of $A$ are the poles</div>
+
+      <div class="prose">
+        The poles of the transfer function $G(s)$ are (generically) the roots of
+        $\text{det}(sI - A) = 0$ — which are exactly the eigenvalues of $A$.
+      </div>
+
+      <div class="math-block">
+        $$\text{poles of } G(s) \subseteq \{\lambda \,:\, \det(\lambda I - A) = 0\} = \text{eigenvalues of } A$$
+      </div>
+
+      <div class="prose">
+        The "subset" qualification matters: if there are pole-zero cancellations in $G(s)$,
+        some eigenvalues of $A$ disappear from the transfer function. This happens when the
+        realization is <em>non-minimal</em> — there are hidden modes that the input can't
+        reach or the output can't see. A minimal realization has no such cancellations, and
+        the eigenvalues of $A$ are exactly the poles of $G(s)$.
+      </div>
+
+      <div class="prose">
+        <strong>Stability from eigenvalues:</strong> A system is (asymptotically) stable if
+        and only if all eigenvalues of $A$ have strictly negative real parts:
+      </div>
+
+      <div class="math-block">
+        $$\text{system stable} \iff \text{Re}(\lambda_i) < 0 \text{ for all } i = 1, \ldots, n$$
+      </div>
+
+      <div class="prose">
+        This is the state-space analog of the Routh-Hurwitz criterion: both answer the same
+        stability question, but from different representations. In state-space, computing
+        the eigenvalues of $A$ directly gives you the answer.
+      </div>
+
+      <div class="prose">
+        Complex eigenvalues come in conjugate pairs (since $A$ is real-valued), $\lambda_{1,2} = \sigma \pm j\omega_d$.
+        The real part $\sigma$ determines the growth/decay rate; the imaginary part $\omega_d$
+        determines the oscillation frequency. This is exactly the same $\sigma + j\omega_d$
+        you've seen on the s-plane in root locus design — the eigenvalues of the closed-loop
+        $A$ matrix are the closed-loop poles.
+      </div>
+
+      <!-- ═══ MODAL DECOMPOSITION ═══ -->
+      <div class="section-head" id="modal">Modal decomposition</div>
+
+      <div class="prose">
+        The most revealing way to understand a linear system is to decompose it into
+        independent <em>modes</em>, each with its own time constant and frequency.
+        This is done by diagonalizing $A$.
+      </div>
+      <div class="prose">
+        If $A$ has $n$ linearly independent eigenvectors $v_1, \ldots, v_n$ (true for most
+        matrices in practice — exceptions involve repeated eigenvalues with insufficient
+        eigenvectors, which require Jordan form), then:
+      </div>
+
+      <div class="math-block">
+        $$A = T\Lambda T^{-1}, \qquad \Lambda = \text{diag}(\lambda_1, \ldots, \lambda_n), \qquad T = \begin{bmatrix}v_1 & v_2 & \cdots & v_n\end{bmatrix}$$
+      </div>
+
+      <div class="prose">
+        Define a change of coordinates $z = T^{-1}x$ (the <em>modal coordinates</em>).
+        Then the state equation becomes:
+      </div>
+
+      <div class="math-block">
+        $$\dot{z} = T^{-1}AT\, z + T^{-1}Bu = \Lambda z + \tilde{B}u$$
+      </div>
+
+      <div class="prose">
+        Since $\Lambda$ is diagonal, the modal state equation decouples into $n$ independent
+        first-order equations:
+      </div>
+
+      <div class="math-block">
+        $$\dot{z}_i = \lambda_i z_i + \tilde{B}_i u, \qquad i = 1, \ldots, n$$
+      </div>
+
+      <div class="prose">
+        Each mode $z_i(t)$ evolves as $e^{\lambda_i t}$ (plus a driven term). The
+        original state is $x(t) = Tz(t) = \sum_i z_i(t) v_i$ — a superposition of
+        independent exponential modes, each with its own decay rate and oscillation
+        frequency given by $\lambda_i$.
+      </div>
+
+      <div class="callout">
+        <strong>Modes and physical intuition:</strong>
+        For the spring-mass-damper with underdamping ($b^2 &lt; 4mk$), the eigenvalues are
+        $\lambda_{1,2} = -\zeta\omega_n \pm j\omega_n\sqrt{1-\zeta^2}$, giving a single
+        oscillatory mode with exponential envelope $e^{-\zeta\omega_n t}$. This is exactly
+        the step-response behavior from Lesson 3 — the modal decomposition explains <em>why</em>
+        that behavior arises: there is only one mode, and it is a damped sinusoid.
+      </div>
+
+      <div class="prose">
+        For a system with two real eigenvalues $\lambda_1 &lt; \lambda_2 &lt; 0$, the response
+        has two modes: a fast-decaying component $e^{\lambda_1 t}$ and a slow-decaying
+        component $e^{\lambda_2 t}$. The long-time behavior is dominated by the
+        <em>slowest mode</em> (eigenvalue closest to the imaginary axis).
+      </div>
+
+      <!-- ═══ INTERACTIVE ═══ -->
+      <div class="section-head" id="interactive">Interactive: phase plane explorer</div>
+
+      <div class="prose">
+        For a second-order autonomous system $\dot{x} = Ax$, the phase plane shows how the
+        state $[x_1, x_2]$ evolves from various initial conditions. Each curve is a
+        trajectory starting from a different $x_0$. The character of the trajectories —
+        spiraling inward, spiraling outward, converging along a line, or diverging — is
+        entirely determined by the eigenvalues of $A$.
+      </div>
+      <div class="prose">
+        Adjust the four entries of $A$ and watch the eigenvalues and phase portrait update.
+        Try to reproduce the six canonical phase-plane portraits: stable node, unstable node,
+        saddle point, stable spiral, unstable spiral, and center.
+      </div>
+
+      <div class="widget-card">
+        <div class="widget-title">Phase Plane Explorer — $\dot{x} = Ax$</div>
+        <div style="display:grid; grid-template-columns:220px 1fr; gap:18px; align-items:start;">
+          <!-- Controls -->
+          <div>
+            <div style="font-size:12px; color:#7a9ab0; margin-bottom:10px;">Matrix $A$:</div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:12px; font-size:13px;">
+              <div>
+                <div class="slider-row"><label>$a_{11}$</label><input type="range" id="ss-a11" min="-3" max="3" step="0.1" value="-1" oninput="ssUpdate()"><span class="sv" id="ss-a11-v">−1.0</span></div>
+                <div class="slider-row"><label>$a_{21}$</label><input type="range" id="ss-a21" min="-3" max="3" step="0.1" value="-2" oninput="ssUpdate()"><span class="sv" id="ss-a21-v">−2.0</span></div>
+              </div>
+              <div>
+                <div class="slider-row"><label>$a_{12}$</label><input type="range" id="ss-a12" min="-3" max="3" step="0.1" value="1" oninput="ssUpdate()"><span class="sv" id="ss-a12-v">+1.0</span></div>
+                <div class="slider-row"><label>$a_{22}$</label><input type="range" id="ss-a22" min="-3" max="3" step="0.1" value="-1" oninput="ssUpdate()"><span class="sv" id="ss-a22-v">−1.0</span></div>
+              </div>
+            </div>
+
+            <div style="font-size:12px; color:#7a9ab0; margin-bottom:6px;">Quick presets:</div>
+            <div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:14px;">
+              <button class="sim-btn secondary" style="font-size:11.5px; padding:5px 8px;" onclick="ssPreset(-1,0,0,-2)">Stable node</button>
+              <button class="sim-btn secondary" style="font-size:11.5px; padding:5px 8px;" onclick="ssPreset(1,0,0,2)">Unstable node</button>
+              <button class="sim-btn secondary" style="font-size:11.5px; padding:5px 8px;" onclick="ssPreset(1,0,0,-2)">Saddle point</button>
+              <button class="sim-btn secondary" style="font-size:11.5px; padding:5px 8px;" onclick="ssPreset(-0.3,2,-2,-0.3)">Stable spiral</button>
+              <button class="sim-btn secondary" style="font-size:11.5px; padding:5px 8px;" onclick="ssPreset(0.3,2,-2,0.3)">Unstable spiral</button>
+              <button class="sim-btn secondary" style="font-size:11.5px; padding:5px 8px;" onclick="ssPreset(0,2,-2,0)">Center</button>
+            </div>
+
+            <!-- Eigenvalue display -->
+            <div class="eig-display" id="ss-eig-display">
+              <div style="font-size:11px; color:#7a9ab0; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:6px;">Eigenvalues</div>
+              <div id="ss-eig1">λ₁ = —</div>
+              <div id="ss-eig2">λ₂ = —</div>
+              <div style="margin-top:8px; font-size:12px; color:#7a9ab0;">tr(A) = <span id="ss-tr" style="color:#2a3a4a;">—</span>, det(A) = <span id="ss-det" style="color:#2a3a4a;">—</span></div>
+              <div style="margin-top:8px;"><span id="ss-class" class="mode-badge mode-stable-spiral">—</span></div>
+            </div>
+          </div>
+
+          <!-- Phase plane -->
+          <div>
+            <svg id="ss-phase-svg" width="100%" viewBox="0 0 340 320"
+                 style="display:block; background:#fff; border:1px solid #d0dce6; border-radius:4px;"></svg>
+            <div style="font-size:11.5px; color:#9aabb8; margin-top:6px; text-align:center;">
+              Phase plane: $x_1$ (horizontal) vs $x_2$ (vertical). Each curve is one trajectory.
+            </div>
+          </div>
+        </div>
+      </div><!-- /widget -->
+
+      <!-- ═══ WORKED EXAMPLES ═══ -->
+      <div class="section-head" id="worked-examples">Worked examples</div>
+
+      <!-- Example 1 -->
+      <div class="callout" style="border-color:#a0c8a0; background:#f4fbf4;">
+        <strong>Example 1 — State-space of a double integrator.</strong><br>
+        The <em>double integrator</em> $G(s) = 1/s^2$ models position control of a mass
+        under a force input with no damping: $\ddot{q} = u$.
+
+        Choose $x_1 = q$ (position) and $x_2 = \dot{q}$ (velocity):
+        $$\dot{x} = \begin{bmatrix}0 & 1 \\ 0 & 0\end{bmatrix}x + \begin{bmatrix}0\\1\end{bmatrix}u, \qquad y = \begin{bmatrix}1 & 0\end{bmatrix}x$$
+
+        Eigenvalues of $A$: $\lambda_{1,2} = 0$ (repeated). The double integrator sits at
+        the boundary of stability — not unstable, but not asymptotically stable either. Any
+        perturbation persists forever. This is why position control of an unactuated mass
+        (satellite, cart) is challenging: you must add feedback to stabilize it.
+
+        <div style="margin-top:10px;">
+          Verify via formula: $G(s) = C(sI-A)^{-1}B = [1\;0]\begin{bmatrix}s & -1 \\ 0 & s\end{bmatrix}^{-1}\!\begin{bmatrix}0\\1\end{bmatrix}$.
+          $(sI-A)^{-1} = \frac{1}{s^2}\begin{bmatrix}s & 1 \\ 0 & s\end{bmatrix}$.
+          So $C(sI-A)^{-1}B = [1\;0]\frac{1}{s^2}\begin{bmatrix}1\\s\end{bmatrix} = \frac{1}{s^2}$ ✓
+        </div>
+      </div>
+
+      <!-- Example 2 -->
+      <div class="callout" style="border-color:#a0c8a0; background:#f4fbf4; margin-top:18px;">
+        <strong>Example 2 — Eigenvalues from a given $A$ matrix.</strong><br>
+        $$A = \begin{bmatrix}-3 & 1 \\ -2 & 0\end{bmatrix}$$
+
+        Characteristic polynomial: $\det(sI - A) = \det\begin{bmatrix}s+3 & -1 \\ 2 & s\end{bmatrix} = s(s+3) + 2 = s^2 + 3s + 2$.
+
+        Roots: $(s+1)(s+2) = 0 \Rightarrow \lambda_1 = -1, \lambda_2 = -2$.
+
+        Both eigenvalues have negative real parts: the system is <strong>asymptotically stable</strong>.
+
+        Transfer function (with $B = [0; 1]$, $C = [1\; 0]$, $D = 0$):
+        $G(s) = C(sI-A)^{-1}B = [1\;0] \cdot \frac{1}{s^2+3s+2}\begin{bmatrix}s & 1 \\ -2 & s+3\end{bmatrix}\begin{bmatrix}0\\1\end{bmatrix} = \frac{1}{s^2+3s+2}$.
+
+        Poles at $s = -1, -2$ match the eigenvalues of $A$ ✓.
+      </div>
+
+      <!-- Example 3 -->
+      <div class="callout" style="border-color:#a0c8a0; background:#f4fbf4; margin-top:18px;">
+        <strong>Example 3 — Minimal vs non-minimal realization.</strong><br>
+        Consider $G(s) = 1/(s+2)$ and a "padded" 2-state realization:
+        $$A = \begin{bmatrix}-2 & 0 \\ 0 & -5\end{bmatrix}, \quad B = \begin{bmatrix}1 \\ 1\end{bmatrix}, \quad C = \begin{bmatrix}1 & 0\end{bmatrix}$$
+
+        Eigenvalues of $A$: $\{-2, -5\}$. Two states, two poles — but:
+        $G(s) = C(sI-A)^{-1}B = \frac{1}{s+2} + \frac{0}{s+5} = \frac{1}{s+2}$.
+
+        The mode at $s = -5$ is present in $A$ but doesn't appear in $G(s)$.
+        Why? Because $C[1\; 0]$ selects only $x_1$, so $x_2$ (the $-5$ mode) is never
+        observed in the output. This is a non-minimal realization — it uses 2 states to
+        describe a first-order system. The minimal realization is the 1-state version:
+        $A = [-2]$, $B = [1]$, $C = [1]$.
+      </div>
+
+      <!-- ═══ FOOD FOR THOUGHT ═══ -->
+      <div class="section-head" id="food-for-thought">Food for thought</div>
+      <ol class="prose" style="padding-left:22px;">
+        <li style="margin-bottom:10px;">
+          Two different physical systems — a spring-mass-damper and a series RLC circuit —
+          have the same state-space structure with different parameter names. What does this
+          tell you about the relationship between the mathematics of a system and its physical
+          implementation? What other systems share this structure?
+        </li>
+        <li style="margin-bottom:10px;">
+          The state vector $x$ is not unique — any invertible transformation $z = Tx$ gives
+          an equivalent representation with matrices $TAT^{-1}, TB, CT^{-1}, D$.
+          Since the transfer function $G(s) = C(sI-A)^{-1}B$ doesn't change under this
+          transformation, what properties of the system are "coordinate-invariant" (same
+          regardless of which state basis you choose)?
+        </li>
+        <li>
+          The phase variable realization always produces an $A$ matrix in companion form.
+          This is numerically convenient for small systems but problematic for large ones —
+          why might the companion matrix have poor numerical conditioning, and how does this
+          matter for simulation or control design?
+        </li>
+      </ol>
+
+      <!-- ═══ COMMON PITFALLS ═══ -->
+      <div class="section-head" id="pitfalls">Common pitfalls</div>
+      <ul class="prose" style="padding-left:22px;">
+        <li style="margin-bottom:8px;">
+          <strong>Confusing eigenvalues of $A$ with poles of $G(s)$.</strong>
+          They are the same for a minimal realization, but the eigenvalues of $A$ include
+          <em>all</em> modes — including hidden ones that cancel in the TF. The eigenvalues
+          are the right object for stability analysis of the full state trajectory;
+          the poles are the right object for input-output analysis.
+        </li>
+        <li style="margin-bottom:8px;">
+          <strong>Forgetting that the state choice affects $A, B, C, D$ but not $G(s)$.</strong>
+          Different valid state choices give the same transfer function — they are equivalent
+          representations. But they give different $A$ matrices, different eigenspaces, and
+          (most importantly) different interpretations of what $x$ means physically.
+        </li>
+        <li style="margin-bottom:8px;">
+          <strong>Applying the phase-variable realization when there are input derivatives.</strong>
+          If the right-hand side contains $\dot{u}$ or higher derivatives, setting
+          $x_1 = y$ and differentiating introduces derivatives of $u$ into the state
+          equation, which is not allowed. Use the controllable or observable canonical form
+          derived from the transfer function instead.
+        </li>
+        <li style="margin-bottom:8px;">
+          <strong>Assuming $D = 0$ always.</strong>
+          For most physical plant models $D = 0$ (no direct feedthrough). But when you
+          cascade a controller with the plant, the controller transfer function may have
+          $D \neq 0$ (e.g., a PD controller has $D \neq 0$ because the derivative term
+          passes high-frequency input directly to output). Always check.
+        </li>
+        <li>
+          <strong>Dimension mismatches.</strong>
+          The most common algebra error: $A$ must be $n \times n$, $B$ must be $n \times m$,
+          $C$ must be $p \times n$, and $D$ must be $p \times m$. When writing state equations
+          for a new system, always check dimensions before computing anything.
+        </li>
+      </ul>
+
+      <!-- ═══ CONNECTS TO ═══ -->
+      <div class="section-head">Connects to</div>
+      <div class="prose">
+        <a href="transfer-functions.html">Lesson 2 (Transfer Functions)</a> — the
+        input-output representation that state-space extends. The relationship $G(s) = C(sI-A)^{-1}B + D$
+        connects the two frameworks; eigenvalues of $A$ = poles of $G(s)$ for minimal
+        realizations.
+        ·
+        <a href="bode.html">Lesson 3 (Second-Order Systems)</a> — the step response
+        analyzed there corresponds to the single oscillatory mode of a 2-state system;
+        modal decomposition makes this explicit.
+        ·
+        <span style="color:#7a9ab0;">Lesson 10 (State Response)</span> — the matrix exponential $e^{At}$
+        is the exact solution of $\dot{x} = Ax$; eigenvalues of $A$ determine its behavior.
+        ·
+        <span style="color:#7a9ab0;">Lesson 11 (Controllability &amp; Observability)</span> —
+        minimal realizations, hidden modes, and the question of which eigenvalues of $A$
+        are reachable from the input and visible in the output.
+      </div>
+
+      <!-- ═══ NAV ═══ -->
+      <div class="lesson-nav">
+        <a href="lead-lag.html" class="lesson-nav-btn">← Lesson 8: Lead-Lag</a>
+        <a href="index.html" class="lesson-nav-btn">Back to Control Theory</a>
+        <span class="lesson-nav-btn disabled">Lesson 10: State Response →</span>
+      </div>
+
+    </div><!-- /main -->
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+<script>
+// ─── Phase Plane Explorer ───────────────────────────────────────────────────
+
+function ssInit() {
+  ssUpdate();
+}
+
+function ssPreset(a11, a12, a21, a22) {
+  document.getElementById('ss-a11').value = a11;
+  document.getElementById('ss-a12').value = a12;
+  document.getElementById('ss-a21').value = a21;
+  document.getElementById('ss-a22').value = a22;
+  ssUpdate();
+}
+
+function ssUpdate() {
+  var a11 = parseFloat(document.getElementById('ss-a11').value);
+  var a12 = parseFloat(document.getElementById('ss-a12').value);
+  var a21 = parseFloat(document.getElementById('ss-a21').value);
+  var a22 = parseFloat(document.getElementById('ss-a22').value);
+
+  // Update labels
+  function fmt(v) { return (v >= 0 ? '+' : '') + v.toFixed(1); }
+  document.getElementById('ss-a11-v').textContent = fmt(a11);
+  document.getElementById('ss-a12-v').textContent = fmt(a12);
+  document.getElementById('ss-a21-v').textContent = fmt(a21);
+  document.getElementById('ss-a22-v').textContent = fmt(a22);
+
+  // Eigenvalues of 2x2 matrix
+  var tr  = a11 + a22;
+  var det = a11 * a22 - a12 * a21;
+  var disc = (tr / 2) * (tr / 2) - det;
+
+  document.getElementById('ss-tr').textContent  = tr.toFixed(2);
+  document.getElementById('ss-det').textContent = det.toFixed(2);
+
+  var eig1_re, eig1_im, eig2_re, eig2_im;
+  var classification, badgeClass;
+
+  if (Math.abs(disc) < 1e-6) disc = 0;
+
+  if (disc >= 0) {
+    eig1_re = tr / 2 + Math.sqrt(disc);
+    eig1_im = 0;
+    eig2_re = tr / 2 - Math.sqrt(disc);
+    eig2_im = 0;
+    // Classification
+    if (eig1_re < -1e-6 && eig2_re < -1e-6) {
+      classification = 'Stable node'; badgeClass = 'mode-stable-node';
+    } else if (eig1_re > 1e-6 && eig2_re > 1e-6) {
+      classification = 'Unstable node'; badgeClass = 'mode-unstable-node';
+    } else if (eig1_re * eig2_re < 0) {
+      classification = 'Saddle point'; badgeClass = 'mode-saddle';
+    } else {
+      classification = 'Marginal'; badgeClass = 'mode-center';
+    }
+  } else {
+    eig1_re = tr / 2;
+    eig1_im = Math.sqrt(-disc);
+    eig2_re = tr / 2;
+    eig2_im = -Math.sqrt(-disc);
+    if (eig1_re < -1e-6) {
+      classification = 'Stable spiral'; badgeClass = 'mode-stable-spiral';
+    } else if (eig1_re > 1e-6) {
+      classification = 'Unstable spiral'; badgeClass = 'mode-unstable-spiral';
+    } else {
+      classification = 'Center'; badgeClass = 'mode-center';
+    }
+  }
+
+  function fmtEig(re, im) {
+    if (Math.abs(im) < 1e-6) return re.toFixed(3);
+    var sign = im >= 0 ? '+' : '−';
+    return re.toFixed(3) + ' ' + sign + ' ' + Math.abs(im).toFixed(3) + 'j';
+  }
+  function eigClass(re) {
+    if (re < -1e-6) return 'eig-stable';
+    if (re > 1e-6)  return 'eig-unstable';
+    return 'eig-marginal';
+  }
+
+  var e1El = document.getElementById('ss-eig1');
+  var e2El = document.getElementById('ss-eig2');
+  e1El.textContent = 'λ₁ = ' + fmtEig(eig1_re, eig1_im);
+  e1El.className = eigClass(eig1_re);
+  e2El.textContent = 'λ₂ = ' + fmtEig(eig2_re, eig2_im);
+  e2El.className = eigClass(eig2_re);
+
+  var badgeEl = document.getElementById('ss-class');
+  badgeEl.textContent = classification;
+  badgeEl.className = 'mode-badge ' + badgeClass;
+
+  // Render phase plane
+  ssRenderPhase(a11, a12, a21, a22, eig1_re, eig1_im, eig2_re, classification);
+}
+
+function ssRenderPhase(a11, a12, a21, a22, eig1_re, eig1_im, eig2_re, classification) {
+  var svg = document.getElementById('ss-phase-svg');
+  var W = 340, H = 320;
+  var cx = W / 2, cy = H / 2;
+  var scale = 55; // pixels per unit
+
+  function px(x1) { return cx + x1 * scale; }
+  function py(x2) { return cy - x2 * scale; }
+
+  var content = '';
+
+  // Grid lines
+  for (var g = -5; g <= 5; g++) {
+    if (g === 0) continue;
+    var gx = px(g), gy = py(g);
+    content += '<line x1="' + gx.toFixed(1) + '" y1="0" x2="' + gx.toFixed(1) + '" y2="' + H + '" stroke="#f0f0ee" stroke-width="1"/>';
+    content += '<line x1="0" y1="' + gy.toFixed(1) + '" x2="' + W + '" y2="' + gy.toFixed(1) + '" stroke="#f0f0ee" stroke-width="1"/>';
+    if (Math.abs(g) <= 3) {
+      content += '<text x="' + gx.toFixed(1) + '" y="' + (cy + 12) + '" font-size="9" fill="#b0bcc8" text-anchor="middle">' + g + '</text>';
+      if (g !== 0) content += '<text x="' + (cx + 5) + '" y="' + (gy + 3).toFixed(1) + '" font-size="9" fill="#b0bcc8">' + g + '</text>';
+    }
+  }
+
+  // Axes
+  content += '<line x1="0" y1="' + cy + '" x2="' + W + '" y2="' + cy + '" stroke="#c0ccd6" stroke-width="1.2"/>';
+  content += '<line x1="' + cx + '" y1="0" x2="' + cx + '" y2="' + H + '" stroke="#c0ccd6" stroke-width="1.2"/>';
+  content += '<text x="' + (W - 8) + '" y="' + (cy - 4) + '" font-size="10" fill="#8a9aaa" text-anchor="end">$x_1$</text>';
+  content += '<text x="' + (cx + 4) + '" y="12" font-size="10" fill="#8a9aaa">$x_2$</text>';
+
+  // Compute trajectories
+  var isUnstable = eig1_re > 0.05 || eig2_re > 0.05;
+  var DT = isUnstable ? 0.005 : 0.015;
+  var N_steps = isUnstable ? 250 : 350;
+  var radius = 2.5;
+  var N_traj = 10;
+
+  // Color scheme based on stability
+  var strokeColor, arrowColor;
+  if (classification === 'Stable node' || classification === 'Stable spiral') {
+    strokeColor = '#3a6a8a';
+  } else if (classification === 'Unstable node' || classification === 'Unstable spiral') {
+    strokeColor = '#b04040';
+  } else if (classification === 'Saddle point') {
+    strokeColor = '#7a5520';
+  } else {
+    strokeColor = '#5a4a90';
+  }
+
+  for (var t = 0; t < N_traj; t++) {
+    var angle = (2 * Math.PI * t) / N_traj;
+    var x1 = radius * Math.cos(angle);
+    var x2 = radius * Math.sin(angle);
+
+    var pathFwd = '';
+    var validFwd = true;
+    for (var step = 0; step < N_steps; step++) {
+      var sx = px(x1), sy = py(x2);
+      if (sx < -10 || sx > W + 10 || sy < -10 || sy > H + 10) { validFwd = false; break; }
+      pathFwd += (step === 0 ? 'M' : 'L') + sx.toFixed(1) + ',' + sy.toFixed(1);
+
+      // Euler step forward: dx = A*x
+      var dx1 = a11 * x1 + a12 * x2;
+      var dx2 = a21 * x1 + a22 * x2;
+      x1 += DT * dx1;
+      x2 += DT * dx2;
+    }
+    if (pathFwd.length > 3) {
+      content += '<path d="' + pathFwd + '" fill="none" stroke="' + strokeColor + '" stroke-width="1.2" opacity="0.7"/>';
+    }
+
+    // Backward integration (shows unstable direction for saddle)
+    if (classification === 'Saddle point') {
+      var bx1 = radius * Math.cos(angle);
+      var bx2 = radius * Math.sin(angle);
+      var pathBwd = 'M' + px(bx1).toFixed(1) + ',' + py(bx2).toFixed(1);
+      for (var step = 0; step < 120; step++) {
+        var dbx1 = a11 * bx1 + a12 * bx2;
+        var dbx2 = a21 * bx1 + a22 * bx2;
+        bx1 -= DT * dbx1;
+        bx2 -= DT * dbx2;
+        var sx = px(bx1), sy = py(bx2);
+        if (sx < -10 || sx > W + 10 || sy < -10 || sy > H + 10) break;
+        pathBwd += 'L' + sx.toFixed(1) + ',' + sy.toFixed(1);
+      }
+      content += '<path d="' + pathBwd + '" fill="none" stroke="#7a5520" stroke-width="1" opacity="0.4" stroke-dasharray="3,2"/>';
+    }
+  }
+
+  // Origin dot
+  content += '<circle cx="' + cx + '" cy="' + cy + '" r="3.5" fill="' + strokeColor + '" opacity="0.8"/>';
+
+  svg.innerHTML = content;
+}
+</script>
+
+</body>
+</html>
