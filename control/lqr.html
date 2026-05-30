@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Linear Quadratic Regulator — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$',  right: '$',  display: false}
+        ],
+        throwOnError: false
+      });
+      lqrInit();
+    });
+  </script>
+  <style>
+    .widget-card {
+      background: #f0f4f7;
+      border: 1px solid #c0d0dc;
+      border-radius: 6px;
+      padding: 20px 22px;
+      margin: 24px 0;
+    }
+    .widget-title {
+      font-size: 12.5px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #3a5a78;
+      margin-bottom: 16px;
+    }
+    .notation-table td:first-child {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 13px;
+      white-space: nowrap;
+      padding-right: 14px;
+      color: #2a4868;
+      vertical-align: top;
+    }
+    .notation-table td { padding: 4px 8px; vertical-align: top; font-size: 13.5px; }
+    .slider-row {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 7px; font-size: 13px;
+    }
+    .slider-row label { width: 60px; flex-shrink: 0; font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #3a5a78; }
+    .slider-row input[type=range] { flex: 1; }
+    .slider-row .sv { font-family: 'IBM Plex Mono', monospace; width: 56px; text-align: right; font-size: 12.5px; }
+    .lqr-panels { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 12px; }
+    .lqr-panel-label { font-size: 11.5px; font-weight: 600; color: #3a5a78; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+    .lqr-result-box {
+      background: #fff;
+      border: 1px solid #c8d8e4;
+      border-radius: 4px;
+      padding: 10px 14px;
+      margin-bottom: 8px;
+      font-size: 13px;
+      font-family: 'IBM Plex Mono', monospace;
+    }
+    .lqr-result-box .lbl { font-size: 11px; font-family: 'IBM Plex Sans', sans-serif; color: #7a9ab0; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 3px; }
+    /* derivation box */
+    .derivation-box {
+      background: #f5f8fa;
+      border: 1px solid #c0d8e8;
+      border-left: 4px solid #3a6a8a;
+      border-radius: 0 5px 5px 0;
+      padding: 16px 20px;
+      margin: 18px 0;
+    }
+    .derivation-label {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.07em; color: #3a5a78; margin-bottom: 8px;
+    }
+    .formula-box {
+      background: #f7fafb;
+      border: 1px solid #c0d8e8;
+      border-radius: 5px;
+      padding: 16px 20px;
+      margin: 16px 0;
+      text-align: center;
+    }
+    /* Q/R tuning guide */
+    .tuning-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      margin: 16px 0;
+    }
+    .tuning-cell {
+      background: #f5f8fb;
+      border: 1px solid #c0d8e8;
+      border-radius: 5px;
+      padding: 12px 14px;
+      font-size: 13px;
+    }
+    .tuning-head { font-weight: 600; font-size: 12px; margin-bottom: 6px; color: #2a4868; }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Foundations</div>
+        <a href="control-problem.html" class="nav-item">1 · The Control Problem</a>
+        <a href="transfer-functions.html" class="nav-item">2 · Dynamical Systems &amp; Transfer Functions</a>
+        <a href="bode.html" class="nav-item">3 · Second-Order Systems</a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-label">Frequency Domain</div>
+        <a href="routh.html" class="nav-item">4 · Routh-Hurwitz Stability</a>
+        <a href="root-locus.html" class="nav-item">5 · Root Locus</a>
+        <a href="nyquist.html" class="nav-item">6 · Nyquist &amp; Stability Margins</a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-label">Classical Design</div>
+        <a href="pid.html" class="nav-item">7 · PID Control</a>
+        <a href="lead-lag.html" class="nav-item">8 · Lead-Lag Compensators</a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-label">State Space</div>
+        <a href="state-space.html" class="nav-item">9 · State-Space Representation</a>
+        <a href="state-response.html" class="nav-item">10 · State Response</a>
+        <a href="controllability.html" class="nav-item">11 · Controllability &amp; Observability</a>
+        <a href="state-feedback.html" class="nav-item">12 · State Feedback &amp; Pole Placement</a>
+        <a href="lqr.html" class="nav-item active">13 · Linear Quadratic Regulator</a>
+        <span class="nav-item planned">14 · Observers &amp; Separation Principle</span>
+      </div>
+      <hr class="sidebar-rule">
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#cost-function" class="nav-item">The cost function</a>
+        <a href="#optimal-law" class="nav-item">Optimal control law</a>
+        <a href="#riccati" class="nav-item">Riccati equation</a>
+        <a href="#derivation" class="nav-item">Derivation</a>
+        <a href="#qr-tuning" class="nav-item">Tuning $Q$ and $R$</a>
+        <a href="#margins" class="nav-item">Stability margins</a>
+        <a href="#interactive" class="nav-item">Interactive weight tuner</a>
+        <a href="#worked-examples" class="nav-item">Worked examples</a>
+        <a href="#food-for-thought" class="nav-item">Food for thought</a>
+        <a href="#pitfalls" class="nav-item">Common pitfalls</a>
+      </div>
+    </div><!-- /sidebar -->
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Control Theory</a>
+        <span class="sep">›</span>
+        <span>Lesson 13</span>
+      </div>
+
+      <div class="lesson-title">Linear Quadratic Regulator</div>
+      <div class="lesson-meta">Optimal Control · Quadratic Cost · Riccati Equation · Q/R Tuning · Stability Margins</div>
+
+      <!-- Hook -->
+      <div class="prose">
+        Pole placement (Lesson 12) gives complete freedom: any eigenvalues you want,
+        anywhere. But complete freedom comes with a burden — you must choose well, and
+        there's no principle telling you what "good" pole locations look like except intuition
+        and experience. The Linear Quadratic Regulator resolves this by framing control
+        as an optimisation problem: minimise a cost that quantifies both how badly the
+        states deviate and how much control effort you expend. The answer is a state-feedback
+        law, and the optimal gain falls out of a single matrix equation.
+      </div>
+
+      <!-- Notation -->
+      <div class="callout" style="margin-bottom:24px;">
+        <strong>Notation recap</strong>
+        <table class="notation-table" style="margin-top:8px;">
+          <tr><td>$Q$</td><td>State cost matrix ($n \times n$, positive semidefinite $Q \geq 0$)</td></tr>
+          <tr><td>$R$</td><td>Input cost matrix ($m \times m$, positive definite $R > 0$)</td></tr>
+          <tr><td>$P$</td><td>Solution to the algebraic Riccati equation ($n \times n$, positive definite)</td></tr>
+          <tr><td>$K^*$</td><td>Optimal feedback gain $R^{-1}B^TP$</td></tr>
+          <tr><td>$J$</td><td>Total cost (infinite-horizon quadratic integral)</td></tr>
+        </table>
+      </div>
+
+      <!-- ── Cost Function ───────────────────────────────────── -->
+      <div id="cost-function"></div>
+      <div class="section-head">The Cost Function</div>
+
+      <div class="prose">
+        Start with the linear system $\dot{x} = Ax + Bu$ and ask: what control signal
+        $u(t)$ minimises the following integral from now until infinity?
+      </div>
+
+      <div class="formula-box">
+        $$J = \int_0^\infty \bigl(x(t)^T Q\, x(t) + u(t)^T R\, u(t)\bigr)\,dt$$
+      </div>
+
+      <div class="prose">
+        Each term has a physical meaning:
+      </div>
+
+      <ul class="prose" style="margin-top:-8px;padding-left:24px;">
+        <li>
+          $x^TQx$ — the <em>state cost</em>. When $Q$ is diagonal, $Q = \text{diag}(q_1,\ldots,q_n)$,
+          this equals $\sum_i q_i x_i^2$. Each $q_i$ weights how expensive it is for state
+          component $x_i$ to deviate from zero. Larger $q_i$ means "keep this state small."
+        </li>
+        <li>
+          $u^TRu$ — the <em>input cost</em>. When $R = r\cdot I$, this is $r\|u\|^2$.
+          Large $r$ means "actuator effort is expensive." Small $r$ means "effort is cheap,
+          use as much as you need."
+        </li>
+      </ul>
+
+      <div class="prose">
+        The ratio $Q/R$ is what matters — not their absolute values. Doubling both $Q$
+        and $R$ leaves the optimal gain unchanged; only the relative weighting between
+        state penalty and control effort determines the design.
+      </div>
+
+      <div class="callout">
+        The cost $J$ must be finite for the problem to be meaningful. A sufficient condition
+        is that $u = K^*x$ makes the closed-loop stable (all eigenvalues of $A - BK^*$
+        in the left half-plane, so $x \to 0$ and the integral converges).
+      </div>
+
+      <!-- ── Optimal Control Law ─────────────────────────────── -->
+      <div id="optimal-law"></div>
+      <div class="section-head">The Optimal Control Law</div>
+
+      <div class="prose">
+        The remarkable result of LQR theory is that the minimising control is linear state
+        feedback — the same structure as Lesson 12, but now the gain is determined by
+        solving an optimisation rather than by picking desired poles:
+      </div>
+
+      <div class="formula-box">
+        $$u^*(t) = -K^* x(t), \qquad K^* = R^{-1}B^T P$$
+      </div>
+
+      <div class="prose">
+        where $P$ is the unique symmetric positive-definite solution to the
+        <em>algebraic Riccati equation</em> (ARE):
+      </div>
+
+      <div class="formula-box">
+        $$\boxed{A^T P + PA - PBR^{-1}B^T P + Q = 0}$$
+      </div>
+
+      <div class="prose">
+        The closed-loop system under this control is $\dot{x} = (A - BK^*)x$, and
+        the minimum achievable cost is $J^* = x(0)^T P\, x(0)$ — it depends only on
+        the initial state and the Riccati solution $P$.
+      </div>
+
+      <!-- ── ARE ─────────────────────────────────────────────── -->
+      <div id="riccati"></div>
+      <div class="section-head">The Algebraic Riccati Equation</div>
+
+      <div class="prose">
+        The ARE is a nonlinear matrix equation in the unknown $P$.
+        Despite being nonlinear (the $PBR^{-1}B^TP$ term is quadratic in $P$),
+        it has a unique positive-definite solution under mild conditions:
+      </div>
+
+      <div class="callout">
+        <strong>Existence and uniqueness.</strong>
+        If $(A, B)$ is <em>stabilisable</em> and $(A, C_Q)$ is <em>detectable</em>
+        (where $Q = C_Q^T C_Q$), then the ARE has a unique positive-semidefinite solution $P \geq 0$,
+        and the closed-loop $A - BK^*$ is asymptotically stable.
+      </div>
+
+      <div class="prose">
+        For fully controllable and fully observable systems (the common case), the conditions
+        are satisfied and $P > 0$ is strictly positive definite.
+      </div>
+
+      <div class="prose">
+        <strong>How to solve it.</strong> In practice you never solve the ARE by hand —
+        use a software routine:
+      </div>
+
+      <pre class="code-block">% MATLAB
+[K, P, e] = lqr(A, B, Q, R)    % K = gain, P = Riccati solution, e = closed-loop eigenvalues
+
+# Python (scipy)
+from scipy.linalg import solve_continuous_are
+P = solve_continuous_are(A, B, Q, R)
+K = np.linalg.solve(R, B.T @ P)  # K = R^{-1} B^T P</pre>
+
+      <div class="prose">
+        Internally these routines use the <em>Hamiltonian matrix</em> approach: the
+        $2n \times 2n$ Hamiltonian
+        $$\mathcal{H} = \begin{bmatrix}A & -BR^{-1}B^T \\ -Q & -A^T\end{bmatrix}$$
+        has $n$ eigenvalues in the left half-plane and $n$ in the right half-plane
+        (when the stabilisability/detectability conditions hold). The solution $P$ is
+        constructed from the stable eigenspace of $\mathcal{H}$.
+      </div>
+
+      <!-- ── Derivation ──────────────────────────────────────── -->
+      <div id="derivation"></div>
+      <div class="section-head">Derivation — Completing the Square</div>
+
+      <div class="prose">
+        The cleanest path to the ARE and the optimal gain uses a matrix analogue of
+        completing the square. It's worth following through — the argument is short and
+        reveals exactly why the Riccati equation is the right equation to solve.
+      </div>
+
+      <div class="derivation-box">
+        <div class="derivation-label">⟶ Derivation (complete the square)</div>
+        <div style="font-size:13.5px;line-height:1.7;">
+          <strong>Step 1.</strong> Suppose there exists a symmetric $P > 0$ such that for
+          all $x$ and $u$:
+          $$x^TQx + u^TRu + \frac{d}{dt}(x^TPx) = (u + R^{-1}B^TPx)^T R\,(u + R^{-1}B^TPx) + x^T\underbrace{(A^TP + PA - PBR^{-1}B^TP + Q)}_{\text{if = 0, this vanishes}}x$$
+          This identity follows from expanding $\frac{d}{dt}(x^TPx) = \dot{x}^TPx + x^TP\dot{x} = (Ax+Bu)^TPx + x^TP(Ax+Bu)$.
+          <br><br>
+          <strong>Step 2.</strong> Assume $P$ satisfies the ARE, so the last term vanishes:
+          $$x^TQx + u^TRu + \frac{d}{dt}(x^TPx) = (u + R^{-1}B^TPx)^T R\,(u + R^{-1}B^TPx) \geq 0$$
+          <br>
+          <strong>Step 3.</strong> Integrate from $0$ to $\infty$ (assuming $x(\infty) = 0$):
+          $$J = \int_0^\infty (x^TQx + u^TRu)\,dt = x(0)^TPx(0) + \int_0^\infty (u + K^*x)^TR(u + K^*x)\,dt$$
+          where $K^* = R^{-1}B^TP$.
+          <br><br>
+          <strong>Step 4.</strong> The integral on the right is non-negative, so $J \geq x(0)^TPx(0)$.
+          Equality holds when $u = -K^*x$. <strong>This is the optimal control law,
+          and the minimum cost is $J^* = x(0)^TPx(0)$.</strong>
+        </div>
+      </div>
+
+      <div class="prose">
+        The derivation shows two things simultaneously: the ARE tells us what $P$ must be
+        for the argument to work, and once $P$ satisfies the ARE, the optimal gain follows
+        immediately as $K^* = R^{-1}B^TP$.
+      </div>
+
+      <div class="callout">
+        <strong>Connection to reinforcement learning.</strong>
+        The cost $J = x_0^T P x_0$ is the value function of the LQR problem.
+        The ARE is the Bellman equation evaluated at steady state — exactly the
+        continuous-time analogue of the DP value iteration from Lesson 5 of the RL
+        cluster. LQR is, in fact, a solved RL problem with a known quadratic structure
+        that makes the optimisation tractable.
+      </div>
+
+      <!-- ── Q/R Tuning ──────────────────────────────────────── -->
+      <div id="qr-tuning"></div>
+      <div class="section-head">Tuning $Q$ and $R$</div>
+
+      <div class="prose">
+        The engineer's job is to choose $Q$ and $R$ to express design intent.
+        Two frameworks help:
+      </div>
+
+      <div class="prose">
+        <strong>Bryson's rule.</strong> A pragmatic starting point: set the diagonal entries
+        of $Q$ and $R$ to be the inverse of the square of the maximum acceptable value
+        for each state and input:
+      </div>
+
+      <div class="formula-box">
+        $$Q_{ii} = \frac{1}{x_{i,\max}^2}, \qquad R_{jj} = \frac{1}{u_{j,\max}^2}$$
+      </div>
+
+      <div class="prose">
+        This normalises all states and inputs to a common scale before comparing them.
+        If position can swing ±0.1 m but velocity can swing ±1 m/s, you might set
+        $Q_{11} = 100$ and $Q_{22} = 1$ so both contribute equally when at their limits.
+      </div>
+
+      <div class="prose">
+        <strong>Scalar tradeoff.</strong> For many designs, a convenient starting point is
+        $Q = I$, $R = \rho\,I$ and sweep $\rho$:
+      </div>
+
+      <div class="tuning-grid">
+        <div class="tuning-cell">
+          <div class="tuning-head">$\rho$ small ($\ll 1$)</div>
+          Effort cheap — aggressive control. Large $K$, fast poles pushed far left.
+          Fast settling, large inputs.
+        </div>
+        <div class="tuning-cell">
+          <div class="tuning-head">$\rho = 1$</div>
+          Balanced. Equal weight on states and inputs.
+          Moderate speed, moderate effort.
+        </div>
+        <div class="tuning-cell">
+          <div class="tuning-head">$\rho$ large ($\gg 1$)</div>
+          Effort expensive — conservative control. Small $K$, slow poles near imaginary axis.
+          Slow settling, small inputs.
+        </div>
+      </div>
+
+      <div class="prose">
+        In practice: start with Bryson's rule, simulate the step response, and adjust
+        the ratio of $Q$ to $R$ until the settling time and peak control signal are both
+        within acceptable limits. There's always a tradeoff — faster settling requires
+        more actuator effort.
+      </div>
+
+      <!-- ── Stability Margins ───────────────────────────────── -->
+      <div id="margins"></div>
+      <div class="section-head">Guaranteed Stability Margins</div>
+
+      <div class="prose">
+        One of the most remarkable properties of LQR is that it provides
+        <em>guaranteed</em> stability margins — something arbitrary pole placement cannot offer.
+      </div>
+
+      <div class="callout">
+        <strong>LQR stability margin theorem (single input).</strong>
+        For a single-input system with optimal gain $K^*$, the closed-loop system remains
+        stable for any loop gain $\alpha \in [0.5,\,\infty)$: that is, replacing $u = -K^*x$
+        with $u = -\alpha K^* x$ is stable for all $\alpha \geq 0.5$.
+        In terms of classical margins:
+        <ul style="margin:8px 0 0 16px;">
+          <li><strong>Gain margin:</strong> $[−6\,\text{dB},\,+\infty\,\text{dB}]$ (a factor of 0.5 down to $\infty$ up)</li>
+          <li><strong>Phase margin:</strong> $\geq 60°$</li>
+        </ul>
+      </div>
+
+      <div class="prose">
+        This is proven using the return-difference inequality. The key identity is:
+        $$\|I + K^*(j\omega I - A)^{-1}B\|_2 \geq 1 \quad \forall\,\omega$$
+        which means the Nyquist plot of $K^*(j\omega I - A)^{-1}B$ never enters a unit
+        circle centred at $-1 + 0j$, guaranteeing $\geq 60°$ phase margin and
+        $\geq 6\,\text{dB}$ gain margin for gain reduction.
+      </div>
+
+      <div class="prose">
+        <strong>Important caveat.</strong> These guarantees apply to the continuous-time LQR
+        loop gain in the original, ideal model. They vanish when:
+      </div>
+
+      <ul class="prose" style="margin-top:-8px;padding-left:24px;">
+        <li>The system is discretised (digital implementation introduces phase lag)</li>
+        <li>An observer is added (the separation principle preserves stability but not margins)</li>
+        <li>The plant has unmodelled dynamics (model uncertainty)</li>
+      </ul>
+
+      <div class="prose">
+        In practice, LQR-designed gains are often robust, but the theoretical margin
+        guarantee should not be taken as a substitute for robustness analysis under
+        the actual implementation.
+      </div>
+
+      <!-- ── Interactive ─────────────────────────────────────── -->
+      <div id="interactive"></div>
+      <div class="section-head">Interactive — LQR Weight Tuner</div>
+
+      <div class="prose">
+        The system is a double integrator ($\ddot{y} = u$) with $Q = I$, $R = \rho$.
+        The analytic LQR solution for this system is:
+        $k_1 = 1/\!\sqrt{\rho}$, $k_2 = \sqrt{(1+2\sqrt{\rho})/\rho}$.
+        Sweep $\rho$ from aggressive ($\rho \to 0$) to conservative ($\rho \to \infty$)
+        and observe how the optimal gain, pole locations, and step response change.
+      </div>
+
+      <div class="widget-card">
+        <div class="widget-title">LQR Weight Tuner — Double Integrator</div>
+
+        <div class="slider-row">
+          <label>$\log_{10}\rho$</label>
+          <input type="range" id="lqr-rho" min="-2" max="2" step="0.05" value="0">
+          <span class="sv" id="lqr-rho-val">ρ = 1.00</span>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+          <div class="lqr-result-box">
+            <div class="lbl">Optimal gain</div>
+            <div id="lqr-k-display" style="font-size:13.5px;color:#1a3a5a;">K* = [1.000, 1.732]</div>
+          </div>
+          <div class="lqr-result-box">
+            <div class="lbl">Closed-loop poles</div>
+            <div id="lqr-poles-display" style="font-size:13.5px;color:#1a3a5a;">−0.866 ± 0.500j</div>
+          </div>
+        </div>
+
+        <div class="lqr-panels">
+          <div>
+            <div class="lqr-panel-label">$s$-plane</div>
+            <svg id="lqr-splane" width="100%" viewBox="0 0 240 200" style="border:1px solid #c8d8e4;border-radius:4px;background:#fff;display:block;"></svg>
+          </div>
+          <div>
+            <div class="lqr-panel-label">Step response</div>
+            <svg id="lqr-step" width="100%" viewBox="0 0 240 200" style="border:1px solid #c8d8e4;border-radius:4px;background:#fff;display:block;"></svg>
+          </div>
+        </div>
+        <div style="font-size:12px;color:#7a9ab0;margin-top:10px;">
+          Open-loop poles ○ at $s=0$ &nbsp;·&nbsp; Optimal closed-loop poles ×
+        </div>
+      </div>
+
+      <script>
+      function lqrInit() {
+        var el = document.getElementById('lqr-rho');
+        el.addEventListener('input', lqrUpdate);
+        lqrUpdate();
+      }
+
+      function lqrUpdate() {
+        var logRho = parseFloat(document.getElementById('lqr-rho').value);
+        var rho = Math.pow(10, logRho);
+        document.getElementById('lqr-rho-val').textContent = 'ρ = ' + rho.toFixed(3);
+
+        // Analytic LQR for double integrator with Q=I, R=rho
+        // ARE solution: q=sqrt(rho), s=sqrt(rho*(1+2*sqrt(rho))), p=s/sqrt(rho)
+        // K* = [q/rho, s/rho] = [1/sqrt(rho), sqrt((1+2*sqrt(rho))/rho)]
+        var sqrtRho = Math.sqrt(rho);
+        var k1 = 1 / sqrtRho;
+        var k2 = Math.sqrt((1 + 2*sqrtRho) / rho);
+
+        document.getElementById('lqr-k-display').textContent =
+          'K* = [' + k1.toFixed(4) + ', ' + k2.toFixed(4) + ']';
+
+        // Closed-loop: char poly s^2 + k2*s + k1
+        var disc = k2*k2 - 4*k1;
+        var poleStr;
+        var poles = [];
+        if (disc >= 0) {
+          var r1 = (-k2 + Math.sqrt(disc)) / 2;
+          var r2 = (-k2 - Math.sqrt(disc)) / 2;
+          poles = [{re:r1,im:0},{re:r2,im:0}];
+          poleStr = r1.toFixed(4) + ',  ' + r2.toFixed(4);
+        } else {
+          var re = -k2 / 2;
+          var im = Math.sqrt(-disc) / 2;
+          poles = [{re:re,im:im},{re:re,im:-im}];
+          poleStr = re.toFixed(4) + ' ± ' + im.toFixed(4) + 'j';
+        }
+        document.getElementById('lqr-poles-display').textContent = poleStr;
+
+        lqrDrawSplane(poles);
+        lqrDrawStep(k1, k2, rho);
+      }
+
+      function lqrDrawSplane(poles) {
+        var svg = document.getElementById('lqr-splane');
+        var W=240, H=200, cx=150, cy=H/2, scale=25;
+        var h = '';
+
+        // Grid
+        for (var g=-5;g<=1;g++) {
+          var px=cx+g*scale;
+          h+='<line x1="'+px+'" y1="0" x2="'+px+'" y2="'+H+'" stroke="#e8eef2" stroke-width="1"/>';
+        }
+        for (var g=-3;g<=3;g++) {
+          var py=cy+g*scale;
+          h+='<line x1="0" y1="'+py+'" x2="'+W+'" y2="'+py+'" stroke="#e8eef2" stroke-width="1"/>';
+        }
+        // Axes
+        h+='<line x1="0" y1="'+cy+'" x2="'+W+'" y2="'+cy+'" stroke="#9aabb8" stroke-width="1.2"/>';
+        h+='<line x1="'+cx+'" y1="0" x2="'+cx+'" y2="'+H+'" stroke="#9aabb8" stroke-width="1.2"/>';
+        h+='<text x="'+(W-6)+'" y="'+(cy-5)+'" font-size="9" fill="#9aabb8" text-anchor="end">Re</text>';
+        h+='<text x="'+(cx+5)+'" y="10" font-size="9" fill="#9aabb8">Im</text>';
+
+        // Open-loop at s=0 (double pole)
+        h+='<circle cx="'+cx+'" cy="'+cy+'" r="7" fill="none" stroke="#b0c8d8" stroke-width="1.5"/>';
+        h+='<circle cx="'+(cx+3)+'" cy="'+cy+'" r="7" fill="none" stroke="#b0c8d8" stroke-width="1.5"/>';
+
+        // Closed-loop
+        var col = (poles[0].re < 0) ? '#1a6a1a' : '#8a1a1a';
+        poles.forEach(function(p) {
+          var px = cx + p.re*scale;
+          var py = cy - p.im*scale;
+          px = Math.max(5, Math.min(W-5, px));
+          py = Math.max(5, Math.min(H-5, py));
+          h+='<line x1="'+(px-5)+'" y1="'+(py-5)+'" x2="'+(px+5)+'" y2="'+(py+5)+'" stroke="'+col+'" stroke-width="2.2"/>';
+          h+='<line x1="'+(px+5)+'" y1="'+(py-5)+'" x2="'+(px-5)+'" y2="'+(py+5)+'" stroke="'+col+'" stroke-width="2.2"/>';
+        });
+
+        svg.innerHTML = h;
+      }
+
+      function lqrDrawStep(k1, k2, rho) {
+        var svg = document.getElementById('lqr-step');
+        var W=240, H=200;
+        var tMax=20, dt=0.05, N=Math.round(tMax/dt);
+
+        // Nr = k1 (same as lesson 12 derivation for double integrator)
+        var Nr = k1;
+        var x1=0, x2=0;
+        var pts=[];
+        for (var i=0;i<=N;i++) {
+          pts.push({t:i*dt, y:x1});
+          var u = -k1*x1 - k2*x2 + Nr*1.0;
+          x1 += dt*x2;
+          x2 += dt*u;
+        }
+
+        var pad={l:28,r:10,t:10,b:22};
+        var pw=W-pad.l-pad.r, ph=H-pad.t-pad.b;
+        var yMin=-0.2, yMax=2.0;
+
+        function tx(t){ return pad.l+(t/tMax)*pw; }
+        function ty(y){ return pad.t+(1-(y-yMin)/(yMax-yMin))*ph; }
+
+        var h='';
+        [0,0.5,1.0,1.5].forEach(function(yg){
+          var pg=ty(yg);
+          h+='<line x1="'+pad.l+'" y1="'+pg+'" x2="'+(pad.l+pw)+'" y2="'+pg+'" stroke="'+(yg===1.0?'#a0d0a0':'#eaeff2')+'" stroke-width="'+(yg===1.0?'1.2':'1')+'"/>';
+          h+='<text x="'+(pad.l-3)+'" y="'+(pg+3)+'" font-size="8" fill="#aabbcc" text-anchor="end">'+yg.toFixed(1)+'</text>';
+        });
+        h+='<line x1="'+pad.l+'" y1="'+ty(0)+'" x2="'+(pad.l+pw)+'" y2="'+ty(0)+'" stroke="#9aabb8" stroke-width="1"/>';
+        h+='<line x1="'+pad.l+'" y1="'+pad.t+'" x2="'+pad.l+'" y2="'+(pad.t+ph)+'" stroke="#9aabb8" stroke-width="1"/>';
+        [0,5,10,15,20].forEach(function(tl){
+          h+='<text x="'+tx(tl)+'" y="'+(H-5)+'" font-size="8" fill="#aabbcc" text-anchor="middle">'+tl+'</text>';
+        });
+
+        var path=pts.map(function(p,i){
+          var px=tx(p.t), py=Math.max(pad.t,Math.min(pad.t+ph,ty(p.y)));
+          return(i===0?'M':'L')+px.toFixed(1)+' '+py.toFixed(1);
+        }).join(' ');
+        h+='<path d="'+path+'" stroke="#2a6a8a" stroke-width="1.8" fill="none"/>';
+        h+='<text x="'+(pad.l+pw/2)+'" y="'+H+'" font-size="8" fill="#9aabb8" text-anchor="middle">t (s)</text>';
+
+        svg.innerHTML = h;
+      }
+      </script>
+
+      <!-- ── Worked Examples ──────────────────────────────────── -->
+      <div id="worked-examples"></div>
+      <div class="section-head">Worked Examples</div>
+
+      <div class="callout">
+        <strong>Example 1 — Double integrator, analytic LQR.</strong>
+        System: $A = \begin{bmatrix}0&1\\0&0\end{bmatrix}$, $B = \begin{bmatrix}0\\1\end{bmatrix}$,
+        $Q = I$, $R = 1$.
+        <br><br>
+        Let $P = \begin{bmatrix}p & q \\ q & s\end{bmatrix}$. The ARE gives three equations:
+        <ul style="margin:8px 0 0 16px;">
+          <li>$(1,1)$: $-q^2 + 1 = 0 \;\Rightarrow\; q = 1$</li>
+          <li>$(1,2)$: $p - qs = 0 \;\Rightarrow\; p = s$</li>
+          <li>$(2,2)$: $2q - s^2 + 1 = 0 \;\Rightarrow\; s^2 = 3 \;\Rightarrow\; s = \sqrt{3}$</li>
+        </ul>
+        So $P = \begin{bmatrix}\sqrt{3} & 1 \\ 1 & \sqrt{3}\end{bmatrix}$.
+        The optimal gain:
+        $$K^* = R^{-1}B^TP = [0,\;1]\begin{bmatrix}\sqrt{3}&1\\1&\sqrt{3}\end{bmatrix} = [1,\;\sqrt{3}]$$
+        Closed-loop: $A - BK^* = \begin{bmatrix}0&1\\-1&-\sqrt{3}\end{bmatrix}$,
+        eigenvalues $s = -\frac{\sqrt{3}}{2} \pm \frac{1}{2}j$ (underdamped, $\zeta = \sqrt{3}/2 \approx 0.866$, $\omega_n = 1$).
+        Minimum cost from $x_0 = [1,0]^T$:
+        $J^* = x_0^T P x_0 = \sqrt{3} \approx 1.73$.
+      </div>
+
+      <div class="callout">
+        <strong>Example 2 — DC motor, LQR design.</strong>
+        A motor velocity control system: $\dot{x} = -5x + 10u$ (first-order, $n=1$).
+        With $Q = q$, $R = r$ (scalars), the ARE becomes:
+        $$-10p + 2(-5)p - \frac{(10p)^2}{r} + q = 0 \;\Rightarrow\; -10p - \frac{100p^2}{r} + q = 0$$
+        This is a quadratic in $p$:
+        $$\frac{100}{r}p^2 + 10p - q = 0 \;\Rightarrow\; p = \frac{-10 + \sqrt{100 + 400q/r}}{200/r}$$
+        Taking the positive root (we need $P > 0$):
+        $$p = \frac{r}{200}\left(-10 + \sqrt{100 + \frac{400q}{r}}\right)$$
+        Optimal gain: $K^* = \frac{10p}{r}$.
+        For $q = 1$, $r = 1$: $p = \frac{1}{200}(-10 + \sqrt{500}) \approx 0.062$, $K^* \approx 0.62$.
+        Closed-loop pole: $-5 - 10 \times 0.62 = -11.2$ (faster than open-loop $-5$).
+      </div>
+
+      <div class="callout">
+        <strong>Example 3 — Effect of $Q/R$ ratio on pole locations.</strong>
+        For the double integrator with $Q = I$, $R = \rho$, the closed-loop poles from
+        the analytic solution are at $s = -k_2/2 \pm j\sqrt{k_1 - k_2^2/4}$ where
+        $k_1 = 1/\sqrt{\rho}$ and $k_2 = \sqrt{(1+2\sqrt{\rho})/\rho}$.
+        As $\rho \to 0$ (large control, cheap effort):
+        $k_1 \approx 1/\sqrt{\rho} \to \infty$, poles move far left at $s \approx -1/\rho^{1/4}$.
+        As $\rho \to \infty$ (expensive effort):
+        $k_1 \to 0$, $k_2 \to 0$, poles approach $s = 0$ (but always in the left half-plane).
+        The LQR constraint that the closed-loop be stable is maintained automatically —
+        the optimal poles never leave the left half-plane no matter how you tune $\rho$.
+      </div>
+
+      <!-- ── Food for Thought ──────────────────────────────────── -->
+      <div id="food-for-thought"></div>
+      <div class="section-head">Food for Thought</div>
+
+      <ul class="prose">
+        <li>
+          The minimum cost is $J^* = x_0^T P x_0$. What does it mean that the cost
+          depends on the initial condition? If the system starts near the origin, is
+          the cost always low regardless of the gain?
+        </li>
+        <li>
+          LQR theory says: if $Q = 0$ (no state penalty), then $u = 0$ is "optimal"
+          in some trivial sense. What does this tell you about how to set $Q$? Can you
+          always set $Q = 0$ and still get a meaningful design?
+        </li>
+        <li>
+          The stability margin result says LQR tolerates a gain reduction to $0.5K^*$.
+          When an observer is added (Lesson 14), this margin disappears in general.
+          Why does adding the observer degrade the robustness guarantees?
+        </li>
+      </ul>
+
+      <!-- ── Pitfalls ───────────────────────────────────────────── -->
+      <div id="pitfalls"></div>
+      <div class="section-head">Common Pitfalls</div>
+
+      <ul class="prose">
+        <li>
+          <strong>Choosing $Q = 0$.</strong>
+          Setting $Q = 0$ means no state cost — the optimizer doesn't care where the
+          state is, only about minimising input. The result is $u = 0$, which is trivially
+          "optimal" but useless for regulation. Always give $Q$ at least some small weight
+          on the states you care about.
+        </li>
+        <li>
+          <strong>Forgetting $N_r$.</strong>
+          LQR designs a regulator ($x \to 0$). If tracking a reference $r \neq 0$,
+          the feedforward gain $N_r$ from Lesson 12 is still needed, or integral
+          augmentation must be used.
+        </li>
+        <li>
+          <strong>Treating the stability margins as unconditional.</strong>
+          The $60°$ phase margin and $[−6\,\text{dB}, \infty]$ gain margin assume a
+          continuous-time implementation with exact state measurement and perfect model.
+          Digital control, observers, and model uncertainty all erode these guarantees.
+        </li>
+        <li>
+          <strong>Confusing $Q \geq 0$ and $R > 0$.</strong>
+          $Q$ needs to be positive semidefinite (non-negative eigenvalues) — it's fine
+          for some state combinations to be unpenalised. But $R$ must be strictly
+          positive definite — a zero $R$ makes the problem ill-posed (infinite control
+          effort is allowed and the solution degenerates).
+        </li>
+        <li>
+          <strong>Tuning only $\rho = R/Q$ without considering physical limits.</strong>
+          Even if $J$ is minimised, the resulting control signal $u(t)$ may exceed
+          actuator limits. After finding $K^*$, always simulate the worst-case initial
+          condition to verify that peak control effort stays within physical bounds.
+        </li>
+      </ul>
+
+      <div class="course-block">
+        <strong>Connects to:</strong>
+        Lesson 12 (State Feedback — LQR is pole placement with an optimal cost guiding the choice) ·
+        Lesson 14 (Observers — when the full state is not measurable, the LQR gain is combined
+        with a Kalman filter for the optimal output-feedback design) ·
+        RL Cluster / Lesson 4–5 (Bellman equation and dynamic programming — the ARE is the
+        continuous-time Bellman equation; LQR is the solved RL problem with linear dynamics
+        and quadratic cost)
+      </div>
+
+      <!-- Prev/Next nav -->
+      <div class="lesson-nav">
+        <a href="state-feedback.html" class="lesson-nav-btn">← Lesson 12: State Feedback</a>
+        <a href="index.html" class="lesson-nav-btn">Back to Control Theory</a>
+        <span class="lesson-nav-btn disabled">Lesson 14: Observers →</span>
+      </div>
+
+    </div><!-- /main -->
+
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+</body>
+</html>
