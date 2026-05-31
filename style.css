@@ -564,6 +564,7 @@ a.cluster-card:hover {
 /* notes-components.js generated toggle — new pattern */
 details.example-solution-toggle {
   margin: 0;
+  text-decoration: none; /* override stale .example-solution-toggle button rule below */
 }
 details.example-solution-toggle > summary {
   list-style: none;

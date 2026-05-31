@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flavour Science — Food Science | Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/plotly.js-dist@2.27.0/plotly.min.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="food-science" data-current="flavor.html"></div>
+      <hr class="sidebar-rule">
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#taste-flavour" class="nav-item">Taste ≠ flavour</a>
+        <a href="#five-tastes" class="nav-item">The five basic tastes</a>
+        <a href="#olfaction" class="nav-item">Orthonasal vs. retronasal</a>
+        <a href="#volatiles" class="nav-item">Volatile compound families</a>
+        <a href="#umami" class="nav-item">Umami synergy</a>
+        <a href="#thresholds" class="nav-item">Detection thresholds</a>
+        <a href="#pairing" class="nav-item">Flavour pairing</a>
+        <a href="#off-flavours" class="nav-item">Off-flavours</a>
+        <a href="#examples" class="nav-item">Worked examples</a>
+        <a href="#fft" class="nav-item">Food for thought</a>
+        <a href="#pitfalls" class="nav-item">Common pitfalls</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a> → <a href="index.html">Food Science</a> → Flavour Science
+      </div>
+
+      <h1 class="lesson-title">Flavour Science</h1>
+      <div class="lesson-meta">Taste · Olfaction · Aroma Compounds · Umami · Off-Flavours</div>
+
+      <p class="prose">
+        Most of what we call "taste" isn't. The tongue detects exactly five categories of signal.
+        Everything else — the difference between strawberry and raspberry, the roast in coffee,
+        the funk in aged blue cheese, the brightness of fresh herbs — is smell, experienced via
+        a back-route through the throat that most people never think about. Flavour science is
+        the study of what those molecules are, how we detect them at concentrations that can be
+        counted in atoms per glass of wine, and what happens when you understand the chemistry
+        well enough to control it.
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="taste-flavour">Taste is not flavour</div>
+
+      <p class="prose">
+        <em>Taste</em> is a precise technical term: the sensation produced by taste receptor cells
+        on the tongue, soft palate, and epiglottis in response to dissolved chemical compounds.
+        There are exactly five confirmed basic tastes — sweet, sour, salty, bitter, and umami —
+        each with distinct receptor mechanisms and distinct evolutionary signals.
+      </p>
+      <p class="prose">
+        <em>Flavour</em> is the full perceptual experience of eating. It integrates taste with
+        retronasal olfaction (by far the dominant channel), texture, temperature, trigeminal
+        sensations (the "heat" of capsaicin, the "cool" of menthol — detected by TRP channels,
+        not taste receptors), and visual cues. The distinction matters practically: when you
+        say a dish "tastes flat," the problem is almost certainly in the aroma or acid/salt
+        balance — not in the five basic taste modalities specifically.
+      </p>
+      <p class="prose">
+        The clearest demonstration: pinch your nose hard and eat a piece of food. You retain
+        the five tastes (sweet, sour, salty, bitter, umami) but lose essentially everything
+        that makes the food distinct — the difference between apple and pear, coffee and tea,
+        beef and pork largely disappears. What remains is a coarse chemical signal. Everything
+        that makes food interesting is in the aroma.
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="five-tastes">The five basic tastes</div>
+
+      <p class="prose">
+        Each basic taste has a distinct receptor class and a distinct biological signal it evolved
+        to provide. Understanding the receptor mechanisms explains otherwise puzzling kitchen
+        phenomena — why salt suppresses bitterness, why umami makes other flavours rounder,
+        why capsaicin "burns."
+      </p>
+
+      <div class="subsection-head">Sweet</div>
+      <p class="prose">
+        Detected by the <strong>T1R2+T1R3 heterodimer</strong> — a G-protein-coupled receptor
+        (GPCR) complex on the tongue. The receptor has an extracellular "Venus flytrap" domain
+        that binds glucose, fructose, sucrose, and also amino acids (glycine, alanine) and all
+        artificial sweeteners, despite their structural diversity. Multiple binding sites on the
+        same receptor complex explain why many unrelated molecules taste sweet.
+        Evolutionary signal: energy-dense carbohydrate food.
+      </p>
+
+      <div class="subsection-head">Sour</div>
+      <p class="prose">
+        Detected by proton (H⁺) influx, primarily through the <strong>OTOP1 proton channel</strong>
+        recently identified in sour taste cells. Sour taste is the direct detection of acidity.
+        Interestingly, it is the concentration of undissociated acid — not pH alone — that
+        determines sourness: acetic acid (vinegar, pKa 4.75) tastes more sour than hydrochloric
+        acid at the same pH because more of the acid is in the membrane-permeant undissociated
+        form. Evolutionary signal: fermentation, unripe fruit, bacterial spoilage — valid but
+        context-dependent; high acid can signal both "not yet ripe" and "safely fermented."
+      </p>
+
+      <div class="subsection-head">Salty</div>
+      <p class="prose">
+        Sodium ions (Na⁺) pass directly through <strong>ENaC epithelial sodium channels</strong>
+        on salt-sensitive taste cells, depolarising them. Other cations (K⁺, Li⁺) produce
+        partial salt-like responses; most anions are tasteless or mildly bitter. Two
+        practically important effects: (1) sub-threshold amounts of salt suppress bitterness
+        perception — a known but poorly-mechanised phenomenon (possibly via Na⁺ modifying
+        bitter receptor function). This is why a pinch of salt in coffee reduces perceived
+        bitterness. (2) Salt enhances the perception of sweetness and umami by reducing the
+        masking effect of other taste compounds. Evolutionary signal: electrolyte balance.
+      </p>
+
+      <div class="subsection-head">Bitter</div>
+      <p class="prose">
+        Detected by approximately <strong>25 different T2R receptors</strong> — each a GPCR
+        with a different ligand profile. No other taste modality has this diversity.
+        The range reflects the diversity of plant secondary metabolites (alkaloids, glucosinolates,
+        polyphenols, terpenes) that plants evolved to deter herbivores and that animals evolved
+        to detect as toxicity warnings. Caffeine (adenosine receptor antagonist, primarily
+        detected by T2R7 and T2R14), quinine, isohumulones in hops, and phenolic tannins all
+        activate different T2R subsets.
+      </p>
+      <p class="prose">
+        Genetic variation in bitterness is larger than for any other taste modality.
+        The <em>TAS2R38</em> gene determines sensitivity to PROP (6-n-propylthiouracil) and
+        a range of bitter glucosinolates; "supertasters" homozygous for the sensitive allele
+        find Brussels sprouts, kale, and dark chocolate considerably more bitter than
+        non-tasters with the insensitive allele. This is a meaningful source of variation
+        in food preference that has nothing to do with culinary sophistication.
+      </p>
+
+      <div class="subsection-head">Umami</div>
+      <p class="prose">
+        Detected by the <strong>T1R1+T1R3 heterodimer</strong> — distinct from the
+        T1R2+T1R3 sweet receptor, sharing only the T1R3 subunit. The principal ligand is
+        L-glutamate (a free amino acid), with strong synergistic amplification by
+        5'-ribonucleotides (IMP, GMP) — covered in detail in the next section.
+        Umami is often described as "savoriness" or "meatiness" but is more accurately
+        a signal of free amino acids and hence protein content. Unlike sweetness or
+        saltiness, umami has no sharp onset or clear satiation — it rounds and extends
+        other flavours, increasing the duration of the overall taste experience.
+      </p>
+
+      <div class="callout">
+        <strong>Capsaicin is not a taste.</strong> The burning sensation from chilli is
+        produced by TRPV1 (transient receptor potential vanilloid 1), a thermosensor that
+        normally responds to temperatures above ~43°C. Capsaicin opens it at room temperature,
+        producing a "hot" signal identical in mechanism to actual heat — hence "burning."
+        TRPV1 is not on taste cells; it is on trigeminal sensory neurons throughout the
+        oral cavity. Menthol activates the cold-sensing TRPM8 channel. Neither is taste;
+        both are part of flavour.
+      </div>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="olfaction">Orthonasal vs. retronasal olfaction</div>
+
+      <p class="prose">
+        The olfactory epithelium sits at the top of the nasal cavity, about 7 cm above the
+        nostrils. It contains roughly 6–10 million olfactory receptor neurons (ORNs), each
+        expressing one type of olfactory receptor (humans have ~400 functional olfactory
+        receptor genes, dogs ~1,000). Volatile molecules reach this tissue via two routes:
+      </p>
+      <ul class="prose" style="margin-top:6px;">
+        <li><strong>Orthonasal</strong> — inhaled through the nostrils while sniffing or
+          breathing. Used to assess food before eating: "does this smell safe?" Dominant
+          during wine evaluation by aroma (nosing), coffee assessment, detecting a gas leak.</li>
+        <li><strong>Retronasal</strong> — vapours from food in the mouth travel <em>backward</em>
+          through the nasopharynx (the opening at the back of the throat that connects to the
+          nasal passage) and up to the olfactory epithelium. This happens during chewing and
+          especially during swallowing, which creates a piston action that pushes air up from
+          the oral cavity. This is the dominant channel for flavour perception.</li>
+      </ul>
+      <p class="prose">
+        The distinction matters: the same molecule can produce different perceptual experiences
+        via the two routes. Retronasal olfaction is interpreted by the brain in the context
+        of eating (taste inputs, texture, temperature) and is fused into a unified flavour
+        percept. The same molecule inhaled orthonasal is just a smell. This is why food scientists
+        distinguish between the "aroma" of a food (orthonasal, before eating) and its "flavour"
+        (retronasal, while eating) — they can differ meaningfully.
+      </p>
+      <p class="prose">
+        Retronasal olfaction accounts for roughly <strong>70–80% of what people describe as
+        "taste."</strong> Patients with complete anosmia (inability to smell) still taste
+        sweetness, sourness, saltiness, bitterness, and umami normally, but report food as
+        almost entirely flavourless. The five basic tastes provide structure; retronasal
+        aroma provides specificity.
+      </p>
+      <p class="prose">
+        Each ORN expresses one receptor type, and ~10,000 ORNs expressing the same receptor
+        converge onto a single glomerulus in the olfactory bulb. The brain decodes smells by
+        reading the <em>pattern</em> of activated glomeruli — not a single on/off signal, but a
+        combinatorial code across 400 receptor types. A single aroma molecule typically
+        activates a combination of 3–20 receptor types; complex food aromas activate hundreds
+        simultaneously. This combinatorial coding allows approximately 1 trillion distinguishable
+        odours (Bushdid et al., <em>Science</em>, 2014).
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="volatiles">Volatile compound families</div>
+
+      <p class="prose">
+        Aroma compounds are volatile organic molecules — generally small (MW &lt; 300 Da),
+        with sufficient vapour pressure to reach the olfactory epithelium. They span many
+        chemical families; each family has a characteristic sensory signature and a
+        characteristic origin in food chemistry.
+      </p>
+
+      <div class="subsection-head">Esters</div>
+      <p class="prose">
+        R–C(=O)–O–R'. Fruity, sweet, solvent-like. Formed by esterification of alcohols with
+        organic acids — either enzymatically (fruit ripening) or by yeast fermentation.
+        <strong>Isoamyl acetate</strong> (banana, pear) is the dominant ester in banana ripening
+        and in some yeasts (hefeweizens). <strong>Ethyl butyrate</strong> (pineapple, tropical).
+        <strong>Ethyl acetate</strong> (solvent/nail-polish at high concentration, fruity/pineapple
+        at low) — a common fermentation by-product. Esters generally have higher detection
+        thresholds than sulfur compounds; they contribute background fruitiness rather than
+        sharp individual notes.
+      </p>
+
+      <div class="subsection-head">Aldehydes</div>
+      <p class="prose">
+        R–CHO. Character varies strongly with chain length and structure.
+      </p>
+      <ul class="prose" style="margin-top:4px;">
+        <li><strong>C6 aldehydes</strong> (hexanal, (E)-2-hexenal): fresh grass, green apple,
+          unripe fruit. Produced by the lipoxygenase (LOX) pathway when plant cells are damaged
+          — oxidative cleavage of linoleic acid. This is the "fresh-cut" smell of crushed herbs,
+          freshly cut grass, and unripe tomatoes.</li>
+        <li><strong>Trans-2-nonenal</strong>: cardboard, wet cardboard, stale fat. The primary
+          off-odour of oxidized cooking oil, stale beer ("cardboard defect"), and old butter.
+          Very low threshold (~80 ng/L).</li>
+        <li><strong>Strecker aldehydes</strong> (produced by the Maillard reaction — see below):
+          3-methylbutanal (malty, cocoa), methional (boiled potato, soup), phenylacetaldehyde
+          (honey, rose), furfural (caramel, almond). These are the aroma signature of roasted
+          and cooked foods.</li>
+        <li><strong>Benzaldehyde</strong>: almond, marzipan, cherry. Released from amygdalin
+          in stone fruit pits and bitter almonds.</li>
+      </ul>
+
+      <div class="subsection-head">Pyrazines</div>
+      <p class="prose">
+        Bicyclic heterocycles containing two nitrogen atoms. Roasty, nutty, earthy, green-pepper.
+        Maillard-derived pyrazines are among the most flavour-active products of cooking:
+        <strong>2-acetylpyrazine</strong> (popcorn, tortilla chips — the specific roast
+        character of nixtamalized corn), <strong>2-acetyl-1-pyrroline</strong> (the key aroma
+        of basmati rice and fresh bread crust). <strong>2-Isobutyl-3-methoxypyrazine</strong>
+        — the characteristic bell pepper aroma, formed by Capsicum plants enzymatically
+        (not by cooking) — is one of the most potent aroma compounds known, with a
+        detection threshold around 2 ng/L in water.
+      </p>
+
+      <div class="subsection-head">Thiols and other sulfur compounds</div>
+      <p class="prose">
+        Generally the most potent class by detection threshold. The sulfhydryl group (–SH) is
+        particularly effective at activating olfactory receptors, resulting in thresholds in
+        the parts-per-trillion range.
+      </p>
+      <ul class="prose" style="margin-top:4px;">
+        <li><strong>3-Mercaptohexanol and 3-mercaptohexyl acetate</strong>: grapefruit, passion
+          fruit, tropical. Responsible for the varietal character of Sauvignon Blanc;
+          also found in hops and some stone fruits.</li>
+        <li><strong>2-Furfurylthiol</strong>: roasted coffee. One of the most characteristic
+          coffee aroma compounds; threshold ~10 ng/L. Extremely sensitive: a single-atom
+          difference from the non-thiol analog changes the character completely.</li>
+        <li><strong>Allicin and diallyl disulfide</strong>: garlic. Allicin (the initial
+          compound from crushing garlic) is pungent and reactive; it rapidly converts to
+          diallyl disulfide and other polysulfides, giving the more mellow "cooked garlic"
+          character.</li>
+        <li><strong>Methanethiol (MeSH)</strong>: rotten cabbage, some aged cheeses (Limburger,
+          Camembert rind). Produced by bacterial degradation of methionine.</li>
+        <li><strong>Dimethyl sulfide (DMS)</strong>: cooked corn, canned tomatoes, some lager
+          beers (a common defect at high concentrations). Produced during malt kilning and
+          from methionine precursors.</li>
+      </ul>
+
+      <div class="subsection-head">Terpenes</div>
+      <p class="prose">
+        Built from isoprene (C5) units. The largest class of plant secondary metabolites;
+        present in the essential oils of almost every herb and spice. Most have higher thresholds
+        than thiols but dominate by sheer concentration in aromatic plant material.
+        <strong>Limonene</strong> (citrus peel) — the most abundant single compound in many
+        citrus essential oils. <strong>Linalool</strong> (lavender, coriander, bergamot) —
+        floral and slightly woody. <strong>β-Caryophyllene</strong> (black pepper, cloves, hops) —
+        earthy, woody, spicy. <strong>Geraniol</strong> (rose) and <strong>citronellol</strong>
+        (rose, geranium, citrus) are the main terpene alcohols in floral fragrances.
+      </p>
+
+      <div class="subsection-head">Lactones</div>
+      <p class="prose">
+        Cyclic esters formed by intramolecular esterification of hydroxy fatty acids.
+        Dairy-like, coconut, peach. <strong>δ-Decalactone</strong> (peach, cream) —
+        one of the characteristic lactones of peaches and of sweet cream butter; also formed
+        by yeast fermentation of ricinoleic acid (from castor oil). <strong>γ-Undecalactone</strong>
+        (peach, coconut) — the characteristic "peach candy" note.
+        Lactones increase in concentration as fatty acids in dairy age and cyclize.
+      </p>
+
+      <div class="subsection-head">Maillard aroma products — a brief recap</div>
+      <p class="prose">
+        The Maillard reaction (Lesson 1) does not just produce brown colour — it generates
+        hundreds of volatile compounds. Three mechanisms are especially important:
+      </p>
+      <ul class="prose" style="margin-top:4px;">
+        <li><strong>Strecker degradation:</strong> free amino acids react with α-dicarbonyl
+          Maillard intermediates, losing one carbon as an aldehyde. Each amino acid produces a
+          characteristic Strecker aldehyde: leucine → 3-methylbutanal (malty, cocoa);
+          methionine → methional (boiled potato, meat stock); phenylalanine → phenylacetaldehyde
+          (honey, rose); cysteine → H₂S (which then reacts further to produce meat thiols
+          and thiophenes). Strecker aldehydes are key to what distinguishes roasted from raw.
+        </li>
+        <li><strong>Pyrazine formation:</strong> two Strecker-derived amino-carbonyl fragments
+          condense and cyclize to form pyrazine rings — the nutty/roasty character of
+          coffee, bread crust, and seared meat.</li>
+        <li><strong>Furanone formation:</strong> Furaneol (DMHF — 2,5-dimethyl-4-hydroxy-3(2H)-furanone)
+          is a Maillard product that is also produced enzymatically in ripe strawberries.
+          It is simultaneously the "caramel" note in caramelised sugars and the "strawberry"
+          note in fresh fruit — a convergence of two very different reaction pathways
+          producing the same compound.</li>
+      </ul>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="umami">Umami synergy</div>
+
+      <p class="prose">
+        The umami taste receptor (T1R1+T1R3) responds to L-glutamate. But it has a second
+        binding site for <strong>5'-ribonucleotides</strong> — specifically inosine monophosphate
+        (IMP) from animal muscle and guanosine monophosphate (GMP) from fungi and yeast.
+        When both ligands are present simultaneously, the perceived umami intensity is
+        dramatically greater than either produces alone.
+      </p>
+
+      <div style="background:#f0f6fa;border-left:3px solid #7ab8d4;border-radius:0 5px 5px 0;padding:12px 16px;margin:12px 0 18px;font-size:13.5px;line-height:1.8;">
+        Glutamate alone (1× baseline) &nbsp;+&nbsp; IMP alone (1.1×) &nbsp;→&nbsp;
+        Glutamate + IMP together: <strong>~8–30× baseline</strong>, depending on ratio and concentration.
+      </div>
+
+      <p class="prose">
+        The mechanism: the T1R1 subunit has a Venus flytrap domain that opens and closes around
+        glutamate. IMP and GMP bind to a nearby site and stabilise the closed (active) conformation,
+        dramatically increasing the probability that a bound glutamate molecule triggers the receptor.
+        They don't activate the receptor on their own — they act as positive allosteric modulators
+        of glutamate binding.
+      </p>
+      <p class="prose">
+        This has direct and quantitative consequences for cooking:
+      </p>
+      <ul class="prose" style="margin-top:4px;">
+        <li><strong>Free vs. bound glutamate.</strong> Protein-bound glutamate has zero taste —
+          the amino acid is unavailable to the receptor. Only <em>free</em> L-glutamate
+          (released by hydrolysis) activates T1R1. This is why aged Parmesan (~1.2 g free
+          glutamate/100g), ripe tomatoes, soy sauce, and fish sauce have intense umami, while
+          an equivalent mass of fresh meat has comparatively little: most glutamate is still
+          locked in peptide bonds.</li>
+        <li><strong>The dashi principle.</strong> Japanese dashi combines kombu seaweed
+          (very high free glutamate, ~2.5 g/100g dry weight) with katsuobushi (dried bonito,
+          high in IMP from ATP degradation post-slaughter). The combination is not just
+          additive — the IMP amplifies the glutamate signal at the receptor level. The broth
+          is greater than the sum of its parts in a precise biochemical sense.</li>
+        <li><strong>Mixed nucleotide sources.</strong> IMP (animal muscle) and GMP (fungi/yeast)
+          both act at the same receptor site. Combining glutamate-rich with IMP-rich
+          <em>and</em> GMP-rich sources (e.g. beef + dried shiitake in a braise) can
+          push synergy beyond what either nucleotide alone provides.</li>
+        <li><strong>MSG is the isolated compound.</strong> MSG (monosodium glutamate) is simply
+          free L-glutamate with sodium. It activates the T1R1+T1R3 receptor identically to
+          free glutamate from kombu or Parmesan. There is no chemically meaningful
+          distinction.</li>
+      </ul>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="thresholds">Detection thresholds — orders of magnitude</div>
+
+      <p class="prose">
+        Perhaps the most striking fact in flavour science: human olfactory detection thresholds
+        span roughly <strong>ten orders of magnitude</strong>. A compound like TCA (cork taint)
+        is perceptible at concentrations measured in parts per trillion. Ethyl acetate requires
+        a concentration eight million times higher before it registers. The chart below places
+        12 representative aroma compounds on the same log scale — each bar is their approximate
+        detection threshold in water.
+      </p>
+
+      <div class="widget-card" id="thresholds-chart">
+        <div class="widget-title">Aroma compound detection thresholds in water (µg/L, log scale)</div>
+        <div id="plotly-thresholds" style="height:400px;"></div>
+        <p style="font-size:11.5px;color:#8a9aaa;margin-top:8px;line-height:1.5;">
+          Approximate water thresholds. Values vary with matrix (wine, oil, broth) and between
+          individuals. Sources: Flavornet, Leffingwell &amp; Associates, van Gemert (2011).
+        </p>
+      </div>
+
+      <p class="prose">
+        Several patterns are worth noting. Sulfur compounds (shown in orange) cluster at the
+        extreme low end — our olfactory system is extremely sensitive to them, which is plausible
+        as a signal for both spoilage (rotten eggs, decaying meat) and desirable cooked-food
+        aromas (coffee, garlic). Geosmin and TCA are not food compounds produced by cooking
+        at all — they are environmental contaminants detectable at vanishingly small concentrations.
+        Esters and terpenes, at the other end, are generally present in food in relatively large
+        amounts and have correspondingly higher thresholds.
+      </p>
+      <p class="prose">
+        The practical implication: you cannot "balance out" a low-threshold off-compound
+        by adding more desirable flavours. If a wine has TCA at 3 ng/L, no amount of
+        additional fruit character will compensate — TCA actively suppresses the olfactory
+        response to other compounds (see Off-flavours below). Low-threshold compounds must
+        be eliminated, not masked.
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="pairing">The flavour pairing hypothesis</div>
+
+      <p class="prose">
+        In the early 2000s, chef Heston Blumenthal and flavour chemist François Benzi proposed
+        that ingredients sharing dominant aroma compounds should pair well in cooking —
+        the so-called <em>food pairing hypothesis</em>. Chocolate and coffee share pyrazines
+        and furanones; strawberry and balsamic vinegar share furaneol; white chocolate and caviar
+        were claimed to share trimethylamine (the fishy amine compound). The hypothesis attracted
+        significant media attention and spawned commercial software for suggesting novel pairings
+        based on shared volatile profiles.
+      </p>
+      <p class="prose">
+        The empirical record is more nuanced. A 2011 analysis of 56,498 recipes across multiple
+        cuisines (Ahn et al., <em>Scientific Reports</em>) found that <strong>North American and
+        Western European cuisines do indeed tend to use ingredients that share more aroma
+        compounds than random</strong>. But East Asian, Indian, and West African cuisines
+        showed the <strong>opposite pattern</strong> — traditional pairings systematically
+        avoided shared compounds.
+      </p>
+      <p class="prose">
+        This suggests that "shared compounds" is neither a universal principle nor a
+        coincidence. The more likely interpretation: Western European cuisine developed
+        around a set of ingredients (cream, butter, egg, wine) that happen to share many
+        Maillard and dairy lactone compounds, and the hypothesis was derived from — and
+        describes — that one regional tradition, not human flavour perception in general.
+      </p>
+      <p class="prose">
+        An alternative framing that accounts for more cuisines is <strong>aromatic contrast</strong>:
+        some great pairings work not because the aromas converge, but because they provide
+        complementary, non-competing aromatic information that together produce a richer overall
+        experience. A Korean kimchi jjigae combining fermented, allium, and citrus/acidic
+        compounds covers more aromatic space than any ingredient alone, even though no pair
+        of its components shares significant volatiles.
+      </p>
+      <div class="callout">
+        <strong>Current status of the hypothesis:</strong> useful as an ideation tool for novel
+        European-style pairings, and it does explain some specific combinations well. Not a
+        universal theory. The "shared compounds" principle should be treated as one input
+        alongside cultural context, textural contrast, acid-fat-salt balance, and general
+        flavour complexity.
+      </div>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="off-flavours">Off-flavours</div>
+
+      <p class="prose">
+        Off-flavours — compounds that are not intended to be present and that degrade
+        the product — are often more instructive than desirable flavours, because the same
+        threshold sensitivity that makes them perceptible at trace concentrations also means
+        they cannot be overcome by adding more "good" flavour. Understanding their chemistry
+        allows either prevention or correction.
+      </p>
+
+      <div class="subsection-head">Oxidative rancidity — trans-2-nonenal and hexanal</div>
+      <p class="prose">
+        Covered in depth in the Fats lesson. The short version: autoxidation of
+        polyunsaturated fatty acids generates hydroperoxides, which decompose to short-chain
+        aldehydes and ketones. <strong>Trans-2-nonenal</strong> (cardboard; threshold ~80 ng/L)
+        and <strong>hexanal</strong> (paint, green; threshold ~5 µg/L) are the primary
+        off-compounds in oxidized cooking oils, stale beer, and old wholegrain flour.
+        Prevention: exclude oxygen, refrigerate, use antioxidants (tocopherols, rosemary extract),
+        minimise PUFA exposure to air after grinding or opening.
+      </p>
+
+      <div class="subsection-head">TCA — cork taint</div>
+      <p class="prose">
+        <strong>2,4,6-Trichloroanisole (TCA)</strong> is formed when environmental fungi
+        (Botrytis, Aspergillus, Penicillium) methylate chlorophenols — compounds that form
+        when chlorine-based sanitisers react with wood phenolics in wine corks or barrel staves.
+        The result is a compound with a detection threshold around <strong>1–2 ng/L in wine</strong>
+        (parts per trillion) that smells like damp cardboard and mouldy newspaper.
+      </p>
+      <p class="prose">
+        Crucially, TCA does more than just add an off-smell: it <strong>suppresses olfactory
+        receptor responses</strong> by blocking intracellular cyclic AMP signalling in
+        olfactory neurons. A wine with TCA at sub-threshold concentrations may not smell
+        "corky" at all — it will simply seem flat, dull, and devoid of fruit. This is why
+        TCA is so problematic: at very low doses it acts as an olfactory suppressor rather
+        than an identifiable off-odour, making the wine seem just unremarkable rather than
+        visibly faulty. The taint source can also be cardboard packaging and wooden storage
+        shelves (not just corks), so switching to screw-cap closures reduces but does not
+        eliminate the risk.
+      </p>
+
+      <div class="subsection-head">Geosmin — earthy, beetroot, petrichor</div>
+      <p class="prose">
+        <strong>Geosmin</strong> ((4S,4aR,8aS)-octahydro-4,8a-dimethyl-4a(2H)-naphthalenol)
+        is a bicyclic alcohol produced by Streptomyces bacteria in soil and by some
+        cyanobacteria in water. Detection threshold in water: approximately <strong>4 ng/L</strong>.
+        It is responsible for the "earthy" note in fresh beetroot, some freshwater fish (catfish,
+        carp), and for <em>petrichor</em> — the characteristic smell of rain on dry earth,
+        caused by geosmin released when raindrops impact dry soil and aerosolize surface material.
+      </p>
+      <p class="prose">
+        In cooking: geosmin is volatile and can be driven off by heat. It is also acid-labile —
+        adding vinegar or citric acid during cooking converts geosmin to a non-volatile form,
+        which is why beet preparations with vinegar taste less earthy than boiled plain beet.
+        For freshwater fish with earthy off-notes, marinating in an acidic medium (buttermilk,
+        citrus) before cooking significantly reduces the geosmin load.
+      </p>
+
+      <div class="subsection-head">TMA — fish odour</div>
+      <p class="prose">
+        Marine fish muscle contains high concentrations of <strong>trimethylamine N-oxide (TMAO)</strong>,
+        an odourless compound used as an osmolyte to counter the desiccating effect of seawater.
+        When the fish dies, bacteria reduce TMAO to <strong>trimethylamine (TMA)</strong> —
+        the compound responsible for the characteristic "fishy" smell. TMA is a volatile amine
+        with a low detection threshold; its concentration increases with time post-slaughter and
+        with temperature.
+      </p>
+      <p class="prose">
+        TMA is a weak base (pKa ~9.8). Acid protonates it: TMA + H⁺ → TMA-H⁺ (trimethylammonium
+        ion), which is ionic, non-volatile, and odourless. This is the exact mechanism by
+        which lemon juice "de-fishifies" fish — the acid does not remove the TMA, it simply
+        renders it non-volatile. The effect is immediate and effective at any pH below about 7.
+        This is also why freshwater fish (which do not use TMAO as an osmolyte) do not
+        develop a fishy smell in the same way.
+      </p>
+
+      <div class="subsection-head">Brett — barnyard, leather, medicinal</div>
+      <p class="prose">
+        <strong>Brettanomyces bruxellensis</strong> (Brett) is a spoilage yeast that metabolises
+        hydroxycinnamic acids (ferulic acid, p-coumaric acid) in wine and beer into
+        vinyl phenols and then into <strong>4-ethylphenol</strong> (barnyard, leather, Band-Aid)
+        and <strong>4-ethylguaiacol</strong> (smoked meat, spice, medicinal). The individual
+        perception threshold for 4-ethylphenol in red wine is ~420 µg/L; it is considered
+        a fault above ~600 µg/L.
+      </p>
+      <p class="prose">
+        Brett is controversial because low levels can add complexity — some classic styles
+        (Châteauneuf-du-Pape, traditional Burgundy, Belgian farmhouse ales) are associated
+        with low-level Brett character, which becomes "rustic complexity" rather than a defect.
+        This illustrates a general principle: off-compounds exist on a spectrum. Diacetyl
+        is a defect in lager but a desired character in Chardonnay and some ales. Context,
+        concentration, and cultural expectation all determine whether a compound is a flaw
+        or a feature.
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="examples">Worked examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Why does lemon juice reduce the fishy smell?</strong></div>
+        <div class="example-problem">
+          A fillet of sea bass has been in the refrigerator for two days and smells mildly
+          fishy. A cook squeezes fresh lemon juice over it immediately before serving and the
+          fishiness largely disappears within seconds. Explain the chemistry precisely — where
+          does the smell go, and why does acid produce this effect so rapidly?
+        </div>
+        <div class="example-body">
+          <p><strong>Source of the smell:</strong><br>
+          Marine fish muscle contains trimethylamine N-oxide (TMAO), an odourless osmolyte.
+          After the fish dies, bacteria (primarily Shewanella and Pseudomonas species on the
+          surface) reduce TMAO to trimethylamine (TMA) using it as a terminal electron acceptor.
+          TMA is a volatile tertiary amine with a detection threshold around 1 µg/L
+          and a very distinctive fishy smell.</p>
+
+          <p><strong>The acid mechanism:</strong><br>
+          TMA is a Brønsted base, with a pKa of ~9.8 in water. At neutral pH (~7), the
+          equilibrium strongly favours the protonated form (trimethylammonium ion, TMA-H⁺)
+          — about 99.8% protonated — but TMA is still measurably volatile in its free base
+          form. At pH ~2 from lemon juice, essentially 100% of TMA is protonated.
+          The ionic form TMA-H⁺ has negligible vapour pressure: it cannot evaporate from the
+          fish surface, so it never reaches the olfactory epithelium.</p>
+
+          <p><strong>Key distinction:</strong><br>
+          The TMA is not destroyed or removed — it is still present in the fish, now as a
+          tasteless ionic salt. The smell has been physically rendered non-volatile.
+          If you were to neutralise the acid with baking soda, the fishy smell would
+          partially return as TMA was re-liberated in its free base form.
+          The effect is instantaneous because the acid-base equilibrium is fast — no
+          reaction or degradation is required, just proton transfer.</p>
+
+          <p><strong>Why only marine fish?</strong><br>
+          Freshwater fish do not use TMAO for osmoregulation (they live in hypotonic
+          rather than hypertonic environments). They contain little to no TMAO, so
+          no TMA is produced after death, and they do not develop the same fishy smell.
+          "Fishiness" in freshwater species (catfish, carp) typically comes from
+          geosmin instead, which has a different chemistry and is not reduced by acid.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Maximising umami in a broth</strong></div>
+        <div class="example-problem">
+          A chef wants to build the most intensely umami-rich broth possible from:
+          dried kombu, fresh shiitake mushrooms, canned tomatoes, chicken carcasses,
+          and dried shiitake. Design a preparation strategy that maximises umami using
+          the chemistry of the T1R1+T1R3 receptor and the glutamate–nucleotide synergy.
+        </div>
+        <div class="example-body">
+          <p><strong>Step 1 — Identify glutamate and nucleotide sources:</strong></p>
+          <ul>
+            <li><em>Free glutamate sources:</em> Kombu (~2.5 g/100g dry weight — the richest
+              known natural source), canned/roasted tomatoes (~0.14 g/100g fresh, concentrated
+              by canning), long-simmered chicken carcasses (collagen hydrolysis releases
+              glutamate-containing peptides; also some free glutamate).</li>
+            <li><em>Nucleotide sources:</em> Chicken carcasses and meat (IMP — inosine
+              monophosphate, from ATP degradation post-slaughter); dried shiitake mushrooms
+              (GMP — guanosine monophosphate, concentrated by drying because enzymatic
+              activity converts adenosine to GMP before the mushroom fully dries out).</li>
+          </ul>
+          <p><strong>Step 2 — Preparation protocols:</strong></p>
+          <ul>
+            <li><em>Kombu:</em> Extract at 60–65°C for 45 minutes. Above ~80°C, kombu
+              releases mucilaginous compounds (alginates) that produce an unpleasant slimy
+              texture and slightly bitter notes. The glutamate extracts readily at 60°C —
+              high temperature is not needed.</li>
+            <li><em>Chicken:</em> Simmer the carcasses for 3–4 hours. IMP is present in
+              the muscle from ATP degradation (a post-mortem process already complete
+              by the time you buy the bird). Long simmering extracts it along with gelatin
+              and small peptides.</li>
+            <li><em>Dried shiitake:</em> Rehydrate in cold water overnight (not boiling water).
+              Cold extraction preserves more of the GMP content. Add the mushrooms and
+              soaking liquid to the final broth.</li>
+            <li><em>Tomatoes:</em> Use slow-roasted or concentrated canned tomatoes rather
+              than fresh — concentration increases free glutamate per gram significantly.
+              Add late to avoid overcooking acidic compounds.</li>
+          </ul>
+          <p><strong>Step 3 — Combine for maximum synergy:</strong><br>
+          The critical insight: glutamate (from kombu + tomatoes) × nucleotides (IMP from
+          chicken + GMP from shiitake) = synergistic amplification of 8–30×.
+          Using both IMP and GMP simultaneously may enhance synergy further, since they
+          appear to bind at partially distinct sites or stabilize the receptor via
+          slightly different conformational changes.
+          Reduction at the end concentrates all free glutamate, amplifying the effect.
+          Do not add salt until the very end — salt suppresses bitter notes but can
+          mask the rounded, sustained umami character if added too early during reduction.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Diagnosing a faulty wine</strong></div>
+        <div class="example-problem">
+          At dinner, a bottle of red Burgundy smells of damp cardboard with no fruit.
+          The sommelier suggests it's "reduction" that will blow off with swirling.
+          You suspect TCA cork taint. How would you distinguish the two faults, and what
+          would you predict about whether the smell will dissipate?
+        </div>
+        <div class="example-body">
+          <p><strong>The two faults:</strong></p>
+          <ul>
+            <li><em>Reduction (sulfur compounds):</em> H₂S, methanethiol, or DMS
+              produced by yeast under low-nutrient fermentation conditions. These are
+              volatile at wine pH and do dissipate with swirling/aeration — the
+              off-compounds evaporate off the glass. A reductive wine often also has
+              a matchstick or struck-flint note alongside damp basement.</li>
+            <li><em>TCA cork taint:</em> TCA is not produced by the wine — it is
+              absorbed from tainted cork material. It is stable and does not evaporate
+              on swirling. At sub-perceptual threshold concentrations, TCA suppresses
+              the olfactory response to fruit aromas, making the wine smell dull and
+              flat rather than overtly "corky."</li>
+          </ul>
+          <p><strong>Diagnostic protocol:</strong></p>
+          <ol style="padding-left:18px;line-height:1.8;font-size:13.5px;">
+            <li>Pour a small amount. Cover the glass with your palm for 60 seconds, then
+                nose immediately. If the off-character diminished, reduction is likely —
+                accumulation under the glass then release is characteristic of volatile
+                sulfides. If unchanged or worse, suspect TCA.</li>
+            <li>Smell the cork directly. TCA tends to be concentrated in the cork material
+                before it migrates into the wine. A musty, damp-cardboard cork odour
+                strongly implicates TCA.</li>
+            <li>Swirl vigorously for 3–5 minutes. Reductive wines often improve noticeably.
+                TCA wines will not.</li>
+          </ol>
+          <p><strong>Prediction:</strong><br>
+          If it is TCA, the wine will not improve with time or decanting. It is irreversibly
+          tainted. The sommelier's suggestion about reduction is plausible but testable
+          within 5 minutes at the table. A wine that shows no improvement after aggressive
+          aeration should be returned. The important nuance: if the TCA is at a
+          sub-threshold level, the wine may not smell actively corky — it will simply
+          seem thin and flavourless, which can be mistaken for a bad vintage or poor storage
+          rather than a chemical fault.</p>
+        </div>
+      </div>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="fft">Food for thought</div>
+
+      <ul class="fft-list">
+        <li class="fft-item">
+          Wine tasters and perfumers can identify dozens of distinct aromatic compounds in a
+          single sample — yet humans only have ~400 functional olfactory receptor genes,
+          compared to a dog's ~1,000. How does expertise improve olfactory discrimination
+          if the hardware is fixed? And what does this imply about what "detecting" a smell
+          actually means at the neural level?
+          <div class="fft-answer">
+            The ~400 receptor genes are not a ceiling on discrimination — they are the
+            sensors. What experts improve is not the sensitivity of individual receptors
+            but the brain's ability to parse, label, and categorise the combinatorial patterns
+            that reach the olfactory bulb. Studies of trained tasters show increased functional
+            connectivity between the olfactory bulb and frontal cortex (the region associated
+            with naming and working memory) compared to novices. The difference is not in
+            the nose — it is in the cortical representation of smell patterns as labelled,
+            discrete objects ("green pepper = 2-isobutyl-3-methoxypyrazine") rather than
+            undifferentiated backgrounds. This is the same process as a musician hearing
+            individual instruments in an orchestra where a novice hears only sound — the
+            audio signal is identical, but the parsed representation is different. It also
+            implies that smell vocabulary genuinely affects smell perception: people who have
+            precise names for aromatic categories (trained sommeliers, perfumers, spice traders)
+            can identify and recall them more accurately than people who lack the vocabulary,
+            even given identical sensory hardware.
+          </div>
+        </li>
+        <li class="fft-item">
+          The flavour pairing hypothesis predicts that ingredients sharing dominant aroma
+          compounds should pair well. Yet traditional West African, Korean, and Indian cuisines
+          consistently pair ingredients with almost no shared volatiles — and produce
+          highly complex, harmonious flavours. What alternative principle might explain why
+          these pairings work, and what does the cross-cultural data tell us about the
+          limits of a purely chemical theory of flavour?
+          <div class="fft-answer">
+            Several alternative principles account for what "shared compounds" cannot.
+            First, aromatic contrast and complementarity: a cuisine built on fermented fish
+            paste, sesame, gochugaru, and garlic covers a broader span of the aromatic
+            space (sulfurous, nutty, spicy, pungent-allium) than any two of its ingredients
+            share — the combination is richer precisely because the aromas don't overlap.
+            Second, textural and temperature contrast amplifies perceived flavour complexity:
+            the same dish hot vs. cold, with vs. without crunchy garnish, produces
+            meaningfully different flavour experiences because proprioceptive and temperature
+            signals integrate with olfaction in the brain's flavour perception system.
+            Third, Maillard and fermentation products in virtually every traditional cuisine
+            generate pyrazines, furanones, and thiols in common — the "background" of
+            cooked food is already shared; what distinguishes cuisines is the aromatic
+            foreground. The deeper limitation of the hypothesis is that it treats flavour
+            as a property of individual compounds rather than of a system: aroma is
+            perceived contextually, and the same compound can be attractive (coffee thiol)
+            or repellent (rotten-meat thiol) depending entirely on what surrounds it.
+          </div>
+        </li>
+        <li class="fft-item">
+          Anosmia (the complete inability to smell) is a known side effect of some viral
+          infections, head trauma, and neurological conditions. Patients with complete anosmia
+          can still taste sweet, sour, salty, bitter, and umami normally. Many report that
+          food is "flavourless" and eating becomes unpleasant or purely functional. Some
+          develop parosmia on recovery — distorted smells where familiar foods smell rotten
+          or chemical. What does the experience of anosmia and parosmia reveal about
+          how the brain constructs flavour, and why might familiar foods smell especially
+          distorted (not unfamiliar ones) during parosmia recovery?
+          <div class="fft-answer">
+            Anosmia confirms that taste alone is insufficient for the experience of food
+            as pleasurable or diverse — the five basic tastes provide structure (sweet,
+            savoury, acid) but not the specificity that makes one food different from another.
+            The hedonic aspects of eating are heavily olfactory-dependent: food reward,
+            appetite, and food choice are all driven by retronasal aroma in a way they are
+            not driven by basic taste. Parosmia is more revealing about the neural architecture.
+            The prevailing model: olfactory receptor neurons regrow after viral damage, but
+            the new ORNs may re-innervate incorrect glomeruli in the olfactory bulb — wire
+            to the wrong target. The brain then reads a familiar smell pattern (coffee, onion)
+            using the wrong decoder, producing a distorted percept. Familiar foods produce
+            parosmia more severely than unfamiliar ones because the brain has a strong,
+            specific learned representation of what coffee or onion <em>should</em> smell like —
+            the mismatch between the expected and received pattern is jarring.
+            Completely novel odours have no stored representation to violate.
+            This explains why parosmia patients often tolerate unfamiliar foods
+            (novel cuisines, novel ingredients) better than their previously loved favourites.
+          </div>
+        </li>
+      </ul>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="pitfalls">Common pitfalls</div>
+
+      <ul class="prose">
+        <li style="margin-bottom:10px;">
+          <strong>Confusing taste and flavour — or smell and aroma.</strong>
+          In culinary contexts, people use "taste" to mean the full flavour experience,
+          and "smell" to mean orthonasal sniffing. In food science, "taste" is strictly
+          the five basic modalities; "flavour" is the integrated percept; "aroma" is
+          often used for retronasal olfaction specifically. These distinctions matter
+          when diagnosing problems: a dish that "tastes flat" needs salt, acid, or
+          aromatic complexity — not necessarily more of all three.
+        </li>
+        <li style="margin-bottom:10px;">
+          <strong>Thinking you can mask a low-threshold off-compound.</strong>
+          Compounds like TCA and geosmin are detectable at concentrations far below
+          any practical flavour addition. A tainted wine cannot be "improved" by
+          adding more flavour — TCA actively suppresses olfactory signalling, making
+          the wine duller the more you hope to detect fruit. Prevent or remove;
+          you cannot override.
+        </li>
+        <li style="margin-bottom:10px;">
+          <strong>Treating MSG as chemically distinct from "natural" glutamate.</strong>
+          Free L-glutamate activates the T1R1+T1R3 receptor identically regardless
+          of whether it came from a packet of MSG, a reduction of kombu stock, or
+          a chunk of aged Parmesan. The receptor does not know the provenance.
+          The discussion about MSG is a social and historical one, not a chemical one.
+        </li>
+        <li style="margin-bottom:10px;">
+          <strong>Adding umami sources without considering the nucleotide synergy.</strong>
+          Adding glutamate (soy sauce, MSG, tomato paste) to a dish with no nucleotide
+          source (IMP/GMP) gets some umami amplification from glutamate alone but misses
+          the 8–30× synergy. Pairing glutamate-rich ingredients with IMP sources (meat,
+          shellfish) or GMP sources (dried mushrooms) is what produces deeply savoury,
+          extended flavour.
+        </li>
+        <li style="margin-bottom:10px;">
+          <strong>Applying the flavour pairing hypothesis universally.</strong>
+          The hypothesis describes tendencies in Western European cuisines; it was not
+          derived from — and does not describe — the logic of most of the world's
+          culinary traditions. Using it as a universal rule for recipe development
+          will produce results that cluster in a narrow aromatic space. Use it as one
+          heuristic, not a law.
+        </li>
+      </ul>
+
+      <div class="section-head">Connects to</div>
+      <p class="prose">
+        <strong><a href="maillard.html">Heat &amp; Browning</a></strong> — The Maillard
+        reaction generates the majority of the volatile aroma compounds in cooked food:
+        Strecker aldehydes, pyrazines, furanones, and thiols. The flavour science of
+        roasted and baked foods is essentially applied Maillard chemistry.
+        <br>
+        <strong><a href="fermentation.html">Fermentation</a></strong> — Fermentation is
+        the other dominant source of food aroma: esters from yeast, organic acids from LAB,
+        sulfur compounds from bacteria, and hundreds of secondary metabolites from mould aging.
+        The character of wine, beer, cheese, and sourdough is largely a volatile chemistry story.
+        <br>
+        <strong><a href="fats.html">Fats, Oils &amp; Emulsions</a></strong> — Fats are the
+        primary flavour carriers in food: lipophilic aroma compounds (terpenes, lactones,
+        pyrazines) dissolve preferentially in fat and are delivered retronasal during chewing.
+        Fat rancidity (trans-2-nonenal, hexanal) is one of the most common sources of
+        off-flavours in stored food.
+      </p>
+
+      <div class="lesson-nav">
+        <a href="fermentation.html" class="lesson-nav-btn">← Fermentation</a>
+        <span class="lesson-nav-btn disabled">Next lesson →</span>
+      </div>
+
+    </div><!-- /main -->
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+  // ── Aroma compound detection thresholds ───────────────────────────────────
+  // Sorted lowest threshold LAST so it appears at TOP of horizontal bar chart
+  var compounds = [
+    'Ethyl acetate (fruity/solvent)',
+    'Vanillin (vanilla)',
+    'Isoamyl acetate (banana)',
+    'Linalool (floral)',
+    'Diacetyl (buttery)',
+    'Trans-2-nonenal (cardboard)',
+    '3-Mercaptohexanol (grapefruit)',
+    '2-Furfurylthiol (roasted coffee)',
+    'β-Ionone (violet/raspberry)',
+    'Geosmin (earthy/beetroot)',
+    'Methoxypyrazine (bell pepper)',
+    'TCA (cork taint)'
+  ];
+
+  var thresholds = [7500, 100, 30, 6, 5, 0.08, 0.06, 0.01, 0.007, 0.004, 0.002, 0.0014];
+
+  // Colour by chemical family
+  var colors = [
+    '#3a7a8a',  // ester — teal
+    '#8a6a4a',  // phenolic — warm brown
+    '#3a7a8a',  // ester — teal
+    '#7a5aaa',  // terpene — purple
+    '#7a8a9a',  // ketone — slate
+    '#b85c38',  // aldehyde/oxidation — reddish
+    '#c17c2e',  // thiol — orange
+    '#c17c2e',  // thiol — orange
+    '#7a5aaa',  // terpenoid — purple
+    '#b85c38',  // off-flavour — reddish
+    '#5a8a5a',  // pyrazine — green
+    '#b85c38'   // off-flavour — reddish
+  ];
+
+  Plotly.newPlot('plotly-thresholds', [{
+    type: 'bar',
+    orientation: 'h',
+    x: thresholds,
+    y: compounds,
+    marker: { color: colors, opacity: 0.85 },
+    hovertemplate: '<b>%{y}</b><br>Threshold: %{x:.4g} µg/L<extra></extra>'
+  }], {
+    xaxis: {
+      type: 'log',
+      title: 'Detection threshold (µg/L in water, log scale)',
+      tickfont: { family: 'IBM Plex Sans', size: 11 },
+      titlefont: { family: 'IBM Plex Sans', size: 12 },
+      dtick: 1,
+      range: [-3.2, 4.2]
+    },
+    yaxis: {
+      tickfont: { family: 'IBM Plex Sans', size: 11.5 },
+      automargin: true
+    },
+    shapes: [
+      // shade "parts per trillion" zone
+      { type: 'rect', x0: Math.log10(0.0005), x1: Math.log10(0.01),
+        y0: -0.5, y1: 11.5, xref: 'x', yref: 'paper',
+        fillcolor: 'rgba(184,92,56,0.07)', line: { width: 0 } }
+    ],
+    annotations: [
+      { x: Math.log10(0.002), y: 11.5, text: '← ppt range',
+        showarrow: false, xanchor: 'left', yanchor: 'bottom',
+        font: { color: '#b85c38', size: 9.5, family: 'IBM Plex Sans' }, yref: 'paper' }
+    ],
+    margin: { l: 210, r: 20, t: 14, b: 55 },
+    paper_bgcolor: '#f9f9f7',
+    plot_bgcolor: '#f9f9f7',
+    font: { family: 'IBM Plex Sans' },
+    showlegend: false
+  }, { responsive: true, displayModeBar: false });
+
+});
+</script>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+</body>
+</html>

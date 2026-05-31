@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fermentation — Food Science | Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/plotly.js-dist@2.27.0/plotly.min.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="food-science" data-current="fermentation.html"></div>
+      <hr class="sidebar-rule">
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#what-is" class="nav-item">What is fermentation?</a>
+        <a href="#organisms" class="nav-item">Key organisms</a>
+        <a href="#yeast" class="nav-item">Yeast fermentation</a>
+        <a href="#lab" class="nav-item">Lactic acid bacteria</a>
+        <a href="#bread" class="nav-item">Bread fermentation</a>
+        <a href="#sourdough" class="nav-item">Sourdough</a>
+        <a href="#cheese" class="nav-item">Cheese making</a>
+        <a href="#yogurt" class="nav-item">Yogurt</a>
+        <a href="#vegetables" class="nav-item">Fermented vegetables</a>
+        <a href="#vinegar" class="nav-item">Vinegar</a>
+        <a href="#examples" class="nav-item">Worked examples</a>
+        <a href="#fft" class="nav-item">Food for thought</a>
+        <a href="#pitfalls" class="nav-item">Common pitfalls</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a> → <a href="index.html">Food Science</a> → Fermentation
+      </div>
+
+      <h1 class="lesson-title">Fermentation</h1>
+      <div class="lesson-meta">Yeast · Lactic Acid Bacteria · Bread · Cheese · Sourdough · Sauerkraut · Vinegar</div>
+
+      <p class="prose">
+        Fermentation is the oldest food technology humans have, predating agriculture.
+        Every culture independently discovered that leaving food under the right conditions
+        produced something more complex, more preserved, and more interesting than the
+        starting material. We now understand why: microorganisms metabolise the food,
+        producing acids, alcohols, gases, and hundreds of flavour compounds. The science
+        explains not just <em>how</em> fermentation works, but <em>why</em> sourdough
+        develops complexity over 24 hours while commercial yeast bread is flat in 2,
+        and why aged cheese tastes so different from fresh curd.
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="what-is">What fermentation is</div>
+
+      <p class="prose">
+        Biochemically, <em>fermentation</em> refers specifically to anaerobic energy metabolism —
+        the breakdown of organic compounds without oxygen, producing ATP (energy) and organic
+        by-products rather than CO₂ and water. In food science, the term is used more broadly
+        to mean any desirable microbial transformation of food, including some aerobic processes
+        (e.g. vinegar production, mould-ripened cheese).
+      </p>
+
+      <p class="prose">
+        What fermentation does to food:
+      </p>
+      <ul class="prose" style="margin-top:6px;">
+        <li><strong>Preservation:</strong> lactic acid lowers pH to 3.5–4.5, alcohol reaches
+            bactericidal concentrations, and the metabolic activity of beneficial microorganisms
+            out-competes pathogens and spoilage organisms. This is why fermented foods have
+            far longer shelf life than their raw ingredients.</li>
+        <li><strong>Flavour development:</strong> microbial enzymes produce hundreds of secondary
+            metabolites — organic acids, alcohols, esters, aldehydes, and sulfur compounds —
+            that raw food lacks entirely. The flavour difference between fresh milk and aged
+            Parmesan is entirely a function of microbial metabolic activity over months.</li>
+        <li><strong>Texture change:</strong> microbial enzymes and acid production modify protein
+            and carbohydrate structure (casein coagulation in cheese, gluten modification in
+            sourdough, pectin softening in fermented vegetables).</li>
+        <li><strong>Nutritional improvement:</strong> fermentation can improve digestibility
+            (partial protein hydrolysis), synthesise vitamins (B12 in some fermented dairy),
+            and reduce anti-nutritional factors (phytates in grains that inhibit mineral absorption
+            are partially degraded by the acidic environment of sourdough fermentation).</li>
+      </ul>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="organisms">Key organisms in food fermentation</div>
+
+      <p class="prose">
+        Three major groups of microorganisms drive most food fermentation:
+      </p>
+
+      <p class="prose"><strong>Yeasts</strong> — primarily <em>Saccharomyces cerevisiae</em>
+        and related species. Facultative anaerobes (can work with or without oxygen, preferring
+        anaerobic for fermentation). Ferment glucose and fructose primarily. Produce ethanol
+        and CO₂. Central to: bread, beer, wine, and most alcohol fermentations.
+        Wild yeast species (Kazachstania humilis, Wickerhamomyces anomalus) also contribute
+        in sourdoughs.
+      </p>
+
+      <p class="prose"><strong>Lactic acid bacteria (LAB)</strong> — a diverse family including
+        <em>Lactobacillus</em>, <em>Leuconostoc</em>, <em>Streptococcus thermophilus</em>,
+        <em>Pediococcus</em>, and others. Obligate fermenters: they only do anaerobic metabolism.
+        Produce lactic acid (and sometimes acetic acid, CO₂, and ethanol depending on species).
+        Central to: yogurt, cheese, sourdough, sauerkraut, kimchi, salami.
+      </p>
+
+      <p class="prose"><strong>Moulds</strong> — primarily <em>Penicillium</em> species
+        (P. camemberti for Brie/Camembert, P. roqueforti for blue cheese),
+        <em>Aspergillus oryzae</em> (koji, used for soy sauce, miso, sake),
+        and <em>Rhizopus</em> (tempeh). Moulds are aerobic — they grow on surfaces exposed to air.
+        They produce powerful proteases and lipases that break down protein and fat during aging,
+        generating the complex flavour of aged cheeses and fermented soy products.
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="yeast">Yeast fermentation — CO₂ and ethanol from sugar</div>
+
+      <p class="prose">
+        The core reaction of yeast fermentation (anaerobic glycolysis):
+      </p>
+
+      <div style="background:#f0f6fa;border-left:3px solid #7ab8d4;border-radius:0 5px 5px 0;padding:12px 18px;margin:10px 0 20px;font-size:13.5px;line-height:2;">
+        Glucose → 2 ethanol + 2 CO₂ + 2 ATP
+      </div>
+
+      <p class="prose">
+        Each glucose molecule yields two molecules each of ethanol and carbon dioxide. The ATP
+        (energy) is what the yeast is actually after — ethanol and CO₂ are waste products.
+        In food fermentation, these waste products are the valuable outputs: CO₂ for bread
+        leavening, ethanol for wine and beer, both for champagne and sourdough.
+      </p>
+
+      <p class="prose">
+        <strong>Factors controlling yeast activity:</strong>
+      </p>
+      <ul class="prose" style="margin-top:6px;">
+        <li><strong>Temperature:</strong> yeast activity increases with temperature up to
+            ~35–38°C (optimal for S. cerevisiae), then drops sharply as enzymes denature.
+            Cold slows fermentation (4°C fridge = slow but ongoing); above 50°C yeast dies.
+            This is exploited in bread baking: the initial oven temperature range (up to ~60°C)
+            allows a final burst of yeast activity before death — "oven spring."</li>
+        <li><strong>Sugar concentration:</strong> at low concentrations, sugar is the limiting
+            substrate. At very high concentrations (&gt;~25–30% sugar), osmotic stress inhibits
+            yeast — this is why some sweet doughs use osmotolerant yeast strains.</li>
+        <li><strong>Salt:</strong> inhibits yeast at high concentrations. In bread dough, salt
+            is added after initial mixing partly to avoid direct contact with yeast until distributed;
+            salt concentrations above ~2% meaningfully slow fermentation.</li>
+        <li><strong>pH:</strong> yeast prefers slightly acidic conditions (pH 4–6); extremely
+            acidic or alkaline environments (pH &lt;3 or &gt;8) inhibit growth.</li>
+        <li><strong>Alcohol:</strong> ethanol is toxic to yeast above ~12–15% — this is why
+            wine and beer fermentation stops naturally around this concentration (and why
+            spirits require distillation to reach higher alcohol percentages).</li>
+      </ul>
+
+      <!-- Interactive: yeast activity vs. temperature -->
+      <div class="widget-card" style="margin:20px 0;">
+        <div class="widget-title">Yeast CO₂ production rate vs. temperature</div>
+        <div id="yeast-chart" style="width:100%;height:300px;"></div>
+        <p style="font-size:0.82em;color:#9aabb8;margin:6px 0 0;text-align:center;">
+          Relative CO₂ production rate for S. cerevisiae. Optimal range for bread baking
+          (26–30°C) and the cold-retard range (4–8°C) highlighted.
+        </p>
+      </div>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="lab">Lactic acid bacteria — the acid producers</div>
+
+      <p class="prose">
+        LAB convert sugars (glucose, fructose, lactose, maltose) into organic acids.
+        Two metabolic strategies:
+      </p>
+      <ul class="prose" style="margin-top:6px;">
+        <li><strong>Homofermentative LAB</strong> (e.g. Lactobacillus bulgaricus, many Lactococcus):
+            convert glucose almost entirely to lactic acid. Produce no CO₂, no alcohol.
+            Fast acidification. Used in yogurt and fresh cheese where quick, clean acidification
+            is wanted.</li>
+        <li><strong>Heterofermentative LAB</strong> (e.g. Leuconostoc mesenteroides, L. brevis,
+            L. fermentum): produce lactic acid + acetic acid + CO₂ + small amounts of ethanol.
+            Slower, more complex. Central to sourdough and lacto-fermented vegetables.
+            Acetic acid (vinegar flavour) contributes "tang" and sharpness distinct from
+            lactic acid's milder sourness.</li>
+      </ul>
+
+      <p class="prose">
+        <strong>Why acid matters beyond flavour:</strong> as LAB lower pH, they create conditions
+        that are hostile to most pathogens (Listeria, Salmonella, E. coli are progressively
+        inhibited below pH 5, killed below pH 4). LAB also produce bacteriocins — peptide
+        antibiotics that inhibit competitor organisms. This is why properly acidified fermented
+        foods are microbiologically safe despite not being heated. The acid is the preservative.
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="bread">Bread fermentation — gas, structure, and flavour</div>
+
+      <p class="prose">
+        Commercial bread yeast (S. cerevisiae) added to dough ferments primarily:
+      </p>
+      <ul class="prose" style="margin-top:6px;">
+        <li><strong>Simple sugars</strong> from the flour (glucose, fructose, sucrose from sucrase
+            activity)</li>
+        <li><strong>Maltose</strong> from amylase breakdown of starch (more important for a
+            long fermentation)</li>
+      </ul>
+
+      <p class="prose">
+        The CO₂ produced is trapped in the gluten network (developed by kneading — see
+        Lesson 2), causing dough to rise. The ethanol evaporates entirely during baking.
+        Flavour from commercial yeast bread is primarily from yeast metabolism byproducts —
+        small amounts of organic acids, esters, and aldehydes — modest compared to sourdough.
+      </p>
+
+      <p class="prose">
+        <strong>Cold fermentation (retarding):</strong> refrigerating shaped dough overnight
+        slows yeast activity dramatically (~10× slower than at room temp) but allows enzymatic
+        activity (proteases softening gluten, amylases producing more sugar substrate, yeast
+        at low level continuing to produce flavour compounds) to proceed over a longer time.
+        Cold-retarded dough produces noticeably more complex flavour — used by most
+        artisan and high-end bakeries. The slow fermentation also allows better gluten
+        relaxation and dough extensibility.
+      </p>
+
+      <p class="prose">
+        <strong>Oven spring:</strong> in the first 10–15 minutes of baking, yeast activity
+        accelerates (from room temperature to ~38°C), CO₂ dissolved in the dough expands,
+        and steam from the dough's water expands the gas cells — the bread "springs" upward
+        by 30–50% before yeast dies at ~60°C. The gluten network and gelatinising starch
+        set this expanded structure permanently.
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="sourdough">Sourdough — a mixed culture ecosystem</div>
+
+      <p class="prose">
+        A sourdough starter is a stable mixed culture of wild yeasts and LAB living in
+        a flour-water matrix, maintained by regular feeding (refreshing with fresh flour and water).
+        The two groups coexist because they occupy different ecological niches: yeasts prefer
+        maltose (producing CO₂ for leavening); LAB prefer fructose and other simple sugars
+        (producing acids that inhibit competing organisms but are tolerated by the acid-adapted yeasts).
+      </p>
+
+      <p class="prose">
+        <strong>Two acids, two flavours:</strong>
+      </p>
+      <ul class="prose" style="margin-top:6px;">
+        <li><strong>Lactic acid</strong> (produced by homofermentative LAB, favoured at higher
+            temperatures and higher hydration): mild, creamy, yogurt-like sourness.
+            Dominant in mild San Francisco sourdoughs and many French pain de campagne.</li>
+        <li><strong>Acetic acid</strong> (produced by heterofermentative LAB, favoured at lower
+            temperatures and lower hydration): sharp, vinegary, assertive tang. Dominant in
+            more "punchy" sourdoughs — many San Francisco-style loaves, whole-grain breads
+            that ferment at cooler temperatures.</li>
+      </ul>
+
+      <p class="prose">
+        The ratio of lactic to acetic acid is controlled by:
+      </p>
+      <ul class="prose" style="margin-top:6px;">
+        <li><strong>Hydration:</strong> stiffer doughs (lower hydration) favour acetic acid
+            (less available water shifts metabolism). Wetter doughs favour lactic acid.</li>
+        <li><strong>Temperature:</strong> warmer fermentation (&gt;25°C) favours lactic-producing
+            homofermenters; cooler fermentation (&lt;18°C) or long cold retards favour acetic.</li>
+        <li><strong>Fermentation time:</strong> longer = more acid production overall,
+            with acetic acid increasing disproportionately in prolonged fermentations.</li>
+      </ul>
+
+      <div class="callout">
+        <strong>Why does sourdough develop so much more flavour than commercial yeast bread?</strong><br>
+        Three reasons acting together: (1) Longer fermentation allows enzymatic breakdown of
+        starch and protein, producing more sugar substrate for yeast and more amino acids
+        for flavour reactions. (2) LAB produce a complex mixture of organic acids plus dozens
+        of secondary metabolites (ethyl acetate, acetaldehyde, diacetyl, 2,3-butanediol)
+        that commercial yeast barely produces. (3) Proteolytic enzymes from both the LAB and
+        flour itself partially break down gluten — not enough to compromise structure but
+        enough to release amino acids that become flavour compounds in the Maillard reactions
+        during baking. Commercial yeast bread optimises speed; sourdough optimises flavour depth.
+      </div>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="cheese">Cheese making — coagulation, dehydration, and aging</div>
+
+      <p class="prose">
+        Cheese is concentrated milk protein and fat, with most of the water removed and
+        then aged under conditions that allow extensive enzymatic flavour development.
+        The sequence:
+      </p>
+
+      <p class="prose"><strong>Step 1 — Coagulation</strong></p>
+      <p class="prose">
+        Milk can be coagulated by two mechanisms, often used together:
+      </p>
+      <ul class="prose" style="margin-top:6px;">
+        <li><em>Acid coagulation:</em> LAB acidify milk, lowering pH toward 4.6 (the isoelectric
+            point of casein). At this pH, casein micelles lose their surface charge and
+            κ-casein "hairy layer" — they aggregate and form a soft, fragile gel. Produces
+            fresh cheeses (ricotta, queso fresco, paneer) and the base for acid-set styles.</li>
+        <li><em>Enzymatic coagulation (rennet):</em> rennet contains chymosin (or similar
+            proteases) that specifically cleave κ-casein, removing the steric stabilisation
+            of micelles. In the presence of calcium ions, the micelles then aggregate even
+            at normal milk pH (6.6–6.8) — producing a firmer, more elastic curd that can
+            be cut, cooked, and pressed. Most aged cheeses use rennet.</li>
+      </ul>
+
+      <p class="prose"><strong>Step 2 — Curd processing</strong></p>
+      <p class="prose">
+        The curd is cut into pieces (larger pieces = more moisture retained = softer cheese;
+        smaller pieces = more whey expelled = harder cheese). Cut curd is then cooked
+        (further whey expulsion, protein contraction) and/or pressed. Salt is added by
+        brining or rubbing — it draws out more moisture, inhibits unwanted organisms, and
+        contributes to flavour and rind formation. The final moisture content determines
+        the cheese style: soft (Brie, ~50% moisture), semi-hard (Gouda, ~40%), hard
+        (Parmesan, &lt;30%).
+      </p>
+
+      <p class="prose"><strong>Step 3 — Aging (affinage)</strong></p>
+      <p class="prose">
+        This is where flavour is built. During aging:
+      </p>
+      <ul class="prose" style="margin-top:6px;">
+        <li><strong>Proteolysis:</strong> rennet residues + bacterial proteases + plasmin
+            (native milk protease) break casein chains into smaller peptides and free amino
+            acids. Bitter peptides (from non-specific proteolysis) are problematic in young
+            cheese; continued breakdown into free amino acids eliminates bitterness.
+            Free amino acids are then metabolised into flavour compounds: glutamic acid gives
+            umami; tyrosine produces tyrosine crystals (the white "crunchy" bits in aged Parmesan);
+            branched-chain amino acids (leucine, valine) produce fruity and nutty aldehyde
+            flavours via Strecker-like degradation.</li>
+        <li><strong>Lipolysis:</strong> lipases release free fatty acids from triglycerides.
+            Short-chain FFA (butyric, caprylic, capric) are responsible for the pungent, sharp
+            aroma of aged cheeses — especially in mould-ripened and washed-rind styles.
+            At low levels this is "complex"; at high levels it is "rancid."</li>
+        <li><strong>Mould contribution:</strong> Penicillium camemberti (Brie) grows on the rind,
+            producing proteases that digest inward — this is why Brie is runny near the rind
+            and firm in the centre in an under-ripe wheel. P. roqueforti (Roquefort, Stilton,
+            Gorgonzola) grows in air channels through the cheese body — creating the characteristic
+            blue-green veins and the sharp, piquant flavour from its lipase activity.</li>
+      </ul>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="yogurt">Yogurt — rapid acid coagulation</div>
+
+      <p class="prose">
+        Yogurt is essentially a simplified cheese without the whey removal or aging step.
+        The standard yogurt culture is a symbiotic pair: <em>Streptococcus thermophilus</em>
+        (grows first, produces lactic acid quickly at 42–45°C) and <em>Lactobacillus delbrueckii
+        bulgaricus</em> (grows more slowly, produces more acid and acetaldehyde — the characteristic
+        yogurt aroma compound).
+      </p>
+
+      <p class="prose">
+        <strong>Why milk is heated before fermentation:</strong> milk is heated to 85–90°C
+        for 15–30 minutes (or briefly to 95°C) before inoculation. This does three things:
+        (1) kills competing organisms, (2) denatures whey proteins — denatured β-lactoglobulin
+        associates with casein micelles and strengthens the eventual acid gel (more protein
+        network = thicker, creamier yogurt), and (3) reduces dissolved oxygen.
+        UHT milk works reasonably but the already-denatured proteins behave differently —
+        one reason why homemade yogurt from UHT milk can be thinner than from pasteurised milk.
+      </p>
+
+      <p class="prose">
+        <strong>Incubation:</strong> inoculate with live culture at ~43–45°C and hold at
+        temperature for 4–8 hours. The LAB multiply and produce lactic acid; pH drops steadily
+        from ~6.6 to ~4.5. At pH 4.6, casein micelles coagulate into a soft gel — the yogurt
+        sets. Longer incubation = more acid = more sour. Very long incubation = over-acidification,
+        whey separation (syneresis), and a thin, overly sour product.
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="vegetables">Fermented vegetables — salt, brine, and bacterial succession</div>
+
+      <p class="prose">
+        Sauerkraut, kimchi, pickled cucumbers, and fermented hot sauce all rely on wild LAB
+        naturally present on vegetable surfaces. No starter culture is needed — the microorganisms
+        are already there. Salt is the only added ingredient, and it does the critical work:
+      </p>
+
+      <ul class="prose" style="margin-top:6px;">
+        <li><strong>Osmosis:</strong> salt draws water out of vegetable cells, creating the
+            brine that submerges the vegetables. This anaerobic, salt-rich brine selects for
+            salt-tolerant LAB while inhibiting most spoilage organisms and pathogens.</li>
+        <li><strong>Salt concentration determines speed and community:</strong> ~2% salt produces
+            a good fermentation in most vegetables at room temperature. Too little (&lt;1.5%)
+            and undesirable organisms can dominate. Too much (&gt;3%) and fermentation is very
+            slow; above ~5–6%, most LAB are inhibited.</li>
+      </ul>
+
+      <p class="prose">
+        <strong>Bacterial succession:</strong> sauerkraut fermentation follows a classic
+        ecological succession:
+      </p>
+      <ol class="prose" style="margin-top:6px;">
+        <li><em>Leuconostoc mesenteroides</em> dominates early (day 1–3): heterofermentative,
+            produces CO₂ (purges oxygen), lactic acid, acetic acid. Creates the initial
+            anaerobic acid environment.</li>
+        <li><em>Lactobacillus plantarum</em> takes over (day 3–14): more acid-tolerant,
+            continues lactic acid production. Drives pH down to 3.5–4.</li>
+        <li><em>L. brevis</em> (if fermentation extends to weeks): most acid-tolerant LAB,
+            completes fermentation at pH &lt;3.5 where others struggle.</li>
+      </ol>
+
+      <p class="prose">
+        The final pH (~3.2–3.8) makes sauerkraut and kimchi shelf-stable at room temperature
+        without refrigeration — the original purpose of the technique.
+      </p>
+
+      <p class="prose">
+        <strong>Kimchi</strong> adds complexity: garlic, ginger, and Korean red pepper introduce
+        additional substrates and their own microbial populations. The flavour compounds from
+        garlic fermentation (allicin breakdown products, S-compounds) integrate with the LAB
+        metabolites for kimchi's distinctive pungency. The sequence of bacterial species is
+        similar to sauerkraut but faster at higher temperatures and influenced by the additional
+        substrates.
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="vinegar">Vinegar — two sequential fermentations</div>
+
+      <p class="prose">
+        Vinegar production requires two sequential microbial steps:
+      </p>
+      <ol class="prose" style="margin-top:6px;">
+        <li><strong>Alcoholic fermentation:</strong> yeast converts sugars → ethanol + CO₂
+            (wine, cider, beer, or any dilute alcohol solution provides the substrate).</li>
+        <li><strong>Acetic acid fermentation:</strong> <em>Acetobacter</em> and related
+            acetic acid bacteria (AAB) oxidise ethanol → acetic acid + water.
+            This step requires oxygen — it is strictly aerobic, unlike the first step.
+            The reaction: C₂H₅OH + O₂ → CH₃COOH + H₂O.
+            AAB form a surface film (the "mother of vinegar" — cellulose matrix produced
+            by the bacteria) at the liquid–air interface where oxygen is available.</li>
+      </ol>
+
+      <p class="prose">
+        The flavour of vinegar depends entirely on the starting material: wine → wine vinegar
+        (with wine-specific flavour esters and phenolics); cider → cider vinegar; rice wine →
+        rice vinegar (mildly sweet); malt → malt vinegar (more complex, bready). All contain
+        acetic acid as the primary acid, but the secondary compounds produce the character.
+      </p>
+
+      <p class="prose">
+        <strong>Balsamic vinegar</strong> is a more complex version: concentrated grape must
+        (cooked-down grape juice) undergoes both alcoholic fermentation and acetification,
+        then aged for years to decades in a series of wooden barrels of decreasing size
+        (each wood type contributes different flavour compounds). The long aging produces
+        a syrupy, deeply complex condiment far removed from standard wine vinegar.
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="examples">Worked examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Why sourdough bread keeps longer than commercial yeast bread</strong></div>
+        <div class="example-problem">
+          A sourdough loaf stays mould-free and palatable for 4–7 days at room temperature,
+          while a commercial yeast loaf of similar composition moulds within 2–3 days.
+          Explain the chemical and microbiological mechanisms behind this difference.
+        </div>
+        <div class="example-body">
+          <p><strong>Acetic acid — the primary antimicrobial:</strong><br>
+          Heterofermentative LAB in sourdough produce acetic acid (vinegar) alongside lactic
+          acid. Acetic acid is a far more effective antifungal than lactic acid at equivalent
+          concentrations — it is active in its undissociated form (pKa 4.75), and at the
+          typical sourdough crumb pH of 4.5–5.0, a significant fraction remains undissociated
+          and can diffuse across mould cell membranes. Lactic acid (pKa 3.86) is mostly
+          dissociated at crumb pH and thus less membrane-permeable. Commercial yeast bread
+          typically contains no significant acetic acid and minimal lactic acid — its pH is
+          near neutral (~5.8–6.2), far less hostile to mould growth.</p>
+          <p><strong>Lower pH overall:</strong><br>
+          Sourdough crumb pH is typically 4.3–5.2 vs. commercial yeast bread's 5.5–6.2.
+          Most bread moulds (Aspergillus, Penicillium, Rhizopus) have a pH optimum of 5–6
+          and are inhibited below ~4.5. The combined acid environment of sourdough creates
+          a less hospitable surface for mould colonisation.</p>
+          <p><strong>Propionate production (in some sourdoughs):</strong><br>
+          Some LAB strains produce propionic acid — a potent antifungal used commercially
+          as calcium propionate preservative in bread. Sourdoughs with appropriate LAB
+          communities produce this natively.</p>
+          <p><strong>Water activity effects:</strong><br>
+          The acid in sourdough reduces water activity slightly (acid molecules displace
+          water in the aqueous phase), marginally reducing the free water available for
+          microbial growth.</p>
+          <p><em>Practical note:</em> covering bread in plastic accelerates mould regardless
+          of type (trapped moisture creates a humid surface layer ideal for mould). Sourdough's
+          advantage is chemical; storage conditions still matter.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Why does blue cheese taste so different from fresh curd?</strong></div>
+        <div class="example-problem">
+          Roquefort and Stilton are made from milk using rennet coagulation, like most cheeses.
+          But their flavour is dramatically different from fresh curd or young cheese.
+          Trace the specific biochemical steps that transform mild curd into pungent blue cheese,
+          identifying which organisms are responsible and which chemical transformations they drive.
+        </div>
+        <div class="example-body">
+          <p><strong>Starting material:</strong><br>
+          Fresh milk or curd: mild, milky, slightly lactic. Proteins (casein) mostly intact.
+          Fat in fat globules. Minor flavour compounds from milk itself.</p>
+          <p><strong>Step 1 — Initial acidification and pressing:</strong><br>
+          LAB produce lactic acid; pH drops to ~5.2. Rennet coagulation and pressing expel
+          whey; moisture drops to ~40%. Still mild at this stage — similar to a young
+          Cheddar or Edam.</p>
+          <p><strong>Step 2 — Penicillium roqueforti inoculation and piercing:</strong><br>
+          P. roqueforti spores are added to the milk or curd. After pressing, the wheel is
+          pierced with long needles to create air channels throughout the body — P. roqueforti
+          is aerobic and can only grow where oxygen is available. The blue-green veins form
+          precisely along these air channels.</p>
+          <p><strong>Step 3 — Lipolysis (the source of pungency):</strong><br>
+          P. roqueforti produces powerful lipases. These cleave triglycerides to release free
+          fatty acids — particularly the short- and medium-chain fatty acids (caprylic acid C8,
+          capric acid C10, butyric acid C4). These FFA are responsible for the sharp, pungent,
+          "blue cheese" aroma. Methyl ketones (2-heptanone, 2-nonanone) are also produced
+          from fatty acid oxidation — these contribute the "blue cheese" note specifically.
+          The mould essentially converts flavourless fat into a complex mixture of potent aroma compounds.</p>
+          <p><strong>Step 4 — Proteolysis (the source of creaminess and complexity):</strong><br>
+          P. roqueforti and resident LAB produce proteases and peptidases that break casein
+          into peptides and free amino acids. Bitter peptides are further hydrolysed to
+          individual amino acids (reducing bitterness). Glutamic acid contributes umami.
+          Branched-chain amino acids (leucine, isoleucine, valine) are deaminated and
+          decarboxylated to produce fruity aldehydes. The combined effect: creamy texture
+          (protein network partly solubilised), complex layered flavour (acid + FFA + amino
+          acid metabolites), and umami depth.</p>
+          <p><em>Summary:</em> fresh curd has 2–3 dominant flavour notes; Roquefort after
+          3–4 months of aging has dozens, generated by two distinct enzymatic pathways
+          (proteolysis and lipolysis) running simultaneously under the activity of the mould.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Controlling sourdough sourness</strong></div>
+        <div class="example-problem">
+          A baker wants a sourdough loaf that is mildly tangy (creamy, yogurt-like) rather
+          than sharp and vinegary. Using the chemistry of LAB metabolism, design a fermentation
+          protocol (hydration level, temperature, time) that will favour lactic acid over
+          acetic acid production.
+        </div>
+        <div class="example-body">
+          <p><strong>The two acids and their determinants:</strong><br>
+          Lactic acid: produced by homofermentative LAB (and as the primary product of
+          heterofermentative LAB under certain conditions). Dominant under warm temperatures
+          (25–30°C) and higher hydration (wetter dough).<br>
+          Acetic acid: produced by heterofermentative LAB when they use the phosphoketolase
+          pathway under conditions favouring acetyl phosphate accumulation — i.e., cool
+          temperatures and lower hydration (more limited water activity).</p>
+          <p><strong>Protocol for lactic-dominant (mild) sourdough:</strong></p>
+          <ul>
+            <li><em>Hydration:</em> use a high-hydration dough (70–80% water:flour ratio).
+                Excess water promotes homofermentative metabolism and lactic acid production.</li>
+            <li><em>Temperature:</em> ferment the bulk dough at 26–30°C. Warm conditions favour
+                homofermentative strains and the lactic acid pathway. Avoid cold retarding
+                the bulk (save any fridge time for the shaped loaf, and keep it short).</li>
+            <li><em>Time:</em> 3–5 hours bulk fermentation at 28°C produces mild acidity.
+                Do not extend to 12+ hours at room temperature — prolonged fermentation
+                allows heterofermentative organisms to become more active.</li>
+            <li><em>Starter:</em> a young, recently fed starter (peaked activity) is predominantly
+                lactic-favoured. An older, more acidic starter or one maintained at room
+                temperature has more heterofermentative organisms and will contribute more acetic character.</li>
+          </ul>
+          <p><strong>Protocol for acetic-dominant (sharp) sourdough:</strong>
+          The opposite: stiffer dough (~65% hydration), 18–20°C bulk, 12–18+ hours or long
+          cold retard at 4–8°C, older starter. San Francisco-style sourdoughs deliberately
+          use this approach for their characteristic assertive tang.</p>
+        </div>
+      </div>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="fft">Food for thought</div>
+
+      <ul class="fft-list">
+        <li class="fft-item">
+          Traditional fermented foods (sourdough, sauerkraut, cheese) developed long before
+          any understanding of microbiology. People observed empirically which conditions
+          produced good results and which produced spoilage. Which specific environmental
+          variables would have been most salient to pre-scientific observation — and which
+          would have been invisible until Pasteur?
+          <div class="fft-answer">
+            Observable variables: temperature (when the bread rises well, when the cheese
+            ripens correctly, when the sauerkraut stays crisp vs. goes mushy), salt concentration
+            (experienced empirically as the ratio of salt to vegetable weight), time (how long to
+            ferment, when the bread has proofed "enough"), and sensory cues (appearance of mould,
+            colour of rind, texture of curd, smell of the starter). These were transmitted as
+            rules of thumb across generations. Invisible until Pasteur's germ theory (1860s):
+            the existence of microorganisms at all, the fact that fermentation and spoilage were
+            caused by distinct organisms rather than spontaneous generation, why a contaminated
+            vessel produced different results than a clean one, and why milk from healthy vs. sick
+            animals fermented differently (different microbial loads). Pre-scientific fermenters
+            controlled the community structure of their cultures without knowing communities
+            existed — by selecting for favourable conditions that we now understand to select
+            for specific organisms. The knowledge was entirely correct; only the explanation
+            was missing.
+          </div>
+        </li>
+        <li class="fft-item">
+          Sourdough bread has a lower glycaemic index than commercial yeast bread made from
+          the same flour. What fermentation chemistry might explain this, and why would it
+          matter metabolically?
+          <div class="fft-answer">
+            Several mechanisms contribute. First, the organic acids (primarily lactic and acetic)
+            in sourdough lower bread pH to ~4.5–5.0. Acid slows gastric emptying — food stays
+            in the stomach longer, reducing the rate of glucose delivery to the bloodstream
+            (lower postprandial blood glucose spike). Second, the acidic environment during long
+            fermentation partially modifies starch structure: protracted amylase activity
+            (endogenous flour amylases are active during the long bulk fermentation) creates
+            more starch–lipid complexes (amylose wrapping around the fatty acids from wheat)
+            that are more slowly digestible. Third, phytate degradation: the acidic, prolonged
+            fermentation activates phytases in flour, breaking down phytic acid (which chelates
+            minerals and inhibits starch digestion enzymes). Reduced phytate = better mineral
+            absorption and possibly less interference with amylase. The practical result:
+            sourdough bread produces a meaningfully lower blood glucose response than equivalent
+            commercial yeast bread — a meaningful difference for people managing blood sugar,
+            not an incidental observation.
+          </div>
+        </li>
+        <li class="fft-item">
+          Vinegar is made by aerobic oxidation of ethanol to acetic acid. Yet the pH of
+          vinegar (typically 2.4–3.4) is low enough to kill most bacteria, including the
+          Acetobacter that make it. How does Acetobacter survive in its own product,
+          and what limits the final acidity of vinegar?
+          <div class="fft-answer">
+            Acetobacter is uniquely acid-tolerant among the bacteria that make it: it survives
+            acetic acid concentrations up to ~10–12% (well above the inhibitory threshold for
+            most microorganisms). Its tolerance mechanisms include efflux pumps that export
+            undissociated acetic acid from the cytoplasm before it can acidify the interior,
+            and adaptations in its cell membrane composition that maintain integrity at low
+            external pH. The limits on final acidity are practical rather than microbial:
+            (1) substrate availability — Acetobacter requires ethanol; once the alcohol substrate
+            is exhausted, acetic acid production stops. A 10% ABV starting wine/cider produces
+            roughly 10% acetic acid (~10 g/100 mL), near the maximum for most commercial vinegar.
+            (2) Product inhibition — above ~12% acetic acid, even Acetobacter is inhibited
+            by its own product. (3) Oxygen limitation — the reaction requires oxygen; deep
+            vessels with limited surface area slow production naturally. Industrial vinegar
+            production uses submerged fermentation with forced aeration to maintain oxygen
+            supply and accelerate the process.
+          </div>
+        </li>
+      </ul>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="pitfalls">Common pitfalls</div>
+
+      <ul class="prose">
+        <li style="margin-bottom:10px;">
+          <strong>Killing yeast with hot liquid.</strong>
+          Yeast dies above ~50°C. Adding water hotter than ~40°C to yeast (or adding yeast
+          directly to a hot mixture) produces dough that never rises. Water for bread baking
+          should feel warm on the wrist, not hot.
+        </li>
+        <li style="margin-bottom:10px;">
+          <strong>Refrigerating yogurt culture at the wrong stage.</strong>
+          Incubation must complete (gel set) before refrigeration. Refrigerating mid-fermentation
+          stops LAB activity — the yogurt will never set properly. Once set, refrigeration
+          slows (but does not stop) continued acidification; very long refrigerator storage
+          makes yogurt progressively more sour.
+        </li>
+        <li style="margin-bottom:10px;">
+          <strong>Not submerging fermented vegetables in brine.</strong>
+          Any vegetable above the brine surface is exposed to oxygen and becomes a site for
+          mould growth rather than LAB fermentation. Use a weight or zip-lock bag filled with
+          brine to keep everything submerged. Surface kahm yeast (a harmless white film) is
+          normal; visible mould (green, black, pink) is a contamination issue.
+        </li>
+        <li style="margin-bottom:10px;">
+          <strong>Confusing homofermentative and heterofermentative LAB outcomes.</strong>
+          Adding more starter or a warmer temperature to get more sourness may produce a
+          lactic-dominant (milder) fermentation. For a sharper, more assertive sour,
+          lower temperature and longer time produces acetic acid. These are different outcomes
+          from different metabolic pathways, not just more or less of the same thing.
+        </li>
+        <li style="margin-bottom:10px;">
+          <strong>Assuming "fermented = safe" unconditionally.</strong>
+          Acid fermentation to pH &lt;4.6 with adequate salt is safe. Fermentation at
+          insufficient salt, improper temperature, or incomplete acidification can allow
+          pathogen survival. Home fermentation of vegetables at 2% salt by weight, fully
+          submerged, produces consistently safe results. Never skip the salt.
+        </li>
+      </ul>
+
+      <div class="section-head">Connects to</div>
+      <p class="prose">
+        <strong><a href="proteins.html">Proteins in the Kitchen</a></strong> — Cheese making
+        is acid and enzymatic coagulation of casein proteins, followed by enzymatic proteolysis
+        during aging. The denaturation of whey proteins during milk heating determines yogurt
+        texture. All of the protein chemistry from Lesson 2 is active here.
+        <br>
+        <strong><a href="carbohydrates.html">Carbohydrates &amp; Starches</a></strong> —
+        Yeast ferments sugars (glucose, fructose, maltose); amylases produce maltose from
+        starch; phytase in acid dough breaks down antinutritional phytates. Carbohydrates
+        are the substrate for fermentation.
+        <br>
+        <strong><a href="flavor.html">Flavour Science</a></strong> — Fermentation is one
+        of the most prolific sources of flavour compounds: esters, organic acids, aldehydes,
+        sulfur compounds, and ketones. Understanding which organisms produce which compounds
+        is the mechanistic foundation of flavour pairing in fermented food.
+      </p>
+
+      <div class="lesson-nav">
+        <a href="carbohydrates.html" class="lesson-nav-btn">← Carbohydrates &amp; Starches</a>
+        <a href="flavor.html" class="lesson-nav-btn">Flavour Science →</a>
+      </div>
+
+    </div><!-- /main -->
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+  // ── Yeast activity vs. temperature ────────────────────────────────────────
+  var temps = [], rate = [];
+  for (var t = 0; t <= 55; t += 1) {
+    temps.push(t);
+    // Simplified bell-curve model: peak at 35°C, death above 50°C
+    var r;
+    if (t <= 50) {
+      // Gaussian-ish: rises to peak at 35, then falls
+      r = Math.exp(-0.008 * Math.pow(t - 35, 2));
+    } else {
+      r = Math.exp(-0.008 * Math.pow(50 - 35, 2)) * Math.exp(-1.2 * (t - 50));
+    }
+    rate.push(Math.max(r, 0));
+  }
+
+  Plotly.newPlot('yeast-chart', [{
+    x: temps, y: rate,
+    type: 'scatter', mode: 'lines',
+    name: 'CO₂ production rate',
+    line: { color: '#3a6a8a', width: 3 },
+    fill: 'tozeroy',
+    fillcolor: 'rgba(58,106,138,0.1)'
+  }], {
+    xaxis: {
+      title: 'Temperature (°C)',
+      range: [-1, 56],
+      tickfont: { family: 'IBM Plex Sans', size: 12 },
+      titlefont: { family: 'IBM Plex Sans', size: 13 }
+    },
+    yaxis: {
+      title: 'Relative CO₂ rate',
+      range: [0, 1.12],
+      tickfont: { family: 'IBM Plex Sans', size: 12 },
+      titlefont: { family: 'IBM Plex Sans', size: 13 }
+    },
+    shapes: [
+      { type: 'rect', x0: 26, x1: 30, y0: 0, y1: 1.12,
+        fillcolor: 'rgba(58,106,138,0.10)', line: { width: 0 } },
+      { type: 'rect', x0: 4, x1: 8, y0: 0, y1: 1.12,
+        fillcolor: 'rgba(184,92,56,0.10)', line: { width: 0 } },
+      { type: 'line', x0: 50, x1: 50, y0: 0, y1: 1.12,
+        line: { color: '#b85c38', width: 1.5, dash: 'dot' } }
+    ],
+    annotations: [
+      { x: 28, y: 1.10, text: 'Bread baking<br>sweet spot', showarrow: false,
+        xanchor: 'center', font: { color: '#3a6a8a', size: 10, family: 'IBM Plex Sans' } },
+      { x: 6, y: 1.10, text: 'Cold retard', showarrow: false,
+        xanchor: 'center', font: { color: '#b85c38', size: 10, family: 'IBM Plex Sans' } },
+      { x: 50, y: 1.10, text: 'Yeast dies', showarrow: false,
+        xanchor: 'left', xshift: 5, font: { color: '#b85c38', size: 10, family: 'IBM Plex Sans' } }
+    ],
+    margin: { l: 55, r: 20, t: 14, b: 50 },
+    paper_bgcolor: '#f9f9f7',
+    plot_bgcolor: '#f9f9f7',
+    font: { family: 'IBM Plex Sans' },
+    showlegend: false
+  }, { responsive: true, displayModeBar: false });
+});
+</script>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+</body>
+</html>

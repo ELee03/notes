@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carbohydrates &amp; Starches — Food Science | Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/plotly.js-dist@2.27.0/plotly.min.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="food-science" data-current="carbohydrates.html"></div>
+      <hr class="sidebar-rule">
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#sugars" class="nav-item">Sugars</a>
+        <a href="#starch-structure" class="nav-item">Starch structure</a>
+        <a href="#gelatinisation" class="nav-item">Gelatinisation</a>
+        <a href="#retrogradation" class="nav-item">Retrogradation &amp; staling</a>
+        <a href="#starch-types" class="nav-item">Starch types compared</a>
+        <a href="#candy" class="nav-item">Sugar syrup stages</a>
+        <a href="#pectin" class="nav-item">Pectin &amp; fruit gels</a>
+        <a href="#examples" class="nav-item">Worked examples</a>
+        <a href="#fft" class="nav-item">Food for thought</a>
+        <a href="#pitfalls" class="nav-item">Common pitfalls</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a> → <a href="index.html">Food Science</a> → Carbohydrates &amp; Starches
+      </div>
+
+      <h1 class="lesson-title">Carbohydrates &amp; Starches</h1>
+      <div class="lesson-meta">Sugars · Starch Gelatinisation · Retrogradation · Pectin · Candy Stages</div>
+
+      <p class="prose">
+        Carbohydrates are the most abundant food molecules on earth — and in the kitchen,
+        they are the most structurally versatile. Starch gelatinisation is what makes a sauce
+        thick and a custard smooth. Retrogradation is why bread goes stale. Sugar's behaviour
+        at different temperatures produces everything from a soft caramel to a glassy hard candy.
+        Pectin, in the right conditions, turns boiled fruit into jam. These are not separate
+        topics — they are different expressions of the same carbohydrate chemistry.
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="sugars">Sugars — the building blocks</div>
+
+      <p class="prose">
+        All carbohydrates are built from monosaccharides — simple sugar units with the
+        formula (CH₂O)ₙ. The most important in food are:
+      </p>
+      <ul class="prose" style="margin-top:6px;">
+        <li><strong>Glucose (dextrose)</strong> — the universal biological energy currency.
+            In solution, glucose exists mostly in ring form (pyranose) with a free anomeric
+            hydroxyl that makes it a <em>reducing sugar</em> (available to react with amino
+            groups in the Maillard reaction). Slightly less sweet than sucrose.</li>
+        <li><strong>Fructose (fruit sugar)</strong> — found in fruit, honey, and high-fructose
+            corn syrup. Sweeter than glucose or sucrose; reacts faster in Maillard (Lesson 1).
+            High hygroscopicity (fructose absorbs water from the air more strongly than other
+            sugars) — why honey-based baked goods stay moist longer.</li>
+        <li><strong>Galactose</strong> — rarely found free; primarily as part of lactose.
+            Less sweet than glucose.</li>
+      </ul>
+
+      <p class="prose">
+        <strong>Disaccharides</strong> are two monosaccharides joined by a glycosidic bond:
+      </p>
+      <ul class="prose" style="margin-top:6px;">
+        <li><strong>Sucrose</strong> (glucose + fructose, 1→2 linkage): table sugar.
+            <em>Non-reducing</em> — both anomeric carbons are locked in the glycosidic bond,
+            so sucrose cannot react directly in Maillard without first hydrolysing to its
+            components. Extremely soluble and highly crystallisable.</li>
+        <li><strong>Lactose</strong> (glucose + galactose, 1→4 linkage): milk sugar.
+            A reducing sugar. Low sweetness. Limited solubility — crystallises readily,
+            which is why improperly stored milk chocolate develops a grainy texture
+            (lactose crystals = "sugar bloom").</li>
+        <li><strong>Maltose</strong> (glucose + glucose, 1→4 α linkage): produced by amylase
+            enzyme breakdown of starch. Reducing sugar. Central to bread fermentation and
+            beer brewing (malted barley's enzymes convert starch to maltose for yeast).</li>
+      </ul>
+
+      <p class="prose">
+        <strong>Sweetness is relative and context-dependent.</strong> Approximate relative
+        sweetness (sucrose = 100): fructose 170, glucose 70–80, maltose 30–50, lactose 16–20.
+        Cold temperature reduces perceived sweetness — ice cream is formulated noticeably
+        sweeter than it would taste warm.
+      </p>
+
+      <p class="prose">
+        <strong>Invert sugar</strong> — sucrose hydrolysed to glucose + fructose by acid
+        or the enzyme invertase. Inverted sugar is sweeter than sucrose (due to the free
+        fructose), more hygroscopic, and critically: it does not crystallise as easily.
+        Why? Because a mixture of glucose and fructose molecules disrupts the crystal lattice
+        that pure sucrose would form. Confectioners add cream of tartar (tartaric acid) or
+        glucose syrup to sugar solutions specifically to inhibit crystallisation — producing
+        fudge or caramel rather than rock candy.
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="starch-structure">Starch structure — two polymers, one granule</div>
+
+      <p class="prose">
+        Starch is glucose stored by plants. Unlike cellulose (the structural polysaccharide),
+        starch uses α-linkages between glucose units — a geometry our digestive enzymes
+        (amylases) can break. Starch exists as two structurally distinct polymers:
+      </p>
+
+      <p class="prose">
+        <strong>Amylose</strong> (~20–30% of most starches) is a long, essentially unbranched
+        chain of glucose units linked α-1,4. The chain coils into a helix in solution —
+        this helix shape is important: it can trap lipid and flavour molecules inside its
+        hydrophobic core (iodine forms a deep blue inclusion complex in this helix, which
+        is the basis of the classic starch test). Amylose molecules associate strongly with
+        each other on cooling, forming ordered crystalline regions — the primary driver
+        of retrogradation (staling).
+      </p>
+
+      <p class="prose">
+        <strong>Amylopectin</strong> (~70–80%) is a massive branched polymer — the same
+        α-1,4 backbone as amylose but with α-1,6 branch points every 24–30 glucose units.
+        Its tree-like structure is enormous (10⁷–10⁹ g/mol) and prevents tight packing,
+        making it harder to retrograde and producing more viscous, sticky gels.
+      </p>
+
+      <p class="prose">
+        In the plant, both polymers are packed into semicrystalline <strong>starch granules</strong>
+        — compressed spheres or polygons, 2–100 µm in diameter depending on source.
+        The crystalline regions (ordered amylopectin chains) and amorphous regions alternate
+        in growth rings. Raw starch granules are insoluble in cold water and resist digestion —
+        they require heating to gelatinise.
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="gelatinisation">Gelatinisation — the key cooking event</div>
+
+      <p class="prose">
+        When starch granules are heated in water, several things happen in sequence:
+      </p>
+      <ol class="prose" style="margin-top:6px;">
+        <li><strong>Hydration:</strong> below the gelatinisation temperature (~55–75°C depending
+            on starch source), water slowly penetrates the amorphous regions of the granule,
+            causing limited swelling. Granule structure is still intact. Viscosity is low.</li>
+        <li><strong>Gelatinisation proper:</strong> a threshold temperature is crossed and the
+            crystalline regions lose order — they "melt." Granules swell dramatically (up to
+            100× their original volume) as water floods in. The granule surface becomes
+            permeable and amylose leaches out into the surrounding water. Viscosity rises
+            sharply. The starch dispersion becomes translucent.</li>
+        <li><strong>Beyond gelatinisation:</strong> with continued heating, granules rupture.
+            Amylose and amylopectin fully disperse into the water, creating a viscous colloidal
+            sol. Starches differ in how readily their granules rupture — waxy maize (nearly
+            all amylopectin) produces a clear, stringy gel; wheat starch produces a cloudy,
+            short-textured gel.</li>
+      </ol>
+
+      <div class="callout">
+        <strong>Why does a sauce thicken when you cook it?</strong><br>
+        When you add flour or cornstarch to liquid and heat, gelatinisation is occurring.
+        The starch granules swell, amylose leaches into solution, and amylose chains entangle —
+        dramatically increasing viscosity. A 2–3% starch concentration gives a pourable sauce;
+        6–8% gives a pudding or custard consistency. The relationship between starch concentration
+        and thickness is not linear — small increases in starch dramatically increase viscosity
+        once granules start to swell and interact.
+      </div>
+
+      <p class="prose">
+        <strong>Temperature matters for how you add starch:</strong> raw starch granules in cold
+        liquid are a suspension (they sink). To avoid lumps: (1) disperse starch in cold water
+        first (slurry), then add to hot liquid; or (2) coat starch in fat (a roux) before adding
+        liquid — the fat separates granules and prevents them from clumping when they hit hot water.
+        Adding raw starch directly to hot liquid causes the outer granules to gelatinise
+        immediately and stick together — producing lumps with uncooked starch inside.
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="retrogradation">Retrogradation — why bread goes stale</div>
+
+      <p class="prose">
+        Retrogradation is the process by which gelatinised starch chains reassociate into
+        ordered crystalline structures on cooling and storage. It is essentially a partial
+        reversal of gelatinisation — the chains do not return to their native granule structure,
+        but they do form new hydrogen-bonded crystalline regions that change the texture
+        of the food dramatically.
+      </p>
+
+      <p class="prose">
+        <strong>Amylose retrograde fast</strong> (within hours): amylose chains are linear
+        and associate rapidly to form stable microcrystals. This is the major mechanism
+        of bread firming in the first day after baking. The starch gel that gives fresh
+        bread its soft, springy crumb becomes rigid as amylose chains order.
+      </p>
+
+      <p class="prose">
+        <strong>Amylopectin retrograde slowly</strong> (over days to weeks): the branched
+        structure slows chain association, but amylopectin retrogradation is the dominant
+        cause of long-term staling because of its sheer abundance. This is why bread
+        that still smells fresh on day 3 has lost its springiness.
+      </p>
+
+      <p class="prose">
+        <strong>Temperature and staling rate:</strong> retrogradation is fastest just above
+        0°C (refrigerator temperature). Room temperature is slower. Freezer temperature stops
+        it almost completely (chains are immobile). This is the paradox of bread storage:
+        bread stored in the refrigerator goes stale faster than bread left at room temperature.
+        The correct storage is either room temperature (for 1–2 days) or frozen (for weeks).
+        Refrigerating bread is the worst of both worlds.
+      </p>
+
+      <p class="prose">
+        <strong>Re-heating reverses retrogradation:</strong> heating stale bread above the
+        gelatinisation temperature (~60°C) disrupts the newly formed crystalline regions
+        and restores softness — temporarily. This is why toasting stale bread works, and why
+        a stale baguette heated in a 180°C oven for 10 minutes tastes almost fresh again.
+        Once cooled, staling resumes where it left off.
+      </p>
+
+      <p class="prose">
+        <strong>Emulsifiers slow retrogradation:</strong> monoglycerides (found naturally in
+        foods and added commercially) form inclusion complexes with amylose chains — occupying
+        the helix interior and physically blocking chain-chain association. This is why commercial
+        bread with mono/diglycerides listed as ingredients stays soft for a week, while an
+        artisan loaf with no additives firms within a day.
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="starch-types">Starch types in the kitchen — not all are equivalent</div>
+
+      <table style="border-collapse:collapse;width:100%;margin:14px 0 24px;font-size:0.92em;">
+        <thead>
+          <tr style="background:#e8f0f5;color:#1a2840;">
+            <th style="text-align:left;padding:9px 12px;border-bottom:2px solid #7ab8d4;">Starch</th>
+            <th style="text-align:left;padding:9px 12px;border-bottom:2px solid #7ab8d4;">Gels at</th>
+            <th style="text-align:left;padding:9px 12px;border-bottom:2px solid #7ab8d4;">Gel appearance</th>
+            <th style="text-align:left;padding:9px 12px;border-bottom:2px solid #7ab8d4;">Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding:8px 12px;border-bottom:1px solid #dde4ec;font-weight:600;">Cornstarch</td>
+            <td style="padding:8px 12px;border-bottom:1px solid #dde4ec;">62–72°C</td>
+            <td style="padding:8px 12px;border-bottom:1px solid #dde4ec;">Clear to semi-opaque</td>
+            <td style="padding:8px 12px;border-bottom:1px solid #dde4ec;">Breaks down with prolonged heat; doesn't freeze-thaw well</td>
+          </tr>
+          <tr style="background:#f9f9f7;">
+            <td style="padding:8px 12px;border-bottom:1px solid #dde4ec;font-weight:600;">Arrowroot</td>
+            <td style="padding:8px 12px;border-bottom:1px solid #dde4ec;">60–70°C</td>
+            <td style="padding:8px 12px;border-bottom:1px solid #dde4ec;">Very clear</td>
+            <td style="padding:8px 12px;border-bottom:1px solid #dde4ec;">Ideal for clear sauces; loses thickening power with extended boiling</td>
+          </tr>
+          <tr>
+            <td style="padding:8px 12px;border-bottom:1px solid #dde4ec;font-weight:600;">Potato starch</td>
+            <td style="padding:8px 12px;border-bottom:1px solid #dde4ec;">59–68°C</td>
+            <td style="padding:8px 12px;border-bottom:1px solid #dde4ec;">Clear, slightly sticky</td>
+            <td style="padding:8px 12px;border-bottom:1px solid #dde4ec;">High viscosity, gelatinises at lower temp; can become gluey</td>
+          </tr>
+          <tr style="background:#f9f9f7;">
+            <td style="padding:8px 12px;border-bottom:1px solid #dde4ec;font-weight:600;">Wheat flour</td>
+            <td style="padding:8px 12px;border-bottom:1px solid #dde4ec;">65–70°C</td>
+            <td style="padding:8px 12px;border-bottom:1px solid #dde4ec;">Opaque, cloudy</td>
+            <td style="padding:8px 12px;border-bottom:1px solid #dde4ec;">Contains protein (gluten) as well; robust to heat; freezes well in a roux sauce</td>
+          </tr>
+          <tr>
+            <td style="padding:8px 12px;border-bottom:1px solid #dde4ec;font-weight:600;">Waxy maize</td>
+            <td style="padding:8px 12px;border-bottom:1px solid #dde4ec;">63–72°C</td>
+            <td style="padding:8px 12px;border-bottom:1px solid #dde4ec;">Very clear, stringy</td>
+            <td style="padding:8px 12px;border-bottom:1px solid #dde4ec;">~100% amylopectin; excellent freeze-thaw stability; used in commercial frozen foods</td>
+          </tr>
+          <tr style="background:#f9f9f7;">
+            <td style="padding:8px 12px;font-weight:600;">Tapioca</td>
+            <td style="padding:8px 12px;">58–70°C</td>
+            <td style="padding:8px 12px;">Clear, chewy texture</td>
+            <td style="padding:8px 12px;">Good in acidic preparations; glossy clear appearance preferred for fruit pies</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p class="prose">
+        The practical implication: cornstarch and flour are not interchangeable as thickeners.
+        Flour produces an opaque, matte sauce (good for gravy); cornstarch produces a translucent,
+        glossy sauce (good for Chinese-American stir-fry sauces and fruit pie fillings).
+        Arrowroot is best when clarity and a neutral flavour are critical (fruit sauces, clear
+        glazes). For sauces that will be frozen, a waxy starch or a flour-based roux is more
+        stable than cornstarch (which turns spongy on thawing due to amylose retrogradation).
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="candy">Sugar syrup stages — thermodynamics of crystallisation</div>
+
+      <p class="prose">
+        As a sugar syrup is heated, water evaporates and the sugar concentration rises.
+        The boiling point of the solution increases with concentration (boiling point elevation —
+        colligative property). Different concentrations produce radically different textures
+        when the syrup is cooled, because the ratio of sugar to water determines whether,
+        and how fast, the sugar crystallises.
+      </p>
+
+      <!-- Interactive: candy stages temperature chart -->
+      <div class="widget-card" style="margin:20px 0;">
+        <div class="widget-title">Sugar syrup stages and their temperatures</div>
+        <div id="candy-chart" style="width:100%;height:340px;"></div>
+        <p style="font-size:0.82em;color:#9aabb8;margin:6px 0 0;text-align:center;">
+          Temperature ranges for each stage. The boiling point of water (100°C) is the floor —
+          as concentration rises, boiling point rises. Use a thermometer: guessing is unreliable.
+        </p>
+      </div>
+
+      <p class="prose">
+        The cold-water test (drop syrup into cold water and feel the texture) remains a useful
+        backup when you lack a thermometer — but temperature is more precise. The reason each
+        stage has a different texture: at higher concentrations, there is less water to hydrate
+        and separate sugar crystals, so the cooled product has less mobility. Thread stage syrup
+        has enough water to flow freely; hard crack syrup has so little water that the amorphous
+        solid becomes a brittle glass.
+      </p>
+
+      <p class="prose">
+        <strong>Why does fudge have a different texture than toffee?</strong>
+        Both are cooked to similar concentrations (soft- to firm-ball range), but fudge is
+        intentionally allowed to crystallise in a controlled way (fine crystals = smooth
+        texture) while toffee uses cream of tartar or glucose syrup to suppress crystallisation
+        (remaining amorphous = chewy, stretchy). Crystallisation is seeded by mechanical action
+        — working fudge while it cools by stirring or beating introduces seed crystals that
+        grow into fine, uniform crystals throughout. Toffee is not stirred, avoiding seed
+        nucleation.
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="pectin">Pectin and fruit gels — jam chemistry</div>
+
+      <p class="prose">
+        Pectin is a structural polysaccharide found in plant cell walls (particularly in fruit
+        skin and pith). It is a polymer of galacturonic acid units linked α-1,4. In ripe fruit,
+        pectin is partially hydrolysed by enzymes — the fruit softens. In under-ripe or just-ripe
+        fruit, pectin concentration is high — the cell walls are firm and intact.
+      </p>
+
+      <p class="prose">
+        <strong>High-methoxyl pectin</strong> (the natural form in most fruit) requires two
+        conditions to gel:
+      </p>
+      <ul class="prose" style="margin-top:6px;">
+        <li><strong>Acid</strong> (pH 2.8–3.5): protonates the galacturonic acid carboxyl
+            groups, reducing electrostatic repulsion between chains and allowing them to
+            associate via hydrogen bonds.</li>
+        <li><strong>High sugar concentration</strong> (>55% soluble solids): sucrose
+            competes with pectin for water molecules, reducing hydration of the pectin
+            chains and allowing them to associate.</li>
+      </ul>
+      <p class="prose">
+        Both must be present simultaneously. This is why jam requires both enough acid (from
+        the fruit or added lemon juice) and enough sugar. Low-sugar jams fail to set properly
+        unless low-methoxyl pectin or added gelling agents (agar, gelatin) are used.
+      </p>
+
+      <p class="prose">
+        <strong>Low-methoxyl pectin</strong> (commercially modified; methoxyl groups partially
+        removed by amidation or alkali treatment) gels with <strong>calcium ions</strong>
+        rather than acid + sugar. Calcium bridges between adjacent carboxyl groups on pectin
+        chains, cross-linking them into a gel. Used in low-sugar jams, dairy desserts, and
+        restructured fruit products.
+      </p>
+
+      <p class="prose">
+        <strong>Why does lemon juice help jam set?</strong>
+        Lemon juice adds acid (lowering pH into the pectin gel range) and contains its own
+        pectin (high in citrus pith). A sous-ripe fruit jam that refuses to set often fixes
+        with the addition of 1–2 tablespoons of lemon juice.
+      </p>
+
+      <p class="prose">
+        <strong>The setting point test:</strong> jam is done when a drop placed on a chilled
+        plate wrinkles when pushed. At this point, sugar concentration has reached ~68–70%
+        (measured by refractometer as °Brix), pH has concentrated, and pectin concentration
+        is high enough to form a gel network. Below this point, the jam will be runny;
+        above it, it becomes too stiff or crystallises on storage.
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="examples">Worked examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Bread going stale in the fridge</strong></div>
+        <div class="example-problem">
+          A bakery stores its sourdough loaves in the refrigerator to extend shelf life.
+          Customers complain the bread goes stale faster than when left at room temperature.
+          Explain the chemistry behind this complaint and recommend a better storage protocol.
+        </div>
+        <div class="example-body">
+          <p><strong>The chemistry:</strong><br>
+          Staling is caused by starch retrogradation — gelatinised starch chains in the crumb
+          re-associate into crystalline regions, increasing crumb rigidity. Retrogradation rate
+          follows a complex temperature dependence: it is fastest just above 0°C (refrigerator
+          temperature, ~4°C) and slower at room temperature (~20°C) or very cold (frozen, &lt;–18°C).
+          The maximum retrogradation rate near 0°C is a consequence of the balance between
+          chain mobility (higher at higher temps) and the thermodynamic drive to crystallise
+          (stronger at lower temps). At refrigerator temperature, both factors are present
+          simultaneously in their most damaging combination.</p>
+          <p><strong>Why room temperature is better:</strong><br>
+          At 20°C, retrogradation rate is roughly 3–5× slower than at 4°C. Bread held at room
+          temperature in a sealed bag or bread box stays acceptably soft for 2–3 days depending
+          on formulation. Moisture loss (drying out) is the competing degradation mechanism at
+          room temperature — hence the sealed bag.</p>
+          <p><strong>Recommended protocol:</strong><br>
+          (1) Room temperature in a sealed bag for 1–2 days. (2) If longer storage is needed,
+          slice and freeze individually. Freezing stops retrogradation almost completely —
+          frozen bread thawed and reheated will taste fresh because the heat both thaws and
+          reverses the limited retrogradation that occurred during freezing. Never refrigerate
+          bread; it is the worst storage condition for staling.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Thickening a cream sauce: flour vs. cornstarch</strong></div>
+        <div class="example-problem">
+          A chef is making a cream sauce that will be prepared in advance, refrigerated,
+          reheated, and served. They are choosing between (A) a flour-based roux thickener and
+          (B) a cornstarch slurry. Which should they choose, and why?
+          Consider: sauce appearance, flavour, and behaviour after refrigeration and reheating.
+        </div>
+        <div class="example-body">
+          <p><strong>Flour-based roux (Option A):</strong></p>
+          <ul>
+            <li><em>Appearance:</em> opaque, matte — classic French béchamel look. Acceptable
+                for a cream sauce where opacity is expected.</li>
+            <li><em>Flavour:</em> flour contributes a subtle starchy/wheaty note unless cooked
+                long enough. A properly cooked roux (heated until faint nutty aroma, no raw
+                flour smell) adds depth. Contains gluten proteins as well as starch.</li>
+            <li><em>Freeze-thaw/reheat stability:</em> flour sauces are stable because wheat
+                starch has a higher amylose content mixed with gluten — the gluten network
+                prevents complete starch granule rupture and the sauce does not weep on cooling.
+                Reheats cleanly without texture change.</li>
+          </ul>
+          <p><strong>Cornstarch slurry (Option B):</strong></p>
+          <ul>
+            <li><em>Appearance:</em> translucent, glossy — attractive for Chinese-style or
+                fruit-based sauces; slightly odd looking in a classical cream sauce.</li>
+            <li><em>Flavour:</em> nearly neutral; does not add flavour complexity.</li>
+            <li><em>Freeze-thaw/reheat stability:</em> cornstarch gels are unstable on cooling.
+                Amylose retrograde rapidly, and the gel can become spongy and weep water
+                (syneresis) when refrigerated and reheated. The sauce may appear "broken" or
+                watery after overnight refrigeration.</li>
+          </ul>
+          <p><strong>Recommendation:</strong> Flour-based roux for a make-ahead cream sauce.
+          The stability difference is not marginal — cornstarch cream sauces can be noticeably
+          spongy after refrigeration. If a glossy, neutral-flavour thickener is needed with
+          good reheat stability, waxy maize starch or a modified food starch (used commercially)
+          is the professional solution. For home cooking, flour wins for this application.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Why does a fruit jam fail to set?</strong></div>
+        <div class="example-problem">
+          A strawberry jam is cooked to temperature (105°C) but does not set after cooling —
+          it remains pourable. The recipe used ripe supermarket strawberries with added sugar.
+          Diagnose the possible causes and explain a corrective approach.
+        </div>
+        <div class="example-body">
+          <p><strong>Diagnosing the failure:</strong><br>
+          High-methoxyl pectin needs both sufficient pectin concentration, pH 2.8–3.5, and
+          &gt;55% sugar. At least one of these is missing.</p>
+          <p><strong>Cause 1 — Low pectin (most likely with very ripe strawberries):</strong><br>
+          Ripe and over-ripe strawberries have had their cell wall pectin partially hydrolysed
+          by ripening enzymes (pectinases). Compared to a just-ripe berry, a very ripe berry
+          may have 30–60% less functional pectin. The jam lacks the polymer concentration
+          needed to form a gel network.</p>
+          <p><strong>Cause 2 — Insufficient acid:</strong><br>
+          Ripe strawberries are lower in acid than under-ripe ones. If the pH is above ~3.5,
+          the carboxyl groups on pectin chains remain ionised and repel each other — gel
+          formation is impossible regardless of pectin concentration or sugar level.
+          A test: add lemon juice and retest the set (cold plate test). If it sets with lemon juice,
+          acid deficiency was the cause.</p>
+          <p><strong>Cause 3 — Insufficient cooking time:</strong><br>
+          If the jam passed through 105°C very quickly, concentration may be lower than
+          expected (thermometer inaccuracy is common). Refractometer measurement of °Brix
+          is more reliable than temperature for confirming readiness.</p>
+          <p><strong>Corrective approach:</strong>
+          Reheat the jam with 2 tbsp lemon juice + 1–2 tsp commercial pectin dissolved in
+          a small amount of sugar. Return to boil, test set again. If using commercial pectin,
+          follow its ratio guidelines — it varies by brand and type (high-methoxyl vs.
+          low-methoxyl pectin have different requirements).</p>
+        </div>
+      </div>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="fft">Food for thought</div>
+
+      <ul class="fft-list">
+        <li class="fft-item">
+          A roux is made by cooking flour in fat before adding liquid. The standard explanation is
+          that the fat coats starch granules, preventing lumping. But a roux also browns
+          (develops flavour) as it cooks, and the ratio of flour to fat can vary widely.
+          What is the fat actually doing chemically, and is "coating granules" a sufficient
+          explanation for how a roux works?
+          <div class="fft-answer">
+            "Coating starch granules to prevent lumping" is partially true but incomplete.
+            Three things are happening simultaneously. First, the fat does physically separate
+            granules, slowing their rate of swelling when hot liquid is added — this delays
+            gelatinisation slightly and prevents the outer-granule clumping that produces lumps.
+            Second, the cooking process at roux temperatures (120–200°C) partially dehydrates
+            the starch granules — reducing their hydration drive — and breaks down some starch
+            chains (dextrinisation). Dextrins (shorter starch fragments) gelatinise differently,
+            producing a less viscous, more stable sauce. A dark roux (used in gumbo) is cooked
+            to the point of extensive dextrinisation — it has lost most of its thickening power
+            but gained rich, complex Maillard flavours from the proteins in flour reacting with
+            the starch-derived reducing sugars. Third, the fat has no permanent role once hot
+            liquid is added — it disperses. The anti-lumping effect is kinetic: the fat slows
+            the rate of water contact with starch granules during the initial mixing, allowing
+            even distribution before mass gelatinisation begins. A very thorough cold-liquid
+            whisking of cornstarch slurry achieves a similar kinetic goal by different means.
+          </div>
+        </li>
+        <li class="fft-item">
+          Cellulose is a polymer of glucose, exactly like starch, but humans cannot digest it.
+          The only difference is the glycosidic linkage: starch uses α-1,4; cellulose uses β-1,4.
+          Why does one small geometric difference — a configuration change at a single carbon —
+          produce such a dramatically different material (soluble, digestible starch vs.
+          tough, indigestible wood)?
+          <div class="fft-answer">
+            The α vs. β configuration at C1 of glucose changes the bond angle and the chain
+            geometry at every linkage. In α-1,4 starch, the chain adopts a slightly helical
+            coil — the overall structure is compact and curved, and the glucose units are
+            accessible to amylase enzymes which evolved specifically to hydrolyse this geometry.
+            In β-1,4 cellulose, each glucose unit is rotated 180° relative to its neighbour —
+            the chain is perfectly straight, and straight chains can pack tightly side by side
+            via hydrogen bonds between adjacent chains, forming rigid crystalline bundles
+            (microfibrils). This packing creates a material with extraordinary tensile strength
+            (wood, cotton) that is insoluble in water and impervious to most enzymes (no
+            animal produces cellulase; the few that digest cellulose do so via gut microorganisms).
+            The consequence of this single geometric difference: starch is food (energy-available)
+            and cellulose is structure (dietary fibre, fermentable by gut microbiota to short-chain
+            fatty acids but never directly hydrolysed to glucose for systemic absorption).
+            This is one of the more striking examples of how molecular geometry determines
+            macroscopic material properties — the difference between digestion and construction.
+          </div>
+        </li>
+        <li class="fft-item">
+          Fudge and toffee are both sucrose-based candies cooked to similar temperatures,
+          but they have completely different textures. The difference is entirely in how
+          cooling and working are handled. What does this tell you about the role of kinetics
+          (vs. thermodynamics) in determining food texture?
+          <div class="fft-answer">
+            Thermodynamics determines the equilibrium state: at fudge/toffee concentrations,
+            highly ordered crystalline sucrose is the minimum-energy state. Given infinite time,
+            both fudge and toffee would crystallise to the same thermodynamic end state.
+            But kinetics — the rate at which the system approaches equilibrium — determines
+            what you actually get in the kitchen. Toffee suppresses crystallisation kinetics
+            via glucose syrup (which disrupts the sucrose crystal lattice geometry, making
+            nucleation slow) and rapid cooling (reduces molecular mobility). The result is a
+            metastable amorphous glass. Fudge encourages and controls crystallisation kinetics:
+            seeding with crystal nuclei (the stirring action as it cools) and slow cooling
+            create many small crystals simultaneously, rather than allowing a few large crystals
+            to grow (which would feel grainy). The lesson: in food texture, thermodynamics
+            tells you what's possible but kinetics tells you what you get.
+            Most interesting food textures — whipped cream, tempered chocolate, fudge, ice cream —
+            are kinetically controlled metastable states, not thermodynamic equilibria.
+          </div>
+        </li>
+      </ul>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="pitfalls">Common pitfalls</div>
+
+      <ul class="prose">
+        <li style="margin-bottom:10px;">
+          <strong>Refrigerating bread to keep it fresh.</strong>
+          Retrogradation rate peaks near 4°C. Refrigerating bread makes it go stale faster
+          than room temperature storage. Freeze if you need to store it longer than 2 days.
+        </li>
+        <li style="margin-bottom:10px;">
+          <strong>Adding raw starch directly to hot liquid.</strong>
+          Causes lumping as surface granules gelatinise before inner ones are dispersed.
+          Always disperse in cold liquid first (slurry), or coat in fat (roux) before adding hot liquid.
+        </li>
+        <li style="margin-bottom:10px;">
+          <strong>Using cornstarch in sauces destined for freezing.</strong>
+          Cornstarch sauces turn spongy and watery after freeze-thaw. Use a flour-based thickener
+          or waxy maize starch for make-ahead or frozen sauces.
+        </li>
+        <li style="margin-bottom:10px;">
+          <strong>Assuming all starches thicken equally.</strong>
+          Cornstarch thickens approximately twice as much as an equivalent weight of all-purpose
+          flour. Using a 1:1 substitution produces either a water-like sauce or a paste.
+          Correct ratio: 1 tbsp cornstarch ≈ 2 tbsp flour.
+        </li>
+        <li style="margin-bottom:10px;">
+          <strong>Not adding acid when making jam from low-acid fruit.</strong>
+          Very ripe strawberries, overripe figs, and most stone fruits are naturally low in acid
+          at peak ripeness. Without added lemon juice, the pH is too high for high-methoxyl
+          pectin to gel regardless of cooking time and sugar concentration.
+        </li>
+      </ul>
+
+      <div class="section-head">Connects to</div>
+      <p class="prose">
+        <strong><a href="maillard.html">Heat &amp; Browning</a></strong> — Starch hydrolysis
+        produces reducing sugars (glucose, maltose) that are Maillard reactants. Bread crust
+        browning comes partly from Maillard between flour proteins and starch-derived sugars.
+        <br>
+        <strong><a href="proteins.html">Proteins in the Kitchen</a></strong> — Gluten network
+        formation interacts directly with starch: starch gelatinisation fills the gluten
+        network during baking, contributing to crumb structure. Fat's anti-gluten effect
+        (shortening) and starch's water absorption compete in baked goods.
+        <br>
+        <strong><a href="fermentation.html">Fermentation</a></strong> — Yeast and bacteria
+        ferment sugars. Amylase enzymes in flour (and added in commercial baking) break starch
+        to maltose, providing substrate for yeast. Starch's role in bread is half-structural,
+        half-fermentation-substrate.
+      </p>
+
+      <div class="lesson-nav">
+        <a href="fats.html" class="lesson-nav-btn">← Fats, Oils &amp; Emulsions</a>
+        <a href="fermentation.html" class="lesson-nav-btn">Fermentation →</a>
+      </div>
+
+    </div><!-- /main -->
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+  // ── Sugar syrup stages chart ─────────────────────────────────────────────
+  var stages = [
+    { name: 'Thread', low: 110, high: 116, product: 'Glaze, syrup' },
+    { name: 'Soft ball', low: 116, high: 121, product: 'Fudge, fondant, soft caramel' },
+    { name: 'Firm ball', low: 121, high: 130, product: 'Caramel, soft toffee' },
+    { name: 'Hard ball', low: 130, high: 140, product: 'Nougat, marshmallow' },
+    { name: 'Soft crack', low: 140, high: 149, product: 'Butterscotch, taffy' },
+    { name: 'Hard crack', low: 149, high: 160, product: 'Lollipops, barley sugar, brittles' },
+    { name: 'Caramelisation', low: 160, high: 182, product: 'Caramel, praline, dark toffee' }
+  ];
+
+  var colors = [
+    '#c8e0f0','#a8d0e8','#88b8d8','#6aa0c8','#5088b8','#3a70a8','#2a5888'
+  ];
+
+  var bars = stages.map(function(s, i) {
+    return {
+      type: 'bar',
+      orientation: 'h',
+      name: s.name,
+      x: [s.high - s.low],
+      y: [s.name],
+      base: [s.low],
+      marker: { color: colors[i], opacity: 0.9 },
+      hovertemplate: s.name + ': ' + s.low + '–' + s.high + '°C<br>' + s.product + '<extra></extra>',
+      text: [s.low + '–' + s.high + '°C'],
+      textposition: 'inside',
+      insidetextanchor: 'middle',
+      textfont: { family: 'IBM Plex Sans', size: 11, color: '#1a2840' }
+    };
+  });
+
+  Plotly.newPlot('candy-chart', bars, {
+    xaxis: {
+      title: 'Temperature (°C)',
+      range: [100, 195],
+      tickfont: { family: 'IBM Plex Sans', size: 12 },
+      titlefont: { family: 'IBM Plex Sans', size: 13 }
+    },
+    yaxis: {
+      tickfont: { family: 'IBM Plex Sans', size: 12 },
+      automargin: true,
+      autorange: 'reversed'
+    },
+    shapes: [
+      { type: 'line', x0: 100, x1: 100, y0: -0.5, y1: 6.5,
+        line: { color: '#7ab8d4', width: 2, dash: 'dot' } }
+    ],
+    annotations: [
+      { x: 100, y: 6.4, text: '100°C = pure water', showarrow: false,
+        xanchor: 'left', xshift: 5, font: { color: '#7ab8d4', size: 10, family: 'IBM Plex Sans' } }
+    ],
+    barmode: 'stack',
+    showlegend: false,
+    margin: { l: 90, r: 20, t: 14, b: 50 },
+    paper_bgcolor: '#f9f9f7',
+    plot_bgcolor: '#f9f9f7',
+    font: { family: 'IBM Plex Sans' }
+  }, { responsive: true, displayModeBar: false });
+});
+</script>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+</body>
+</html>

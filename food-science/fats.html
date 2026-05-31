@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fats, Oils &amp; Emulsions — Food Science | Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/plotly.js-dist@2.27.0/plotly.min.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="food-science" data-current="fats.html"></div>
+      <hr class="sidebar-rule">
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#structure" class="nav-item">Fat structure</a>
+        <a href="#saturation" class="nav-item">Saturation &amp; physical state</a>
+        <a href="#smoke-point" class="nav-item">Smoke points</a>
+        <a href="#flavour" class="nav-item">Fat as flavour carrier</a>
+        <a href="#rancidity" class="nav-item">Rancidity</a>
+        <a href="#emulsification" class="nav-item">Emulsification</a>
+        <a href="#emulsifiers" class="nav-item">Emulsifiers</a>
+        <a href="#mayo" class="nav-item">Mayonnaise</a>
+        <a href="#butter" class="nav-item">Butter</a>
+        <a href="#examples" class="nav-item">Worked examples</a>
+        <a href="#fft" class="nav-item">Food for thought</a>
+        <a href="#pitfalls" class="nav-item">Common pitfalls</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a> → <a href="index.html">Food Science</a> → Fats, Oils &amp; Emulsions
+      </div>
+
+      <h1 class="lesson-title">Fats, Oils &amp; Emulsions</h1>
+      <div class="lesson-meta">Lipid Chemistry · Smoke Points · Emulsification · Mayonnaise · Butter</div>
+
+      <p class="prose">
+        Fat does more in the kitchen than conduct heat. It carries most of the flavour
+        molecules in food (they are fat-soluble, not water-soluble), it controls texture
+        and mouthfeel, and it makes emulsification possible — the chemistry that turns
+        oil and water into mayonnaise, hollandaise, vinaigrette, and cream sauce.
+        Understanding fat means understanding why food tastes the way it does, and why
+        sauces behave the way they behave.
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="structure">What fats actually are</div>
+
+      <p class="prose">
+        Most dietary fats are <strong>triglycerides</strong> (also called triacylglycerols):
+        a glycerol molecule with three fatty acid chains attached, one to each of glycerol's
+        three hydroxyl groups, via ester bonds (hence: triacyl-glycerol).
+      </p>
+
+      <div style="background:#f0f6fa;border-left:3px solid #7ab8d4;border-radius:0 5px 5px 0;padding:14px 18px;margin:12px 0 20px;font-size:13.5px;line-height:2;">
+        Glycerol (3 –OH groups) + 3 fatty acid chains → triglyceride + 3 water molecules (esterification)
+      </div>
+
+      <p class="prose">
+        The <strong>fatty acid chains</strong> are the interesting part. They are long hydrocarbon
+        chains with a carboxyl group (–COOH) at one end. Key properties determined by chain structure:
+      </p>
+      <ul class="prose" style="margin-top:6px;">
+        <li><strong>Chain length:</strong> most dietary fatty acids are 12–22 carbons. Short-chain
+            fatty acids (4–6 carbons) are volatile — they contribute to the aroma of butter,
+            cheese, and rancid fat. Long-chain fats are odourless at room temperature.</li>
+        <li><strong>Degree of saturation:</strong> whether the chain contains carbon–carbon double
+            bonds. This is the most important property for cooking behaviour.</li>
+      </ul>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="saturation">Saturation and physical state</div>
+
+      <p class="prose">
+        A <strong>saturated</strong> fatty acid has no double bonds — every carbon is bonded
+        to the maximum number of hydrogens. The chain is straight, flexible, and can pack
+        tightly alongside neighbouring chains like stacked pencils. Dense packing = solid at
+        room temperature. Examples: palmitic acid (16C), stearic acid (18C). Fats rich in
+        saturated FA: butter, lard, coconut oil, palm oil — all solid or semi-solid at room temperature.
+      </p>
+
+      <p class="prose">
+        An <strong>unsaturated</strong> fatty acid has one or more double bonds. The double bond
+        introduces a rigid kink in the chain — the two carbon segments on either side of the
+        double bond cannot rotate freely. In natural (cis) unsaturated fats, this kink
+        prevents tight chain packing. Loosely packed chains = liquid at room temperature (an oil).
+        Examples: oleic acid (18C, 1 double bond — mono-unsaturated; dominant in olive oil),
+        linoleic acid (18C, 2 double bonds — poly-unsaturated; dominant in sunflower oil),
+        DHA (22C, 6 double bonds — fish oil).
+      </p>
+
+      <div class="callout">
+        <strong>Trans fats — the kinked-chain exception.</strong>
+        Natural unsaturated fats have <em>cis</em> double bonds (hydrogens on the same side → kink).
+        Industrial partial hydrogenation (used to solidify vegetable oils) produces some
+        <em>trans</em> double bonds (hydrogens on opposite sides → nearly straight chain, like saturated).
+        Trans fats pack almost as tightly as saturated fats but behave differently metabolically —
+        they interfere with cell membrane function and raise LDL cholesterol. Most countries have
+        now restricted or banned partially hydrogenated oils. Naturally occurring trans fats
+        (from ruminant animals: conjugated linoleic acid in butter and beef) exist at low levels
+        and appear to be metabolically neutral or beneficial — a reminder that the <em>geometry</em>
+        of the molecule, not just whether it's "trans," determines biological activity.
+      </div>
+
+      <p class="prose">
+        <strong>Why does coconut oil solidify in the fridge but olive oil does not?</strong>
+        Coconut oil is ~90% saturated fatty acids (mostly lauric acid, 12C, fully saturated).
+        Its high melting point (~24°C) means it is solid below room temperature on a cool day.
+        Olive oil is ~73% monounsaturated (oleic acid); its melting point is ~–6°C.
+        The kinks from the double bonds prevent close packing even at refrigerator temperatures.
+      </p>
+
+      <p class="prose">
+        <strong>Multiple double bonds make fats more reactive:</strong> each double bond is a
+        site vulnerable to oxidation. Polyunsaturated fatty acids (PUFA) oxidise faster than
+        monounsaturated, which oxidise faster than saturated. This determines shelf life and
+        which fats are appropriate for high-heat cooking.
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="smoke-point">Smoke points — what they mean and what they don't</div>
+
+      <p class="prose">
+        The <strong>smoke point</strong> is the temperature at which a fat visibly smokes.
+        It signals the beginning of decomposition: triglycerides hydrolyse under sustained
+        heat into glycerol and free fatty acids, and glycerol further breaks down into
+        <strong>acrolein</strong> (CH₂=CH–CHO) — a highly irritating compound responsible
+        for the acrid smell of burning fat and potentially harmful in quantity.
+      </p>
+
+      <p class="prose">
+        What lowers smoke point:
+      </p>
+      <ul class="prose" style="margin-top:6px;">
+        <li><strong>Free fatty acid (FFA) content:</strong> fats with more FFA smoke sooner.
+            Unrefined ("extra virgin") oils have more impurities and FFA than refined oils.
+            This is why extra-virgin olive oil has a lower smoke point than refined olive oil,
+            not because of its oleic acid content.</li>
+        <li><strong>Repeated heating:</strong> each frying cycle generates more FFA.
+            Used frying oil has a lower smoke point than fresh oil.</li>
+        <li><strong>Milk solids:</strong> whole butter contains ~3% milk solids (proteins and
+            lactose) that scorch well below the smoke point of the fat itself. Clarifying butter
+            (removing solids) raises its smoke point from ~150°C to ~250°C.</li>
+      </ul>
+
+      <!-- Smoke point chart -->
+      <div class="widget-card" style="margin:20px 0;">
+        <div class="widget-title">Smoke points of common cooking fats</div>
+        <div id="smoke-chart" style="width:100%;height:380px;"></div>
+        <p style="font-size:0.82em;color:#9aabb8;margin:6px 0 0;text-align:center;">
+          Approximate smoke points. Values vary with refinement level and batch quality.
+          Unrefined oils (marked *) smoke lower than their refined equivalents.
+        </p>
+      </div>
+
+      <p class="prose">
+        <strong>The smoke point is not the only factor for high-heat cooking.</strong>
+        An oil with a high smoke point but many polyunsaturated bonds (e.g., regular sunflower
+        or canola at 230°C) can still oxidise and produce harmful compounds at prolonged
+        frying temperatures before visibly smoking. For repeated high-heat use, high smoke point
+        <em>plus</em> oxidative stability is the criterion: refined avocado oil, beef tallow,
+        ghee, or refined coconut oil are good choices. Extra-virgin olive oil, though it
+        has a modest smoke point, contains antioxidants (polyphenols) that partially protect
+        it from oxidation — making it more stable under medium heat than its smoke point alone suggests.
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="flavour">Fat as flavour carrier</div>
+
+      <p class="prose">
+        Most of the volatile flavour molecules in food are <strong>fat-soluble</strong> (lipophilic),
+        not water-soluble. This is why: cooking in fat extracts and concentrates flavour compounds
+        from ingredients; fat-based sauces carry flavour to your palate more effectively than
+        water-based ones; and removing fat from food (low-fat products) almost always damages
+        perceived flavour intensity and complexity.
+      </p>
+
+      <p class="prose">
+        Specific ways fat modulates flavour:
+      </p>
+      <ul class="prose" style="margin-top:6px;">
+        <li><strong>Lipophilic volatile extraction:</strong> terpenes (herb and citrus aromatics),
+            most Maillard volatiles, and many Strecker aldehydes partition strongly into fat.
+            Infusing oil with herbs, garlic, or spices concentrates these compounds in the fat phase.
+            This is the mechanism behind flavoured oils, ghee infusions, and fat-based compound butters.</li>
+        <li><strong>Retronasal delivery:</strong> fat coats the mouth and throat, slowly releasing
+            fat-soluble volatiles during and after chewing — extending the duration of flavour
+            perception. This is a large part of what "mouthfeel" means.</li>
+        <li><strong>Taste modulation:</strong> fat slows the release of water-soluble taste compounds
+            (sugars, acids, glutamate) from food matrix to saliva, affecting the time course of
+            taste perception. Very fatty food has a "longer" flavour experience.</li>
+        <li><strong>Tri- and di-acylglycerol perception:</strong> emerging evidence suggests
+            fat is itself a basic taste — distinct from the mouthfeel contribution — possibly via
+            CD36 receptors in the tongue. Often called "oleogustus" (fatty taste).</li>
+      </ul>
+
+      <p class="prose">
+        The butter vs. margarine flavour difference is almost entirely due to this principle.
+        Butter's flavour comes from short-chain fatty acids (butyric acid: rancid-buttery;
+        caprylic acid: goat-like; trace diacetyl from fermentation), all highly fat-soluble
+        and delivered via the fat matrix. Margarine's flavour complexity is comparatively flat —
+        the hydrogenated plant oils lack these compounds, and artificial flavouring additives
+        cannot fully replicate the matrix delivery mechanism.
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="rancidity">Rancidity — fat going wrong</div>
+
+      <p class="prose">
+        Rancidity is the deterioration of fat through oxidation or hydrolysis, producing
+        compounds that smell and taste unpleasant. Two distinct mechanisms:
+      </p>
+
+      <p class="prose"><strong>Oxidative rancidity</strong> (the main culprit in most oils)</p>
+      <p class="prose">
+        Oxygen attacks the carbon–carbon double bonds in unsaturated fatty acids, producing
+        hydroperoxides. These are unstable and break down into a cascade of secondary products:
+        aldehydes (hexanal, nonanal — grassy, cardboard, fishy notes), ketones (2-heptanone,
+        2-nonanone — blue cheese, musty notes), and short-chain carboxylic acids (butyric acid
+        in rancid butter). This is why polyunsaturated fats (more double bond sites) go rancid
+        faster than saturated fats.
+      </p>
+      <p class="prose">
+        Accelerants: light (photosensitises oxygen), heat, metal ions (copper, iron catalyse
+        free radical chain reactions), oxygen exposure.
+        Inhibitors: antioxidants (vitamin E / tocopherols in plant oils; rosemary extract in
+        commercial products), darkness, cool temperature, minimal oxygen (sealed containers).
+      </p>
+
+      <p class="prose"><strong>Hydrolytic rancidity</strong></p>
+      <p class="prose">
+        Water + lipase enzymes cleave the ester bonds of triglycerides, releasing free fatty
+        acids. In butter and cheese, the short-chain fatty acids liberated (butyric, caprylic,
+        capric acids) produce the characteristic sharp, rancid-butter smell. At low levels,
+        this same reaction produces the complex flavour of aged cheese — enzyme-ripened cheeses
+        (Parmesan, Gruyère) deliberately cultivate lipase activity during aging. The difference
+        between "complex" and "rancid" is a matter of degree and context.
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="emulsification">Emulsification — making oil and water coexist</div>
+
+      <p class="prose">
+        Oil and water don't mix. This is not a mystery — it is thermodynamics. Water molecules
+        form hydrogen bonds with each other (strong, directional). Oil molecules interact only
+        via weak van der Waals forces. When oil droplets are dispersed in water, the water
+        molecules at the oil–water interface cannot form hydrogen bonds with the oil surface —
+        they are energetically "frustrated." The system minimises this interface area
+        by coalescing oil droplets together, separating the phases. This is why a vinaigrette
+        left standing separates: thermodynamics.
+      </p>
+
+      <p class="prose">
+        An <strong>emulsion</strong> is a kinetically stable mixture of two immiscible liquids
+        — one dispersed as tiny droplets within the other:
+      </p>
+      <ul class="prose" style="margin-top:6px;">
+        <li><strong>Oil-in-water (O/W):</strong> tiny oil droplets dispersed in a continuous
+            water phase. Examples: milk, cream, mayonnaise, vinaigrette, hollandaise, béarnaise.</li>
+        <li><strong>Water-in-oil (W/O):</strong> tiny water droplets dispersed in a continuous
+            fat phase. Examples: butter, margarine. Less common in sauces.</li>
+      </ul>
+
+      <p class="prose">
+        <em>Kinetically stable</em> means the emulsion does not spontaneously separate —
+        but given enough time or energy (heat, vibration, freezing), it will. Thermodynamic
+        stability (never separating) is essentially impossible for a true emulsion.
+        Good emulsification means creating very small droplets (high surface area, slow
+        coalescence) and stabilising the interface with emulsifiers.
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="emulsifiers">Emulsifiers — amphiphiles at the interface</div>
+
+      <p class="prose">
+        An <strong>emulsifier</strong> is an amphiphilic molecule: it has a hydrophilic ("water-loving")
+        head and a hydrophobic ("water-fearing") tail. It positions itself at the oil–water
+        interface — tail pointing into the oil droplet, head pointing into the water — reducing
+        the interfacial tension and forming a physical barrier that prevents droplets from coalescing.
+      </p>
+
+      <p class="prose">Key emulsifiers in food:</p>
+
+      <p class="prose"><strong>Lecithin (phosphatidylcholine)</strong> — the workhorse of egg yolk</p>
+      <p class="prose">
+        A phospholipid: glycerol backbone with two fatty acid chains (hydrophobic tails) and
+        a phosphate-choline head group (hydrophilic). Present at ~1% in egg yolk and ~0.3% in
+        whole eggs. Egg yolk is extraordinarily effective at emulsification partly because of
+        lecithin and partly because yolk's lipoprotein complexes (LDL, HDL, livetins) act as
+        additional emulsifiers. One egg yolk can stably emulsify up to 250 ml of oil — far
+        beyond what pure lecithin alone could achieve.
+      </p>
+
+      <p class="prose"><strong>Proteins</strong> — flexible film formers</p>
+      <p class="prose">
+        Proteins can adsorb to oil–water interfaces and form a viscoelastic film around droplets.
+        When proteins partially unfold at the interface (exposing hydrophobic regions into the
+        oil), they provide steric stabilisation. Key examples:
+      </p>
+      <ul class="prose" style="margin-top:6px;">
+        <li>Casein micelles in milk — stabilise the fat globules in cream</li>
+        <li>Whey proteins — denatured by heat, form stronger interfacial films (contribution to
+            cooked cream sauce stability)</li>
+        <li>Gelatin — in aspic and cold sauces; when cooled, forms a gel matrix that
+            physically traps fat droplets</li>
+        <li>Mustard — contains mucilage (polysaccharides from mucilage cells in mustard seed)
+            plus some protein; remarkably effective emulsifier for vinaigrettes</li>
+      </ul>
+
+      <p class="prose"><strong>Mono- and diglycerides</strong></p>
+      <p class="prose">
+        Partial glycerides (glycerol with one or two fatty acids instead of three) are the most
+        widely used commercial food emulsifiers (E471). Present naturally at trace levels in
+        triglyceride fats; commercially produced by partial hydrolysis of oils. Used in
+        margarine, ice cream (inhibits fat globule coalescence during freezing, preventing
+        icy texture), bread (softening agent — interacts with amylose to prevent retrogradation).
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="mayo">Mayonnaise — an engineering marvel at room temperature</div>
+
+      <p class="prose">
+        Mayonnaise is an oil-in-water emulsion with approximately 70–80% oil — an extraordinarily
+        high oil fraction. At this ratio, the oil droplets are so densely packed that they
+        are geometrically impossible to be perfectly spherical; they are deformed polyhedra
+        pressed against each other. This close-packed structure is why mayonnaise has a
+        semi-solid, paste-like consistency rather than flowing like a liquid despite being
+        ~75% oil and ~25% water-plus-egg.
+      </p>
+
+      <p class="prose">
+        <strong>Making mayonnaise — mechanics and chemistry:</strong>
+      </p>
+      <ol class="prose" style="margin-top:6px;">
+        <li>Start with egg yolk (lecithin + lipoprotein emulsifiers) in an acidic water phase
+            (lemon juice or vinegar; acid denatures proteins slightly, improving their
+            interfacial activity, and lowers pH for flavour and microbial safety).</li>
+        <li>Add oil drop by drop with vigorous agitation. Each addition creates new oil
+            droplets that must be immediately coated with emulsifier from the continuous phase.
+            If oil is added faster than emulsifier molecules can migrate to the new interface,
+            droplets coalesce before being stabilised — the mayo breaks.</li>
+        <li>As oil fraction increases, droplets pack together. Viscosity rises rapidly.
+            The fully made mayo is a pale, opaque, viscous paste — the opacity comes from
+            light scattering off millions of microscopic oil droplets.</li>
+      </ol>
+
+      <div class="callout">
+        <strong>Why does mayonnaise break — and can it be fixed?</strong><br>
+        <em>Breaking</em> = droplet coalescence → visible oil separation.
+        Causes: (1) oil added too fast, (2) temperature too cold (lecithin becomes less mobile),
+        (3) too little emulsifier relative to oil volume, (4) overworking a fully made mayo
+        which can destroy the droplet structure.
+        <em>Rescue:</em> begin again with a fresh yolk in a clean bowl. Add the broken mayo
+        very slowly — the new yolk supplies fresh emulsifier to re-coat the existing droplets.
+        Works because the "broken" mayo still contains emulsifier-coated oil; it just needs
+        re-dispersing.
+      </div>
+
+      <p class="prose">
+        <strong>Cooked emulsions</strong> (hollandaise, béarnaise) follow the same principle
+        but use heat-denatured egg proteins as the primary emulsifier alongside lecithin.
+        This makes them more temperature-sensitive: proteins over-coagulate above ~70°C,
+        collapsing the interfacial film. A hollandaise held too hot or reheated directly
+        will break for the same reason a custard scrambles.
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="butter">Butter — the phase-inverted emulsion</div>
+
+      <p class="prose">
+        Butter starts as cream, which is an <strong>oil-in-water</strong> emulsion (fat globules
+        dispersed in water). Churning converts it to a <strong>water-in-oil</strong> emulsion —
+        a <em>phase inversion</em>. Here is how:
+      </p>
+      <ol class="prose" style="margin-top:6px;">
+        <li>Cream's fat globules are surrounded by a phospholipid membrane (the milk fat globule
+            membrane, MFGM). Vigorous agitation during churning damages this membrane,
+            exposing the liquid triglycerides inside.</li>
+        <li>Damaged globules aggregate into clumps (the solid grains you see when cream is
+            over-whipped). With continued agitation, these clumps coalesce into a continuous
+            fat phase.</li>
+        <li>At the inversion point, the water droplets are now trapped within a fat matrix —
+            the butter "breaks" in the churning sense, releasing buttermilk (the remaining
+            water phase) as a liquid. The solid material is butter.</li>
+      </ol>
+      <p class="prose">
+        Finished butter: ~80% fat, ~17% water (in tiny dispersed droplets), ~3% milk solids
+        (proteins, lactose, minerals — the source of butter's flavour). The water droplets
+        are so small that butter feels dry and firm, not wet.
+      </p>
+      <p class="prose">
+        <strong>Whipped cream</strong> is a gas-in-liquid foam, not an emulsion, despite involving
+        cream. The fat globules (partially damaged by whipping) cluster around air bubbles,
+        stabilising them. Over-whipping damages globules further and initiates the phase
+        inversion: you get butter, not better whipped cream.
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="examples">Worked examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Choosing fat for high-heat searing</strong></div>
+        <div class="example-problem">
+          You want to sear duck breasts at high heat (~230°C pan temperature).
+          Evaluate three fat choices: (A) extra-virgin olive oil, (B) refined avocado oil,
+          (C) whole butter. Which would you use and why? Address smoke point, oxidative
+          stability, and flavour contribution.
+        </div>
+        <div class="example-body">
+          <p><strong>(A) Extra-virgin olive oil:</strong><br>
+          Smoke point ~190°C (unrefined). At 230°C, it will smoke before the pan is
+          hot enough for effective searing. More importantly, EVOO's polyphenols and
+          chlorophyll can generate acrid off-flavours at sustained high temperatures.
+          Oleic acid (monounsaturated, 73%) provides reasonable oxidative stability
+          for a brief sear, but the impurity content limits high-heat use.
+          <em>Not recommended for 230°C sustained searing.</em></p>
+          <p><strong>(B) Refined avocado oil:</strong><br>
+          Smoke point ~270°C. Very high oleic acid content (~70%, similar to olive oil)
+          provides excellent oxidative stability. Neutral flavour. Good thermal stability.
+          This is the straightforward correct answer for pure high-heat searing with
+          minimal fat flavour contribution to the final dish.
+          <em>Recommended if fat flavour is not desired.</em></p>
+          <p><strong>(C) Whole butter:</strong><br>
+          Smoke point ~150°C — far too low. Milk solids scorch well before pan temperature
+          reaches searing range. The duck skin will taste bitter and the pan will fill
+          with smoke before a crust forms.
+          <em>However:</em> a classic technique is to sear duck in its own rendered fat
+          (duck fat, ~210°C smoke point; ~56% monounsaturated, oxidatively stable), then
+          finish with basting butter at lower heat for flavour. This separates the high-heat
+          phase from the flavour phase.</p>
+          <p><strong>Best answer for a professional context:</strong> Start with refined avocado
+          oil or duck's own rendered fat for the high-heat sear; add whole butter or compound
+          butter only in the last 30–60 seconds for basting, at a lower temperature.
+          Never use unrefined EVOO or whole butter as your primary high-heat medium.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Making a broken vinaigrette stable</strong></div>
+        <div class="example-problem">
+          A vinaigrette is made from 3 parts oil + 1 part vinegar, shaken. It separates
+          within minutes. Identify why it separates and describe two chemical strategies to
+          increase stability. For each, identify the emulsifier involved and explain its mechanism.
+        </div>
+        <div class="example-body">
+          <p><strong>Why it separates:</strong><br>
+          The shaken vinaigrette creates droplets via mechanical energy, but there is no
+          emulsifier to stabilise the oil–water interface. Surface tension drives droplets
+          to coalesce. Droplets merge, the oil phase rises (lower density), and the phases
+          separate. Without emulsifier, this separation happens in seconds to minutes.</p>
+          <p><strong>Strategy 1 — Add mustard:</strong><br>
+          Whole-grain or Dijon mustard contains mucilage (a mixture of polysaccharides)
+          from the mustard seed, plus some protein. Mucilage molecules are amphiphilic —
+          they adsorb to the oil–water interface and form a physical steric barrier around
+          oil droplets, preventing coalescence. Even ~1 teaspoon per tablespoon of vinegar
+          provides enough emulsifier to keep a vinaigrette stable for several minutes to hours.
+          This is why French vinaigrette almost always includes mustard.</p>
+          <p><strong>Strategy 2 — Add egg yolk:</strong><br>
+          Egg yolk lecithin (phosphatidylcholine) is an efficient small-molecule emulsifier.
+          Its phosphocholine head group is hydrophilic; its two fatty acid tails are hydrophobic.
+          It inserts tail-first into oil droplets, head facing water, forming a monolayer
+          that reduces interfacial tension. Combined with yolk's lipoprotein complexes, this
+          makes egg-yolk vinaigrettes extremely stable (they approach mayonnaise in stability
+          at yolk-rich ratios). The resulting emulsion is also opaque rather than clear —
+          light scattering off small droplets — which is the visual sign of good emulsification.</p>
+          <p><em>Practical note:</em> mustard + small amount of honey (adds some polysaccharide
+          gum) + brisk whisking produces a vinaigrette stable enough for a restaurant service.
+          Blending (high shear) creates smaller droplets and even longer stability.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Why does brown butter (beurre noisette) taste nutty?</strong></div>
+        <div class="example-problem">
+          Butter heated in a saucepan goes through stages: foaming, clearing, then develops
+          a golden-brown colour and nutty aroma (beurre noisette). Identify the chemical
+          events at each stage. Why does the flavour become noticeably more complex than
+          plain melted butter?
+        </div>
+        <div class="example-body">
+          <p><strong>Stage 1 — Foaming:</strong><br>
+          The ~17% water in butter vaporises. The milk proteins foam at the surface
+          (protein films stabilise steam bubbles). The butter looks opaque and frothy.</p>
+          <p><strong>Stage 2 — Clearing:</strong><br>
+          Water has mostly evaporated. Foam subsides. The butter is now golden-yellow, clear fat
+          with milk solids settled at the bottom. Temperature can now rise above 100°C.</p>
+          <p><strong>Stage 3 — Browning (beurre noisette):</strong><br>
+          Milk solids are the critical component. Butter contains ~1.5% milk proteins (including
+          casein fragments and whey proteins) and ~0.5% lactose — both Maillard reactants.
+          As temperature rises above ~140°C, the Maillard reaction begins between these
+          proteins and lactose. The same cascade described in Lesson 1 proceeds:
+          Strecker aldehydes (from milk amino acids, particularly leucine → 3-methylbutanal,
+          the defining "brown butter" note, which smells of toffee and hazelnut),
+          pyrazines (nutty), and melanoidins (brown colour).</p>
+          <p><strong>Why is beurre noisette so much more flavourful than plain butter?</strong><br>
+          At ambient temperature, butter's volatile flavour compounds (diacetyl, butyric acid,
+          delta-decalactone) are present but relatively modest. Beurre noisette adds an
+          entirely new layer: dozens of Maillard products from the milk solids that were
+          not present before heating. The fat acts as a solvent and carrier for these new
+          volatiles — and because the fat phase remains, it delivers them to your palate
+          via the lipophilic route. The combination of native butter volatiles plus new
+          Maillard products in a fat matrix produces one of the most complex flavour
+          profiles achievable from a single ingredient with simple technique.</p>
+        </div>
+      </div>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="fft">Food for thought</div>
+
+      <ul class="fft-list">
+        <li class="fft-item">
+          Ice cream contains mono- and diglycerides as emulsifiers. Counterintuitively,
+          these emulsifiers are added not to make the emulsion <em>more</em> stable, but to
+          allow it to partially <em>destabilise</em> in a controlled way during freezing.
+          What does partial destabilisation of the fat phase achieve in frozen ice cream?
+          <div class="fft-answer">
+            In ice cream, a small degree of fat globule coalescence (partial coalescence —
+            globules touching but not fully merged) during the freezing–aeration step is
+            desirable. Partially coalesced fat globules cluster around air bubbles that are
+            incorporated during churning, forming a fat crystal network that stabilises
+            air cells and gives ice cream its characteristic body and resistance to melting.
+            If the emulsion were perfectly stable (no coalescence at all), fat globules
+            would remain discrete spheres and could not form this network around air.
+            Mono- and diglycerides, by partially displacing the more stable protein film
+            from the fat globule surface, allow just enough partial coalescence during
+            freezing to form the network — but not full coalescence (which would produce
+            butter). This is a case where the "right" amount of emulsifier instability
+            produces a better product. Over-emulsified ice cream has weak structure and
+            melts rapidly; under-emulsified ice cream is grainy (large ice crystals, no
+            fat network). The balance is tightly engineered in commercial formulations.
+          </div>
+        </li>
+        <li class="fft-item">
+          Olive oil has a smoke point of ~190°C (unrefined) to ~240°C (refined), yet
+          Mediterranean cuisine has been frying with it for millennia. Modern food scientists
+          note that EVOO, despite its lower smoke point, shows reasonable thermal stability
+          in practice. What two properties of EVOO explain this apparent contradiction?
+          <div class="fft-answer">
+            First, high oleic acid content (~73%): oleic acid is monounsaturated, with only
+            one double bond — far more resistant to oxidative chain reactions than linoleic
+            (2 bonds) or alpha-linolenic (3 bonds). The rate of lipid oxidation is roughly
+            proportional to the number of double bonds, so olive oil oxidises much more
+            slowly than sunflower or soybean oil even at equivalent temperatures.
+            Second, antioxidant content: EVOO contains substantial phenolic antioxidants
+            (hydroxytyrosol, oleuropein aglycone, oleocanthal) that scavenge free radicals,
+            interrupting the oxidative chain reaction. These antioxidants are consumed during
+            frying — repeated use of EVOO does deplete them — but in a single-use frying
+            context, they provide real protection. Refined olive oil lacks these phenolics
+            (they are removed in refining) and has a higher smoke point but is not necessarily
+            more stable under realistic cooking conditions. The smoke point test alone is
+            insufficient to rank practical frying stability.
+          </div>
+        </li>
+        <li class="fft-item">
+          Full-fat cheese melts smoothly; reduced-fat cheese often becomes stringy and
+          rubbery rather than melting. What fat chemistry explains this difference,
+          and what does it imply about the structural role of fat in melted cheese?
+          <div class="fft-answer">
+            In full-fat cheese, the fat phase (dispersed as fat globules between casein
+            protein strands) acts as a lubricant when heated — it melts and flows around the
+            protein network, reducing viscosity and allowing strands to slide past each other.
+            The protein-fat matrix plasticises. In reduced-fat cheese, the protein-to-fat
+            ratio is higher: when heated, the denatured casein proteins form denser, more
+            entangled networks with less fat to lubricate strand movement. The result is a
+            stringy, elastic, rubbery melt rather than fluid flow. The fat is not just a
+            flavour carrier in cheese — it is a structural plasticiser. Without it, the
+            protein network dominates and the material behaves like a thick protein gel
+            under shear, not like a flowing liquid. This is why reduced-fat mozzarella
+            browns acceptably on a pizza but refuses to achieve the puddles of melted
+            stretch of full-fat mozzarella. Emulsifying salts (sodium citrate, sodium
+            phosphate) in processed cheese achieve similar plasticisation by binding calcium
+            (which cross-links casein strands) — breaking up the protein network to produce
+            smooth melt independent of fat content.
+          </div>
+        </li>
+      </ul>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="pitfalls">Common pitfalls</div>
+
+      <ul class="prose">
+        <li style="margin-bottom:10px;">
+          <strong>Using smoke point as the only criterion for fat selection.</strong>
+          Oxidative stability, flavour contribution, and intended temperature range all matter.
+          A fat with a high smoke point but many polyunsaturated bonds (regular sunflower oil)
+          may produce more oxidation products than EVOO at equivalent frying temperatures.
+        </li>
+        <li style="margin-bottom:10px;">
+          <strong>Adding oil too fast when making an emulsion.</strong>
+          The rate of oil addition must not exceed the rate of emulsifier migration to the
+          new interface. For mayonnaise, this means drop-by-drop initially. A modern blender
+          or food processor speeds this by creating much smaller droplets instantly —
+          it's not cheating, it's better droplet formation.
+        </li>
+        <li style="margin-bottom:10px;">
+          <strong>Thinking "broken" emulsions are ruined.</strong>
+          A broken mayo or hollandaise can almost always be rescued by restarting with fresh
+          emulsifier (new egg yolk) and slowly incorporating the broken sauce.
+        </li>
+        <li style="margin-bottom:10px;">
+          <strong>Confusing olive oil grades.</strong>
+          Extra-virgin = cold-pressed, unrefined, full phenolic content, lower smoke point.
+          Refined/light olive oil = processed, neutral flavour, higher smoke point, minimal
+          antioxidants. They are not interchangeable; use each where its properties are wanted.
+        </li>
+        <li style="margin-bottom:10px;">
+          <strong>Storing polyunsaturated oils incorrectly.</strong>
+          Flaxseed, walnut, and hemp oils go rancid within weeks at room temperature in
+          light. They must be refrigerated, in dark containers. The aldehydes from oxidised
+          PUFA not only taste bad but have potential toxicity concerns in quantity.
+        </li>
+      </ul>
+
+      <div class="section-head">Connects to</div>
+      <p class="prose">
+        <strong><a href="maillard.html">Heat &amp; Browning</a></strong> — Maillard products
+        are fat-soluble volatiles; fat is the delivery mechanism that makes them flavour-active.
+        Brown butter is Maillard chemistry in a fat matrix.
+        <br>
+        <strong><a href="proteins.html">Proteins in the Kitchen</a></strong> — Proteins are
+        key emulsifiers (lecithin in egg yolk, casein in milk). Their denaturation behaviour
+        under heat directly controls the stability of cooked emulsions like hollandaise.
+        <br>
+        <strong>Flavour Science</strong> — Most aroma volatiles are lipophilic. Fat is
+        simultaneously the source of many flavour molecules (via oxidation, Maillard of
+        milk solids, rancidity reactions at controlled levels) and their primary delivery vehicle.
+      </p>
+
+      <div class="lesson-nav">
+        <a href="proteins.html" class="lesson-nav-btn">← Proteins in the Kitchen</a>
+        <a href="carbohydrates.html" class="lesson-nav-btn">Carbohydrates &amp; Starches →</a>
+      </div>
+
+    </div><!-- /main -->
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+  // ── Smoke point chart ────────────────────────────────────────────────────
+  var fats = [
+    'Refined avocado oil',
+    'Refined coconut oil',
+    'Clarified butter (ghee)',
+    'Refined sunflower oil',
+    'Refined canola oil',
+    'Lard',
+    'Duck fat',
+    'Refined olive oil',
+    'Vegetable shortening',
+    'Coconut oil (unrefined)',
+    'Extra-virgin olive oil*',
+    'Sesame oil (semi-refined)',
+    'Whole butter',
+    'Unrefined flaxseed oil*'
+  ];
+  var smokePts = [271, 232, 250, 227, 220, 188, 210, 240, 182, 177, 191, 210, 150, 107];
+  // sort by smoke point ascending for horizontal bar
+  var combined = fats.map(function(f, i) { return { fat: f, sp: smokePts[i] }; });
+  combined.sort(function(a, b) { return a.sp - b.sp; });
+
+  var colors = combined.map(function(c) {
+    if (c.sp >= 230) return '#3a6a8a';
+    if (c.sp >= 180) return '#6a9abA';
+    return '#b85c38';
+  });
+
+  Plotly.newPlot('smoke-chart', [{
+    type: 'bar',
+    orientation: 'h',
+    x: combined.map(function(c) { return c.sp; }),
+    y: combined.map(function(c) { return c.fat; }),
+    marker: { color: colors, opacity: 0.85 },
+    text: combined.map(function(c) { return c.sp + '°C'; }),
+    textposition: 'outside',
+    textfont: { family: 'IBM Plex Sans', size: 11, color: '#2a3a4a' },
+    hovertemplate: '%{y}: %{x}°C<extra></extra>'
+  }], {
+    xaxis: {
+      title: 'Smoke point (°C)',
+      range: [80, 310],
+      tickfont: { family: 'IBM Plex Sans', size: 12 },
+      titlefont: { family: 'IBM Plex Sans', size: 13 }
+    },
+    yaxis: {
+      tickfont: { family: 'IBM Plex Sans', size: 11 },
+      automargin: true
+    },
+    shapes: [
+      { type: 'line', x0: 180, x1: 180, y0: -0.5, y1: 13.5,
+        line: { color: '#9aabb8', width: 1.5, dash: 'dot' } }
+    ],
+    annotations: [
+      { x: 180, y: 13.3, text: 'High-heat threshold', showarrow: false,
+        xanchor: 'left', xshift: 5, font: { color: '#9aabb8', size: 10, family: 'IBM Plex Sans' } }
+    ],
+    margin: { l: 185, r: 55, t: 14, b: 50 },
+    paper_bgcolor: '#f9f9f7',
+    plot_bgcolor: '#f9f9f7',
+    font: { family: 'IBM Plex Sans' },
+    showlegend: false
+  }, { responsive: true, displayModeBar: false });
+});
+</script>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+</body>
+</html>
