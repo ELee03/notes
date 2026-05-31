@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chocolate &amp; Confectionery — Food Science</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="food-science" data-current="chocolate.html"></div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb"><a href="../index.html">Field Notes</a> → <a href="index.html">Food Science</a> → Chocolate &amp; Confectionery</div>
+
+      <h1 class="lesson-title">Chocolate &amp; Confectionery</h1>
+      <div class="lesson-meta">Cocoa Fermentation · Maillard Roasting · Lipid Polymorphism · Sugar Chemistry</div>
+
+      <p class="prose">
+        Chocolate is a more complex product than anything else in this cluster. To make
+        it from a raw cacao pod requires five distinct and chemically sophisticated
+        transformations — fermentation, drying, roasting, conching, and tempering —
+        each of which shapes the final character in ways that are irreversible. Skip or
+        mismanage any one of them and nothing in the remaining steps can compensate.
+        The chemistry is also uniquely fascinating: tempering is essentially applied
+        lipid crystallography, and the difference between a chocolate bar that snaps
+        cleanly and one that is waxy and streaked is the difference between one crystal
+        polymorph and another.
+      </p>
+
+      <div class="section-head">From Pod to Nib: Fermentation</div>
+
+      <p class="prose">
+        The cacao pod of <em>Theobroma cacao</em> contains 30–40 seeds surrounded by
+        white, sweetly acidic pulp. Neither the bean nor the pulp has much chocolate
+        character at this stage — the flavour precursors are locked away as biochemically
+        inert precursors. Fermentation is the key that releases them.
+      </p>
+
+      <h3>The fermentation cascade</h3>
+      <p class="prose">
+        Freshly harvested pods are cracked open and the pulp-covered beans are heaped in
+        wooden boxes or under banana leaves, then left for 5–7 days. Two sequential
+        microbial phases drive the chemistry:
+      </p>
+      <p class="prose">
+        <strong>Phase 1 — Anaerobic yeast fermentation (days 1–2):</strong>
+        The pulp is rich in sugars (~15%) and citric acid. In the anaerobic interior of
+        the pile, <em>Saccharomyces cerevisiae</em>, <em>Kloeckera apiculata</em>, and
+        related yeasts ferment the pulp sugars to ethanol and CO₂. Temperature rises to
+        ~35–40°C. The pile is "turned" periodically to introduce oxygen.
+      </p>
+      <p class="prose">
+        <strong>Phase 2 — Acetic acid bacteria (days 3–7):</strong>
+        As pulp drains and oxygen enters, <em>Acetobacter</em> and <em>Gluconobacter</em>
+        take over, oxidising ethanol to acetic acid. Temperature rises further to
+        ~45–50°C. The acetic acid and rising temperature are the keys to what happens
+        inside the bean:
+      </p>
+      <ul class="prose" style="margin-top:0;">
+        <li><strong>Bean embryo death</strong> — the acetic acid and heat kill the seed
+          embryo, releasing enzymes from their cellular compartments.</li>
+        <li><strong>Proteolysis</strong> — storage proteins are hydrolysed by endogenous
+          proteases to free amino acids — the primary substrates for Maillard and Strecker
+          reactions during subsequent roasting.</li>
+        <li><strong>Starch/sugar hydrolysis</strong> — amylases produce reducing sugars
+          (the second Maillard substrate).</li>
+        <li><strong>Polyphenol oxidation</strong> — catechins (the bean contains
+          exceptionally high levels of catechin and epicatechin) are partially oxidised
+          by polyphenol oxidase — reducing the extreme astringency of raw cacao.
+          Unfermented cacao beans are intensely bitter and astringent.</li>
+      </ul>
+      <p class="prose">
+        After fermentation, the beans are dried — typically sun-dried for 1–2 weeks.
+        Most of the acetic acid (volatile, bp 118°C) evaporates during drying. If
+        drying is too rapid (kiln-dried under-dried beans), acetic acid is trapped
+        inside and creates off-flavours described as "hammy" or "vinegary" in the
+        final chocolate.
+      </p>
+
+      <div class="section-head">Roasting</div>
+
+      <p class="prose">
+        Dried cacao beans are roasted at 120–150°C for 15–40 minutes — one of the most
+        complex Maillard systems in all of food science. The free amino acids and reducing
+        sugars from fermentation are now available in intimate contact, ready to react.
+      </p>
+      <p class="prose">
+        The aroma chemistry of roasted cacao is dominated by:
+      </p>
+      <ul class="prose" style="margin-top:0;">
+        <li><strong>Pyrazines</strong> (alkylpyrazines: 2-methylpyrazine, trimethylpyrazine,
+          tetramethylpyrazine) — the characteristic "roasted cocoa" note. These are Maillard
+          products from amino acid + sugar; they increase with higher temperature and longer
+          roast time.</li>
+        <li><strong>Strecker aldehydes</strong> — 3-methylbutanal (malty, from leucine),
+          2-methylbutanal (from isoleucine), phenylacetaldehyde (honey/floral, from
+          phenylalanine). These contribute depth and complexity.</li>
+        <li><strong>Furans and pyrroles</strong> — furanmethanol, furfural, methylpyrrole.
+          Earthy, caramel-like notes.</li>
+        <li><strong>Thiols</strong> — methanethiol, furfurylthiol (the same compound as
+          in coffee). Roasty, sulfurous background notes at trace concentrations.</li>
+      </ul>
+      <p class="prose">
+        Temperature choice is a flavour decision:
+      </p>
+      <ul class="prose" style="margin-top:0;">
+        <li><strong>Low roast (120–130°C):</strong> More fruity and floral Maillard
+          intermediates; lower pyrazine; preserves more origin character.</li>
+        <li><strong>High roast (140–150°C):</strong> Dominant pyrazines; more intense
+          "chocolate/cocoa" character; origin differences are masked.</li>
+      </ul>
+      <p class="prose">
+        After roasting, the shell (husk) is removed by winnowing (cracking + air
+        separation), leaving the <strong>cacao nibs</strong> — the pure roasted cacao
+        interior that will be ground into chocolate.
+      </p>
+
+      <div class="section-head">Grinding and Conching</div>
+
+      <p class="prose">
+        Cacao nibs are roughly 55% fat (cocoa butter). Grinding — between stone rollers
+        or in a melangeur — ruptures the cell walls and releases the fat, creating a
+        thick liquid called <strong>cocoa liquor</strong> (or cacao mass). At this stage,
+        particle size is still too large and flavour is still too harsh.
+      </p>
+
+      <h3>Conching — the essential refinement step</h3>
+      <p class="prose">
+        Conching was invented by Rodolphe Lindt in 1879, and it transformed chocolate
+        from a gritty, harsh, acidic paste into the smooth product we recognise today.
+        The machine (originally shell-shaped, hence "conche") mechanically works the
+        chocolate mass at 50–80°C for 12–72 hours. Three distinct effects occur
+        simultaneously:
+      </p>
+      <ol class="prose" style="margin-top:0;">
+        <li><strong>Volatile acid removal.</strong> Acetic acid and other short-chain
+          fatty acids that survived fermentation and drying are volatile at conching
+          temperatures. The mechanical agitation assists evaporation — these harsh,
+          acidic notes literally leave the chocolate mass during conching. This is why
+          under-conched chocolate tastes harsh and vinegary compared to well-conched
+          chocolate.</li>
+        <li><strong>Particle coating and texture development.</strong> Continuous agitation
+          causes cocoa butter to coat every solid particle (sugar crystals, cocoa cell
+          fragments). As particle coating improves, apparent viscosity drops dramatically
+          — the mass flows more smoothly. This is enhanced by the addition of lecithin
+          late in conching (see below).</li>
+        <li><strong>Flavour development and rounding.</strong> At 60–80°C for many hours,
+          slow Maillard reactions continue; harsh, angular volatile compounds interact and
+          round into more complex, integrated flavour. Over-conching (beyond ~48 hours for
+          most chocolates) begins to lose delicate fruity volatiles, producing a flat
+          character.</li>
+      </ol>
+
+      <h3>Lecithin — the emulsifier</h3>
+      <p class="prose">
+        Chocolate is a dispersion of hydrophilic particles (sugar, cocoa powder) in a
+        fat phase (cocoa butter). Lecithin (phosphatidylcholine, typically from soy or
+        sunflower) is added at 0.3–0.5% of total weight. Its amphiphilic structure
+        allows it to coat hydrophilic sugar particle surfaces, reducing their tendency
+        to aggregate in the fat phase. The effect on viscosity is dramatic: adding 0.3%
+        lecithin can halve the flow viscosity of chocolate, allowing the same texture
+        with less cocoa butter. Above ~0.8–1.0% lecithin, viscosity paradoxically
+        increases because excess lecithin forms multilayer coatings that interfere
+        with each other.
+      </p>
+
+      <div class="section-head">Cocoa Butter Polymorphism and Tempering</div>
+
+      <p class="prose">
+        This is the most chemically distinctive aspect of chocolate science. Cocoa butter
+        is a mixture of triglycerides — principally POS (palmitoyl-oleoyl-stearoyl),
+        SOS (stearoyl-oleoyl-stearoyl), and POP (palmitoyl-oleoyl-palmitoyl). These
+        triglycerides can pack into crystals in six distinct arrangements, called
+        <strong>polymorphic forms</strong>, each with a different melting point and
+        physical properties:
+      </p>
+
+      <div style="overflow-x:auto;margin:16px 0 24px;">
+        <table style="width:100%;border-collapse:collapse;font-size:0.9rem;font-family:'IBM Plex Sans',sans-serif;">
+          <thead>
+            <tr style="background:#e8f0f5;text-align:left;">
+              <th style="padding:8px 12px;border-bottom:2px solid #b0c8d8;">Form</th>
+              <th style="padding:8px 12px;border-bottom:2px solid #b0c8d8;">Melting point</th>
+              <th style="padding:8px 12px;border-bottom:2px solid #b0c8d8;">Stability</th>
+              <th style="padding:8px 12px;border-bottom:2px solid #b0c8d8;">Properties</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #dce4e8;">
+              <td style="padding:7px 12px;">Form I (α)</td>
+              <td style="padding:7px 12px;">~17°C</td>
+              <td style="padding:7px 12px;color:#c0392b;">Very unstable</td>
+              <td style="padding:7px 12px;">Soft, crumbly; converts rapidly</td>
+            </tr>
+            <tr style="border-bottom:1px solid #dce4e8;background:#fafafa;">
+              <td style="padding:7px 12px;">Form II</td>
+              <td style="padding:7px 12px;">~23°C</td>
+              <td style="padding:7px 12px;color:#c0392b;">Unstable</td>
+              <td style="padding:7px 12px;">Converts to III in hours</td>
+            </tr>
+            <tr style="border-bottom:1px solid #dce4e8;">
+              <td style="padding:7px 12px;">Form III</td>
+              <td style="padding:7px 12px;">~25°C</td>
+              <td style="padding:7px 12px;color:#e67e22;">Unstable</td>
+              <td style="padding:7px 12px;">Converts to IV in days</td>
+            </tr>
+            <tr style="border-bottom:1px solid #dce4e8;background:#fafafa;">
+              <td style="padding:7px 12px;">Form IV</td>
+              <td style="padding:7px 12px;">~27–28°C</td>
+              <td style="padding:7px 12px;color:#e67e22;">Moderately unstable</td>
+              <td style="padding:7px 12px;">Hard but dull; converts to V in weeks</td>
+            </tr>
+            <tr style="border-bottom:1px solid #dce4e8;background:#fff9e8;">
+              <td style="padding:7px 12px;"><strong>Form V (β)</strong></td>
+              <td style="padding:7px 12px;"><strong>~33–34°C</strong></td>
+              <td style="padding:7px 12px;color:#27ae60;"><strong>Metastable (TARGET)</strong></td>
+              <td style="padding:7px 12px;"><strong>Glossy, snaps, melts at body temp, contracts from moulds</strong></td>
+            </tr>
+            <tr style="background:#fafafa;">
+              <td style="padding:7px 12px;">Form VI (β')</td>
+              <td style="padding:7px 12px;">~36°C</td>
+              <td style="padding:7px 12px;color:#27ae60;">Most stable</td>
+              <td style="padding:7px 12px;">Waxy, slow to form (years); responsible for fat bloom in aged chocolate</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="prose">
+        <strong>Why Form V is the target</strong>: its melting point of ~33–34°C means
+        it melts just below body temperature (37°C) and just above room temperature
+        (~22°C). This is why good chocolate is solid at room temperature but melts on
+        the tongue. Form V also produces the densest crystal packing — giving the
+        characteristic glossy surface and satisfying snap. It contracts slightly on
+        solidification (~3%), which makes it release cleanly from moulds.
+      </p>
+      <p class="prose">
+        If chocolate cools uncontrolled — poured over ice cream, left in a warm pocket,
+        or simply cooled without tempering — it forms mixed Forms III/IV and slowly
+        converts to VI. The result is dull, waxy chocolate that melts too slowly on the
+        tongue.
+      </p>
+
+      <h3>The tempering process</h3>
+      <p class="prose">
+        Tempering is the controlled crystallisation process that ensures the chocolate
+        solidifies in Form V and only Form V:
+      </p>
+      <ol class="prose" style="margin-top:0;">
+        <li><strong>Fully melt all crystal forms</strong> — heat to 50–55°C. At this
+          temperature, all six polymorphs melt; the chocolate is completely amorphous.
+          If you don't fully melt any existing crystals, they act as seeds for the
+          wrong form.</li>
+        <li><strong>Cool to 27–28°C</strong> — crystal nucleation begins. Both Form IV
+          and Form V nuclei form at this temperature. The mass thickens noticeably.
+          This can be done by pouring onto a marble slab (tabliering) or by controlled
+          temperature in a tempering machine.</li>
+        <li><strong>Reheat to 31–32°C</strong> — this "working temperature" is critical.
+          At 31–32°C, Form IV crystals (melt point ~27–28°C) melt. Form V crystals
+          (melt point ~33–34°C) survive. The result: a chocolate mass seeded exclusively
+          with Form V nuclei. Every new crystal that forms from these seeds is Form V.</li>
+        <li><strong>Use or cast while maintaining 31–32°C</strong> — at this temperature,
+          the chocolate remains fluid enough to pour, dip, or mould, while the Form V seeds
+          direct solidification in the desired direction.</li>
+      </ol>
+
+      <div class="widget-card">
+        <div class="widget-title">Tempering Temperature Curve — Crystal Form Stability</div>
+        <div id="tempering-chart" style="width:100%;height:380px;"></div>
+        <p style="font-size:0.85rem;color:#6a7f8a;margin:8px 16px 16px;">
+          Melting points of cocoa butter polymorphic forms I–VI (coloured horizontal lines)
+          overlaid with a typical three-step tempering temperature profile (dashed curve).
+          The working temperature window (31–32°C) lies above all unstable forms but below
+          Form V's melting point — ensuring only Form V seeds remain active.
+        </p>
+      </div>
+
+      <h3>Fat bloom</h3>
+      <p class="prose">
+        <strong>Fat bloom</strong> — grey-white streaks or patches on chocolate — is a
+        Form V → Form VI transition. Form VI is thermodynamically more stable and forms
+        slowly over months to years. The conversion involves cocoa butter molecules
+        migrating through the crystal matrix, segregating into Form VI crystals that
+        grow to visible size at the surface. The resulting surface is matte and waxy;
+        the texture is crumbly rather than snappy.
+      </p>
+      <p class="prose">
+        Fat bloom is accelerated by temperature cycling (warm room → cool fridge
+        repeatedly), incorporation of incompatible fats (vegetable oils mixed with
+        cocoa butter), or insufficient Form V seed crystal density during tempering.
+        It is not a food safety issue, but it is an aesthetics and texture defect.
+        (Not to be confused with <strong>sugar bloom</strong> — a separate phenomenon
+        where surface moisture dissolves and recrystallises surface sugar, also producing
+        a white matte surface, caused by condensation from temperature changes or
+        storage at high humidity.)
+      </p>
+
+      <div class="section-head">Sugar Chemistry and Confectionery</div>
+
+      <p class="prose">
+        Sugar confectionery is essentially applied sugar crystallisation chemistry.
+        Different confectionery textures are created by controlling three variables:
+        concentration, cooling rate, and the presence of interfering agents that
+        modulate crystal growth.
+      </p>
+
+      <h3>Sugar syrup stages</h3>
+      <p class="prose">
+        As a sucrose/water solution is heated, water evaporates and concentration rises.
+        At each concentration threshold, the cooled syrup has a different texture because
+        the degree of supersaturation and crystal formation potential changes:
+      </p>
+
+      <div style="overflow-x:auto;margin:16px 0 24px;">
+        <table style="width:100%;border-collapse:collapse;font-size:0.9rem;font-family:'IBM Plex Sans',sans-serif;">
+          <thead>
+            <tr style="background:#e8f0f5;text-align:left;">
+              <th style="padding:8px 12px;border-bottom:2px solid #b0c8d8;">Stage</th>
+              <th style="padding:8px 12px;border-bottom:2px solid #b0c8d8;">Temperature</th>
+              <th style="padding:8px 12px;border-bottom:2px solid #b0c8d8;">Sucrose %</th>
+              <th style="padding:8px 12px;border-bottom:2px solid #b0c8d8;">Cold water test</th>
+              <th style="padding:8px 12px;border-bottom:2px solid #b0c8d8;">Uses</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #dce4e8;">
+              <td style="padding:7px 12px;">Thread</td>
+              <td style="padding:7px 12px;">106–112°C</td>
+              <td style="padding:7px 12px;">~80%</td>
+              <td style="padding:7px 12px;">Thin thread, breaks</td>
+              <td style="padding:7px 12px;">Syrups, spun sugar</td>
+            </tr>
+            <tr style="border-bottom:1px solid #dce4e8;background:#fafafa;">
+              <td style="padding:7px 12px;">Soft ball</td>
+              <td style="padding:7px 12px;">112–116°C</td>
+              <td style="padding:7px 12px;">~85%</td>
+              <td style="padding:7px 12px;">Soft, flattens</td>
+              <td style="padding:7px 12px;">Fudge, fondant, Italian meringue base</td>
+            </tr>
+            <tr style="border-bottom:1px solid #dce4e8;">
+              <td style="padding:7px 12px;">Firm ball</td>
+              <td style="padding:7px 12px;">118–120°C</td>
+              <td style="padding:7px 12px;">~87%</td>
+              <td style="padding:7px 12px;">Holds shape, slightly firm</td>
+              <td style="padding:7px 12px;">Soft caramels, nougat filling</td>
+            </tr>
+            <tr style="border-bottom:1px solid #dce4e8;background:#fafafa;">
+              <td style="padding:7px 12px;">Hard ball</td>
+              <td style="padding:7px 12px;">121–130°C</td>
+              <td style="padding:7px 12px;">~90%</td>
+              <td style="padding:7px 12px;">Holds shape, bouncy</td>
+              <td style="padding:7px 12px;">Italian meringue, marshmallow, nougat</td>
+            </tr>
+            <tr style="border-bottom:1px solid #dce4e8;">
+              <td style="padding:7px 12px;">Soft crack</td>
+              <td style="padding:7px 12px;">132–143°C</td>
+              <td style="padding:7px 12px;">~95%</td>
+              <td style="padding:7px 12px;">Hard threads, bends</td>
+              <td style="padding:7px 12px;">Taffy, butterscotch</td>
+            </tr>
+            <tr style="border-bottom:1px solid #dce4e8;background:#fafafa;">
+              <td style="padding:7px 12px;">Hard crack</td>
+              <td style="padding:7px 12px;">149–154°C</td>
+              <td style="padding:7px 12px;">~99%</td>
+              <td style="padding:7px 12px;">Hard, brittle, snaps</td>
+              <td style="padding:7px 12px;">Hard candies, lollipops, brittles</td>
+            </tr>
+            <tr style="background:#fafafa;">
+              <td style="padding:7px 12px;">Caramel</td>
+              <td style="padding:7px 12px;">160–185°C</td>
+              <td style="padding:7px 12px;">Decomposing</td>
+              <td style="padding:7px 12px;">Brown, bitter at high end</td>
+              <td style="padding:7px 12px;">Caramel sauce, toffee, croquembouche</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Crystal control: why fudge is smooth and toffee is not</h3>
+      <p class="prose">
+        Both fudge and toffee are cooked at similar temperatures (~115–120°C), but they
+        have completely different textures. The difference is crystal size:
+      </p>
+      <ul class="prose" style="margin-top:0;">
+        <li><strong>Fudge</strong> — deliberately seeded with many tiny crystals. After
+          cooking, the syrup is cooled to ~40°C (supersaturated, not yet crystallising
+          spontaneously) and then beaten vigorously. Beating provides thousands of
+          nucleation sites simultaneously; the result is millions of tiny crystals
+          (&lt;10 μm) that feel smooth to the tongue. Fat (butter) and inverted sugar
+          from the cooking further interfere with crystal growth, keeping them small.</li>
+        <li><strong>Toffee/butterscotch</strong> — higher butter and fat content coats
+          sugar particles and physically prevents nucleation of ordered crystals. The
+          result is a partially amorphous, glassy texture that fractures rather than
+          crumbles.</li>
+        <li><strong>Rock candy / fondant gone wrong</strong> — if a hot sugar syrup is
+          disturbed prematurely (by a speck of sugar, a wooden spoon edge, or rough
+          handling), large crystals nucleate from a few sites → large crystals →
+          grainy texture. This is crystallisation failure.</li>
+      </ul>
+
+      <h3>Caramelisation</h3>
+      <p class="prose">
+        Above ~160°C, sucrose undergoes a series of decomposition reactions (not Maillard —
+        caramelisation requires no amino acids). Sucrose first inverts (hydrolysis to
+        glucose + fructose at elevated temperature), then the monosaccharides undergo
+        enolisation, dehydration, and polymerisation to produce hundreds of compounds:
+      </p>
+      <ul class="prose" style="margin-top:0;">
+        <li><strong>Furans</strong> (5-HMF, furfural) — caramel, sweet</li>
+        <li><strong>Pyrones and maltol</strong> — caramel, cotton candy-like</li>
+        <li><strong>Diacetyl</strong> — butterscotch</li>
+        <li><strong>Volatile acids</strong> — lactic, acetic, pyruvic</li>
+        <li><strong>High-MW melanoidins</strong> — dark brown colour, increasingly bitter</li>
+      </ul>
+      <p class="prose">
+        <strong>Maillard vs. caramelisation in toffee/dulce de leche:</strong> When
+        milk (proteins + lactose) is cooked with sugar, both Maillard and caramelisation
+        run simultaneously. Lactose (a reducing disaccharide) is more reactive in the
+        Maillard reaction than sucrose (a non-reducing disaccharide), making milk-based
+        confections brown faster and at lower temperatures than pure sucrose. The
+        casein and whey proteins in milk provide abundant Strecker substrates for
+        additional complexity not present in pure sucrose caramel.
+      </p>
+
+      <div class="section-head">Milk Chocolate, Dark Chocolate, and White Chocolate</div>
+
+      <p class="prose">
+        All three start with cocoa butter. The differences lie in what else is present:
+      </p>
+      <ul class="prose" style="margin-top:0;">
+        <li><strong>Dark chocolate</strong> (&gt;60% cocoa mass): cocoa liquor + cocoa butter + sugar.
+          High polyphenol content → bitter, astringent; intense cocoa aroma; lower sugar.
+          Polyphenols in dark chocolate include the same epicatechin/catechin-based tannins
+          as in red wine and tea.</li>
+        <li><strong>Milk chocolate</strong> (~30–40% cocoa mass): cocoa liquor + cocoa butter + sugar
+          + milk solids (~12%). Milk proteins (casein, whey) partially complex with cocoa
+          polyphenols, reducing astringency. Lactose adds sweetness and contributes to
+          Maillard reactions, producing caramel-milky notes. Fat from milk fat modifies
+          the cocoa butter crystallisation (milk fat is a less ordered crystalliser than
+          cocoa butter — why milk chocolate tempering is slightly different).</li>
+        <li><strong>White chocolate</strong>: cocoa butter + sugar + milk solids; no cocoa
+          solids. Legally must contain ≥20% cocoa butter, ≥14% milk solids. The "chocolate"
+          character is entirely from cocoa butter aroma and milk compounds. Low-quality
+          white chocolate substitutes vegetable fat for cocoa butter and has a waxy,
+          flavourless character because cocoa butter has its own characteristic aroma
+          (from trace volatile compounds).</li>
+      </ul>
+
+      <div class="section-head">Worked Examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Fat bloom diagnosis</strong></div>
+        <div class="example-problem">
+          A box of moulded chocolates is stored in a 22°C kitchen. Twice a week for
+          three weeks, the homeowner puts them in the refrigerator overnight "to keep
+          them fresh." The chocolates develop grey-white streaks. Separately, chocolate-
+          dipped strawberries stored at high humidity develop a white powder on the
+          surface. Identify both defects and explain the mechanism of each.
+        </div>
+        <div class="example-body">
+          <p><strong>Moulded chocolates — fat bloom:</strong> The temperature cycling
+          (22°C → 4°C → 22°C repeated) is the primary driver. At 22°C, Form V crystals
+          are close to their lower stability limit; warming slightly destabilises the
+          crystal lattice. Repeated thermal stress provides the energy for Form V
+          crystals to begin converting to the more thermodynamically stable Form VI.
+          This conversion involves cocoa butter molecules migrating to the surface,
+          where they grow into Form VI crystals visible as grey-white streaks or patches.
+          The surface texture changes from glossy to matte. The chocolate is safe to
+          eat but aesthetically degraded and texturally compromised (crumblier, waxier
+          melt). Prevention: stable room temperature storage between 15–18°C; avoid
+          refrigeration unless necessary, and only do so in an airtight container
+          to prevent the humidity cycling below.</p>
+          <p><strong>Dipped strawberries — sugar bloom:</strong> The white powder is
+          not fat — it is recrystallised sucrose. Strawberries introduce moisture into
+          the chocolate coating. In the presence of moisture, surface sucrose dissolves
+          partially and then recrystallises as large crystals as the moisture evaporates.
+          The result is a powdery, gritty white surface — sugar bloom. High ambient
+          humidity accelerates it because atmospheric moisture also contributes. Prevention:
+          consume dipped fruit promptly (within hours); do not store in a sealed humid
+          environment; avoid drastic temperature swings that cause condensation.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Tempering failure modes</strong></div>
+        <div class="example-problem">
+          A home chocolatier attempts to temper dark chocolate by melting it to 55°C
+          (correct), then cooling it on a marble slab to 27°C and pouring it into moulds.
+          The bars set quickly but are soft, matte, and have an uneven waxy texture.
+          A second attempt: they melt to 55°C, cool to 27°C, then accidentally heat
+          to 38°C before moulding. This batch also fails. Explain both failures using
+          crystal polymorph chemistry.
+        </div>
+        <div class="example-body">
+          <p><strong>Attempt 1 — cooled to 27°C then moulded without reheat:</strong>
+          At 27°C, both Form IV nuclei (melt point ~27–28°C) and Form V nuclei (melt
+          point ~33–34°C) have formed in the mass. Moulding at this temperature means
+          both Form IV and Form V crystals seed the solidification. The chocolate sets
+          quickly because Form IV is also stable at room temperature, but it is harder
+          and duller. Over days to weeks, Form IV converts to Form V, causing shrinkage
+          cracks, surface changes, and possibly early fat bloom. The bars never had
+          the characteristic snap and gloss because Form V never fully dominated.
+          The missing step: reheat to 31–32°C (melting Form IV, preserving Form V)
+          before moulding.</p>
+          <p><strong>Attempt 2 — overheated to 38°C after cooling:</strong>
+          At 38°C, Form V melts (its melt point is ~33–34°C). The chocolatier inadvertently
+          destroyed all the Form V seeds they had carefully grown in step 2. The
+          chocolate at 38°C is now seeded with nothing useful — it is essentially
+          untampered melt again. When it cools, it will form random mixed polymorphs,
+          predominately Forms III and IV, with the characteristic matte, soft, inferior
+          outcome. Lesson: the reheat step must bring temperature to 31–32°C and hold
+          it there. Even brief excursions to 35°C+ destroy the seed crystals and require
+          starting over.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Fudge crystallisation control</strong></div>
+        <div class="example-problem">
+          Two batches of fudge are made from identical recipes. Batch A is stirred
+          immediately after reaching 115°C and while still very hot. Batch B is cooled
+          to 40°C without stirring, then beaten vigorously. Predict the texture of each
+          and explain the crystal chemistry.
+        </div>
+        <div class="example-body">
+          <p><strong>Batch A — stirred immediately at high temperature:</strong>
+          The syrup is at ~115°C and supersaturation is not extreme. Stirring at this
+          temperature provides nucleation sites (from the spoon surface and from any
+          undissolved sugar), but the high temperature means crystals grow rapidly
+          — large, few nuclei, fewer crystals. Large sucrose crystals (&gt;40 μm) are
+          detectable by the tongue as sandy or grainy. Batch A will have a coarse,
+          gritty texture — classic "grainy fudge."</p>
+          <p><strong>Batch B — cooled to 40°C, then beaten:</strong>
+          Cooling to 40°C without stirring allows the syrup to become highly
+          supersaturated (far more dissolved sugar than equilibrium allows) without
+          crystallising. At 40°C, beating introduces thousands of nucleation sites
+          simultaneously — from air bubbles, from the beater surfaces, from any
+          seed crystal on the bowl walls. Thousands of nuclei form at once, and
+          the remaining dissolved sugar distributes across all of them equally.
+          Each crystal gets very little sugar: the result is millions of microscopic
+          crystals (&lt;10 μm), below the tongue's detection threshold. Batch B will
+          be smooth, creamy, fine-grained fudge. This is the "super-seeding"
+          principle — the same concept as seeding ice cream at low temperature
+          for fine ice crystal formation.</p>
+        </div>
+      </div>
+
+      <div class="section-head">Food for Thought</div>
+      <ul class="fft-list">
+        <li class="fft-item">
+          Single-origin craft chocolate makers often advertise unfermented or
+          "naturally processed" cacao as superior to conventionally fermented cacao.
+          Based on what you know about fermentation's role in flavour development,
+          evaluate this claim critically.
+          <div class="fft-answer">
+            The claim is almost certainly misleading. Fermentation is not optional
+            post-processing — it is the biochemical step that converts inert storage
+            compounds into the flavour precursors that roasting then transforms.
+            Unfermented or poorly fermented cacao lacks two things: (1) free amino
+            acids from proteolysis (because proteases never activated) and (2) reducing
+            sugars from carbohydrate breakdown. Without these, the Maillard cascade
+            during roasting produces fewer characteristic cocoa aroma compounds —
+            the pyrazines and Strecker aldehydes that define chocolate. Unfermented
+            cacao also retains full polyphenol astringency (no partial oxidation
+            during fermentation) and often residual acetic acid from the pulp (if any
+            fermentation occurred at all). The result: harsh, astringent, under-aromatic.
+            What "natural process" enthusiasts may be responding to is the *quality*
+            of fermentation — a controlled, well-executed fermentation with appropriate
+            yeast/bacterial succession produces better precursors than a badly managed
+            or interrupted fermentation. The distinction is between good fermentation
+            and no fermentation, not between fermentation and something better.
+          </div>
+        </li>
+        <li class="fft-item">
+          Caramel sauce made with only sucrose has a clean, sweet-butter character.
+          Dulce de leche (made by long-simmering sweetened condensed milk) tastes
+          completely different — more complex, darker, nuttier. Both involve prolonged
+          heating of sugar. What specifically makes them taste so different?
+          <div class="fft-answer">
+            Pure sucrose caramel involves caramelisation only — sucrose inversion, then
+            monosaccharide decomposition to furans, pyrones, and brown polymers. The
+            available reactants are sugar molecules and their thermal decomposition
+            products. Dulce de leche adds two things: (1) lactose, a reducing
+            disaccharide that participates in the Maillard reaction far more readily than
+            sucrose (which must be inverted first); and (2) milk proteins (casein and
+            whey), which provide abundant amino acids for both Maillard browning and
+            Strecker degradation. The Maillard products from lactose + casein amino acids
+            include the same pyrazines, furans, and Strecker aldehydes found in roasted
+            coffee, bread crust, and cooked meat — a level of complexity impossible from
+            pure sugar alone. The milk proteins also contribute to the thick, viscous
+            texture as they partially denature and interact with the concentrated sugar
+            syrup. The result is dozens of additional compounds not present in pure caramel,
+            producing the characteristic nutty, complex, butterscotch depth that is
+            impossible to replicate by adding caramel to milk after cooking.
+          </div>
+        </li>
+        <li class="fft-item">
+          A pastry chef claims that adding corn syrup to a candy recipe "prevents
+          crystallisation." From what you know about crystal nucleation and sugar
+          chemistry, explain the mechanism by which corn syrup achieves this effect.
+          <div class="fft-answer">
+            Corn syrup is a mixture of glucose, maltose, and glucose oligomers (from
+            enzymatic hydrolysis of corn starch). It interferes with sucrose
+            crystallisation through three mechanisms: (1) The glucose and maltose
+            molecules are structurally different from sucrose — they cannot slot into
+            a sucrose crystal lattice, so they act as "impurities" that block crystal
+            growth sites. Even small amounts dramatically reduce the maximum crystal
+            size achievable. (2) The high molecular weight oligomers in corn syrup
+            increase viscosity of the syrup, slowing diffusion of sucrose molecules to
+            crystal surfaces — reducing growth rate. (3) At high concentrations, corn
+            syrup molecules compete with sucrose for nucleation sites. The net result
+            is that corn syrup raises the effective supersaturation threshold — the
+            syrup must be cooled further before crystallisation begins, and when it
+            does, smaller, more numerous crystals form. This is the same "interfering
+            agent" principle as using cream of tartar (promotes inversion of sucrose
+            to glucose + fructose, with similar interference effect) or simply using
+            invert sugar.
+          </div>
+        </li>
+      </ul>
+
+      <div class="section-head">Common Pitfalls</div>
+      <ol class="prose">
+        <li>
+          <strong>Confusing fat bloom and sugar bloom.</strong> Both look white/grey on
+          the surface, but the causes and contexts are different. Fat bloom: temperature
+          cycling or mis-tempering, Form V → Form VI crystal conversion, greasy texture.
+          Sugar bloom: moisture exposure, dissolved and recrystallised sucrose, powdery/
+          gritty texture. The distinction matters because the prevention strategies
+          are different.
+        </li>
+        <li>
+          <strong>Overheating during tempering.</strong> The reheat step must reach
+          31–32°C, not 33–35°C. Exceeding Form V's melting point (~33–34°C) melts
+          the seeds you just grew. A candy thermometer or infrared gun is required —
+          touch-testing is not precise enough.
+        </li>
+        <li>
+          <strong>Skipping or inadequate conching.</strong> Home chocolate makers often
+          "melt and mould" commercial couverture, which is already fully conched. But
+          attempting to make chocolate from nibs without a conching step produces
+          acidic, harsh chocolate regardless of how well it was fermented and roasted.
+          Conching cannot be substituted by longer roasting or better ingredients.
+        </li>
+        <li>
+          <strong>Stirring fudge at the wrong temperature.</strong> The entire texture
+          of fudge depends on when crystallisation is induced. Stirring at high
+          temperature creates large crystals; stirring too late (below 35°C, once
+          spontaneous crystallisation has started) forces you to work with partial
+          crystal masses that produce uneven, streaky fudge. The window (38–45°C)
+          is specific and requires a thermometer to hit reliably.
+        </li>
+        <li>
+          <strong>Treating "percentage" on chocolate as a quality indicator.</strong>
+          The percentage on dark chocolate refers to total cocoa solids (cocoa mass
+          + cocoa butter). An 85% chocolate from poor-quality, under-fermented beans
+          is inferior to a 70% chocolate from excellent beans. Percentage determines
+          bitterness and intensity, not quality. Origin, fermentation, and roast
+          are the quality determinants; percentage is a texture and flavour intensity
+          dial.
+        </li>
+      </ol>
+
+      <div class="section-head">Connects to</div>
+      <p class="prose">
+        <strong>Fermentation</strong> (Lesson 5) — Cacao fermentation uses the same
+        yeast (S. cerevisiae) and acetic acid bacteria (Acetobacter) as vinegar production;
+        the two-phase aerobic/anaerobic sequence parallels other fermentation cascades.<br>
+        <strong>Heat &amp; Browning</strong> (Lesson 1) — Cacao roasting is a Maillard
+        showcase: Strecker degradation, pyrazine formation, same mechanisms as bread crust,
+        coffee, and meat browning.<br>
+        <strong>Carbohydrates &amp; Starches</strong> (Lesson 4) — Sugar crystallisation,
+        sucrose inversion, the syrup stages, and the interfering-agent principle connect
+        directly to the carbohydrate chemistry of jams, gels, and caramel.<br>
+        <strong>Fats, Oils &amp; Emulsions</strong> (Lesson 3) — Cocoa butter polymorphism
+        is a fat crystallisation problem; the role of lecithin as an emulsifier; chocolate
+        ganache as a fat-continuous emulsion with an aqueous cream phase.
+      </p>
+
+      <div class="lesson-nav">
+        <a href="wine-beer.html" class="lesson-nav-btn">← Lesson 12: Wine &amp; Beer</a>
+        <a href="hydrocolloids.html" class="lesson-nav-btn">Lesson 14: Hydrocolloids &amp; Food Texture →</a>
+      </div>
+
+    </div><!-- /main -->
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  renderMathInElement(document.body, {
+    delimiters: [
+      {left: '$$', right: '$$', display: true},
+      {left: '$', right: '$', display: false}
+    ]
+  });
+
+  /* Cocoa butter polymorph + tempering curve chart */
+  /* Horizontal lines for each polymorph melt point */
+  /* Overlaid dashed line showing tempering temperature profile */
+
+  var forms = ['Form I', 'Form II', 'Form III', 'Form IV', 'Form V (target)', 'Form VI'];
+  var meltPoints = [17, 23, 25, 28, 33.5, 36];
+  var formColors = ['#e74c3c','#e74c3c','#e67e22','#e67e22','#27ae60','#3a6a8a'];
+
+  var traces = [];
+
+  /* Horizontal lines for each polymorph */
+  forms.forEach(function(f, i) {
+    traces.push({
+      x: [0, 60],
+      y: [meltPoints[i], meltPoints[i]],
+      mode: 'lines',
+      name: f + ' (' + meltPoints[i] + '°C)',
+      line: { color: formColors[i], width: f.indexOf('V (') > -1 ? 3 : 1.5,
+              dash: f.indexOf('V (') > -1 ? 'solid' : 'dot' },
+      showlegend: true
+    });
+  });
+
+  /* Tempering curve */
+  var tempTime = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60];
+  var tempTemp = [55, 55, 50, 40, 33, 28, 27, 27, 31, 31.5, 31.5, 31.5, 31.5];
+
+  traces.push({
+    x: tempTime, y: tempTemp,
+    mode: 'lines',
+    name: 'Tempering profile',
+    line: { color: '#1a2840', width: 2.5, dash: 'dashdot' },
+    showlegend: true
+  });
+
+  var layout = {
+    xaxis: {
+      title: 'Process time (min)',
+      tickfont: { family: 'IBM Plex Sans', size: 12 },
+      gridcolor: '#e8ecee',
+      range: [0, 62]
+    },
+    yaxis: {
+      title: 'Temperature (°C)',
+      tickfont: { family: 'IBM Plex Sans', size: 12 },
+      gridcolor: '#e8ecee',
+      range: [10, 60]
+    },
+    shapes: [
+      {
+        type: 'rect',
+        x0: 0, x1: 62,
+        y0: 31, y1: 32,
+        fillcolor: 'rgba(100,200,100,0.15)',
+        line: { width: 0 }
+      }
+    ],
+    annotations: [
+      {
+        x: 50, y: 31.5,
+        xref: 'x', yref: 'y',
+        text: 'Working window<br>31–32°C',
+        showarrow: false,
+        font: { family: 'IBM Plex Sans', size: 10, color: '#27ae60' },
+        xanchor: 'center', yanchor: 'bottom',
+        yshift: 4
+      },
+      {
+        x: 5, y: 55,
+        xref: 'x', yref: 'y',
+        text: '① Melt all forms',
+        showarrow: false,
+        font: { family: 'IBM Plex Sans', size: 10, color: '#1a2840' },
+        xanchor: 'left'
+      },
+      {
+        x: 30, y: 26,
+        xref: 'x', yref: 'y',
+        text: '② Cool<br>(IV + V nucleate)',
+        showarrow: false,
+        font: { family: 'IBM Plex Sans', size: 10, color: '#1a2840' },
+        xanchor: 'center'
+      },
+      {
+        x: 45, y: 33,
+        xref: 'x', yref: 'y',
+        text: '③ Reheat<br>(melt IV, keep V)',
+        showarrow: false,
+        font: { family: 'IBM Plex Sans', size: 10, color: '#1a2840' },
+        xanchor: 'center', yanchor: 'bottom',
+        yshift: 2
+      }
+    ],
+    legend: {
+      x: 1.02, y: 1, xanchor: 'left',
+      font: { family: 'IBM Plex Sans', size: 11 },
+      bgcolor: 'rgba(255,255,255,0.9)',
+      bordercolor: '#d0d8dd',
+      borderwidth: 1
+    },
+    margin: { t: 20, r: 160, b: 50, l: 60 },
+    paper_bgcolor: '#fafaf8',
+    plot_bgcolor: '#fafaf8',
+    font: { family: 'IBM Plex Sans' }
+  };
+
+  Plotly.newPlot('tempering-chart', traces, layout, { responsive: true, displayModeBar: false });
+});
+</script>
+</body>
+</html>
