@@ -34,7 +34,7 @@
       "label": "Beverages",
       "items": [
         { "href": "coffee-tea.html",    "text": "11 · Coffee & Tea" },
-        { "href": "wine-beer.html",     "text": "12 · Wine & Beer",              "planned": true }
+        { "href": "wine-beer.html",     "text": "12 · Wine & Beer" }
       ]
     },
     {

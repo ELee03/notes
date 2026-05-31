@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wine &amp; Beer — Food Science</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="food-science" data-current="wine-beer.html"></div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb"><a href="../index.html">Field Notes</a> → <a href="index.html">Food Science</a> → Wine &amp; Beer</div>
+
+      <h1 class="lesson-title">Wine &amp; Beer</h1>
+      <div class="lesson-meta">Fermentation · Phenolic Chemistry · Hop Biochemistry · Varietal Aromas</div>
+
+      <p class="prose">
+        Wine and beer are the most chemically sophisticated fermented beverages in regular
+        human consumption — and the chemistry behind them goes far deeper than "yeast eats
+        sugar and makes alcohol." Wine involves the complete transformation of grape
+        biochemistry through alcoholic fermentation, optional secondary malolactic
+        fermentation, and years of oxidative and reductive ageing reactions. Beer involves
+        controlled starch hydrolysis, precise enzymatic mashing, a Maillard-heavy boil,
+        and the extraction of hop chemistry under tightly controlled conditions.
+        Understanding the mechanisms explains why the same grape variety tastes different
+        from different climates, why butter notes in some Chardonnays come from bacteria,
+        and why the same hops added at different points in the boil produce completely
+        different flavour contributions.
+      </p>
+
+      <div class="section-head">Wine: Grape Composition</div>
+
+      <p class="prose">
+        Wine's starting material is grape juice — a relatively simple solution of sugars
+        (glucose and fructose, ~15–25% by weight at harvest), organic acids, phenolics,
+        proteins, minerals, and aroma precursors. The vineyard determines the composition;
+        the winery transforms it.
+      </p>
+      <p class="prose">
+        <strong>Sugars:</strong> Glucose and fructose in roughly equal ratio. Yeast
+        metabolises both, but preferentially consumes glucose first at high concentrations.
+        The Brix scale (° Bx) measures sugar concentration: 1° Bx ≈ 10 g/L sugar ≈
+        ~0.55% potential alcohol. Grapes at ~24 Brix produce ~13.2% alcohol.
+      </p>
+      <p class="prose">
+        <strong>Organic acids:</strong> Tartaric acid is unique to grapes — it is
+        not metabolised by yeast or most bacteria, so it persists in the finished wine.
+        Its potassium salt (potassium bitartrate) can crystallise at low temperatures,
+        depositing harmless "wine diamonds" on the cork or bottom of the bottle.
+        Malic acid gives wine an apple-like sharpness and is the substrate for malolactic
+        fermentation. Citric acid contributes fresh notes.
+      </p>
+      <p class="prose">
+        <strong>Phenolics:</strong> Divided into flavonoids (flavonols, flavanols/tannins,
+        anthocyanins) in skins and seeds, and non-flavonoids (hydroxycinnamates,
+        stilbenes including resveratrol) distributed throughout the berry. Skins
+        contain the colour (anthocyanins in red varieties) and much of the tannin;
+        seeds contain highly astringent, harsh seed tannins. White wine fermentation
+        avoids skin contact; red wine fermentation requires it.
+      </p>
+
+      <div class="section-head">Alcoholic Fermentation in Wine</div>
+
+      <p class="prose">
+        The core reaction is already covered in
+        <a href="fermentation.html">Lesson 5: Fermentation</a>: <em>Saccharomyces
+        cerevisiae</em> converts glucose (and fructose) to ethanol and CO₂ under
+        anaerobic conditions. Wine fermentation adds critical specifics:
+      </p>
+
+      <h3>Yeast and ester production</h3>
+      <p class="prose">
+        Beyond alcohol, yeast produces dozens of secondary metabolites that define
+        wine character. Two major classes:
+      </p>
+      <ul class="prose" style="margin-top:0;">
+        <li><strong>Esters</strong> — formed by the enzyme alcohol acetyltransferase (ATF1)
+          coupling acetyl-CoA with alcohols. Ethyl acetate (solvent/nail-varnish at high
+          levels), isoamyl acetate (banana), ethyl hexanoate (apple). Ester production
+          is higher at warmer fermentation temperatures and under nitrogen limitation.</li>
+        <li><strong>Higher alcohols (fusel alcohols)</strong> — from the Ehrlich pathway:
+          yeast deaminates amino acids from the must, producing iso-amyl alcohol
+          (isoamyl acetate precursor), 1-propanol, 2-methyl-1-butanol. At moderate
+          levels they add complexity; at high levels (fusel oil overload from high-temp
+          fermentation) they are harsh and hot on the palate.</li>
+      </ul>
+      <p class="prose">
+        <strong>Temperature matters enormously.</strong> White and rosé wines fermented
+        cold (10–15°C) retain more delicate volatile esters and fruity terpenes; warm
+        fermentation (25–30°C) produces more body, richer flavour, but risks losing
+        fresh aromatics. Red wine fermentation is typically warmer (25–30°C) to assist
+        colour and tannin extraction from skins.
+      </p>
+
+      <h3>Thiol precursors and reductive winemaking</h3>
+      <p class="prose">
+        Sauvignon Blanc and some other varieties contain aroma precursors — cysteine- and
+        glutathione-conjugated thiols bound in the grape flesh. These are odourless in the
+        grape. During fermentation, yeast lyase enzymes cleave the conjugate, releasing
+        free volatile thiols:
+      </p>
+      <ul class="prose" style="margin-top:0;">
+        <li><strong>3-mercaptohexanol (3-MH)</strong>: passion fruit, grapefruit
+          (threshold ~60 ppt)</li>
+        <li><strong>3-mercaptohexyl acetate (3-MHA)</strong>: more intense boxwood,
+          passion fruit (threshold ~4 ppt)</li>
+        <li><strong>4-mercapto-4-methylpentan-2-one (4-MMP)</strong>: boxwood,
+          blackcurrant bud, tomato leaf (threshold ~3 ppt — one of the most
+          potent wine aroma compounds known)</li>
+      </ul>
+      <p class="prose">
+        Thiols are extremely oxygen-sensitive — they oxidise to odourless disulfides
+        on contact with air. "Reductive winemaking" (limiting oxygen exposure through
+        inert-gas blanketing, early SO₂ addition, sealed tanks) preserves thiol
+        character. Oxidative handling destroys it.
+      </p>
+
+      <div class="section-head">Malolactic Fermentation</div>
+
+      <p class="prose">
+        After alcoholic fermentation completes, winemakers often allow a second
+        fermentation conducted by lactic acid bacteria — primarily
+        <em>Oenococcus oeni</em>. This is not actually a fermentation in the
+        sugar → alcohol sense; it is a decarboxylation:
+      </p>
+      <div class="callout">
+        L-Malic acid → L-Lactic acid + CO₂<br>
+        <em>(catalysed by malate decarboxylase / malolactic enzyme)</em>
+      </div>
+      <p class="prose">
+        The consequences are significant:
+      </p>
+      <ul class="prose" style="margin-top:0;">
+        <li><strong>Softened acidity:</strong> Malic acid (pKa 3.46) is stronger than
+          lactic acid (pKa 3.86). Converting malic to lactic at typical wine volumes
+          reduces titratable acidity by 1–3 g/L and raises pH by 0.1–0.3 units.
+          The wine tastes softer and rounder.</li>
+        <li><strong>Diacetyl production:</strong> <em>O. oeni</em> produces diacetyl
+          (buttery aroma) as a by-product of citrate metabolism. At high levels, diacetyl
+          is a defect; at low to moderate levels in a full-bodied white (Chardonnay,
+          Viognier), it contributes a "creamy" richness. Diacetyl concentration depends
+          on SO₂ levels, oxygen exposure, and timing of SO₂ addition after MLF.</li>
+        <li><strong>Textural complexity:</strong> MLF also contributes to mouthfeel
+          through production of polysaccharides by <em>O. oeni</em>, which can increase
+          viscosity slightly.</li>
+      </ul>
+      <p class="prose">
+        MLF is nearly universal in red wines (it also increases microbial stability) and
+        standard in many full-bodied white wines (California Chardonnay). It is blocked
+        in wines where freshness and high acidity are desirable: Sauvignon Blanc,
+        Riesling, Pinot Grigio in crisp styles.
+      </p>
+
+      <div class="section-head">Tannins, Colour, and Phenolic Chemistry</div>
+
+      <h3>Tannins</h3>
+      <p class="prose">
+        Tannins are polyphenols capable of precipitating proteins — this is their
+        defining functional property. In wine, they precipitate salivary proline-rich
+        proteins, creating the drying, puckering sensation called astringency. Tannin
+        quality (not just quantity) matters: seed tannins are harsh and unripe-tasting;
+        skin tannins are softer; oak tannins (ellagitannins) are different in structure
+        and integrate into wine character over years of barrel ageing.
+      </p>
+      <p class="prose">
+        During ageing, tannin molecules undergo polymerisation reactions — larger
+        polymers precipitate as sediment (why old wines throw a deposit), while remaining
+        polymers become softer in astringency. This is why a tannic young red wine softens
+        with age. Oak barrel ageing also introduces oxygen (via the porous wood stave)
+        which catalyses these polymerisation reactions.
+      </p>
+
+      <h3>Anthocyanins and colour</h3>
+      <p class="prose">
+        Red wine colour comes from anthocyanins extracted during maceration. As in
+        Lesson 9's red cabbage chemistry, anthocyanins are pH-sensitive: at wine pH
+        (~3.3–3.8), they are primarily in the flavylium cation form (red), but a
+        significant fraction is in the colourless carbinol form even at typical wine pH.
+        This is why pH affects colour intensity: a lower-pH wine looks more deeply coloured.
+      </p>
+      <p class="prose">
+        Over time, monomeric anthocyanins react with tannins (and other compounds) to
+        form <strong>anthocyanin-tannin condensates</strong> (copigmentation complexes
+        and covalent adducts), then <strong>pyranoanthocyanins</strong> — more stable,
+        pH-independent forms that resist the colourless carbinol equilibrium. This is
+        why aged red wines retain vibrant colour even as free anthocyanins disappear.
+      </p>
+
+      <div class="section-head">Varietal Aroma Chemistry</div>
+
+      <p class="prose">
+        Different grape varieties produce different characteristic aromas not because they
+        have different yeast or different winemaking, but because the grapes themselves
+        contain different profiles of aroma compounds and precursors.
+      </p>
+
+      <div style="overflow-x:auto;margin:16px 0 24px;">
+        <table style="width:100%;border-collapse:collapse;font-size:0.9rem;font-family:'IBM Plex Sans',sans-serif;">
+          <thead>
+            <tr style="background:#e8f0f5;text-align:left;">
+              <th style="padding:8px 12px;border-bottom:2px solid #b0c8d8;">Variety</th>
+              <th style="padding:8px 12px;border-bottom:2px solid #b0c8d8;">Key compound(s)</th>
+              <th style="padding:8px 12px;border-bottom:2px solid #b0c8d8;">Aroma descriptor</th>
+              <th style="padding:8px 12px;border-bottom:2px solid #b0c8d8;">Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #dce4e8;">
+              <td style="padding:7px 12px;"><strong>Sauvignon Blanc</strong></td>
+              <td style="padding:7px 12px;font-family:'IBM Plex Mono',monospace;font-size:0.82rem;">3-MH, 3-MHA, 4-MMP</td>
+              <td style="padding:7px 12px;">Passion fruit, grapefruit, boxwood</td>
+              <td style="padding:7px 12px;">Released from cysteine-conjugated precursors by yeast</td>
+            </tr>
+            <tr style="border-bottom:1px solid #dce4e8;background:#fafafa;">
+              <td style="padding:7px 12px;"><strong>Sauvignon Blanc (unripe)</strong></td>
+              <td style="padding:7px 12px;font-family:'IBM Plex Mono',monospace;font-size:0.82rem;">Isobutyl methoxypyrazine</td>
+              <td style="padding:7px 12px;">Bell pepper, grass, green</td>
+              <td style="padding:7px 12px;">Degrades with sun exposure; too much = fault</td>
+            </tr>
+            <tr style="border-bottom:1px solid #dce4e8;">
+              <td style="padding:7px 12px;"><strong>Riesling</strong></td>
+              <td style="padding:7px 12px;font-family:'IBM Plex Mono',monospace;font-size:0.82rem;">Geraniol, linalool, TDN</td>
+              <td style="padding:7px 12px;">Floral; aged = "petrol"</td>
+              <td style="padding:7px 12px;">TDN from carotenoid degradation during bottle ageing</td>
+            </tr>
+            <tr style="border-bottom:1px solid #dce4e8;background:#fafafa;">
+              <td style="padding:7px 12px;"><strong>Muscat / Gewürz.</strong></td>
+              <td style="padding:7px 12px;font-family:'IBM Plex Mono',monospace;font-size:0.82rem;">Linalool, geraniol</td>
+              <td style="padding:7px 12px;">Rose, lychee, orange blossom</td>
+              <td style="padding:7px 12px;">Monoterpenes at directly detectable concentrations in grape</td>
+            </tr>
+            <tr style="border-bottom:1px solid #dce4e8;">
+              <td style="padding:7px 12px;"><strong>Syrah / Shiraz</strong></td>
+              <td style="padding:7px 12px;font-family:'IBM Plex Mono',monospace;font-size:0.82rem;">Rotundone</td>
+              <td style="padding:7px 12px;">Black pepper, spice</td>
+              <td style="padding:7px 12px;">25% of population anosmic to rotundone</td>
+            </tr>
+            <tr style="background:#fafafa;">
+              <td style="padding:7px 12px;"><strong>Pinot Noir</strong></td>
+              <td style="padding:7px 12px;font-family:'IBM Plex Mono',monospace;font-size:0.82rem;">β-ionone, α-ionone, ethyl esters</td>
+              <td style="padding:7px 12px;">Red berry, violet, silky</td>
+              <td style="padding:7px 12px;">Ionones from carotenoid degradation; low tannin</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="prose">
+        <strong>Rotundone</strong> deserves special mention. It is a sesquiterpene ketone
+        present in the skin of Syrah grapes (and also in black pepper — explaining the
+        classic descriptor). Its detection threshold in wine is about 16 ppb. Remarkably,
+        approximately 25% of the human population is specifically anosmic to rotundone —
+        they cannot smell it at any concentration — while the other 75% can detect it
+        clearly. This means that roughly a quarter of all Syrah drinkers are physiologically
+        unable to detect one of that variety's most characteristic aromas.
+      </p>
+
+      <div class="section-head">Wine Faults</div>
+
+      <p class="prose">
+        Several common wine faults connect back to chemistry covered in earlier lessons:
+      </p>
+      <ul class="prose" style="margin-top:0;">
+        <li><strong>Cork taint (TCA)</strong> — 2,4,6-trichloroanisole from chlorophenol
+          methylation by moulds in the cork. Threshold ~1.4–5 ppb; suppresses other aromas
+          (see Lesson 6: Flavour Science).</li>
+        <li><strong>Brettanomyces (Brett)</strong> — the yeast <em>Brettanomyces
+          bruxellensis</em> converts hydroxycinnamic acids (coumaric, ferulic acids from
+          grape skin) to 4-ethylphenol ("barnyard," "horse sweat") and 4-ethylguaiacol
+          ("smoky," "spicy"). The flavour threshold is ~400 ppb for 4-EP in red wine.
+          At low levels some consider it complexity; above threshold it is a fault.</li>
+        <li><strong>Volatile acidity (VA)</strong> — acetic acid produced by
+          <em>Acetobacter</em> in the presence of oxygen. Legal limit ~0.9–1.2 g/L;
+          above ~1.5 g/L it is a prominent vinegar defect. At sub-threshold levels,
+          some acetic acid contributes to complexity.</li>
+        <li><strong>Reduction (sulphur faults)</strong> — H₂S (rotten egg) from yeast
+          under nitrogen or pantothenic acid deficiency; methyl mercaptan (vegetal,
+          rubbery) from methionine degradation. Both dissipate with aeration; winemakers
+          use copper finings to precipitate them as insoluble copper sulfides.</li>
+        <li><strong>Mousiness</strong> — 2-acetyltetrahydropyridine (ATHP) from
+          Lactobacillus or Brett under high pH conditions. Unique mechanism: ATHP is
+          protonated in the mouth after swallowing, releasing the volatile form
+          retronasally. Tasters perceive it only as an aftertaste, often described as
+          "mouse cage" or "crackers." Not detectable by sniffing the wine because
+          the inactive form doesn't evaporate below wine pH.
+        </li>
+      </ul>
+
+      <div class="section-head">Beer: From Grain to Glass</div>
+
+      <p class="prose">
+        Beer production requires converting insoluble starch in barley into fermentable
+        sugars — a step wine does not need because grapes start as sugar. This is the
+        fundamental challenge of brewing and the reason malting and mashing exist.
+      </p>
+
+      <h3>Malting</h3>
+      <p class="prose">
+        Raw barley grain is inert — its starch is locked in tight granules surrounded
+        by protein matrix and protected by the cell wall. Malting solves this:
+      </p>
+      <ol class="prose" style="margin-top:0;">
+        <li><strong>Steeping</strong> — barley is soaked in water to ~45% moisture,
+          triggering germination. The embryo releases gibberellin hormones.</li>
+        <li><strong>Germination</strong> — gibberellins activate amylase and protease
+          genes in the aleurone layer. α-amylase and β-amylase are synthesised;
+          proteases break down the protein matrix surrounding starch granules ("modification").
+          Cell walls are broken down by β-glucanases.</li>
+        <li><strong>Kilning</strong> — heat dries the malt to ~4–5% moisture, halting
+          germination and fixing enzyme levels. Temperature determines character:
+          pale malt (80°C, minimal Maillard), crystal malt (stewed wet then kilned at
+          higher temp → caramelised sugars), roasted malt (200+°C, heavily Maillard,
+          coffee/chocolate character).</li>
+      </ol>
+
+      <h3>Mashing</h3>
+      <p class="prose">
+        Crushed malt is mixed with hot water in a "mash tun." Temperature controls
+        which enzymes dominate and therefore the beer's body and fermentability:
+      </p>
+      <div class="callout">
+        <strong>β-amylase (55–65°C optimum):</strong> Cleaves maltose units from
+        non-reducing ends of starch chains → high fermentability → dry, crisp beer<br>
+        <strong>α-amylase (65–72°C optimum):</strong> Random internal cleavage →
+        dextrins that yeast cannot ferment → fuller body, more residual sweetness<br><br>
+        Lower mash temperature (63–65°C): more β-amylase activity → more fermentable
+        wort → drier beer (good for IPAs, session beers)<br>
+        Higher mash temperature (68–72°C): more α-amylase contribution → more dextrins
+        → fuller-bodied beer (good for stouts, porters, English bitters)
+      </div>
+      <p class="prose">
+        The mash is then lautered (filtered through the grain bed), producing clear
+        sweet liquid called <strong>wort</strong>, which is rinsed with hot water
+        (sparging) to extract remaining sugars.
+      </p>
+
+      <h3>Boiling and hop chemistry</h3>
+      <p class="prose">
+        Wort is boiled for 60–90 minutes. Several things happen simultaneously:
+        sterilisation, protein coagulation (hot break), evaporation of volatile
+        off-compounds (particularly DMS — see below), concentration to target gravity,
+        and the critical transformation of hops.
+      </p>
+      <p class="prose">
+        <strong>Bitterness — iso-alpha acids:</strong> Hops contain alpha acids
+        (humulone, cohumulone, adhumulone) in lupulin glands. These are water-insoluble
+        and non-bitter in their native form. At boiling temperature, they undergo
+        isomerisation to <strong>iso-alpha acids</strong> — soluble, stable, and
+        intensely bitter (threshold ~5 ppm; beer contains 15–100+ ppm). Isomerisation
+        efficiency is only ~25–35% of total alpha acids added; longer boil time and
+        lower wort gravity improve efficiency.
+      </p>
+      <p class="prose">
+        <strong>Timing is everything for hops:</strong> iso-alpha acid formation
+        requires sustained high temperature; aroma volatiles evaporate quickly.
+        Adding hops early in the boil (60 minutes) maximises bitterness; adding late
+        (5–0 minutes, "flameout") extracts aroma terpenes with minimal isomerisation.
+        Dry hopping (adding hops after fermentation, at ~10–20°C) extracts terpenes
+        directly into finished beer with no isomerisation and no thermal loss — the
+        basis of American IPA aroma.
+      </p>
+
+      <div class="widget-card">
+        <div class="widget-title">Hop Addition Timing — Bitterness vs. Aroma</div>
+        <div id="hop-chart" style="width:100%;height:360px;"></div>
+        <p style="font-size:0.85rem;color:#6a7f8a;margin:8px 16px 16px;">
+          Relative bitterness (IBU contribution, from iso-alpha acid isomerisation) and
+          aroma contribution (terpene retention) as a function of when hops are added
+          before the end of the boil. Early additions maximise bitterness; late additions
+          maximise aroma. Dry hopping operates outside this chart — at fermentation
+          temperatures, zero isomerisation but near-complete terpene extraction.
+        </p>
+      </div>
+
+      <h3>DMS and the boil</h3>
+      <p class="prose">
+        <strong>Dimethyl sulfide (DMS)</strong> — a cooked corn/vegetable off-flavour —
+        is a major quality concern in lager brewing. It forms from S-methylmethionine
+        (SMM), a compound present in malt, which converts to DMS thermally. SMM
+        hydrolysis continues even after the boil during the "hot standby" period before
+        chilling. A vigorous boil with an open kettle (uncovered) continuously strips DMS
+        by steam stripping. A covered or very gentle boil allows DMS to accumulate.
+        Rapid chilling after the boil is equally important — slow cooling through the
+        60–100°C range continues SMM conversion without DMS removal.
+      </p>
+
+      <h3>Fermentation: ale vs. lager</h3>
+      <p class="prose">
+        The two primary yeast species produce fundamentally different flavour profiles:
+      </p>
+      <ul class="prose" style="margin-top:0;">
+        <li><strong><em>Saccharomyces cerevisiae</em> (ale yeast):</strong> Fermenting at
+          18–22°C, it produces abundant esters (isoamyl acetate — banana, ethyl acetate,
+          ethyl hexanoate — apple/anise) and fusel alcohols. English ale strains produce
+          more diacetyl; Belgian strains produce dramatic ester and phenolic (4-vinylguaiacol,
+          "clove") profiles. Top-fermenting — floats to the top during active fermentation.</li>
+        <li><strong><em>Saccharomyces pastorianus</em> (lager yeast):</strong> A hybrid
+          of <em>S. cerevisiae</em> and <em>S. eubayanus</em>, adapted to cold fermentation
+          at 7–12°C. Produces very low ester and fusel levels — the clean, neutral profile
+          of pilsners and lagers. Bottom-fermenting — settles to tank bottom.</li>
+      </ul>
+      <p class="prose">
+        <strong>Diacetyl and conditioning:</strong> Yeast produces diacetyl during
+        fermentation as a by-product of the valine biosynthesis pathway. Under normal
+        conditions, yeast reabsorbs and reduces it to acetoin (odourless) during
+        conditioning (lagering). If the yeast is removed too early by chilling or
+        filtration, diacetyl remains in the beer — a buttery defect. Quality lager
+        production includes a "diacetyl rest" (briefly raising temperature to 16–18°C
+        at the end of fermentation) to encourage yeast to clean up residual diacetyl.
+      </p>
+
+      <h3>Hop variety chemistry</h3>
+      <p class="prose">
+        The 1990s–2010s craft beer revolution was driven largely by the discovery and
+        development of highly aromatic hop varieties. The key terpene differences:
+      </p>
+      <ul class="prose" style="margin-top:0;">
+        <li><strong>Traditional European hops (Saaz, Hallertau):</strong> High in humulene
+          and farnesene (noble, herbal); low myrcene; used in pilsners for subtle
+          spicy/floral character.</li>
+        <li><strong>American hops (Cascade, Centennial, Citra, Mosaic):</strong> High
+          in myrcene, linalool, and geraniol; limonene and citrus terpenes. Responsible
+          for the tropical/citrus IPA aroma.</li>
+        <li><strong>New World hops (Nelson Sauvin, Motueka):</strong> Exceptionally
+          high in thiol precursors — the same 3-MH/3-MHA precursors as Sauvignon Blanc
+          grapes. Active yeast during dry hopping (biotransformation) cleaves these
+          to free volatile thiols, producing "white wine," passion fruit character.</li>
+      </ul>
+
+      <div class="section-head">Worked Examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — MLF in Chardonnay: why the "buttery" note</strong></div>
+        <div class="example-problem">
+          A California Chardonnay undergoes full malolactic fermentation. A Chablis
+          (French white Burgundy) from the same vintage blocks MLF entirely. Both wines
+          were made with essentially the same grapes and winemaking technique otherwise.
+          Explain the chemical differences between the two wines and predict how each
+          will taste in terms of acidity, texture, and aroma.
+        </div>
+        <div class="example-body">
+          <p><strong>California MLF (full):</strong> Essentially all malic acid has been
+          converted to lactic acid by <em>Oenococcus oeni</em>. The wine now has
+          approximately 1–3 g/L lower titratable acidity and a pH 0.1–0.3 higher than
+          before MLF. The softer acid profile makes the wine feel rounder and less
+          sharp. During MLF, <em>O. oeni</em> metabolised citric acid (residual in
+          the wine) and produced diacetyl as a by-product. At the typical levels in
+          a carefully managed MLF (~0.5–1.5 mg/L), diacetyl contributes a creamy,
+          buttery note. The winemaker likely also used oak barrels — ellagitannins
+          from oak plus the MLF diacetyl creates the classic California Chardonnay
+          profile: soft, creamy, rich, slightly buttery, lower perceived acidity,
+          vanilla/toasty oak overlay.</p>
+          <p><strong>Chablis (MLF blocked):</strong> Typically blocked by early SO₂
+          addition, cooling, or sterile filtration before MLF bacteria can establish.
+          All malic acid remains intact. The wine is notably more tart and bright —
+          higher titratable acidity, lower pH, more crisp apple-like freshness (malic
+          acid's character). No diacetyl production. Chablis also typically sees little
+          to no new oak. The result: lean, mineral, high-acid, crisp, no butter note.
+          The same grape, processed differently, produces a wine that seems to be a
+          completely different style.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Hop addition timing and IPA design</strong></div>
+        <div class="example-problem">
+          A brewer is designing an IPA targeting 65 IBUs (International Bitterness Units)
+          and very high aromatic impact — tropical and citrus fruit notes — with minimal
+          "dank" resin character. Using the chemistry of iso-alpha acid formation and
+          terpene retention, design a hop addition schedule with three additions and
+          explain the role of each.
+        </div>
+        <div class="example-body">
+          <p>The key tension is that bitterness requires sustained high temperature
+          for isomerisation (α-acid → iso-α-acid), but that same high temperature
+          rapidly volatilises the terpenes responsible for aroma. Solution: separate
+          the bitterness additions (early in the boil) from the aroma additions (late
+          or post-fermentation).</p>
+          <p><strong>Addition 1 — 60 minutes (bittering):</strong> A bittering-efficient
+          high-alpha acid hop (e.g. Magnum, Warrior). Alpha acid isomerisation at 30–35%
+          efficiency over 60 minutes. This addition provides the IBU target (~55 IBUs
+          from this addition). Very little aroma contribution — volatile terpenes fully
+          evaporated. Choose a neutral bittering variety to avoid adding unwanted flavour.</p>
+          <p><strong>Addition 2 — 10 minutes (late addition):</strong> Citra or Mosaic
+          hops. ~10–20% isomerisation efficiency gives ~10 more IBUs. But crucially:
+          50% or more of the terpene volatile oil survives a 10-minute boil. This addition
+          contributes a burst of citrus/tropical terpenes (linalool, geraniol, myrcene)
+          and initiates hop oil integration into the wort.</p>
+          <p><strong>Addition 3 — dry hop after primary fermentation (aroma):</strong>
+          Additional Citra/Mosaic at room temperature. Zero iso-alpha acid formation (no
+          boil), zero thermal terpene loss. Extracts full terpene complement directly
+          into the beer. Active yeast biotransformation converts geraniol to floral
+          citronellol and converts bound thiol precursors to free 3-MH — the tropical
+          fruit aroma. This is where the "juicy" IPA character originates. The "dank"
+          resin character the brewer wants to avoid comes from myrcene at high
+          concentrations — use hop varieties with low myrcene ratio relative to linalool/
+          geraniol for cleaner tropical rather than resiny character.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Diagnosing a wine fault</strong></div>
+        <div class="example-problem">
+          A Pinot Noir smells intensely of Band-Aid and horse barn, with a plastic/medicinal
+          quality. This is only noticeable on the finish, not on initial nosing. A second
+          glass of a different Syrah from the same producer smells strongly of black pepper
+          and grilled meat, but your dining companion — who is otherwise sensitive to aromas
+          — reports smelling only fruit. Identify both faults/features and explain the
+          mechanism of each.
+        </div>
+        <div class="example-body">
+          <p><strong>Pinot Noir — Brettanomyces contamination:</strong> The Band-Aid
+          and horse barn descriptors are diagnostic for 4-ethylphenol (4-EP) and
+          4-ethylguaiacol (4-EG), produced by the yeast <em>Brettanomyces bruxellensis</em>
+          from hydroxycinnamic acid precursors (para-coumaric acid → 4-EP; ferulic acid
+          → 4-EG). The "only noticeable on the finish" characteristic is interesting —
+          it may suggest the wine is near the threshold, where retronasal perception
+          (via swallowing) is more effective than orthonasal (nosing) at picking up
+          the compound. Brett contamination typically comes from barrel cellar
+          hygiene issues; <em>Brettanomyces</em> thrives in used barrels.
+          Management: SO₂ additions, barrel sanitation, sterile filtration.</p>
+          <p><strong>Syrah — rotundone anosmic in dining companion:</strong> The black
+          pepper note in Syrah is specifically due to rotundone (a sesquiterpene ketone),
+          not a fault. However, approximately 25% of the population is specifically
+          anosmic to rotundone — their olfactory receptors do not respond to it at any
+          concentration. Your companion is almost certainly in this group. They experience
+          the same wine minus one of its defining aromas. This is not abnormal — rotundone-
+          specific anosmia is one of the best-documented specific anosmias in wine research.
+          The wine itself is not faulty; the companion's nose is simply tuned to a different
+          range of compounds.</p>
+        </div>
+      </div>
+
+      <div class="section-head">Food for Thought</div>
+      <ul class="fft-list">
+        <li class="fft-item">
+          Old World wine regions (Burgundy, Bordeaux, Champagne) are at latitudes where
+          grapes barely ripen. New World regions (Napa, Barossa) are significantly warmer.
+          From what you now know about fermentation and grape biochemistry, predict how
+          grape chemistry differs between cool and warm climates — and what this means
+          for alcohol levels, acidity, and primary fruit character.
+          <div class="fft-answer">
+            In cool climates, slow, extended ripening allows flavour compound development
+            (including terpene synthesis) while organic acids are retained — malic acid
+            degrades slowly in cool conditions. Grapes may not reach full sugar ripeness;
+            Brix at harvest might be 19–21 → ~10.5–11.5% potential alcohol. The result:
+            lower alcohol, higher acidity (including significant malic acid), more restrained
+            and complex fruit character where fermentation by-products and vineyard character
+            dominate over primary fruit. Thiols and aromatic terpenes developed slowly.
+            In warm climates, rapid sugar accumulation often outpaces flavour development.
+            Grapes can reach 26+ Brix before full flavour maturity → 14.5%+ alcohol.
+            Malic acid degrades rapidly in heat (enzymatic process in the grape). The result:
+            richer, lower-acid wine; riper, jammy fruit character; higher alcohol can mask
+            delicate aromas. Hot climates often require acidification (tartaric acid addition)
+            to restore balance. This explains why Burgundy Pinot Noir tastes like cherry/
+            earth/forest and California Pinot Noir tastes like strawberry jam with more
+            body — same variety, dramatically different chemistry.
+          </div>
+        </li>
+        <li class="fft-item">
+          A home brewer makes a pale ale and it smells intensely of creamed corn and
+          canned vegetables when cold. After warming to room temperature, the smell
+          mostly disappears. Identify the compound, explain the production mechanism,
+          and describe what the brewer should do differently next time.
+          <div class="fft-answer">
+            The compound is dimethyl sulfide (DMS), threshold ~30–50 ppb in beer.
+            The creamed corn/cooked vegetable descriptor is highly characteristic.
+            DMS forms primarily from S-methylmethionine (SMM), a compound in malt
+            that degrades thermally to DMS. A vigorous open boil continuously strips
+            DMS by steam; however, during the hot standby and chilling period after
+            the boil (when the wort sits in the kettle, still hot, waiting to be chilled),
+            SMM continues to convert to DMS without the volatilisation that an active
+            boil provides. The faster the wort is chilled through 50–100°C, the less
+            DMS accumulates. DMS is volatile (BP 37°C) — this explains the disappearance
+            at room temperature: warming the beer liberates the DMS from solution and it
+            evaporates. The brewer should: (1) ensure a vigorous, uncovered boil (not a
+            gentle simmer or covered boil); (2) minimise hot standby time after flame-out;
+            (3) chill the wort as rapidly as possible. An immersion chiller or counter-flow
+            chiller that quickly drops the wort from boiling to yeast-pitching temperature
+            significantly reduces DMS precursor conversion.
+          </div>
+        </li>
+        <li class="fft-item">
+          Red wine is often described as improving with age, while most white wine is
+          described as best consumed young. But some white wines (aged white Burgundy,
+          Riesling Spätlese) improve dramatically over 10–20 years. What chemical
+          processes specifically make red wine age well, and what makes certain white
+          wines age-worthy when most whites do not?
+          <div class="fft-answer">
+            Red wine ageing: tannin polymerisation and precipitation softens astringency
+            over years; anthocyanin-tannin condensates and pyranoanthocyanins develop
+            more stable colour; esters develop from slow acid-alcohol reactions (tertiary
+            "bouquet" — leather, tobacco, forest floor, dried fruit notes); reductive
+            conditions under cork allow reductant-driven thiol chemistry (secondary
+            bottle bouquet). Tannins also act as antioxidants, protecting the wine from
+            premature oxidation. The structure (tannin + acidity) effectively "scaffolds"
+            the wine against collapse while these slow reactions proceed.
+            White wine ageing: most whites lack tannins and phenolics to protect against
+            oxidation — they flatten quickly. But high-acid whites have acidity as their
+            structural backbone. Riesling Spätlese: high tartaric + residual sugar + high
+            acidity creates a buffer system; TDN ("petrol") develops from carotenoid
+            degradation over years; floral terpene precursors (geraniol glycosides)
+            hydrolyse to release more geraniol. Aged white Burgundy: in oak-aged, MLF-
+            complete Chardonnay, oxidative compounds integrate; diacetyl polymerises and
+            fades; reductive aging develops more complex bottle bouquet. In both cases,
+            acidity + some phenolic structure + appropriate closure (low oxygen
+            transmission) are prerequisites — most thin, low-acid whites have none of this.
+          </div>
+        </li>
+      </ul>
+
+      <div class="section-head">Common Pitfalls</div>
+      <ol class="prose">
+        <li>
+          <strong>Confusing fermentation temperature effects in wine vs. beer.</strong>
+          In beer, warm ale fermentation produces more esters (which is often desirable
+          in ales). In wine, warm fermentation can also produce esters but often loses
+          the delicate volatile thiols and primary fruit aromatics. The key difference
+          is that beer has no thiol precursor system requiring reductive conditions —
+          wine does. What is beneficial in ale fermentation (warm, slightly oxidative)
+          is detrimental for aromatic white wine.
+        </li>
+        <li>
+          <strong>Assuming higher IBUs = more bitter beer.</strong> IBUs measure iso-alpha
+          acid concentration; perceived bitterness also depends on residual sweetness,
+          body, pH, and thiol/terpene content that interact with bitter perception. A
+          60-IBU West Coast IPA may taste less bitter than a 40-IBU British Bitter
+          because the IPA has hop oils that buffer bitterness perception and the
+          British Bitter has higher residual dextrins and sweetness from a different
+          mash temperature.
+        </li>
+        <li>
+          <strong>Attributing all wine aroma to fermentation.</strong> Fermentation
+          contributes esters and fusel alcohols, but many of wine's most distinctive
+          aromas come from varietal precursors in the grape — thiols, terpenes, methoxypyrazines
+          — that are either present in the grape directly or released from bound precursors
+          by yeast enzymes. The yeast makes the alcohol; the grape makes the aroma.
+        </li>
+        <li>
+          <strong>Treating diacetyl in beer and wine as the same compound.</strong> It
+          is the same molecule, but the context differs. In wine, small amounts of diacetyl
+          post-MLF are accepted and stylistically deliberate in some whites. In lager beer,
+          any detectable diacetyl is a defect; even at 50 ppb it is noticeable and unwanted
+          in the style. The sensory threshold in lager (~15–40 ppb) is lower than in
+          wine (~100–200 ppb) partly because the rest of the flavour profile doesn't
+          mask it.
+        </li>
+        <li>
+          <strong>Thinking that tannins are only from skins.</strong> Grape seeds contain
+          tannins (seed tannins) that are harsher and greener-tasting than skin tannins.
+          Overlong maceration at high temperatures, excessive pump-overs, or vigorous
+          crushing can extract harsh seed tannins. Oak adds ellagitannins, which are
+          structurally different again. Winemakers manage each tannin source separately —
+          "more extraction" is not better, it depends entirely on what is being extracted.
+        </li>
+      </ol>
+
+      <div class="section-head">Connects to</div>
+      <p class="prose">
+        <strong>Fermentation</strong> (Lesson 5) — Core yeast biochemistry (Embden-Meyerhof
+        pathway, ethanol production, LAB strains for MLF); sourdough and vinegar connections.<br>
+        <strong>Flavour Science</strong> (Lesson 6) — TCA cork taint mechanism; Brett
+        off-flavours; thiol detection thresholds; rotundone as a specific anosmia example.<br>
+        <strong>Carbohydrates &amp; Starches</strong> (Lesson 4) — Beer mashing is
+        applied starch hydrolysis: same amylases, same gelatinisation, same chemistry
+        as described for food starch.<br>
+        <strong>Spices &amp; Aromatics</strong> (Lesson 10) — Hops are essentially a
+        spice added to beer: same terpene chemistry (myrcene, linalool, geraniol),
+        same fat-vs-water extraction principles, same thermal stability considerations.
+      </p>
+
+      <div class="lesson-nav">
+        <a href="coffee-tea.html" class="lesson-nav-btn">← Lesson 11: Coffee &amp; Tea</a>
+        <a href="chocolate.html" class="lesson-nav-btn">Lesson 13: Chocolate &amp; Confectionery →</a>
+      </div>
+
+    </div><!-- /main -->
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  renderMathInElement(document.body, {
+    delimiters: [
+      {left: '$$', right: '$$', display: true},
+      {left: '$', right: '$', display: false}
+    ]
+  });
+
+  /* Hop addition timing chart */
+  var minutesBefore = [0, 5, 10, 15, 20, 30, 45, 60];
+
+  /* Bitterness (iso-alpha acid yield, % of maximum) — increases with longer boil */
+  var bitterness = [2, 5, 10, 16, 22, 35, 55, 100];
+
+  /* Aroma retention (% of volatile terpene oil remaining in wort) — decreases with boil */
+  var aroma = [100, 90, 75, 58, 42, 25, 12, 4];
+
+  var traces = [
+    {
+      x: minutesBefore, y: bitterness,
+      name: 'Bitterness (IBU contribution)',
+      mode: 'lines+markers',
+      line: { color: '#c0392b', width: 2.5 },
+      marker: { size: 5 },
+      yaxis: 'y'
+    },
+    {
+      x: minutesBefore, y: aroma,
+      name: 'Aroma terpene retention',
+      mode: 'lines+markers',
+      line: { color: '#27ae60', width: 2.5, dash: 'dot' },
+      marker: { size: 5 },
+      yaxis: 'y'
+    }
+  ];
+
+  var layout = {
+    xaxis: {
+      title: 'Minutes before end of boil',
+      tickfont: { family: 'IBM Plex Sans', size: 12 },
+      gridcolor: '#e8ecee',
+      dtick: 10
+    },
+    yaxis: {
+      title: 'Relative value (%)',
+      range: [0, 105],
+      tickfont: { family: 'IBM Plex Sans', size: 12 },
+      gridcolor: '#e8ecee'
+    },
+    annotations: [
+      {
+        x: 60, y: 100,
+        xref: 'x', yref: 'y',
+        text: '60-min<br>(bittering)',
+        showarrow: true, arrowhead: 2, arrowcolor: '#c0392b',
+        ax: -40, ay: 10,
+        font: { family: 'IBM Plex Sans', size: 11, color: '#c0392b' }
+      },
+      {
+        x: 0, y: 100,
+        xref: 'x', yref: 'y',
+        text: 'Dry hop<br>(pure aroma)',
+        showarrow: false,
+        font: { family: 'IBM Plex Sans', size: 11, color: '#27ae60' },
+        xanchor: 'left',
+        xshift: 5
+      },
+      {
+        x: 10, y: 50,
+        xref: 'x', yref: 'y',
+        text: 'Late addition<br>sweet spot',
+        showarrow: false,
+        font: { family: 'IBM Plex Sans', size: 10, color: '#7f4e1b' },
+        xanchor: 'center'
+      }
+    ],
+    shapes: [
+      {
+        type: 'rect',
+        x0: 5, x1: 15,
+        y0: 0, y1: 105,
+        fillcolor: 'rgba(180,180,100,0.10)',
+        line: { width: 0 }
+      }
+    ],
+    legend: {
+      x: 0.5, xanchor: 'center', y: 0.5,
+      font: { family: 'IBM Plex Sans', size: 12 },
+      bgcolor: 'rgba(255,255,255,0.85)',
+      bordercolor: '#d0d8dd',
+      borderwidth: 1
+    },
+    margin: { t: 20, r: 20, b: 50, l: 60 },
+    paper_bgcolor: '#fafaf8',
+    plot_bgcolor: '#fafaf8',
+    font: { family: 'IBM Plex Sans' }
+  };
+
+  Plotly.newPlot('hop-chart', traces, layout, { responsive: true, displayModeBar: false });
+});
+</script>
+</body>
+</html>
