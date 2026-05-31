@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coffee &amp; Tea — Food Science</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="food-science" data-current="coffee-tea.html"></div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb"><a href="../index.html">Field Notes</a> → <a href="index.html">Food Science</a> → Coffee &amp; Tea</div>
+
+      <h1 class="lesson-title">Coffee &amp; Tea</h1>
+      <div class="lesson-meta">Roasting Chemistry · Extraction Kinetics · Polyphenol Oxidation · Brewing Science</div>
+
+      <p class="prose">
+        Coffee and tea are beverages whose character is determined almost entirely by
+        chemistry — and in both cases the chemistry is more complex, more specific, and
+        more interesting than the experience of drinking them might suggest. Coffee
+        involves one of the most chemically complex Maillard transformations in all of
+        food science: green beans are turned from a biochemically inert seed into a
+        matrix of over a thousand volatile compounds. Tea involves a precisely timed
+        enzymatic oxidation that determines the entire character of the final drink.
+        In both cases, extraction — how much, how fast, at what temperature — governs
+        whether the resulting beverage is brilliant or flat.
+      </p>
+
+      <div class="section-head">Coffee: The Green Bean</div>
+
+      <p class="prose">
+        A green coffee bean is a seed of <em>Coffea arabica</em> (or <em>C. canephora</em>
+        for robusta). Its composition determines what roasting can produce:
+      </p>
+
+      <div style="overflow-x:auto;margin:16px 0 24px;">
+        <table style="width:100%;border-collapse:collapse;font-size:0.9rem;font-family:'IBM Plex Sans',sans-serif;">
+          <thead>
+            <tr style="background:#e8f0f5;text-align:left;">
+              <th style="padding:8px 12px;border-bottom:2px solid #b0c8d8;">Component</th>
+              <th style="padding:8px 12px;border-bottom:2px solid #b0c8d8;">% dry weight</th>
+              <th style="padding:8px 12px;border-bottom:2px solid #b0c8d8;">Role in roasting</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #dce4e8;">
+              <td style="padding:7px 12px;">Sucrose</td>
+              <td style="padding:7px 12px;">6–9%</td>
+              <td style="padding:7px 12px;">Primary Maillard substrate; caramelises; CO₂ precursor</td>
+            </tr>
+            <tr style="border-bottom:1px solid #dce4e8;background:#fafafa;">
+              <td style="padding:7px 12px;">Chlorogenic acids</td>
+              <td style="padding:7px 12px;">5–8%</td>
+              <td style="padding:7px 12px;">Major Maillard substrate; converts to 4-vinylguaiacol,
+              phenolics; drives roast bitterness in dark roasts</td>
+            </tr>
+            <tr style="border-bottom:1px solid #dce4e8;">
+              <td style="padding:7px 12px;">Proteins / free amino acids</td>
+              <td style="padding:7px 12px;">10–13%</td>
+              <td style="padding:7px 12px;">Maillard reaction partners; Strecker degradation
+              → characteristic aldehydes</td>
+            </tr>
+            <tr style="border-bottom:1px solid #dce4e8;background:#fafafa;">
+              <td style="padding:7px 12px;">Trigonelline</td>
+              <td style="padding:7px 12px;">0.5–1%</td>
+              <td style="padding:7px 12px;">Converts to pyridines and nicotinic acid (niacin) at roast
+              temperatures; contributes mellow, buttery notes in light roasts</td>
+            </tr>
+            <tr style="border-bottom:1px solid #dce4e8;">
+              <td style="padding:7px 12px;">Lipids</td>
+              <td style="padding:7px 12px;">12–18%</td>
+              <td style="padding:7px 12px;">Carrier for fat-soluble volatiles; migrate to surface in
+              dark roasts; include cafestol and kahweol (diterpene alcohols)</td>
+            </tr>
+            <tr style="background:#fafafa;">
+              <td style="padding:7px 12px;">Caffeine</td>
+              <td style="padding:7px 12px;">1–2.5%</td>
+              <td style="padding:7px 12px;">Heat-stable; survives roasting essentially unchanged;
+              contributes bitterness in cup</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="section-head">Roasting Chemistry</div>
+
+      <p class="prose">
+        Roasting is the most chemically transformative process in food — it converts an
+        essentially odourless bean into a matrix of over 1000 identified volatile compounds.
+        The key reactions proceed in stages as temperature rises:
+      </p>
+
+      <h3>Drying and early reactions (~100–150°C)</h3>
+      <p class="prose">
+        Free water evaporates (~11% of green bean weight). The bean lightens in colour
+        slightly and becomes brittle. Early Maillard intermediates (Amadori compounds)
+        form from sucrose degradation products and amino acids — no aroma yet.
+      </p>
+
+      <h3>Maillard cascade and first crack (~150–205°C)</h3>
+      <p class="prose">
+        The Maillard reaction accelerates sharply above 150°C. Several parallel pathways
+        produce hundreds of aroma compounds simultaneously:
+      </p>
+      <ul class="prose" style="margin-top:0;">
+        <li><strong>Strecker degradation</strong> — amino acids react with α-dicarbonyl
+          Maillard intermediates. Each amino acid produces a characteristic Strecker
+          aldehyde: methionine → methional (potato-like); cysteine → methanethiol;
+          leucine → 3-methylbutanal (malty); valine → 2-methylpropanal. These contribute
+          the initial wave of roasted aroma.</li>
+        <li><strong>Pyrazine formation</strong> — two Strecker amino-ketones combine
+          and cyclise. Pyrazines are the main carriers of "roasted, nutty" character;
+          they increase with darker roasts.</li>
+        <li><strong>Furans</strong> — from sugar degradation. Furfural (from pentoses),
+          2-acetylfuran, furfuryl alcohol. Caramel-like, sweet.</li>
+        <li><strong>Chlorogenic acid degradation</strong> — chlorogenic acids fragment
+          to 4-vinylguaiacol (clove-smoky), guaiacol, phenol, and catechol. These
+          compounds accumulate in darker roasts and contribute body and phenolic depth.</li>
+        <li><strong>Trigonelline pyrolysis</strong> — above ~170°C, trigonelline loses
+          its methyl group to form nicotinic acid (niacin, a B vitamin) and a range of
+          pyridines (mellow, slightly musty).</li>
+      </ul>
+      <p class="prose">
+        Around 196–205°C, rapid CO₂ production from the bean interior causes the cell
+        walls to fracture with an audible pop — <strong>first crack</strong>. The bean
+        expands and lightens. Light and medium roasts are pulled here or shortly after.
+      </p>
+
+      <h3>Second crack and dark roasts (~225–240°C)</h3>
+      <p class="prose">
+        Continued heating breaks down cell wall carbohydrates (cellulose pyrolysis),
+        releasing more CO₂ in a second audible cracking sequence. The bean surface
+        turns oily as lipids migrate outward. The key changes:
+      </p>
+      <ul class="prose" style="margin-top:0;">
+        <li>Most chlorogenic acids are now destroyed; the moderate bitterness they
+          contributed is replaced by harsher pyrolysis products.</li>
+        <li>Sucrose is fully consumed; organic acids (malic, citric, quinic) that
+          survived are progressively degraded — dark roast coffee is less acidic
+          than light roast, counterintuitively.</li>
+        <li>2-Furfurylthiol (FFT) — the single most important coffee aroma compound
+          (also called coffee furanethiol) — forms from the reaction of furfuryl
+          alcohol and H₂S. Its detection threshold is ~0.01 ppb; it contributes
+          the characteristic "fresh coffee" character at concentrations in the parts
+          per trillion range.</li>
+        <li>Beyond second crack: significant charring. Carbon compounds dominate.
+          The bean is losing rather than gaining character.</li>
+      </ul>
+
+      <div class="callout">
+        <strong>Light vs. dark roast: what changes?</strong><br>
+        Light: more chlorogenic acid (higher perceived acidity), higher caffeine
+        per unit weight (beans are less expanded), more nuanced Maillard products,
+        more original bean character (origin, variety, processing method detectable).<br>
+        Dark: more pyrazines (roasted/burnt notes), less chlorogenic acid, less
+        caffeine per unit weight, surface oils present (affects crema differently
+        in espresso), lower perceived acidity, heavier body.
+      </div>
+
+      <h3>CO₂ degassing and the bloom</h3>
+      <p class="prose">
+        During roasting, CO₂ is produced and trapped in the bean cell structure under
+        pressure. A freshly roasted bean can contain 2–12 mL of CO₂ per gram of coffee.
+        This degasses over days to weeks after roasting. For brewing:
+      </p>
+      <ul class="prose" style="margin-top:0;">
+        <li>Espresso: CO₂ is a major contributor to crema formation. Too fresh (within
+          2–3 days of roast) gives uneven extraction; too old (4+ weeks) and there's
+          no crema. Most espresso is at its best 7–21 days off roast.</li>
+        <li>Filter/pour-over: the bloom step (pre-wetting grounds with ~2× their weight
+          in water for 30–45 seconds) allows CO₂ to off-gas before extraction starts.
+          CO₂ impedes even water penetration; skipping the bloom produces uneven
+          extraction with channelling.</li>
+        <li>Cold brew: very slow degassing over days; CO₂ contributes mild carbonation.</li>
+      </ul>
+
+      <div class="section-head">Coffee Extraction Chemistry</div>
+
+      <p class="prose">
+        No single brewing method is "better"; each is optimised for a different target.
+        What they all have in common is that flavour compounds are not all equally soluble
+        or equally fast to extract. The sequence matters:
+      </p>
+
+      <h3>The extraction sequence</h3>
+      <p class="prose">
+        As water contacts coffee grounds, compounds dissolve in a predictable sequence
+        based on their solubility and molecular weight:
+      </p>
+      <ol class="prose" style="margin-top:0;">
+        <li><strong>Acids and fruity esters</strong> (fast) — highly soluble organic acids
+          (acetic, citric, malic) and fruity ester compounds extract first. Under-extracted
+          coffee (&lt;18% extraction yield) tastes predominantly sour and sharp because
+          these compounds dominate without the subsequent balancing compounds.</li>
+        <li><strong>Sugars and Maillard sweetness compounds</strong> (medium) — sucrose
+          residues and sweet Maillard intermediates extract in the middle of the extraction.
+          These provide body, sweetness, and the complex aroma of properly extracted coffee.</li>
+        <li><strong>Bitter compounds</strong> (slow) — phenolics from chlorogenic acid
+          degradation, heavier Maillard products, and some caffeine compounds extract last.
+          At &gt;22–24% extraction yield, these dominate and produce the astringent,
+          hollow bitterness of over-extracted coffee.</li>
+      </ol>
+
+      <div class="widget-card">
+        <div class="widget-title">Coffee Extraction — Flavour Compound Sequence</div>
+        <div id="extraction-chart" style="width:100%;height:380px;"></div>
+        <p style="font-size:0.85rem;color:#6a7f8a;margin:8px 16px 16px;">
+          Relative concentration of flavour compound families as a function of extraction
+          yield (% of soluble coffee dissolved into the brew). The optimal 18–22% window
+          captures peak sweetness and acid balance before bitterness becomes dominant.
+          Values are schematic representations of extraction kinetics; actual profiles
+          vary with grind, temperature, and roast level.
+        </p>
+      </div>
+
+      <h3>Extraction variables</h3>
+      <p class="prose">
+        Four variables determine extraction yield and therefore flavour:
+      </p>
+      <ul class="prose" style="margin-top:0;">
+        <li><strong>Grind size</strong> — the most controllable variable. Finer grind =
+          more surface area = faster extraction of everything. Grind too fine: over-extracted
+          bitterness even at short brew times. Too coarse: under-extracted sourness even
+          at long brew times. Each brewing method has an optimal grind range.</li>
+        <li><strong>Temperature</strong> — higher temperature increases solubility and
+          diffusion rates of all compounds, including bitter ones. Most filter brewing
+          targets 90–96°C; temperatures above 96°C extract harsh phenolics faster than
+          desirable compounds. Cold brew at 4–20°C achieves 16–18% extraction over
+          12–24 hours — the low temperature kinetics shift extraction toward acids and
+          sweetness, producing a less bitter, lower-acid-perceived cup despite actually
+          having similar total acid levels.</li>
+        <li><strong>Brew ratio</strong> — g of coffee to mL of water. More coffee per
+          water → higher TDS (concentration) but not necessarily higher extraction yield.
+          Specialty coffee targets 1:15–1:17 for filter.</li>
+        <li><strong>Brew time / contact time</strong> — longer contact at the same
+          grind/temperature = more extraction. Espresso (~25–30 seconds) reaches
+          20–22% extraction at fine grind and 9 bar pressure. French press at 4 minutes
+          reaches similar extraction at much coarser grind.</li>
+      </ul>
+
+      <h3>Espresso physics</h3>
+      <p class="prose">
+        Espresso is distinguished from other brewing methods not primarily by roast level
+        but by the 9-bar pressure used to force hot water through a compact puck of finely
+        ground coffee. The pressure achieves several things:
+      </p>
+      <ul class="prose" style="margin-top:0;">
+        <li>Emulsification of coffee oils — CO₂ and lipids are forced into colloidal
+          suspension, forming <strong>crema</strong> (a CO₂-stabilised oil-in-water
+          emulsion). Crema is not primarily flavour — it is texture and CO₂; the actual
+          aroma of espresso comes primarily from the liquid beneath.</li>
+        <li>Higher TDS (~8–12% dissolved solids vs. ~1.2–1.5% for filter). Espresso
+          is a concentrate, not a different kind of coffee.</li>
+        <li>Faster extraction than immersion or filter — 25–30 seconds vs. minutes.
+          This requires a very fine, very uniform grind; any channelling (water finding
+          a path of least resistance through the puck) produces both over-extracted
+          and under-extracted zones simultaneously.</li>
+      </ul>
+
+      <div class="section-head">Tea: The Oxidation Spectrum</div>
+
+      <p class="prose">
+        All non-herbal teas come from the same plant, <em>Camellia sinensis</em>, in two
+        main varieties: <em>var. sinensis</em> (smaller leaf, grows in China and Japan)
+        and <em>var. assamica</em> (larger leaf, more catechin-rich, grows in Assam and
+        Africa). The staggering diversity of tea types — from pale Japanese gyokuro to
+        dark Yunnan pu-erh — comes almost entirely from differences in how the leaf is
+        processed after picking, specifically the degree of polyphenol oxidation.
+      </p>
+
+      <h3>Catechins: the starting material</h3>
+      <p class="prose">
+        Tea leaves contain 12–25% dry-weight catechins — a family of flavonoid polyphenols.
+        The four major catechins are EGCG (epigallocatechin gallate, the most abundant),
+        EGC, ECG, and EC. Catechins are colourless to pale yellow and contribute
+        astringency by binding to and precipitating salivary proteins. They are also
+        potent antioxidants and are responsible for most of tea's putative health effects.
+      </p>
+      <p class="prose">
+        In the freshly picked leaf, catechins are stored in vacuoles and <strong>polyphenol
+        oxidase (PPO)</strong> is in the chloroplast — the same separation as in Lesson 9's
+        enzymatic browning story. Cell damage during processing mixes them.
+      </p>
+
+      <h3>The oxidation cascade</h3>
+      <p class="prose">
+        When PPO contacts catechins in the presence of O₂, the oxidation cascade begins:
+      </p>
+      <div class="callout">
+        Catechins + PPO + O₂ → <strong>Theaflavins</strong> (orange-red, bright, brisk)<br>
+        Theaflavins + more catechins → <strong>Thearubigins</strong> (dark brown, malty, full)<br>
+        <em>Green tea: PPO inactivated before oxidation → catechins preserved</em><br>
+        <em>Black tea: full oxidation → most catechins converted</em>
+      </div>
+      <p class="prose">
+        <strong>Theaflavins</strong> (TF1, TF2a, TF2b, TF3) give Assam and Darjeeling black
+        teas their bright, orange-red liquor colour and their characteristic "briskness"
+        — the clean, astringent quality that makes black tea feel lively. Theaflavins
+        are good antioxidants, more potent per molecule than the original catechins.
+      </p>
+      <p class="prose">
+        <strong>Thearubigins</strong> — a heterogeneous group of high-molecular-weight
+        polymers — develop from theaflavin oxidation. They give black tea its dark reddish-brown
+        colour and the heavy, malty body. A well-made Assam has both: theaflavins for
+        brightness, thearubigins for depth. Poor processing (over-oxidation, high temperature)
+        produces a flat, astringent black tea dominated by thearubigins with little brightness.
+      </p>
+
+      <h3>The tea types: chemistry determines character</h3>
+
+      <div style="overflow-x:auto;margin:16px 0 24px;">
+        <table style="width:100%;border-collapse:collapse;font-size:0.9rem;font-family:'IBM Plex Sans',sans-serif;">
+          <thead>
+            <tr style="background:#e8f0f5;text-align:left;">
+              <th style="padding:8px 12px;border-bottom:2px solid #b0c8d8;">Type</th>
+              <th style="padding:8px 12px;border-bottom:2px solid #b0c8d8;">PPO inactivation</th>
+              <th style="padding:8px 12px;border-bottom:2px solid #b0c8d8;">Oxidation level</th>
+              <th style="padding:8px 12px;border-bottom:2px solid #b0c8d8;">Dominant compounds</th>
+              <th style="padding:8px 12px;border-bottom:2px solid #b0c8d8;">Character</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #dce4e8;">
+              <td style="padding:7px 12px;"><strong>White</strong></td>
+              <td style="padding:7px 12px;">Minimal</td>
+              <td style="padding:7px 12px;">0–15%</td>
+              <td style="padding:7px 12px;">Catechins, subtle theaflavins</td>
+              <td style="padding:7px 12px;">Delicate, floral, light</td>
+            </tr>
+            <tr style="border-bottom:1px solid #dce4e8;background:#fafafa;">
+              <td style="padding:7px 12px;"><strong>Green</strong></td>
+              <td style="padding:7px 12px;">Heat (steam or pan-fire)</td>
+              <td style="padding:7px 12px;">~0%</td>
+              <td style="padding:7px 12px;">Catechins, L-theanine, C6 volatiles</td>
+              <td style="padding:7px 12px;">Grassy, vegetal, umami</td>
+            </tr>
+            <tr style="border-bottom:1px solid #dce4e8;">
+              <td style="padding:7px 12px;"><strong>Oolong</strong></td>
+              <td style="padding:7px 12px;">Partial (timed)</td>
+              <td style="padding:7px 12px;">15–85%</td>
+              <td style="padding:7px 12px;">Mixed catechins + theaflavins</td>
+              <td style="padding:7px 12px;">Floral to roasted; huge range</td>
+            </tr>
+            <tr style="border-bottom:1px solid #dce4e8;background:#fafafa;">
+              <td style="padding:7px 12px;"><strong>Black</strong></td>
+              <td style="padding:7px 12px;">None before rolling</td>
+              <td style="padding:7px 12px;">~100%</td>
+              <td style="padding:7px 12px;">Theaflavins, thearubigins, caffeine</td>
+              <td style="padding:7px 12px;">Malty, brisk, full-bodied</td>
+            </tr>
+            <tr style="background:#fafafa;">
+              <td style="padding:7px 12px;"><strong>Pu-erh (sheng/shou)</strong></td>
+              <td style="padding:7px 12px;">None</td>
+              <td style="padding:7px 12px;">+ Microbial</td>
+              <td style="padding:7px 12px;">Transformed polyphenols, microbial metabolites</td>
+              <td style="padding:7px 12px;">Earthy, complex, aged</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Green tea aroma and L-theanine</h3>
+      <p class="prose">
+        Japanese green teas (steamed) taste markedly different from Chinese green teas
+        (pan-fired). The difference is the kill-green method:
+      </p>
+      <ul class="prose" style="margin-top:0;">
+        <li><strong>Steam (Japanese — sencha, gyokuro):</strong> Very rapid PPO
+          inactivation. Preserves more chlorophyll (vivid green liquor), more EGCG,
+          and more LOX-pathway C6 volatiles (hexanal, (Z)-3-hexenol) — responsible
+          for the fresh, grassy, marine character of sencha. DMS (dimethyl sulfide)
+          from S-methylmethionine in the leaf contributes the characteristic seaweed
+          note of high-grade Japanese teas.</li>
+        <li><strong>Pan-fire (Chinese — Longjing, Bi Luo Chun):</strong> Maillard
+          reactions occur on the hot pan surface, adding roasted, chestnut-like notes.
+          The toasting also converts some LOX volatiles, reducing grassiness. This is
+          why Longjing tastes toasty where sencha tastes grassy.</li>
+      </ul>
+      <p class="prose">
+        <strong>L-theanine</strong> is an amino acid nearly unique to tea (also found
+        in trace amounts in mushrooms). It contributes:
+      </p>
+      <ul class="prose" style="margin-top:0;">
+        <li>A mild umami/broth taste quality — distinct from glutamate but similar in
+          mouthfeel. High-grade gyokuro (grown under shade to increase L-theanine)
+          has a pronounced savoury depth absent from ordinary green tea.</li>
+        <li>Pharmacological interaction with caffeine — L-theanine modulates caffeine's
+          stimulant effect, producing what practitioners describe as "calm focus" rather
+          than the jittery urgency of coffee. L-theanine increases alpha brain wave
+          activity while caffeine increases beta activity; the combination produces a
+          distinctly different alertness state.</li>
+        <li>Formation of Maillard-like compounds during roasting of hojicha (pan-roasted
+          green tea), contributing caramel character.</li>
+      </ul>
+
+      <h3>Brewing temperature and catechin extraction</h3>
+      <p class="prose">
+        Tea is highly sensitive to brewing temperature — particularly green teas. The key
+        tradeoff: catechins (and therefore bitterness and astringency) extract faster at
+        higher temperatures; delicate volatile aromatics (linalool, DMS, C6 volatiles)
+        are destroyed by boiling water.
+      </p>
+      <div class="callout">
+        <strong>Optimal brewing temperatures:</strong><br>
+        Gyokuro / high-grade Japanese green: 55–65°C (preserves sweet/umami, minimises bitterness)<br>
+        Sencha / standard green tea: 70–80°C<br>
+        Oolong (light): 80–85°C<br>
+        Oolong (dark/roasted): 90–95°C<br>
+        Black tea: 95–100°C (robust theaflavins/thearubigins tolerate full boiling point)<br>
+        Pu-erh: 95–100°C (aged polyphenols also heat-tolerant)
+      </div>
+      <p class="prose">
+        The traditional instruction to never use boiling water for green tea is chemically
+        justified: at 100°C, EGCG and other catechins extract so rapidly that within
+        2 minutes the cup is dominated by bitter astringency. The same tea brewed at 70°C
+        for 2 minutes is delicate and sweet. The temperature is not about "scalding" the
+        leaves (a myth) — it is about extraction kinetics of bitter vs. pleasant compounds.
+      </p>
+      <p class="prose">
+        <strong>Caffeine–catechin complexes and tea cream:</strong> Caffeine and EGCG
+        form non-covalent complexes in solution. At low temperatures, these complexes
+        precipitate, forming a milky turbidity in the cup — "tea cream." This is especially
+        visible in cold-brewed black tea and explains why cold black tea looks cloudy.
+        Adding milk before the tea (heated) denatures milk proteins which can encapsulate
+        catechins, slightly altering the astringency profile. The "milk first or milk after"
+        debate is chemically real but the effect size is small.
+      </p>
+
+      <div class="section-head">Worked Examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Diagnosing under-extracted vs. over-extracted coffee</strong></div>
+        <div class="example-problem">
+          A filter coffee tastes unpleasantly sour with a thin, watery body. You adjust
+          the same parameters next time and the coffee becomes bitter and hollow with
+          an unpleasant dryness at the back of the throat. What went wrong each time,
+          and what single-variable change would move each cup toward the ideal?
+        </div>
+        <div class="example-body">
+          <p><strong>Cup 1 — sour, thin, watery: under-extracted.</strong> Organic acids
+          (acetic, citric, malic) and a small amount of fruity esters extracted but
+          the balancing sugars and Maillard sweetness compounds did not. Extraction yield
+          was below 18%. Causes: grind too coarse (insufficient surface area), water
+          too cool (low extraction kinetics), or brew time too short.</p>
+          <p>Single-variable fix: grind finer. This is the most reliable and largest-effect
+          variable. Finer grind increases surface area, which speeds up extraction of all
+          compounds. The acids and sweetness compounds will now both extract sufficiently
+          within the same brew time. Do not increase brew time first — it risks channelling
+          (uneven extraction) in a coarse grind.</p>
+          <p><strong>Cup 2 — bitter, hollow, dry: over-extracted.</strong> Extraction
+          yield exceeded ~23–24%. All the desirable acids and sweetness compounds extracted
+          fully, then continued extraction pulled the slow-dissolving bitter phenolics
+          (from chlorogenic acid degradation), harsh tannins, and heavy Maillard polymers.
+          "Hollow" indicates the sweetness compounds were already fully extracted and
+          diluted by the additional bitter water volume.</p>
+          <p>Single-variable fix: grind coarser. The coarser grind slows extraction at
+          the same brew time, leaving the bitter fraction incompletely extracted while
+          still achieving full extraction of acids and sweetness compounds. Alternatively:
+          reduce brew time — but this requires a corresponding grind adjustment to maintain
+          extraction yield, making it a two-variable change.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Why sencha brewed at 100°C tastes awful</strong></div>
+        <div class="example-problem">
+          A visitor brews a high-grade Japanese sencha by pouring freshly boiled water
+          over 5g of leaves and steeping for 2 minutes. The result is harshly bitter
+          and astringent. The same tea brewed at 75°C for 2 minutes by a more
+          experienced person is sweet, grassy, and umami-rich. Explain the chemistry
+          of this difference.
+        </div>
+        <div class="example-body">
+          <p>The central issue is the temperature-dependent extraction kinetics of
+          catechins (primarily EGCG) vs. the desirable sweet/umami compounds (L-theanine,
+          free amino acids, sugars).</p>
+          <p><strong>At 100°C:</strong> EGCG and other catechins extract very rapidly.
+          Within 30–45 seconds, catechin concentration in the cup is approaching
+          maximum. By 2 minutes, essentially all extractable EGCG is in the cup.
+          EGCG is the dominant contributor to astringency: it precipitates salivary
+          proline-rich proteins, creating the characteristic drying, puckering sensation.
+          L-theanine and amino acids also extract quickly at this temperature, but their
+          concentration is overwhelmed by the catechin flood.</p>
+          <p><strong>At 75°C:</strong> Catechin extraction is dramatically slower — maybe
+          40–50% of the 100°C rate at equivalent time. In 2 minutes, a much smaller
+          fraction of the EGCG has extracted. L-theanine and free amino acids, being
+          smaller and more soluble, extract at proportionally higher yields relative to
+          catechins at this temperature. The resulting cup is richer in the sweet/umami
+          fraction and lower in astringency — the intended flavour profile.</p>
+          <p><strong>The volatile dimension:</strong> At 100°C, the LOX-pathway C6
+          volatiles (hexanal, (Z)-3-hexenol) that give sencha its fresh grassy/marine
+          character immediately evaporate out of the cup. At 75°C, they are retained
+          long enough to be perceived retronasally during drinking. This is an additional
+          reason why high-grade green teas are sensitive to temperature beyond just
+          catechin kinetics.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Light vs. dark roast: caffeine content and acid perception</strong></div>
+        <div class="example-problem">
+          Two popular coffee myths: (1) dark roast coffee has more caffeine than light
+          roast; (2) dark roast coffee is more acidic. Evaluate both claims using
+          roasting chemistry.
+        </div>
+        <div class="example-body">
+          <p><strong>Claim 1 — Dark roast has more caffeine: False by weight, varies by volume.</strong></p>
+          <p>Caffeine is heat-stable and survives roasting essentially unchanged in
+          absolute quantity per bean. However, roasting causes the bean to expand and
+          lose mass (water + CO₂). A dark roast bean is less dense than a light roast
+          bean from the same origin. When comparing equal weights: dark roast has
+          slightly more caffeine per gram (because water/CO₂ mass was lost without
+          taking caffeine with it). When comparing equal volumes by scoop: dark roast
+          has less caffeine per scoop (fewer, lighter beans fit in a spoon). The
+          difference is small (~10–15%) and often swamped by batch variation. Neither
+          direction of the claim is strongly "more caffeine" in any practical sense.</p>
+          <p><strong>Claim 2 — Dark roast is more acidic: False. Light roast is more acidic.</strong></p>
+          <p>Perceived acidity depends primarily on the organic acid content. Green beans
+          contain chlorogenic acids (~6%), citric acid, malic acid, and phosphoric acid.
+          Light roasting degrades chlorogenic acids to some extent but preserves more of
+          the citric, malic, and phosphoric acids. These are the acids primarily responsible
+          for coffee's perceived brightness and acidity. Dark roasting continues to degrade
+          all of these; citric acid is largely destroyed at second-crack temperatures.
+          Dark roast coffee has lower total organic acid content than light roast and is
+          perceived as less bright and acidic. The paradox is that the "harsh" sensation
+          associated with dark roast is from bitter phenolics, not from acid — and some
+          people conflate "harsh" with "acidic."</p>
+        </div>
+      </div>
+
+      <div class="section-head">Food for Thought</div>
+      <ul class="fft-list">
+        <li class="fft-item">
+          Cold brew coffee is described as "less acidic" than hot-brewed coffee, but
+          analytical measurements show total acid levels are similar or even slightly
+          higher in cold brew. How can it taste less acidic if the acid content is
+          the same?
+          <div class="fft-answer">
+            The perception of acidity in coffee is not purely a function of total
+            organic acid concentration. Several factors contribute: (1) Certain organic
+            acids are perceived as harsher at higher temperatures (quinic acid, which
+            forms from chlorogenic acid degradation, is particularly temperature-sensitive
+            in extraction). Cold brew extracts a different acid profile — more malic,
+            less quinic acid — which is perceived as milder even at equivalent total acid
+            levels. (2) The ratio of bitter compounds to acids matters: cold brew extracts
+            proportionally more acids and sweetness compounds relative to bitter phenolics
+            because bitter compounds have lower solubility at low temperatures. The overall
+            flavour balance is sweeter and rounder, which reduces the perceived prominence
+            of the acids even if absolute acid levels are comparable. (3) Temperature of
+            consumption: cold brew is served cold, and cold temperature reduces volatile
+            aroma, which contributes to perception of acidity (volatile acids are part of
+            the acidic "brightness" sensation at warm temperatures).
+          </div>
+        </li>
+        <li class="fft-item">
+          Gyokuro — the highest grade of Japanese green tea — is grown under 90% shade
+          for three to four weeks before harvest. The shading stresses the plant and
+          dramatically increases L-theanine content. Explain why shade would increase
+          L-theanine, using what you know about amino acid metabolism in plants.
+          <div class="fft-answer">
+            L-theanine is synthesised in tea roots from ethylamine and glutamate, then
+            transported to the leaves. In full sunlight, L-theanine in the leaves is
+            converted to catechins via the phenylpropanoid pathway — the plant uses it
+            as a nitrogen source for polyphenol biosynthesis, which serves as UV
+            protection and pest deterrence. In shade, UV exposure is reduced; the plant
+            has less need for UV-protective catechins, so less L-theanine is converted.
+            Simultaneously, reduced photosynthesis slows the energy-requiring catechin
+            synthesis further. L-theanine therefore accumulates rather than being consumed.
+            The result: gyokuro has ~3–4× the L-theanine of ordinary sencha grown in
+            full sun, producing the pronounced savoury, umami-rich sweetness that defines
+            the tea style. This is also why gyokuro has lower catechin content and
+            lower astringency than regular sencha.
+          </div>
+        </li>
+        <li class="fft-item">
+          A café offers to serve you their "fresh single-origin coffee, roasted this
+          morning." You hesitate. Should you wait, and if so, how long? What specifically
+          goes wrong if you brew it today?
+          <div class="fft-answer">
+            Yes, you should wait — ideally 5–10 days for espresso, 3–7 days for filter
+            brewing. A bean roasted today contains enormous quantities of CO₂ trapped
+            under pressure in its cell structure. For espresso: the outgassing CO₂ forms
+            excessive, unstable crema and causes channelling in the puck (CO₂ in the
+            grounds creates uneven resistance, and high-pressure water finds paths through
+            rather than through the entire puck uniformly). The result is an uneven
+            extraction — some pathways over-extracted, most under-extracted. For filter
+            brewing: the bloom step will be extremely active, producing foam that impedes
+            even wetting of the coffee bed; extraction will be uneven and typically
+            under-extracted even if the bloom step is performed. Beyond extraction
+            mechanics, some roasting-derived volatile precursors continue transforming in
+            the days after roasting — particularly the compounds that form from Maillard
+            intermediates reacting with each other in the cool, CO₂-rich bean interior.
+            Most coffees reach their flavour peak 7–14 days after roast.
+          </div>
+        </li>
+      </ul>
+
+      <div class="section-head">Common Pitfalls</div>
+      <ol class="prose">
+        <li>
+          <strong>Blaming roast level for bitterness.</strong> Bitterness in coffee is
+          primarily an extraction problem — over-extraction at any roast level produces
+          bitter cups. A light roast over-extracted will be more bitter than a dark roast
+          properly extracted. Fix grind and technique before switching roast levels.
+        </li>
+        <li>
+          <strong>Using boiling water for green tea.</strong> The result is not "scalded
+          leaves" (a metaphor that explains nothing) — it is rapid extraction of harsh
+          catechins that overwhelm all other compounds. Green tea requires 65–80°C. The
+          technique of pouring boiling water into the cup first, then adding water from
+          the kettle, quickly achieves 75–80°C.
+        </li>
+        <li>
+          <strong>Assuming all espresso is dark roast.</strong> Espresso is a brewing
+          method, not a roast level. Medium-light roast coffees can and are used for
+          espresso in specialty settings; the high TDS of espresso extraction makes
+          origin character more detectable, not less. The "espresso = dark roast"
+          association comes from historical commercial practice, not chemistry.
+        </li>
+        <li>
+          <strong>Storing coffee in the freezer and thawing repeatedly.</strong> Freezing
+          whole beans is actually effective for long-term storage if done correctly —
+          frozen beans should be portioned before freezing and brought to room temperature
+          in the sealed bag before opening (condensation on cold beans absorbs moisture and
+          accelerates staling). Repeatedly opening and re-closing a freezer bag causes
+          moisture cycling that degrades coffee quickly.
+        </li>
+        <li>
+          <strong>Treating steeped tea and brewed tea as simply stronger or weaker
+          versions of each other.</strong> Brew time and temperature interact non-linearly:
+          a 5-minute steep at 70°C extracts a different compound profile than a 2-minute
+          steep at 85°C, even if the final catechin concentration is similar. Shorter
+          time at higher temperature extracts more volatile aromatics before they evaporate;
+          longer time at lower temperature extracts a higher proportion of sweet/amino
+          acid fractions. Neither is universally better — they produce different cups.
+        </li>
+      </ol>
+
+      <div class="section-head">Connects to</div>
+      <p class="prose">
+        <strong>Heat &amp; Browning</strong> (Lesson 1) — Coffee roasting is one of the
+        most complex Maillard systems in food; Strecker degradation drives early aroma
+        formation; pyrazines as Maillard products.<br>
+        <strong>Fermentation</strong> (Lesson 5) — Coffee processing: wet-processed beans
+        undergo microbial fermentation of the mucilage layer, altering organic acid and
+        flavour precursor profiles; pu-erh tea involves genuine post-harvest microbial
+        fermentation.<br>
+        <strong>Flavour Science</strong> (Lesson 6) — 2-Furfurylthiol as an ultra-low-threshold
+        aroma compound; the extraction sequence of acids, sweetness, and bitterness as a
+        flavour perception problem; retronasal aroma in tasting hot beverages.<br>
+        <strong>Vegetables &amp; Fruits</strong> (Lesson 9) — PPO in tea oxidation is
+        the same enzyme family as in enzymatic browning; same mechanism, intentionally
+        triggered rather than prevented.
+      </p>
+
+      <div class="lesson-nav">
+        <a href="spices.html" class="lesson-nav-btn">← Lesson 10: Spices &amp; Aromatics</a>
+        <a href="wine-beer.html" class="lesson-nav-btn">Lesson 12: Wine &amp; Beer →</a>
+      </div>
+
+    </div><!-- /main -->
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  renderMathInElement(document.body, {
+    delimiters: [
+      {left: '$$', right: '$$', display: true},
+      {left: '$', right: '$', display: false}
+    ]
+  });
+
+  /* Coffee extraction curve */
+  var extraction = [5,8,10,12,14,16,18,20,22,24,26,28,30];
+
+  /* Relative compound concentration (schematic) */
+  var acids = [20,45,65,78,87,92,95,96,96,95,93,90,87];
+  var sweet  = [2, 8,15,25,40,62,82,95,95,88,72,55,38];
+  var bitter = [1, 2, 4, 6, 8,11,16,24,36,52,70,84,94];
+
+  var traces = [
+    {
+      x: extraction, y: acids,
+      name: 'Acids & brightness',
+      mode: 'lines',
+      line: { color: '#e74c3c', width: 2.5 }
+    },
+    {
+      x: extraction, y: sweet,
+      name: 'Sweetness & body',
+      mode: 'lines',
+      line: { color: '#27ae60', width: 2.5 }
+    },
+    {
+      x: extraction, y: bitter,
+      name: 'Bitterness & harshness',
+      mode: 'lines',
+      line: { color: '#7f4e1b', width: 2.5 }
+    }
+  ];
+
+  var layout = {
+    xaxis: {
+      title: 'Extraction yield (%)',
+      tickfont: { family: 'IBM Plex Sans', size: 12 },
+      gridcolor: '#e8ecee'
+    },
+    yaxis: {
+      title: 'Relative concentration (a.u.)',
+      range: [0, 105],
+      tickfont: { family: 'IBM Plex Sans', size: 12 },
+      gridcolor: '#e8ecee'
+    },
+    shapes: [
+      {
+        type: 'rect',
+        x0: 18, x1: 22,
+        y0: 0, y1: 105,
+        fillcolor: 'rgba(100,180,100,0.12)',
+        line: { width: 0 }
+      },
+      {
+        type: 'line',
+        x0: 18, x1: 18,
+        y0: 0, y1: 105,
+        line: { color: '#27ae60', width: 1.5, dash: 'dash' }
+      },
+      {
+        type: 'line',
+        x0: 22, x1: 22,
+        y0: 0, y1: 105,
+        line: { color: '#27ae60', width: 1.5, dash: 'dash' }
+      }
+    ],
+    annotations: [
+      {
+        x: 20, y: 102,
+        xref: 'x', yref: 'y',
+        text: 'Ideal 18–22%',
+        showarrow: false,
+        font: { family: 'IBM Plex Sans', size: 11, color: '#27ae60' },
+        xanchor: 'center'
+      },
+      {
+        x: 11, y: 85,
+        xref: 'x', yref: 'y',
+        text: '← Under-extracted<br>(sour, thin)',
+        showarrow: false,
+        font: { family: 'IBM Plex Sans', size: 10, color: '#e74c3c' },
+        xanchor: 'center'
+      },
+      {
+        x: 27, y: 85,
+        xref: 'x', yref: 'y',
+        text: 'Over-extracted →<br>(bitter, hollow)',
+        showarrow: false,
+        font: { family: 'IBM Plex Sans', size: 10, color: '#7f4e1b' },
+        xanchor: 'center'
+      }
+    ],
+    legend: {
+      x: 0.5, xanchor: 'center', y: 0.5,
+      font: { family: 'IBM Plex Sans', size: 12 },
+      bgcolor: 'rgba(255,255,255,0.85)',
+      bordercolor: '#d0d8dd',
+      borderwidth: 1
+    },
+    margin: { t: 20, r: 20, b: 50, l: 60 },
+    paper_bgcolor: '#fafaf8',
+    plot_bgcolor: '#fafaf8',
+    font: { family: 'IBM Plex Sans' }
+  };
+
+  Plotly.newPlot('extraction-chart', traces, layout, { responsive: true, displayModeBar: false });
+});
+</script>
+</body>
+</html>
