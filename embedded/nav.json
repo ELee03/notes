@@ -1,0 +1,48 @@
+{
+  "sections": [
+    {
+      "label": "Architecture &amp; Internals",
+      "items": [
+        {"href": "mcu-architecture.html",  "text": "1 · MCU Architecture"},
+        {"href": "memory-clocks.html",     "text": "2 · Memory &amp; Clock Systems"},
+        {"href": "interrupts-nvic.html",   "text": "3 · Interrupts &amp; the NVIC"},
+        {"href": "dma.html",               "text": "4 · DMA"}
+      ]
+    },
+    {
+      "label": "Peripherals",
+      "items": [
+        {"href": "gpio.html",        "text": "5 · GPIO"},
+        {"href": "timers-pwm.html",  "text": "6 · Timers &amp; PWM"},
+        {"href": "adc-dac.html",     "text": "7 · ADC &amp; DAC"}
+      ]
+    },
+    {
+      "label": "Protocols",
+      "items": [
+        {"href": "uart.html", "text": "8 · UART"},
+        {"href": "spi.html",  "text": "9 · SPI"},
+        {"href": "i2c.html",  "text": "10 · I2C"},
+        {"href": "can.html",  "text": "11 · CAN Bus"},
+        {"href": "usb.html",  "text": "12 · USB Fundamentals"}
+      ]
+    },
+    {
+      "label": "Firmware",
+      "items": [
+        {"href": "bare-metal.html", "text": "13 · Bare-Metal Patterns"},
+        {"href": "rtos.html",       "text": "14 · RTOS Concepts"},
+        {"href": "debug.html",      "text": "15 · Debugging &amp; Test"}
+      ]
+    },
+    {
+      "label": "PCB Design",
+      "items": [
+        {"href": "layout.html",       "text": "16 · Layout Fundamentals"},
+        {"href": "mixed-signal.html", "text": "17 · Mixed-Signal Layout"},
+        {"href": "power-thermal.html","text": "18 · Power &amp; Thermal"},
+        {"href": "high-speed-rf.html","text": "19 · High-Speed &amp; RF"}
+      ]
+    }
+  ]
+}

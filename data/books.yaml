@@ -287,3 +287,61 @@ books:
     year: 2004
     clusters: [food-science, chemistry, biochemistry]
     annotation: The foundational reference for applied food science. Covers the chemistry of cooking — Maillard reactions, protein denaturation, emulsification, fermentation, and why techniques work.
+    source: GoodNotes:Reading List/Cooking/ON_FOOD_AND_COOKING_The_Science_and_Lore.pdf
+
+  # ── Adaptive & Robust Control ─────────────────────────────────────────────
+
+  - id: ioannou-sun-adaptive
+    title: Robust Adaptive Control
+    authors: [Petros A. Ioannou, Jing Sun]
+    publisher: Prentice-Hall
+    year: 1996
+    clusters: [adaptive-control]
+    annotation: A rigorous treatment of model reference adaptive control, self-tuning regulators, and Lyapunov-based stability analysis for adaptive systems.
+
+  - id: sastry-bodson-adaptive
+    title: Adaptive Control — Stability, Convergence, and Robustness
+    authors: [Shankar Sastry, Marc Bodson]
+    publisher: Prentice-Hall
+    year: 1989
+    clusters: [adaptive-control]
+    annotation: Foundational graduate text on adaptive control. Covers MRAC, parameter convergence, and robust modifications. A standard reference alongside Ioannou & Sun.
+
+  # ── Nonlinear Control ─────────────────────────────────────────────────────
+
+  - id: khalil-nonlinear
+    title: Nonlinear Systems
+    authors: [Hassan K. Khalil]
+    edition: 3rd
+    publisher: Prentice-Hall
+    year: 2002
+    clusters: [nonlinear-control]
+    annotation: The standard graduate reference for nonlinear systems analysis — Lyapunov stability, input-output stability, feedback linearization, and sliding mode control.
+
+  - id: slotine-li-nonlinear
+    title: Applied Nonlinear Control
+    authors: [Jean-Jacques E. Slotine, Weiping Li]
+    publisher: Prentice-Hall
+    year: 1991
+    clusters: [nonlinear-control]
+    annotation: More applied and accessible than Khalil. Covers sliding mode control, adaptive control, and feedback linearization with strong physical intuition.
+
+  # ── Game Theory ───────────────────────────────────────────────────────────
+
+  - id: osborne-rubinstein-gametheory
+    title: A Course in Game Theory
+    authors: [Martin J. Osborne, Ariel Rubinstein]
+    publisher: MIT Press
+    year: 1994
+    clusters: [game-theory]
+    annotation: Classic graduate text covering Nash equilibria, extensive-form games, repeated games, and bargaining theory. Freely available online from the authors.
+    url: https://arielrubinstein.tau.ac.il/books/GT.pdf
+
+  - id: shoham-leyton-brown-multiagent
+    title: Multiagent Systems — Algorithmic, Game-Theoretic, and Logical Foundations
+    authors: [Yoav Shoham, Kevin Leyton-Brown]
+    publisher: Cambridge University Press
+    year: 2009
+    clusters: [game-theory]
+    annotation: Covers mechanism design, auctions, social choice, and computational aspects of game theory. Bridges AI/CS and economics perspectives. Freely available online.
+    url: https://www.masfoundations.org/

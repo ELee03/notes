@@ -1,0 +1,38 @@
+{
+  "sections": [
+    {
+      "label": "Foundations",
+      "items": [
+        {"href": "control-problem.html",   "text": "1 · The Control Problem"},
+        {"href": "transfer-functions.html", "text": "2 · Dynamical Systems &amp; Transfer Functions"},
+        {"href": "bode.html",              "text": "3 · Second-Order Systems"}
+      ]
+    },
+    {
+      "label": "Frequency Domain",
+      "items": [
+        {"href": "routh.html",      "text": "4 · Routh-Hurwitz Stability"},
+        {"href": "root-locus.html", "text": "5 · Root Locus"},
+        {"href": "nyquist.html",    "text": "6 · Nyquist &amp; Stability Margins"}
+      ]
+    },
+    {
+      "label": "Classical Design",
+      "items": [
+        {"href": "pid.html",      "text": "7 · PID Control"},
+        {"href": "lead-lag.html", "text": "8 · Lead-Lag Compensators"}
+      ]
+    },
+    {
+      "label": "State Space",
+      "items": [
+        {"href": "state-space.html",      "text": "9 · State-Space Representation"},
+        {"href": "state-response.html",   "text": "10 · State Response"},
+        {"href": "controllability.html",  "text": "11 · Controllability &amp; Observability"},
+        {"href": "state-feedback.html",   "text": "12 · State Feedback &amp; Pole Placement"},
+        {"href": "lqr.html",              "text": "13 · Linear Quadratic Regulator"},
+        {"href": "observers.html",        "text": "14 · Observers &amp; Separation Principle"}
+      ]
+    }
+  ]
+}
