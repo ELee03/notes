@@ -464,6 +464,59 @@ a.cluster-card:hover {
   font-style: italic;
 }
 
+/* --- Lesson table (cluster index pages) -------------------- */
+/* Shared by all cluster index pages. Replaces per-file inline styles. */
+table.lesson-list {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+  margin: 0 0 24px;
+}
+table.lesson-list tr.lesson-row { display: table-row; }
+table.lesson-list thead th {
+  padding: 7px 12px;
+  text-align: left;
+  background: #f0f4f7;
+  border-bottom: 2px solid #c0dae8;
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #3a5a78;
+  white-space: nowrap;
+}
+table.lesson-list thead th:first-child { width: 2.5em; text-align: center; }
+table.lesson-list thead th:nth-child(2) { width: 24%; }
+table.lesson-list td {
+  padding: 9px 12px;
+  vertical-align: top;
+  border-bottom: 1px solid #e8eef2;
+  color: #2a3a4a;
+}
+table.lesson-list td:first-child {
+  text-align: center;
+  color: #9aabb8;
+  font-size: 12px;
+  font-family: 'IBM Plex Mono', monospace;
+}
+table.lesson-list tr.lesson-row td a {
+  color: #2a4868;
+  font-weight: 500;
+  text-decoration: none;
+}
+table.lesson-list tr.lesson-row td a:hover { color: #3a6a8a; }
+table.lesson-list tr.lesson-row.planned td,
+table.lesson-list tr.lesson-row.planned td a { color: #a8b8c4; }
+table.lesson-list tr.part-head td {
+  padding: 6px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #3a6a8a;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: #f0f6fa;
+}
+
 /* --- Course block (cluster page) --------------------------- */
 .course-block {
   border-left: 2px solid rgba(122,184,212,0.50);
