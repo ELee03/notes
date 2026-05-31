@@ -20,7 +20,7 @@
       "label": "Animal Foods",
       "items": [
         { "href": "meat.html",          "text": "7 · Meat Science" },
-        { "href": "fish.html",          "text": "8 · Fish & Shellfish",          "planned": true }
+        { "href": "fish.html",          "text": "8 · Fish & Shellfish" }
       ]
     },
     {

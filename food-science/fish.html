@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fish &amp; Shellfish — Food Science | Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/plotly.js-dist@2.27.0/plotly.min.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="food-science" data-current="fish.html"></div>
+      <hr class="sidebar-rule">
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#muscle-structure" class="nav-item">Fish muscle structure</a>
+        <a href="#tmao" class="nav-item">TMAO and freshness</a>
+        <a href="#rigor" class="nav-item">Rigor and quality</a>
+        <a href="#fat-types" class="nav-item">Lean vs. fatty fish</a>
+        <a href="#cooking" class="nav-item">Cooking fish</a>
+        <a href="#shellfish" class="nav-item">Shellfish biology</a>
+        <a href="#cephalopods" class="nav-item">Cephalopods</a>
+        <a href="#freshness" class="nav-item">Freshness assessment</a>
+        <a href="#examples" class="nav-item">Worked examples</a>
+        <a href="#fft" class="nav-item">Food for thought</a>
+        <a href="#pitfalls" class="nav-item">Common pitfalls</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a> → <a href="index.html">Food Science</a> → Fish &amp; Shellfish
+      </div>
+
+      <h1 class="lesson-title">Fish &amp; Shellfish</h1>
+      <div class="lesson-meta">Muscle Biology · TMAO · Rigor · Cooking Temperature · Shellfish</div>
+
+      <p class="prose">
+        Fish is not just wet meat. The muscle biology of aquatic animals differs from
+        land animals in almost every relevant dimension — fibre length, connective tissue
+        content, protein stability, post-mortem biochemistry, and the specific off-compounds
+        that signal spoilage. Understanding these differences explains why a 55°C steak is
+        perfectly cooked while a 55°C salmon fillet is already overdone, why fresh fish
+        has essentially no smell while day-old fish smells strongly, and why shellfish
+        that are alive to the moment of cooking are a food safety requirement rather than
+        a culinary preference.
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="muscle-structure">Fish muscle structure — why fish flakes</div>
+
+      <p class="prose">
+        Fish skeletal muscle shares the basic contractile machinery of land-animal muscle
+        — sarcomeres, myosin, actin, titin, Z-discs — but its structural organisation
+        is radically different in ways that make fish delicate, quick-cooking, and prone
+        to falling apart.
+      </p>
+
+      <div class="subsection-head">Short muscle fibres and myotomes</div>
+      <p class="prose">
+        Land-animal muscle fibres run long, often the full length of the muscle, and are
+        organised in bundles (fascicles) running roughly parallel. Fish muscle is organised
+        into <strong>myotomes</strong> — W-shaped or cone-shaped segments stacked along
+        the length of the body (the "flakes" you see when you break apart cooked fish are
+        individual myotomes separating). Each myotome contains very short muscle fibres —
+        often only 1–3 mm long, compared to several centimetres in beef. The fibres run
+        roughly perpendicular to the long axis of the body.
+      </p>
+      <p class="prose">
+        This organisation allows the wave-like lateral flexion needed for swimming without
+        requiring fibres that span the whole body. For the cook, the implication is that
+        fish muscle has almost no tensile continuity along its length — there is no
+        equivalent of the long grain in beef that you "cut against." Fish naturally
+        separates into flakes at the myotome boundaries (the myocommata — thin sheets of
+        connective tissue between myotomes) when cooked.
+      </p>
+
+      <div class="subsection-head">Minimal connective tissue</div>
+      <p class="prose">
+        Fish have far less collagen than land animals. The myocommata between myotomes
+        are thin and have very few cross-links — collagen in fish muscle is mostly
+        heat-labile type I with immature cross-links, converting to gelatin at temperatures
+        as low as 45–50°C (compared to 70–82°C for mammalian muscle collagen).
+        This means fish requires no prolonged moist heat for collagen conversion —
+        a few minutes is enough. It also means there is no category of "tough cut"
+        in fish that benefits from braising.
+      </p>
+      <p class="prose">
+        The practical consequence is profound: fish muscle proteins and connective
+        tissue denature at nearly the same temperature and nearly the same time,
+        leaving an extremely narrow window between "just right" and "overdone."
+        In beef, you can separate collagen management from myofibrillar management
+        by choosing the cut. In fish, everything happens at once.
+      </p>
+
+      <div class="subsection-head">Protein thermal stability</div>
+      <p class="prose">
+        Fish myosin denatures at a considerably lower temperature than mammalian myosin —
+        typically <strong>40–45°C</strong> for most temperate-water species, versus
+        ~50–55°C for beef myosin. This is an evolutionary adaptation: fish live in cold
+        water and their muscle proteins are optimised to function at low temperatures.
+        A protein that needs to be flexible and active at 5°C water temperature cannot
+        be stable at 55°C without losing its cold-water function.
+      </p>
+      <p class="prose">
+        The result: fish passes through all the textural changes (from translucent to
+        opaque, from soft to firm to dry) at much lower temperatures than meat. For most
+        white fish (cod, sole, halibut), the ideal core temperature is <strong>50–55°C</strong>.
+        For salmon, which has high fat content that modulates texture perception,
+        <strong>48–52°C</strong> is the target for silky, just-translucent flesh.
+        Cooking any fish to 65°C+ — a common guideline written for food safety rather
+        than culinary quality — produces dry, stringy, fibrous flesh.
+      </p>
+
+      <div class="callout">
+        <strong>Food safety note:</strong> The FDA guideline of 63°C for fish is written
+        to kill parasites (Anisakis in wild-caught fish, primarily salmon and some
+        others). The same safety objective can be achieved by freezing at −20°C for
+        7 days or −35°C for 15 hours — the approach used by sushi-grade fish.
+        Cooking to 63°C is one option; the freezing protocol is another.
+        The guideline is not a culinary recommendation.
+      </div>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="tmao">TMAO, TMA, and the chemistry of freshness</div>
+
+      <p class="prose">
+        The single most important chemical fact about marine fish is the presence of
+        <strong>trimethylamine N-oxide (TMAO)</strong> in its muscle tissue.
+        TMAO is an organic osmolyte — a small molecule that marine teleost fish (and
+        elasmobranchs to an even greater degree) use to counterbalance the osmotic
+        pressure of seawater. Seawater is hypertonic relative to fish tissue fluids,
+        and without countermeasures, fish would continuously lose water by osmosis.
+        TMAO (along with other osmolytes like betaine and taurine) is accumulated in
+        muscle tissue to raise internal osmolality.
+      </p>
+      <p class="prose">
+        TMAO itself is <strong>completely odourless and tasteless</strong>.
+        The problem begins post-mortem.
+      </p>
+
+      <div class="subsection-head">The TMAO → TMA conversion</div>
+      <p class="prose">
+        After the fish dies, bacteria on the skin, gills, and gut — primarily
+        <em>Shewanella putrefaciens</em>, <em>Pseudomonas</em>, and other Gram-negative
+        psychrotrophic (cold-tolerant) species — begin using TMAO as a terminal electron
+        acceptor in anaerobic respiration, reducing it to
+        <strong>trimethylamine (TMA)</strong>:
+      </p>
+      <div style="background:#f0f6fa;border-left:3px solid #7ab8d4;border-radius:0 5px 5px 0;padding:12px 16px;margin:10px 0 18px;font-size:13.5px;font-family:'IBM Plex Mono',monospace;">
+        (CH₃)₃N⁺=O &nbsp;+&nbsp; 2H⁺ &nbsp;+&nbsp; 2e⁻ &nbsp;→&nbsp; (CH₃)₃N &nbsp;+&nbsp; H₂O
+      </div>
+      <p class="prose">
+        TMA is a volatile tertiary amine with a detection threshold around 1 µg/L and
+        the characteristic "fishy" smell. Its accumulation is proportional to bacterial
+        load and time post-mortem. This is why freshness = freshness: a fish caught
+        hours ago has no TMA because bacteria have had no time to produce it.
+        A fish stored for days has progressively more.
+      </p>
+      <p class="prose">
+        The acid fix (covered in Lesson 6): TMA (pKa ~9.8) is protonated by acid to
+        non-volatile TMA-H⁺. Lemon juice, vinegar, or any acid applied to fish before
+        serving suppresses the smell instantly. This is why acid is traditional with
+        fish — not for flavour balance alone, but for smell management.
+      </p>
+      <p class="prose">
+        <strong>Freshwater fish do not contain significant TMAO</strong> — they live in
+        hypotonic environments and do not need an osmolyte. This is why freshwater fish
+        (trout, catfish, perch) do not develop the classic marine fishiness. Their
+        off-odours come from other sources: geosmin from environmental bacteria, and
+        microbial degradation products from their own metabolites.
+      </p>
+
+      <div class="subsection-head">Elasmobranchs (sharks and rays) — urea</div>
+      <p class="prose">
+        Sharks and rays use a different osmoregulatory strategy: they maintain high body
+        concentrations of <strong>urea</strong> (~400 mM) and TMAO together. The urea
+        would be protein-denaturing at that concentration, but TMAO counteracts its
+        destabilising effect — a remarkable co-evolved balance. Post-mortem, bacterial
+        urease converts urea to ammonia (NH₃), giving shark meat its characteristic
+        ammoniacal off-smell if not handled carefully. Traditional shark-derived foods
+        (Icelandic hákarl, dried shark) use controlled fermentation/aging to manage
+        this chemistry.
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="rigor">Rigor mortis — why it matters more in fish</div>
+
+      <p class="prose">
+        Fish undergo rigor mortis by the same mechanism as land animals (ATP depletion →
+        permanent myosin-actin cross-bridges), but with key differences in timing and
+        consequence.
+      </p>
+      <p class="prose">
+        Fish rigor is faster than mammalian rigor — onset within 1–7 hours at refrigerator
+        temperatures, resolution within 24–48 hours. The rate is highly temperature-dependent:
+        fish held on ice (0°C) go into and through rigor more slowly than fish held at
+        room temperature or in warm water, giving more time for controlled handling.
+      </p>
+      <p class="prose">
+        The critical practical difference from land animals: in fish, cooking during rigor
+        produces a dramatically inferior product. Rigor-locked muscle is stiff and inextensible.
+        When heat is applied, the already-contracted sarcomeres shrink further, expelling
+        large amounts of water and gaping (the myotome seams split open, producing visual
+        gaps in the fillet). Fillets filleted from a fish in rigor are also more prone to
+        gaping — the connective tissue between myotomes is under maximum tension.
+      </p>
+      <p class="prose">
+        The ideal: fish should be cooked either <em>before</em> rigor sets in (immediately
+        after catch — "pre-rigor" — which produces the most delicate texture), or after
+        rigor has fully resolved (post-rigor). Most commercially sold fresh fish is
+        post-rigor. The "pre-rigor" ideal is why ikejime-processed fish (see below)
+        is particularly prized.
+      </p>
+
+      <div class="callout">
+        <strong>Ikejime:</strong> A Japanese technique of immediately killing the fish
+        (brain spike) and destroying the spinal cord (wire threading) to prevent the
+        stress-induced glycolysis and ATP depletion that would accelerate rigor.
+        Properly ikejime-processed fish has more residual ATP, enters rigor more slowly,
+        and retains better texture for longer. The extra ATP also degrades to IMP more
+        slowly, preserving the nucleotide that contributes to umami. Widely used in
+        high-end Japanese fish handling, increasingly adopted globally.
+      </div>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="fat-types">Lean fish vs. fatty fish</div>
+
+      <p class="prose">
+        Fish fat is stored differently from land-animal fat. Most land animals store fat
+        primarily subcutaneously (under the skin) and intramuscularly (marbling).
+        Fish species divide into two broad categories based on where they store energy:
+      </p>
+
+      <div class="subsection-head">Lean fish (white fish)</div>
+      <p class="prose">
+        Cod, sole, halibut, haddock, sea bass, tilapia — typically &lt;2% fat by weight.
+        These fish store energy almost entirely in the liver (cod liver oil is a by-product
+        of this). Muscle is very low in lipid. The flavour is mild precisely because
+        lipophilic aroma compounds have little fat to dissolve in. Lean fish are delicate,
+        quick to dry out if overcooked, and highly sensitive to browning (Maillard requires
+        dry surface — lean fish surface tends to wet quickly during cooking).
+      </p>
+
+      <div class="subsection-head">Fatty fish (oily fish)</div>
+      <p class="prose">
+        Salmon, mackerel, sardines, herring, tuna, trout — typically 5–30% fat by weight,
+        distributed throughout the muscle tissue (not just subcutaneously). The fat is
+        rich in long-chain polyunsaturated fatty acids (PUFA), especially
+        EPA (eicosapentaenoic acid, C20:5 n-3) and DHA (docosahexaenoic acid, C22:6 n-3) —
+        the omega-3 fatty acids associated with cardiovascular and neural health.
+      </p>
+      <p class="prose">
+        These long-chain PUFAs have very low melting points (liquid far below 0°C) and
+        contribute to the rich, unctuous texture of fatty fish even at lower cooking
+        temperatures. They are also highly susceptible to oxidative rancidity — the
+        many double bonds in EPA and DHA are readily attacked by oxygen and free radicals,
+        producing the characteristic "fishy" oxidation smell distinct from TMA
+        (pentanal, hexanal, and (E,E)-2,4-heptadienal are the primary oxidation products
+        from DHA and EPA). This is why frozen fatty fish degrades in flavour faster than
+        lean fish, and why freshly cooked fatty fish tastes quite different from reheated
+        fatty fish.
+      </p>
+      <p class="prose">
+        The red/dark muscle in fatty fish (visible as the darker band along the lateral
+        line in salmon or the deep red in tuna) is Type I oxidative muscle with extremely
+        high myoglobin and high fat content. White muscle is fast-twitch glycolytic.
+        Tuna has red muscle distributed through most of its body (continuous swimmer);
+        salmon has a discrete red muscle strip.
+      </p>
+
+      <div class="widget-card">
+        <div class="widget-title">Fat content vs. optimal cooking temperature — selected fish</div>
+        <div id="plotly-fish" style="height:360px;"></div>
+        <p style="font-size:11.5px;color:#8a9aaa;margin-top:8px;line-height:1.5;">
+          Fat content approximate (varies with season, diet, and wild vs. farmed).
+          Optimal core temperature is culinary target, not food-safety minimum.
+        </p>
+      </div>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="cooking">Cooking fish — the narrow window</div>
+
+      <p class="prose">
+        Fish cookery is defined by the extremely narrow window between underdone and
+        overcooked. For white fish (cod, sole), the difference between silky and rubbery
+        is approximately 5°C of core temperature. Because fish proteins denature at lower
+        temperatures and in a tighter range than land-animal proteins, and because fish
+        fillets are thin (fast heat penetration), precision matters more than with meat.
+      </p>
+
+      <div class="subsection-head">Temperature targets</div>
+      <ul class="prose" style="margin-top:4px;">
+        <li><strong>Delicate white fish (sole, flounder, sea bass):</strong>
+          45–50°C. At this temperature, myosin has denatured but actin and collagen are
+          largely intact. The fillet separates cleanly into moist flakes. Above 55°C,
+          the fish becomes rubbery and dry rapidly.</li>
+        <li><strong>White fish with more structure (cod, halibut, turbot):</strong>
+          50–55°C. Slightly firmer fillets benefit from a degree more heat for structural
+          integrity.</li>
+        <li><strong>Salmon, trout:</strong> 48–52°C for translucent, silky, custard-like.
+          55°C+ produces the white albumin (coagulated myosin and collagen proteins)
+          that visually signals overcooking. At 60°C salmon is overcooked.</li>
+        <li><strong>Tuna (sashimi-grade):</strong> typically served raw or barely seared
+          (tataki, 30 seconds per side). Target is ~30–40°C core for seared.
+          Fully cooked tuna at 65°C is dry and crumbles.</li>
+        <li><strong>Oily, strong-flavoured fish (mackerel, sardines):</strong>
+          55–60°C. The higher fat content tolerates slightly more heat before the
+          texture becomes problematic; full cooking is often preferred for flavour
+          integration.</li>
+      </ul>
+
+      <div class="subsection-head">White albumin — what is it?</div>
+      <p class="prose">
+        The white exudate that appears on the surface of cooked salmon or on the cut
+        face of halibut is <strong>coagulated albumin proteins</strong> — primarily
+        myosin and sarcoplasmic proteins squeezed out of the muscle fibres as they
+        denature and contract. It is harmless but signals that the fish has been cooked
+        above ~55°C and is expelling moisture at an accelerating rate. Some recipes
+        recommend brining salmon in ~10% salt water for 10–15 minutes before cooking —
+        this partially denatures surface proteins and reduces albumin exudation.
+      </p>
+
+      <div class="subsection-head">Skin and the Maillard challenge</div>
+      <p class="prose">
+        Fish skin presents a specific challenge: the skin contains moisture and collagen
+        that prevent it from reaching Maillard browning temperatures unless the surface
+        is dried and the heat is very high. The classic technique — dry the skin with
+        paper towels, score it to prevent curling (tension from collagen shrinkage curls
+        the fillet), press flat in a very hot dry pan, cook skin-side-down for 80–90%
+        of total cooking time — works because (1) the dry skin surface can reach
+        >150°C quickly in a hot dry pan, (2) keeping the skin down maintains pressure
+        and contact, and (3) the flesh side faces the cooler air, slowing overcooking
+        of the interior.
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="shellfish">Shellfish — bivalves and crustaceans</div>
+
+      <p class="prose">
+        "Shellfish" encompasses two very different animal groups with different biology,
+        different food safety concerns, and different cooking chemistry.
+      </p>
+
+      <div class="subsection-head">Bivalves (oysters, clams, mussels, scallops)</div>
+      <p class="prose">
+        Bivalves are filter feeders — they pump large volumes of water through their gills,
+        extracting plankton and particles. This means they also concentrate anything
+        dissolved in the water: pathogens, heavy metals, biotoxins (from dinoflagellate
+        blooms — the "red tide"). This is the food safety reason why bivalves are
+        strictly regulated by harvest area and why they must be alive to the moment
+        of cooking or consuming raw.
+      </p>
+      <p class="prose">
+        A live bivalve holds its shell shut with its adductor muscle. A gaping shell that
+        doesn't close when tapped is dead — the adductor has lost tension. Dead bivalves
+        should be discarded before cooking (they may have begun bacterial decomposition).
+        The "tap test" and "sniff test" (off-smell = dead) are reliable freshness checks.
+      </p>
+      <p class="prose">
+        <strong>Oyster flavour chemistry:</strong> the characteristic briny, mineral,
+        oceanic flavour of a fresh raw oyster comes from a complex of compounds including
+        dimethyl sulfide (DMS), iodine-containing aromatics, glycogen (oysters store
+        energy as glycogen — the sweetness of a plump oyster), free amino acids
+        (glutamate, glycine, alanine, taurine), and TMAO. The "merroir" concept
+        (terroir for shellfish) reflects genuine chemical variation: oysters from
+        cold, high-salinity waters taste markedly different from warm, estuarine oysters
+        because these factors change the animal's biochemistry.
+      </p>
+      <p class="prose">
+        <strong>Cooking bivalves:</strong> the adductor muscle (what you eat in a scallop;
+        the muscle band holding clam/oyster shells together) is very lean white muscle with
+        almost no connective tissue. It overcooks rapidly — scallops at 50–55°C are
+        perfectly cooked; above 60°C they become rubbery from myosin aggregation.
+        Clams and mussels in steam open when their adductor muscle proteins denature
+        and lose grip — discard any that don't open, as they were dead before cooking.
+      </p>
+
+      <div class="subsection-head">Crustaceans (shrimp, lobster, crab)</div>
+      <p class="prose">
+        Crustacean muscle is composed of long, stiff striated fibres with more structural
+        integrity than fish muscle but less than red-meat muscle. The texture (firm, snappy)
+        comes from the organised parallel fibre bundles. Overcooking denatures these fibres,
+        producing the rubbery, cottony texture of overcooked shrimp.
+      </p>
+      <p class="prose">
+        <strong>The colour change:</strong> raw shrimp and lobster are grey-blue or
+        translucent because the carotenoid pigment <strong>astaxanthin</strong> is
+        complexed with a protein (crustacyanin) that shifts its absorption spectrum.
+        Heat denatures crustacyanin, releasing free astaxanthin which absorbs in the
+        blue-green range → orange-red colour. The protein-pigment interaction, not
+        the pigment chemistry itself, determines the raw grey colour.
+      </p>
+      <p class="prose">
+        <strong>Flavour chemistry:</strong> crustacean flavour is particularly rich in
+        glycine and other sweet amino acids, pyrazines (from the shell during high-heat
+        cooking, via Maillard between shell chitin amino sugars and amino acids),
+        and sulfur compounds from methionine degradation. Roasting/sautéing the shells
+        before making a bisque or stock extracts these Maillard products — the shell
+        contributes more flavour than the meat.
+      </p>
+
+      <div class="subsection-head">Live cooking — why it matters</div>
+      <p class="prose">
+        Lobsters and crabs are conventionally cooked live. The reason is enzymatic:
+        crustacean digestive enzymes (proteases) and the bacteria in their gut are
+        extremely active. In a dead crustacean, these enzymes immediately begin breaking
+        down muscle proteins, and bacterial populations — already present on the animal —
+        proliferate rapidly. A lobster left dead for 30–60 minutes at room temperature
+        develops visibly softer, deteriorating flesh. The live-cooking convention is a
+        practical solution to this fast enzymatic deterioration, not purely a tradition.
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="cephalopods">Cephalopods — squid, octopus, cuttlefish</div>
+
+      <p class="prose">
+        Cephalopod muscle is anatomically different from fish or crustacean muscle.
+        Squid mantle (the main edible body tube) consists of interlocking layers of
+        muscle fibres running in different orientations — a design that allows the
+        mantle to both contract radially (for jet propulsion) and expand longitudinally
+        for the refill stroke. The result is meat with a pronounced anisotropic texture:
+        it resists cutting in some directions more than others.
+      </p>
+      <p class="prose">
+        Cephalopod collagen is unusual — it is more thermostable than fish collagen
+        but still lower than mammalian collagen. This creates the infamous
+        <strong>cephalopod bimodal cookery rule</strong>:
+      </p>
+      <ul class="prose" style="margin-top:4px;">
+        <li><strong>Fast and hot (under 2 minutes):</strong> Squid rings seared at
+          high heat for 60–90 seconds are tender because myofibrillar proteins have
+          denatured but collagen has not yet contracted and toughened. The window
+          is genuinely 30–60 seconds.</li>
+        <li><strong>Low and slow (over 45 minutes):</strong> A braised octopus after
+          60–90 minutes at 85°C is tender again because collagen has converted to
+          gelatin. The intermediate zone (5–45 minutes) produces maximally tough,
+          rubbery texture as collagen has shrunk and contracted but not yet hydrolysed.</li>
+      </ul>
+      <p class="prose">
+        Octopus requires longer braising than squid because its collagen is more
+        cross-linked (octopus is a long-lived, highly active animal). Cuttlefish
+        falls between the two. The scoring or tenderising of squid (cross-hatching
+        the surface before cooking) speeds the heat penetration and also allows
+        the pre-denatured sections to curl attractively.
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="freshness">Freshness assessment</div>
+
+      <p class="prose">
+        Freshness in fish and shellfish is not simply about smell — it can be assessed
+        systematically by multiple chemical and physical indicators that track different
+        stages of post-mortem degradation.
+      </p>
+      <ul class="prose" style="margin-top:4px;">
+        <li><strong>Eyes:</strong> fresh fish has clear, convex, bright eyes. As freshness
+          declines, the eyes become cloudy (protein denaturation in the lens), then sunken
+          (fluid loss). Reliable indicator for whole fish; useless for fillets.</li>
+        <li><strong>Gills:</strong> fresh gills are bright red (oxyhaemoglobin). As
+          bacteria proliferate, gills become brownish-grey then slimy and foul-smelling.
+          Gill colour is one of the most reliable whole-fish freshness indicators.</li>
+        <li><strong>Texture:</strong> fresh fish is firm and elastic — pressing a finger
+          into the fillet, the indentation springs back immediately. As rigor resolves
+          and enzymes degrade myofibrillar proteins, the flesh softens and does not
+          spring back.</li>
+        <li><strong>Smell:</strong> truly fresh fish smells of the sea — iodine, algae,
+          clean marine notes. Any fishy (TMA) smell indicates bacterial reduction of TMAO
+          has begun. Strong ammonia smell (rare in teleosts, common in sharks) indicates
+          advanced decomposition.</li>
+        <li><strong>K-value:</strong> an objective chemical freshness index based on
+          the ratio of hypoxanthine + inosine to total adenosine-derived compounds
+          (K-value = [HxR + Hx] / [ATP + ADP + AMP + IMP + HxR + Hx] × 100%).
+          Fresh fish: K &lt;20%. Sushi-acceptable: K &lt;40%. Used in Japanese fish markets
+          and quality-control labs. Not practical for home use but explains why ATP
+          degradation chemistry is a real quality timeline.</li>
+      </ul>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="examples">Worked examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Crispy salmon skin</strong></div>
+        <div class="example-problem">
+          A home cook wants crispy skin on a salmon fillet but consistently produces
+          skin that is rubbery, sticks to the pan, and curls the fillet into a curved shape.
+          Using what you know about fish muscle, collagen, and Maillard chemistry, diagnose
+          all three failure modes and explain the correct technique for each.
+        </div>
+        <div class="example-body">
+          <p><strong>Failure 1 — Rubbery skin (not crispy):</strong><br>
+          Crispy skin requires the surface to reach &gt;150°C to drive off moisture and
+          begin Maillard browning of skin proteins and any remaining carbohydrates.
+          Rubbery skin means the surface never got dry or hot enough. Causes: (a) wet skin —
+          moisture on the surface steams the skin rather than searing it; dry the skin
+          completely with paper towels before cooking, and ideally leave uncovered in
+          the refrigerator for 30–60 minutes to further dry the surface.
+          (b) Cold pan or insufficient oil temperature — the skin contacts a cool surface,
+          absorbs heat slowly, and steams from its own moisture before it can brown.
+          Heat the pan over medium-high until a drop of water evaporates instantly before
+          adding oil, then heat the oil until shimmering.</p>
+
+          <p><strong>Failure 2 — Skin sticking to pan:</strong><br>
+          Fish skin sticks during the window after initial contact when the collagen in
+          the skin is partially denatured (gelatinous, adhesive) but before it has fully
+          denatured and released. The solution is not to move the fish. Press the skin
+          firmly onto the pan surface immediately after contact (using a spatula), and
+          then do not try to move it for at least 2–3 minutes. A properly hot, well-oiled
+          pan will naturally release the fish when the skin has fully crisped — if you're
+          fighting the spatula, the skin isn't ready.</p>
+
+          <p><strong>Failure 3 — Curling:</strong><br>
+          The skin contains collagen layers that run roughly parallel to the skin surface.
+          When heat denatures and shrinks these collagen fibres, the skin contracts.
+          Since the flesh side contracts less at the same temperature, the differential
+          contraction curves the fillet. Prevention: score the skin with shallow parallel
+          cuts every 3 cm before cooking (disrupts the collagen continuity in the skin,
+          reducing contractile force), and press firmly with a spatula during the first
+          minute. Alternatively, cure the skin briefly in salt before cooking — this
+          partially denatures skin collagen and reduces the degree of heat-induced
+          contraction.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Why squid becomes rubbery</strong></div>
+        <div class="example-problem">
+          A restaurant serves grilled squid rings that are ordered as starters and take
+          8 minutes to reach the table from the grill. By the time guests eat them, they
+          are extremely rubbery. The chef considers whether the issue is undercooking or
+          overcooking. Explain the biology, identify the actual cause, and describe how
+          to fix both the timing and the technique.
+        </div>
+        <div class="example-body">
+          <p><strong>The bimodal window:</strong><br>
+          Squid's cephalopod collagen is the problem. Squid mantle has two protein systems
+          responding at different rates to heat: myofibrils denature quickly (at ~45–50°C),
+          but collagen requires sustained heat above ~60°C to hydrolyse. In the window
+          between ~2 and ~45 minutes of cooking, myofibrils have denatured (losing the
+          tenderness they provided when raw/barely cooked) and collagen has contracted
+          and stiffened but not yet converted to gelatin. This zone produces maximally
+          rubbery texture.</p>
+
+          <p><strong>At 8 minutes from grill to table:</strong><br>
+          The squid was almost certainly properly cooked on the grill (fast-and-hot, 60–90
+          seconds = tender). During the 8 minutes of resting and transit time, residual heat
+          from the outside diffuses inward, and the collagen continues to contract at the
+          sustained ~55–65°C temperature the interior has reached. By the time the guest
+          eats, the squid is squarely in the rubbery zone. This is not undercooking; it is
+          the consequence of prolonged time in the intermediate temperature window.</p>
+
+          <p><strong>Fixes:</strong><br>
+          (a) Serve immediately — under 2 minutes from grill to guest. Squid is a dish
+          that cannot sit. If this is operationally impossible, switch to a braised squid
+          preparation (low-and-slow, exits the rubbery zone into tender-again zone) that
+          can be held at temperature.<br>
+          (b) Score or tenderise the mantle before grilling — cross-hatching the surface
+          disrupts collagen continuity and allows faster heat penetration, reducing the
+          thickness of material passing through the rubbery zone.<br>
+          (c) Thin rings cook faster through the intermediate zone — whole mantles or thick
+          rings spend more time in the danger zone than thin rings.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Oyster freshness at a restaurant</strong></div>
+        <div class="example-problem">
+          You order a dozen oysters at a restaurant. Most are briny and bright; two have
+          a flat, slightly sour, almost metallic taste with no marine freshness. The shells
+          of the flat ones are open — the staff say they opened during transit.
+          Using the biology of bivalves, assess the safety and quality risk of eating
+          the two open oysters, and explain the biochemistry that produced the off-character.
+        </div>
+        <div class="example-body">
+          <p><strong>The open-shell problem:</strong><br>
+          A live oyster holds its shell shut with sustained adductor muscle contraction —
+          this requires ATP. The shell opens when the adductor loses tension, which happens
+          either when the animal dies (ATP depletion) or when the adductor muscle is
+          mechanically damaged. An oyster whose shell opened "during transit" may have been
+          damaged (cracked or physically forced), or more likely was already dead or dying.
+          A truly live, healthy oyster does not gape open during normal transport.</p>
+
+          <p><strong>Off-character biochemistry:</strong><br>
+          "Flat and slightly sour, no marine freshness" describes the chemical progression
+          that begins immediately at death: (1) glycogen (the energy reserve that provides
+          the "sweetness" of fresh oyster) is rapidly consumed by anaerobic glycolysis →
+          lactate accumulates (slight sourness). (2) Free amino acids and nucleotides that
+          contribute marine freshness (glycine, taurine, IMP from ATP degradation) are
+          still present but diluted and chemically altered. (3) TMAO begins reducing to
+          TMA, though the fishy smell is not necessarily strong yet at early decomposition.
+          The metallic note is characteristic of early myoglobin oxidation and iron release
+          from heme proteins.</p>
+
+          <p><strong>Safety and quality assessment:</strong><br>
+          The flat/sour/metallic characters are early-stage spoilage indicators. The
+          question is: how long was the animal dead before cooking/eating, and what is
+          the bacterial load? Bivalves concentrate waterborne pathogens (Vibrio, norovirus)
+          during filter feeding. A recently dead oyster from a certified clean harvest area
+          with intact shell appearance presents low but non-zero risk. An oyster with visible
+          off-character and unknown death time from an oyster sourced with uncertain
+          provenance represents a genuine food safety risk — particularly for Vibrio
+          parahaemolyticus in warmer months. The correct answer: send them back, explain
+          the observation, and request a replacement. The flat taste alone tells you the
+          animal died before you were served it; the cause of death is unknown.</p>
+        </div>
+      </div>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="fft">Food for thought</div>
+
+      <ul class="fft-list">
+        <li class="fft-item">
+          Sushi-grade fish is defined partly by freezing treatment (−20°C for 7 days or
+          −35°C for 15 hours) to kill Anisakis parasites. But salmon farmed in fresh water
+          does not contain Anisakis (which has a marine lifecycle requiring crustacean
+          intermediate hosts). Yet farmed Atlantic salmon is commonly served raw without
+          freezing in high-end sushi restaurants. What does this tell us about how we
+          should think about food safety rules — as principles or as specific engineering
+          solutions to specific biological risks?
+          <div class="fft-answer">
+            The freezing requirement for "sushi-grade" fish is an engineering solution to
+            a specific biological hazard: Anisakis nematodes, which are present in
+            wild-caught marine fish. The rule is correct and important for wild salmon,
+            wild tuna, wild mackerel, and other wild marine fish. Farmed Atlantic salmon
+            raised in fresh water — kept away from any crustacean intermediate host
+            for Anisakis — does not harbour the parasite and therefore does not require
+            the freezing treatment for parasite safety. Serving it raw without freezing
+            is biologically defensible. The broader lesson: food safety regulations are
+            not commandments — they are hazard-specific engineering controls. Understanding
+            the biology of a specific hazard (Anisakis lifecycle, Vibrio temperature
+            sensitivity, TMAO to TMA conversion rate) lets you apply controls that
+            are proportionate and specific rather than blanket rules applied uniformly
+            to all situations. This matters both for safety (applying the wrong control
+            provides false security) and for quality (unnecessary freezing degrades
+            texture; unnecessary high-temperature cooking destroys delicate fish).
+          </div>
+        </li>
+        <li class="fft-item">
+          The K-value freshness index tracks the progressive degradation of ATP:
+          ATP → ADP → AMP → IMP → inosine (HxR) → hypoxanthine (Hx).
+          IMP has a positive umami-supporting effect at T1R1+T1R3 receptors.
+          Hypoxanthine (Hx) has a distinctly bitter taste. This means fish passes
+          through a window of maximum umami potential during aging, then crosses
+          into bitterness. Based on this, at what stage of post-mortem aging would
+          you expect fish to have the best flavour, and does this contradict
+          the "freshest is best" rule?
+          <div class="fft-answer">
+            This does not contradict "freshest is best" in any simple way — it adds nuance.
+            At death, ATP is high but free IMP is low (ATP has not yet degraded). IMP peaks
+            roughly 24–48 hours post-mortem as AMP is dephosphorylated. This is the window
+            of maximum nucleotide-driven umami synergy — the K-value is in the 20–40% range,
+            which corresponds to "fresh" to "very fresh" commercially. Chefs in Japan who
+            work with ikejime fish are well aware of this and deliberately rest whole fish
+            for 24–48 hours before serving specific cuts as sashimi, to allow IMP to peak.
+            A fish eaten 2 hours post-catch (K ~5%) may actually have less umami depth than
+            the same fish 36 hours later (K ~30–35%), despite the latter scoring lower on
+            objective freshness indices. Beyond K ~40%, hypoxanthine accumulates and
+            bitterness increases. The "freshest" in the absolute sense (hours-old) is
+            texturally ideal (pre-rigor or freshly post-rigor) but may not be the flavour
+            ideal. Professional Japanese fish handling distinguishes these two variables
+            explicitly — freshness for texture and rest time for flavour are managed
+            independently.
+          </div>
+        </li>
+        <li class="fft-item">
+          Fish farming ("aquaculture") is projected to supply more than 50% of human
+          seafood consumption. Farmed salmon has higher fat content than wild salmon
+          because of controlled feeding and reduced activity. Does a farmed Atlantic
+          salmon cooked at the same temperature as wild sockeye salmon produce the same
+          culinary result? What specific variables would you expect to differ, and which
+          would you adjust?
+          <div class="fft-answer">
+            No — the cooking result will differ in predictable and significant ways.
+            Farmed Atlantic salmon typically has 15–25% fat by weight; wild sockeye
+            salmon 6–12%. The higher fat content changes three things: (1) Heat capacity
+            and conductivity — fat has lower thermal conductivity than lean muscle and
+            lower heat capacity, meaning a heavily marbled fillet heats faster. The
+            thick fat layer in farmed salmon (especially the belly) will heat differently
+            from the lean meat layers. (2) Target temperature — at the same target of
+            50°C core, the farmed salmon will have significantly more melted fat lubricating
+            the muscle fibres, producing a richer, silkier texture than the leaner wild
+            fish at the same temperature. The wild sockeye at 50°C may benefit from being
+            taken slightly lower (47–48°C) because there is less fat to compensate for
+            myofibrillar moisture loss. (3) Flavour — farmed salmon muscle fat is higher
+            in saturated and monounsaturated fatty acids relative to the omega-3 (EPA/DHA)
+            proportion, because feed composition (often soy/canola-heavy) differs from
+            the krill-rich wild diet. The flavour profile is genuinely different — farmed
+            is milder and fattier; wild is more distinctly "salmon-flavoured" from the
+            DHA-rich fat oxidation products that occur even during proper cooking.
+            Adjustments: lower target temperature for farmed (+2–3°C higher tolerance than
+            wild due to fat buffer), different pan temperature (more fat renders out of
+            farmed skin, requiring more active management to prevent grease splatter).
+          </div>
+        </li>
+      </ul>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="pitfalls">Common pitfalls</div>
+
+      <ul class="prose">
+        <li style="margin-bottom:10px;">
+          <strong>Cooking fish to food-safety temperatures.</strong>
+          The FDA guideline of 63°C is for parasite safety, not culinary quality.
+          At 63°C, virtually all fish is overcooked. For sushi-grade (previously frozen)
+          fish, cooking to 50–55°C is safe and produces far better texture. Use the
+          right control for the actual hazard.
+        </li>
+        <li style="margin-bottom:10px;">
+          <strong>Thinking "fishy smell = old fish."</strong>
+          Truly fresh fish has almost no TMA smell — any fishiness is already a sign
+          of bacterial TMAO reduction having started. "Fresh" fish at most retailers
+          already has some TMA. The absence of smell is the standard for fresh, not
+          the presence of "mild" fishiness.
+        </li>
+        <li style="margin-bottom:10px;">
+          <strong>Braising squid for a short time.</strong>
+          Short braising (5–20 minutes) lands in the rubbery zone — myofibrils
+          denatured, collagen contracted but not hydrolysed. Either fast-and-hot
+          (under 2 minutes) or low-and-slow (45+ minutes) — the intermediate zone
+          should be crossed as fast as possible.
+        </li>
+        <li style="margin-bottom:10px;">
+          <strong>Buying shellfish from unknown sources.</strong>
+          Bivalves concentrate waterborne pathogens. Purchase from certified, regulated
+          sources with proper cold-chain handling. The live-at-purchase requirement
+          is not a preference — it is the primary safety control for bivalves.
+        </li>
+        <li style="margin-bottom:10px;">
+          <strong>Assuming all fish cooks the same way.</strong>
+          Lean white fish (cod, sole), fatty fish (salmon, mackerel), and cephalopods
+          have different target temperatures, different toughness mechanisms, and different
+          cooking windows. A salmon fillet and a squid ring require completely different
+          techniques even though they are both "seafood."
+        </li>
+      </ul>
+
+      <div class="section-head">Connects to</div>
+      <p class="prose">
+        <strong><a href="meat.html">Meat Science</a></strong> — Direct comparison:
+        fish muscle has shorter fibres, less collagen, lower protein denaturation
+        temperatures, and TMAO chemistry absent in land animals. Understanding both
+        defines the full landscape of animal-muscle cookery.
+        <br>
+        <strong><a href="flavor.html">Flavour Science</a></strong> — TMA chemistry
+        (acid deprotonation), TMAO as an odourless precursor, and the role of IMP
+        from ATP degradation in umami are all covered in detail in Lesson 6.
+        <br>
+        <strong><a href="fats.html">Fats, Oils &amp; Emulsions</a></strong> — Omega-3
+        PUFA (EPA, DHA) rancidity in fatty fish follows the same autoxidation cascade
+        as other polyunsaturated fats — but at higher rates because EPA and DHA have
+        5 and 6 double bonds respectively (vs. 2 in linoleic acid).
+      </p>
+
+      <div class="lesson-nav">
+        <a href="meat.html" class="lesson-nav-btn">← Meat Science</a>
+        <a href="vegetables.html" class="lesson-nav-btn">Vegetables &amp; Fruits →</a>
+      </div>
+
+    </div><!-- /main -->
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+  // ── Fat content vs. optimal cooking temperature ───────────────────────────
+  var fish = [
+    'Cod / Haddock',
+    'Sole / Flounder',
+    'Sea Bass',
+    'Halibut',
+    'Trout',
+    'Salmon (farmed)',
+    'Salmon (wild sockeye)',
+    'Tuna (bluefin)',
+    'Mackerel',
+    'Sardines'
+  ];
+  var fatPct   = [0.7, 1.2, 2.0, 2.5, 5.0, 20, 10, 12, 18, 11];
+  var optTemp  = [52,  48,  52,  54,  52,  50, 48, 40, 56, 55];
+
+  // colour by fat level
+  var colors = fatPct.map(function (f) {
+    if (f < 3)  return '#7ab8d4';  // lean — blue
+    if (f < 8)  return '#5a8a5a';  // medium — green
+    return '#c17c2e';              // fatty — orange
+  });
+
+  Plotly.newPlot('plotly-fish', [
+    {
+      type: 'bar',
+      orientation: 'h',
+      x: optTemp,
+      y: fish,
+      marker: { color: colors, opacity: 0.85 },
+      text: fatPct.map(function (f) { return f + '% fat'; }),
+      textposition: 'outside',
+      textfont: { family: 'IBM Plex Sans', size: 10.5, color: '#5a6a7a' },
+      hovertemplate: '<b>%{y}</b><br>Target: %{x}°C core<extra></extra>',
+      cliponaxis: false
+    }
+  ], {
+    xaxis: {
+      title: 'Optimal core temperature (°C)',
+      range: [30, 68],
+      tickfont: { family: 'IBM Plex Sans', size: 11 },
+      titlefont: { family: 'IBM Plex Sans', size: 12 }
+    },
+    yaxis: {
+      tickfont: { family: 'IBM Plex Sans', size: 11.5 },
+      automargin: true
+    },
+    shapes: [
+      { type: 'line', x0: 63, x1: 63, y0: -0.5, y1: 9.5,
+        line: { color: '#b85c38', width: 1.5, dash: 'dot' } }
+    ],
+    annotations: [
+      { x: 63, y: 9.5, text: 'FDA 63°C min', showarrow: false,
+        xanchor: 'left', xshift: 4,
+        font: { color: '#b85c38', size: 9.5, family: 'IBM Plex Sans' } }
+    ],
+    margin: { l: 140, r: 60, t: 14, b: 50 },
+    paper_bgcolor: '#f9f9f7',
+    plot_bgcolor: '#f9f9f7',
+    font: { family: 'IBM Plex Sans' },
+    showlegend: false
+  }, { responsive: true, displayModeBar: false });
+
+});
+</script>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+</body>
+</html>
