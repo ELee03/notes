@@ -1,0 +1,20 @@
+{
+  "sections": [
+    {
+      "label": "Chemistry of Cooking",
+      "items": [
+        { "href": "maillard.html",      "text": "1 · Heat & Browning" },
+        { "href": "proteins.html",      "text": "2 · Proteins in the Kitchen" },
+        { "href": "fats.html",          "text": "3 · Fats, Oils & Emulsions",    "planned": true },
+        { "href": "carbohydrates.html", "text": "4 · Carbohydrates & Starches",  "planned": true }
+      ]
+    },
+    {
+      "label": "Transformation",
+      "items": [
+        { "href": "fermentation.html",  "text": "5 · Fermentation",              "planned": true },
+        { "href": "flavor.html",        "text": "6 · Flavour Science",           "planned": true }
+      ]
+    }
+  ]
+}

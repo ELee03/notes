@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Food Science — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Chemistry of Cooking</div>
+        <a href="maillard.html" class="nav-item">1 · Heat &amp; Browning</a>
+        <a href="proteins.html" class="nav-item">2 · Proteins in the Kitchen</a>
+        <span class="nav-item planned">3 · Fats, Oils &amp; Emulsions</span>
+        <span class="nav-item planned">4 · Carbohydrates &amp; Starches</span>
+      </div>
+      <div class="nav-section">
+        <div class="nav-label">Transformation</div>
+        <span class="nav-item planned">5 · Fermentation</span>
+        <span class="nav-item planned">6 · Flavour Science</span>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb"><a href="../index.html">Field Notes</a> → Food Science</div>
+
+      <h1 class="lesson-title">Food Science</h1>
+      <div class="lesson-meta">Applied Chemistry · Biochemistry · Thermodynamics · Sensory Science</div>
+
+      <p class="prose">
+        Cooking is applied science. Every time you sear a steak, bake bread, or make a sauce,
+        you are running chemical reactions — controlling temperature, pH, water activity, and
+        protein structure with the goal of producing a specific result. Most cooks do this by
+        feel, by rule of thumb, by tradition. Food science does it by understanding the
+        underlying mechanisms.
+      </p>
+      <p class="prose">
+        This cluster covers the science of what happens to food when you cook it.
+        Not nutritional science. Not food safety regulations. The actual chemistry and physics:
+        why does bread rise, why does meat sear, why does fat emulsify with water, why does
+        fermentation produce flavour. McGee's <em>On Food and Cooking</em> is the primary
+        reference — one of the rare books that is simultaneously readable and scientifically
+        rigorous.
+      </p>
+      <p class="prose">
+        <strong>Prerequisites:</strong> None strictly required. Basic STEM literacy helps
+        (atoms, molecules, what temperature means) but is not assumed. Chemistry and
+        biochemistry concepts are introduced inline as needed. This cluster is designed
+        to be readable by anyone curious about why cooking works.
+      </p>
+
+      <div class="section-head">Lessons</div>
+
+      <table class="lesson-list">
+        <tbody>
+          <tr class="lesson-row">
+            <td class="lesson-num">1</td>
+            <td><a href="maillard.html">Heat &amp; Browning</a></td>
+            <td class="lesson-topics">Maillard reaction · Caramelisation · Water activity · pH and browning rate</td>
+          </tr>
+          <tr class="lesson-row">
+            <td class="lesson-num">2</td>
+            <td><a href="proteins.html">Proteins in the Kitchen</a></td>
+            <td class="lesson-topics">Denaturation · Coagulation · Collagen &amp; gelatin · Gluten · Dairy proteins</td>
+          </tr>
+          <tr class="lesson-row planned">
+            <td class="lesson-num">3</td>
+            <td>Fats, Oils &amp; Emulsions</td>
+            <td class="lesson-topics">Lipid chemistry · Smoke points · Emulsification · Mayonnaise · Butter</td>
+          </tr>
+          <tr class="lesson-row planned">
+            <td class="lesson-num">4</td>
+            <td>Carbohydrates &amp; Starches</td>
+            <td class="lesson-topics">Sugars · Starch gelatinisation · Gluten network · Pectin · Dietary fibre</td>
+          </tr>
+          <tr class="lesson-row planned">
+            <td class="lesson-num">5</td>
+            <td>Fermentation</td>
+            <td class="lesson-topics">Yeast · Lactic acid bacteria · Bread · Cheese · Wine &amp; beer · Kimchi</td>
+          </tr>
+          <tr class="lesson-row planned">
+            <td class="lesson-num">6</td>
+            <td>Flavour Science</td>
+            <td class="lesson-topics">Taste vs. aroma · Volatile compounds · Maillard products · Flavour pairing · Off-flavours</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="section-head">References</div>
+      <ul class="book-list" id="cluster-refs"></ul>
+
+    </div><!-- /main -->
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<script src="../books-render.js"></script>
+<script>renderBooks({ containerId: 'cluster-refs', clusterId: 'food-science', jsonPath: '../books.json' });</script>
+</body>
+</html>

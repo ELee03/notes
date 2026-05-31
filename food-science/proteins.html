@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Proteins in the Kitchen — Food Science | Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/plotly.js-dist@2.27.0/plotly.min.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="food-science" data-current="proteins.html"></div>
+      <hr class="sidebar-rule">
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#structure" class="nav-item">Protein structure primer</a>
+        <a href="#denaturation" class="nav-item">Denaturation</a>
+        <a href="#coagulation" class="nav-item">Coagulation</a>
+        <a href="#eggs" class="nav-item">Eggs as model system</a>
+        <a href="#denat-chart" class="nav-item">Denaturation temperatures</a>
+        <a href="#collagen" class="nav-item">Collagen &amp; gelatin</a>
+        <a href="#gluten" class="nav-item">Gluten</a>
+        <a href="#dairy" class="nav-item">Dairy proteins</a>
+        <a href="#examples" class="nav-item">Worked examples</a>
+        <a href="#fft" class="nav-item">Food for thought</a>
+        <a href="#pitfalls" class="nav-item">Common pitfalls</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a> → <a href="index.html">Food Science</a> → Proteins in the Kitchen
+      </div>
+
+      <h1 class="lesson-title">Proteins in the Kitchen</h1>
+      <div class="lesson-meta">Denaturation · Coagulation · Collagen &amp; Gelatin · Gluten · Dairy Proteins</div>
+
+      <p class="prose">
+        Proteins are the reason eggs set, meat has texture, cheese stretches, gluten traps
+        CO₂ bubbles in dough, and hollandaise sauce holds together in a stable emulsion.
+        They are nature's most versatile structural material — and cooking is, at its core,
+        the art of selectively unfolding and rearranging them. Understanding what proteins
+        are, how they fold, and what heat does to them will explain more cooking mysteries
+        than almost any other single concept.
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="structure">Protein structure — a brief primer</div>
+
+      <p class="prose">
+        You don't need a biochemistry degree to cook with proteins, but you do need a working
+        mental model. Here is the minimum necessary:
+      </p>
+
+      <p class="prose">
+        <strong>Amino acids</strong> are the building blocks. There are 20 in the standard set,
+        each with an amino group (–NH₂), a carboxyl group (–COOH), and a side chain (called R)
+        that differs between them. The R group is what makes each amino acid chemically
+        distinctive — it can be hydrophobic, charged, polar, or able to form special bonds
+        (like the disulfide bond formed by cysteine pairs).
+      </p>
+
+      <p class="prose">
+        <strong>A protein</strong> is a chain of amino acids linked by peptide bonds (–CO–NH–),
+        formed when the carboxyl of one amino acid reacts with the amino group of the next.
+        This chain is the <em>primary structure</em>. Typical food proteins are hundreds to
+        thousands of amino acids long.
+      </p>
+
+      <p class="prose">
+        The chain does not stay as a floppy string. It folds:
+      </p>
+      <ul class="prose" style="margin-top:6px;">
+        <li><strong>Secondary structure</strong>: local folding into regular patterns — α-helices
+            (a spiral, like a coiled spring) and β-sheets (flat, like a pleated ribbon).
+            Held in place by hydrogen bonds between nearby peptide groups.</li>
+        <li><strong>Tertiary structure</strong>: the overall 3D shape of the whole chain,
+            determined by how hydrophobic R groups cluster in the core (away from water),
+            how charged groups arrange on the surface, and where disulfide bonds (covalent
+            S–S bridges between cysteine pairs) lock the structure.</li>
+        <li><strong>Quaternary structure</strong>: multiple separate protein chains assembled
+            together (e.g., collagen is three chains wound together; haemoglobin is four chains).</li>
+      </ul>
+
+      <p class="prose">
+        The 3D structure is not fixed rigidly — it is the stable equilibrium of many weak
+        competing forces. This matters enormously for cooking, because heat has enough energy
+        to disrupt those forces.
+      </p>
+
+      <div class="callout">
+        <strong>The key insight:</strong> a protein's function (and cooking behaviour) is almost
+        entirely determined by its 3D shape, not its sequence. Denaturation — the destruction
+        of that shape — is therefore the central event in protein cooking chemistry.
+      </div>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="denaturation">Denaturation — unfolding without breaking</div>
+
+      <p class="prose">
+        Denaturation is the disruption of a protein's higher-order structure (secondary,
+        tertiary, quaternary) without breaking the peptide bonds of the primary chain.
+        The chain sequence is intact; the 3D shape is destroyed. Think of it as unravelling
+        a coiled rope without cutting any fibres.
+      </p>
+
+      <p class="prose">
+        Causes of denaturation:
+      </p>
+      <ul class="prose" style="margin-top:6px;">
+        <li><strong>Heat:</strong> thermal energy disrupts hydrogen bonds and hydrophobic packing
+            that hold the structure. Above a threshold temperature (different for every protein),
+            the structure collapses. This is the most important cause in cooking.</li>
+        <li><strong>Acid:</strong> protonates charged amino acid side chains, disrupting
+            electrostatic interactions and altering the protein's charge balance. This is why
+            acid "cooks" fish (ceviche) — the proteins denature without heat.</li>
+        <li><strong>Alkali:</strong> deprotonates groups, similarly disrupting charge balance.
+            Used in lye-processed foods (lutefisk, century eggs).</li>
+        <li><strong>Mechanical action:</strong> vigorous agitation unfolds protein chains by
+            physical force. Whipping egg whites denatures ovalbumin — the bubbles stretch
+            the proteins, which then unfold and aggregate around air interfaces.</li>
+        <li><strong>Salt and other solutes:</strong> can stabilise or destabilise structure
+            depending on concentration and type (Hofmeister series — beyond our scope here).</li>
+      </ul>
+
+      <p class="prose">
+        Denaturation is <em>usually irreversible under cooking conditions</em>. Once egg white
+        proteins have unfolded and aggregated, you cannot un-cook them. There are exceptions
+        (some proteins refold under mild conditions), but in practical cooking, denaturation
+        is a one-way gate.
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="coagulation">Coagulation — from liquid to solid</div>
+
+      <p class="prose">
+        Denaturation alone just produces unfolded protein chains — they are still soluble.
+        <strong>Coagulation</strong> is what happens next: the unfolded chains aggregate,
+        forming a solid network. The protein goes from dissolved and fluid to an entangled gel.
+      </p>
+
+      <p class="prose">
+        Once denatured, hydrophobic regions (normally buried inside the folded structure)
+        are exposed on the surface of the chain. Hydrophobic regions repel water and attract
+        each other. The unfolded chains therefore clump together, expelling water
+        (syneresis) and forming either a solid coagulum or a gel, depending on the protein
+        concentration and rate.
+      </p>
+
+      <p class="prose">
+        Temperature matters critically here. The difference between a perfectly cooked egg
+        and a rubbery, weeping mess is a few degrees:
+      </p>
+      <ul class="prose" style="margin-top:6px;">
+        <li><strong>Too slow / too cool:</strong> proteins denature gently and form a fine,
+            stable network — smooth, tender gel (silky scrambled eggs, custard).</li>
+        <li><strong>Too fast / too hot:</strong> proteins denature rapidly and aggregate in
+            large clumps, squeezing out water — rubbery, weeping texture (overcooked
+            scrambled eggs, curdled custard).</li>
+      </ul>
+
+      <p class="prose">
+        Rate matters as much as temperature. This is why custard requires gentle heat:
+        not just to stay below scrambling temperature, but to give the proteins time to
+        form a fine network rather than large aggregates.
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="eggs">Eggs — the best model system in the kitchen</div>
+
+      <p class="prose">
+        Eggs contain multiple proteins that denature at different temperatures, making them
+        ideal for exploring the denaturation concept. Egg white (~10% protein by weight) is
+        largely a mix of:
+      </p>
+      <ul class="prose" style="margin-top:6px;">
+        <li><strong>Ovalbumin</strong> (~54% of egg white protein): major coagulating protein;
+            begins to denature at ~60°C, fully set around 80°C. Responsible for most of the
+            structural change in cooked egg white.</li>
+        <li><strong>Ovotransferrin / conalbumin</strong> (~13%): most heat-sensitive egg white
+            protein; begins denaturing at ~62°C. Its early aggregation contributes to the
+            clouding of egg white at low temperatures.</li>
+        <li><strong>Ovomucin, lysozyme, globulins:</strong> minor structural roles; various
+            denaturation temperatures.</li>
+      </ul>
+      <p class="prose">
+        Egg <em>yolk</em> contains mainly lipoproteins and livetins. The yolk proteins
+        begin coagulating around 65°C and are fully set by 70°C. This narrow window between
+        yolk and white is why soft-boiled eggs and sous-vide eggs are possible.
+      </p>
+
+      <div class="callout">
+        <strong>The sous-vide 63°C egg:</strong> Held at exactly 63°C for 60–75 minutes,
+        egg white proteins are at or just above their onset temperature. The white is barely
+        set — translucent, gelatinous. The yolk is at the lower end of its coagulation range —
+        custardy and flowing but not liquid. This is a temperature that is <em>impossible to
+        achieve</em> by conventional poaching or boiling; precise sous-vide control is the
+        only way. The 63°C egg is a direct consequence of the protein denaturation temperature
+        window.
+      </div>
+
+      <p class="prose">
+        <strong>Dilution raises the effective coagulation temperature.</strong> When making
+        custard, egg proteins are diluted with milk or cream. The protein chains are farther
+        apart, so aggregation requires more energy to bring them together — the apparent set
+        temperature rises to 75–85°C depending on dilution ratio. This is why a custard can
+        be stirred over 80°C heat without curdling, where a pure egg would have scrambled at 70°C.
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="denat-chart">Denaturation temperatures for key food proteins</div>
+
+      <!-- Interactive: protein denaturation temperature chart -->
+      <div class="widget-card" style="margin:20px 0;">
+        <div class="widget-title">When proteins set — denaturation and coagulation temperature ranges</div>
+        <div id="protein-chart" style="width:100%;height:360px;"></div>
+        <p style="font-size:0.82em;color:#9aabb8;margin:6px 0 0;text-align:center;">
+          Onset–completion ranges for key food proteins. Bars show where the protein transitions from
+          unfolded to aggregated under typical cooking conditions.
+        </p>
+      </div>
+
+      <p class="prose">
+        A few things jump out from this chart:
+      </p>
+      <ul class="prose" style="margin-top:6px;">
+        <li>Myosin (the dominant muscle protein responsible for contraction) begins setting at just
+            50°C. A steak held at 55°C for long enough has already experienced significant myosin
+            denaturation — that's what changes the texture from raw to "cooked."</li>
+        <li>Actin (the other major muscle protein) doesn't set until 75–80°C. At this temperature,
+            meat becomes noticeably tougher and drier. This is why medium-rare (57°C) feels
+            fundamentally different from well-done (75°C+) — you've crossed the actin
+            denaturation threshold.</li>
+        <li>Egg white proteins span a wide range. The white is "set" progressively, not all at once,
+            as temperature rises through 62–80°C.</li>
+        <li>Collagen doesn't fully convert to gelatin at lower temperatures, but the initial
+            disruption of its triple-helix begins around 65°C. Conversion to gelatin requires
+            sustained time at higher temperatures.</li>
+      </ul>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="collagen">Collagen and gelatin — why tough cuts need time</div>
+
+      <p class="prose">
+        Collagen is the most abundant protein in animal connective tissue (tendons, skin,
+        cartilage, the casings around muscle fibres). It is a triple helix — three polypeptide
+        chains wound around each other in a right-handed coil, stabilised by hydrogen bonds.
+        This structure makes collagen extraordinarily tough and insoluble at low temperatures —
+        which is why a raw beef shank is almost impossibly chewy.
+      </p>
+
+      <p class="prose">
+        <strong>Tough cuts = lots of connective tissue = lots of collagen.</strong>
+        Cuts that do a lot of work (shoulder, shank, brisket, short rib) are full of it.
+        Tender cuts (tenderloin, ribeye) have little. This is not a flaw — it is the muscle's
+        adaptation to mechanical stress.
+      </p>
+
+      <p class="prose">
+        When collagen is heated above ~70°C in the presence of water, two things happen:
+      </p>
+      <ol class="prose" style="margin-top:6px;">
+        <li><strong>Shrinkage:</strong> the triple helix unwinds rapidly when its hydrogen bonds
+            break — the collagen fibre contracts to roughly 1/3 its original length.
+            This is why braised meat sometimes "seizes" initially when it hits the hot liquid.</li>
+        <li><strong>Hydrolysis → gelatin:</strong> sustained heat cleaves the peptide bonds
+            that link the three chains, releasing them as separate gelatin chains. These dissolve
+            into the cooking liquid. On cooling, gelatin chains entangle and form a gel —
+            the characteristic "silkiness" of a long-braised sauce or a proper stock that
+            sets to a jelly when chilled.</li>
+      </ol>
+
+      <p class="prose">
+        The key word is <em>sustained</em>. Collagen hydrolysis is a slow reaction, even at
+        90°C. A short high-heat blast — like searing — is not enough. A 2-hour braise at
+        80°C is not enough for a pork shoulder. A proper braise needs 3–6+ hours at 80–95°C,
+        depending on the cut and animal age. Older animals have more cross-linked collagen
+        that hydrolyses even more slowly.
+      </p>
+
+      <div class="callout">
+        <strong>The braising paradox:</strong> Long cooking toughens the muscle fibres
+        (actin/myosin denaturation and aggregation squeeze out moisture) but simultaneously
+        softens the connective tissue (collagen → gelatin). A short-braised shoulder is tough
+        in both ways. A long-braised shoulder has overtly cooked muscle fibres but so much
+        dissolved gelatin that it feels tender and moist — the gelatin coats the mouth and
+        the fibres pull apart easily. The gelatin compensates for what the fibre denaturation
+        took away.
+      </div>
+
+      <p class="prose">
+        Temperature control in braising matters too. A full boil (100°C) causes rapid
+        muscle fibre contraction and water expulsion — the meat becomes tough and stringy
+        faster. A gentle braise (80–85°C, barely simmering) allows more gelatin development
+        per unit of muscle fibre damage. Low and slow is not superstition; it is protein
+        chemistry.
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="gluten">Gluten — a protein network built by mechanical work</div>
+
+      <p class="prose">
+        Wheat flour contains two classes of storage proteins: <strong>glutenin</strong> (large
+        polymers, elastic — provides strength and chewiness) and <strong>gliadin</strong>
+        (small monomers, plastic and extensible — provides stretch without tearing).
+        Alone, neither forms useful structure. But when hydrated and mechanically worked,
+        they interlock into a viscoelastic network: <strong>gluten</strong>.
+      </p>
+
+      <p class="prose">
+        The network forms primarily via:
+      </p>
+      <ul class="prose" style="margin-top:6px;">
+        <li><strong>Disulfide bonds</strong> between cysteine residues (covalent S–S bridges
+            that lock chains together)</li>
+        <li><strong>Hydrogen bonds</strong> between glutenin/gliadin chains (weaker, numerous,
+            responsible for the network's elasticity)</li>
+        <li><strong>Hydrophobic interactions</strong> between non-polar side chains</li>
+      </ul>
+
+      <p class="prose">
+        <strong>Kneading</strong> aligns protein chains, creates new S–S bonds via thiol-disulfide
+        exchange, and develops the network. More kneading = stronger, more elastic gluten.
+        This is the difference between bread (kneaded extensively, chewy, open crumb) and
+        cake (barely mixed, tender, tight crumb).
+      </p>
+
+      <p class="prose">
+        <strong>Factors that weaken (shorten) gluten:</strong>
+      </p>
+      <ul class="prose" style="margin-top:6px;">
+        <li><strong>Fat:</strong> lipids coat protein strands and physically interrupt network
+            formation — hence "shortening" (the whole category of fat used for tender pastry).
+            More fat = more tender = less gluten development.</li>
+        <li><strong>Sugar:</strong> competes with protein for water, reducing hydration of
+            glutenin/gliadin — slows network formation and produces a more tender crumb.</li>
+        <li><strong>Acid:</strong> reduces pH, weakens the disulfide bonds and charge
+            interactions that hold gluten together. Sourdough's acid extends gluten
+            extensibility — the dough stretches farther before tearing.</li>
+        <li><strong>Overmixing cake batter:</strong> develops more gluten than intended for
+            a tender cake — produces a tough, rubbery result.</li>
+      </ul>
+
+      <p class="prose">
+        <strong>Resting dough (autolyse or bulk fermentation)</strong> allows the gluten
+        network to relax and become more extensible. The cysteine side chains undergo slow
+        thiol-disulfide shuffling, and the network equilibrates to a lower-energy conformation.
+        A rested dough stretches more easily than one worked directly — important for both
+        bread shaping and pizza.
+      </p>
+
+      <p class="prose">
+        <strong>Gluten-free baking</strong> is difficult precisely because gluten-free flours
+        (rice, corn, tapioca, sorghum) lack glutenin and gliadin entirely. Xanthan gum or
+        psyllium husk is added to mimic gluten's network function — but neither produces
+        the same viscoelastic properties. Gluten-free bread has a fundamentally different
+        (denser, stickier, less chewy) structure not because of poor technique but because
+        the underlying protein chemistry is absent.
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="dairy">Dairy proteins — why milk behaves as it does</div>
+
+      <p class="prose">
+        Milk is about 3.5% protein by weight, divided into two main families:
+      </p>
+
+      <p class="prose">
+        <strong>Caseins</strong> (~80% of milk protein) are a family of proteins that exist in
+        milk as <em>casein micelles</em> — large colloidal aggregates (100–300 nm diameter)
+        stabilised by calcium phosphate bridges and a hairy outer layer of κ-casein that
+        keeps the micelles dispersed in water. Caseins are:
+      </p>
+      <ul class="prose" style="margin-top:6px;">
+        <li>Remarkably heat-stable — they do not denature at normal cooking temperatures
+            because they have little regular secondary structure to disrupt.</li>
+        <li>Acid-sensitive — lowering pH to ~4.6 (their isoelectric point) removes the
+            electrical charge that keeps micelles repelling each other.
+            They aggregate and precipitate: this is what happens in yogurt, cheese,
+            and soured milk.</li>
+        <li>Rennet-sensitive — rennet (proteases) cleave κ-casein, removing its hairy
+            outer layer. Without κ-casein, micelles aggregate in the presence of calcium:
+            this is the primary mechanism of cheese curd formation.</li>
+      </ul>
+
+      <p class="prose">
+        <strong>Whey proteins</strong> (~20% of milk protein, including β-lactoglobulin,
+        α-lactalbumin, and lactoferrin) are heat-sensitive. They denature at 70–80°C —
+        this is the skin that forms when you heat milk, and why ultra-pasteurised (UHT)
+        milk smells slightly "cooked." Whey proteins contribute to the stretchy texture
+        of mozzarella (when heated, denatured whey proteins bind to casein and help
+        the cheese string) and to the creaminess of well-made yogurt.
+      </p>
+
+      <p class="prose">
+        <strong>Acid + heat = disaster for milk-based sauces.</strong>
+        Adding acidic wine or tomatoes directly to a hot cream or milk sauce can cause
+        the caseins to aggregate (pH drops + heat = fast coagulation). The technique fix:
+        (1) reduce the acid first before adding dairy, or (2) add a starch (flour, cornstarch)
+        which surrounds the casein micelles and physically prevents their aggregation even
+        at lower pH.
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="examples">Worked examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Why does a steak get tougher at high internal temperature?</strong></div>
+        <div class="example-problem">
+          A steak cooked to 57°C (medium-rare) is noticeably more tender and juicy than one
+          cooked to 75°C (well-done), even with the same cooking method. Explain the difference
+          using protein denaturation and coagulation. Account for both myosin and actin.
+        </div>
+        <div class="example-body">
+          <p><strong>Myosin denaturation (50–55°C):</strong><br>
+          Myosin, the primary muscle contractile protein, denatures beginning at ~50°C and is
+          mostly denatured by 55°C. At 57°C (medium-rare), myosin is denatured throughout
+          the steak. The muscle fibres have transitioned from raw (translucent, springy) to
+          cooked (opaque, with a cooked texture). However, the degree of aggregation is
+          moderate — the myosin network has formed but not severely contracted.</p>
+          <p><strong>Actin denaturation (75–80°C):</strong><br>
+          At 57°C, actin (the other major muscle protein) has not yet denatured — it is still
+          in its native fibrous form. The muscle fibre structure retains some integrity.
+          At 75°C+, actin denatures. Actin denaturation causes dramatic contraction of
+          the muscle fibre structure: the fibres shorten and squeeze water out laterally
+          (expressed as the grey-brown liquid pooling around the well-done steak).
+          The remaining protein network is much denser and tougher.</p>
+          <p><strong>Water retention:</strong><br>
+          Protein networks can hold water within their structure. A less-contracted network
+          (medium-rare) retains more intramuscular water. An over-contracted network
+          (well-done) has expelled most free water. Perceived juiciness tracks retained
+          moisture closely.</p>
+          <p><em>Implication:</em> there is a physical reason why well-done steak is tougher
+          and drier — it is not a matter of taste or preference but of protein chemistry.
+          Cooking a tender cut (low collagen) to well-done sacrifices both myosin and
+          actin integrity with no collagen benefit (tender cuts have little to convert).
+          For tough cuts (high collagen), high temperature over long time is beneficial —
+          the collagen conversion to gelatin compensates for the actin damage.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Making hollandaise without curdling</strong></div>
+        <div class="example-problem">
+          Hollandaise is an emulsion of butter fat in egg yolk protein, thickened by gentle
+          cooking. It frequently "breaks" (the fat separates, and the egg solids scramble).
+          Using protein denaturation principles, explain why it breaks and what technique
+          controls prevent it.
+        </div>
+        <div class="example-body">
+          <p><strong>What is hollandaise structurally:</strong><br>
+          Egg yolk proteins (lipoproteins, mostly) are partially denatured by gentle heat,
+          forming a network that traps and stabilises the emulsified butter fat droplets.
+          The yolk's lecithin acts as an emulsifier. The sauce thickens as more protein
+          denatures and the network tightens.</p>
+          <p><strong>Why it breaks:</strong><br>
+          Two failure modes: (1) Over-temperature: above ~70°C, egg yolk proteins denature
+          too rapidly and aggregate into large clumps (scrambled egg) rather than forming
+          a fine network. The emulsion breaks as the protein loses its ability to surround
+          fat droplets. (2) Over-rate: even below 70°C, adding butter too quickly gives the
+          partially denatured proteins insufficient time to distribute around the new fat
+          droplets — the emulsion breaks mechanically.</p>
+          <p><strong>Technique controls:</strong></p>
+          <ul>
+            <li><em>Temperature:</em> use a double boiler (bain-marie) — water below keeps
+                the maximum temperature to ~80°C (less than boiling), giving a buffer.
+                Never cook hollandaise over direct heat. The Maillard/boiling point cap
+                of water is your safety net.</li>
+            <li><em>Rate:</em> add clarified butter in a very thin stream (drop by drop initially),
+                giving the proteins time to coat each new fat droplet before the next is added.</li>
+            <li><em>Dilution:</em> more lemon juice or water dilutes the protein concentration,
+                raising the apparent coagulation temperature and giving more headroom.</li>
+            <li><em>Rescue:</em> a broken hollandaise can sometimes be saved by whisking into
+                a fresh yolk — the undenatured proteins from the new yolk can re-stabilise
+                the emulsion.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Why resting meat after cooking matters</strong></div>
+        <div class="example-problem">
+          A steak cut immediately after cooking loses a large pool of pink juice. The same
+          steak rested for 5 minutes loses very little. Explain the mechanism using protein
+          structure and temperature gradients.
+        </div>
+        <div class="example-body">
+          <p><strong>During cooking:</strong><br>
+          The outer surface of the steak reaches browning temperatures (160°C+) while the
+          interior is cooler. The surface proteins (both myosin and actin near the surface)
+          are heavily denatured and contracted. The surface protein network has expelled
+          a large fraction of its intracellular water — this water is now in the form of
+          free fluid sitting inside the steak near the surface but outside the protein fibres.</p>
+          <p><strong>Temperature gradient and fibre tension:</strong><br>
+          During cooking, there is a significant temperature gradient: exterior hot, interior
+          cooler. The contracted exterior fibres are under tension relative to the less-contracted
+          interior. When the steak is cut, this tension is released — the fibres spring apart,
+          and the free fluid (which was being held in place by the internal pressure) rushes
+          out. Cutting also physically disrupts the protein network, further releasing trapped fluid.</p>
+          <p><strong>During resting:</strong><br>
+          After removing from heat, the temperature gradient equalises as the interior warms
+          and the exterior cools. The contractile tension difference decreases. More importantly,
+          the partially denatured proteins at the surface begin to relax slightly as temperature
+          drops below their coagulation threshold. The protein network loosens marginally and
+          re-absorbs some of the expelled free fluid. The fluid becomes less mobile as
+          temperature drops (more viscous) and as partially rehydrated protein networks
+          grip it again.</p>
+          <p><em>Practical note:</em> 5 minutes of resting for a steak, 20–30 minutes for a
+          large roast. Tent loosely with foil — not tightly, which traps steam and softens
+          the crust. The resting does not meaningfully lower internal temperature
+          (for a steak, maybe 1–2°C); it primarily allows the protein network to
+          equilibrate and reabsorb free fluid.</p>
+        </div>
+      </div>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="fft">Food for thought</div>
+
+      <ul class="fft-list">
+        <li class="fft-item">
+          Acid denatures proteins. Ceviche is "cooked" in citrus juice — fish proteins
+          denature without heat. But ceviche texture is noticeably different from
+          heat-cooked fish. What does this tell you about the mechanism of denaturation
+          by acid vs. heat, and about the relationship between denaturation and coagulation?
+          <div class="fft-answer">
+            Acid denaturation works by disrupting electrostatic interactions — protonating
+            histidine, lysine, and arginine side chains, and deprotonating aspartate and
+            glutamate, collapsing the charge balance that maintains the 3D structure.
+            Heat denaturation works by disrupting hydrogen bonds and hydrophobic packing
+            directly. Both unfold the protein chains, but at different rates and with
+            different kinetics. Crucially: acid denaturation occurs at a lower pH (around
+            the protein's isoelectric point) and tends to produce a finer, more even
+            aggregation, partly because charge neutralisation makes aggregation cooperative
+            but gradual. Heat denaturation can be faster and more violent when the temperature
+            exceeds the melting transition sharply. The noticeably more "tender" texture of
+            ceviche (less rubbery than heat-cooked fish) suggests that acid-denatured protein
+            networks are less tightly cross-linked than thermally-coagulated ones — possibly
+            because fewer disulfide bonds form under acid conditions (cysteine's thiol group
+            is more reactive at neutral pH). This is a genuine difference in mechanism,
+            not just a difference in temperature.
+          </div>
+        </li>
+        <li class="fft-item">
+          Gluten development requires both hydration AND mechanical work. If you mix flour
+          with water and let it sit for 30 minutes without kneading, how much gluten has
+          formed, and what does this imply about the relative contributions of hydration and
+          work to the network?
+          <div class="fft-answer">
+            Autolyse experiments (mix flour + water, no kneading, rest 20–60 minutes) show
+            measurable gluten formation — the dough becomes noticeably more extensible and
+            cohesive without any kneading. The hydration alone allows glutenin and gliadin
+            to unfold from their compact storage forms and begin associating. Some disulfide
+            bonds form spontaneously in an oxygen-containing environment. However, the network
+            is loose, under-aligned, and far less elastic than a kneaded dough. Kneading adds
+            mechanical energy that (a) forces chain alignment so that disulfide bonding between
+            adjacent chains is more probable, (b) stretches chains repeatedly to break weak
+            bonds and allow stronger ones to form in better positions, and (c) incorporates
+            oxygen which can facilitate disulfide bond formation via thiol-disulfide exchange.
+            The lesson: hydration is necessary but not sufficient. Mechanical work is the
+            second independent driver, and its contribution is largely irreplaceable by
+            simply waiting longer.
+          </div>
+        </li>
+        <li class="fft-item">
+          A stock made from the bones of a young animal (say, veal) gels more firmly when
+          chilled than stock from an older animal (say, mature beef). What protein chemistry
+          explains this difference?
+          <div class="fft-answer">
+            The firmness of a gel depends on the concentration of dissolved gelatin and the
+            number and quality of junction zones (where gelatin chains associate during cooling).
+            Young animals have more collagen in their bones and connective tissue, but crucially,
+            their collagen has fewer intermolecular cross-links. Cross-links in collagen form
+            slowly over an animal's lifetime via enzyme-mediated oxidation of lysine and
+            hydroxylysine residues (forming pyridinoline and deoxypyridinoline cross-links).
+            Heavily cross-linked collagen in old animals is harder to hydrolyse — it requires
+            more time and temperature to convert to gelatin, and yields shorter gelatin chains
+            (because the cross-links fragment the molecule further). Shorter chains form less
+            effective gel networks (fewer entanglements). Young animals' less-cross-linked
+            collagen hydrolyses more completely to longer gelatin chains, which entangle more
+            effectively on cooling and form a stronger, more elastic gel — hence the firmer
+            set of veal stock. Professional kitchens prize veal feet and calf bones specifically
+            for this gelatin quality difference.
+          </div>
+        </li>
+      </ul>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="pitfalls">Common pitfalls</div>
+
+      <ul class="prose">
+        <li style="margin-bottom:10px;">
+          <strong>"More heat = more cooked" applied uniformly.</strong>
+          Protein cooking is not a monotonic improvement with temperature. There is a sweet
+          spot for each protein. Overcooking actin (above 75°C) damages texture irreversibly.
+          Overcooking egg proteins produces a rubbery, weeping mass. Temperature precision matters.
+        </li>
+        <li style="margin-bottom:10px;">
+          <strong>Not resting meat.</strong>
+          Cutting immediately releases free fluid trapped by contracted protein fibres.
+          5 minutes is not overcautious ritual — it is the time needed for the protein
+          network to partially re-absorb expelled fluid and the temperature gradient to equalise.
+        </li>
+        <li style="margin-bottom:10px;">
+          <strong>Adding cold acid directly to hot dairy.</strong>
+          Lemon juice into hot cream = casein at isoelectric point + heat = rapid aggregation.
+          Always reduce acid separately, or add starch as insurance.
+        </li>
+        <li style="margin-bottom:10px;">
+          <strong>Thinking gluten is about flour type alone.</strong>
+          High-protein flour helps, but kneading method, hydration level, fat, and acid all
+          modulate gluten strength independently. A well-kneaded low-protein flour dough can
+          outperform a poorly-kneaded high-protein flour dough.
+        </li>
+        <li style="margin-bottom:10px;">
+          <strong>Boiling a braise to speed it up.</strong>
+          A hard boil (100°C) damages muscle fibres faster than collagen converts.
+          The "falling apart" quality of long-braised meat requires collagen → gelatin conversion,
+          which is a slow enzymatic-like hydrolysis, not a rapid thermal event. Boiling
+          achieves neither faster collagen conversion nor better results — only tougher,
+          drier, shredded-texture meat.
+        </li>
+      </ul>
+
+      <div class="section-head">Connects to</div>
+      <p class="prose">
+        <strong><a href="maillard.html">Heat &amp; Browning</a></strong> — The amino groups driving
+        the Maillard reaction come from lysine residues in proteins. Surface browning and internal
+        protein coagulation happen simultaneously when searing — these are complementary,
+        not competing, processes.
+        <br>
+        <strong>Fats, Oils &amp; Emulsions</strong> (planned) — Egg yolk lecithin is a protein-lipid
+        complex that enables emulsification. Understanding protein structure helps explain why
+        yolk is such a powerful emulsifier and why mayonnaise breaks the way it does.
+        <br>
+        <strong>Fermentation</strong> (planned) — Lactic acid bacteria lower pH during fermentation
+        (yogurt, cheese, sourdough), denaturing milk proteins (casein) and modifying gluten
+        structure. The acid does the same chemistry described here, just slowly over hours.
+      </p>
+
+      <div class="lesson-nav">
+        <a href="maillard.html" class="lesson-nav-btn">← Heat &amp; Browning</a>
+        <span class="lesson-nav-btn disabled">Fats, Oils &amp; Emulsions (planned)</span>
+      </div>
+
+    </div><!-- /main -->
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+  // ── Protein denaturation temperature chart ───────────────────────────────
+  var proteins = [
+    'Actin (muscle)',
+    'Whey proteins (milk)',
+    'Egg white — ovalbumin',
+    'Egg yolk proteins',
+    'Egg white — ovotransferrin',
+    'Myosin (muscle)',
+    'Collagen (initial disruption)'
+  ];
+  var onsets  = [75, 70, 72, 65, 62, 50, 60];
+  var offsets = [80, 80, 82, 70, 68, 55, 90]; // completion (or gelatin conversion window for collagen)
+
+  // Build shapes (horizontal bars as error bars / bar chart)
+  var barData = {
+    type: 'bar',
+    orientation: 'h',
+    x: onsets.map(function (o, i) { return offsets[i] - o; }),
+    y: proteins,
+    base: onsets,
+    marker: {
+      color: [
+        '#b85c38', '#c86a3a', '#3a6a8a', '#4a7a9a', '#5a8aaa', '#6ab4d4', '#8abcd8'
+      ],
+      opacity: 0.82
+    },
+    hovertemplate: '%{y}: %{base}–%{customdata}°C<extra></extra>',
+    customdata: offsets,
+    text: onsets.map(function (o, i) { return o + '–' + offsets[i] + '°C'; }),
+    textposition: 'outside',
+    textfont: { family: 'IBM Plex Sans', size: 11, color: '#2a3a4a' }
+  };
+
+  var layout = {
+    xaxis: {
+      title: 'Temperature (°C)',
+      range: [44, 100],
+      tickfont: { family: 'IBM Plex Sans', size: 12 },
+      titlefont: { family: 'IBM Plex Sans', size: 13 }
+    },
+    yaxis: {
+      tickfont: { family: 'IBM Plex Sans', size: 12 },
+      automargin: true
+    },
+    margin: { l: 170, r: 60, t: 18, b: 50 },
+    paper_bgcolor: '#f9f9f7',
+    plot_bgcolor: '#f9f9f7',
+    font: { family: 'IBM Plex Sans' },
+    showlegend: false
+  };
+
+  Plotly.newPlot('protein-chart', [barData], layout, { responsive: true, displayModeBar: false });
+});
+</script>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+</body>
+</html>

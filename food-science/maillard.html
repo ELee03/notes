@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Heat &amp; Browning — Food Science | Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/plotly.js-dist@2.27.0/plotly.min.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="food-science" data-current="maillard.html"></div>
+      <hr class="sidebar-rule">
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#what-is-browning" class="nav-item">What is browning?</a>
+        <a href="#maillard" class="nav-item">The Maillard reaction</a>
+        <a href="#mechanism" class="nav-item">The mechanism</a>
+        <a href="#conditions" class="nav-item">Controlling browning</a>
+        <a href="#caramelisation" class="nav-item">Caramelisation</a>
+        <a href="#kitchen" class="nav-item">In the kitchen</a>
+        <a href="#examples" class="nav-item">Worked examples</a>
+        <a href="#fft" class="nav-item">Food for thought</a>
+        <a href="#pitfalls" class="nav-item">Common pitfalls</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a> → <a href="index.html">Food Science</a> → Heat &amp; Browning
+      </div>
+
+      <h1 class="lesson-title">Heat &amp; Browning</h1>
+      <div class="lesson-meta">Maillard Reaction · Caramelisation · Water Activity · pH · Flavour Chemistry</div>
+
+      <p class="prose">
+        A steak seared in a screaming-hot cast-iron pan. A baguette with a mahogany crust.
+        A cup of dark-roast coffee. Roasted peanuts. Soy sauce. These foods have almost nothing
+        in common — except that they all owe their most prized flavours and aromas to a single
+        family of reactions: the <strong>Maillard reaction</strong>. Understanding it changes how
+        you think about heat, moisture, and seasoning. It is arguably the most important chemical
+        event in cooking.
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="what-is-browning">What actually happens when food browns?</div>
+
+      <p class="prose">
+        Browning is not a single thing. The visible colour change, the new aromas, and the
+        flavour complexity are all chemical consequences of the same underlying reactions — but
+        there are two completely different pathways to browning, and they are not the same reaction
+        at different temperatures:
+      </p>
+
+      <table style="border-collapse:collapse;width:100%;margin:16px 0 24px;font-size:0.925em;">
+        <thead>
+          <tr style="background:#e8f0f5;color:#1a2840;">
+            <th style="text-align:left;padding:10px 14px;border-bottom:2px solid #7ab8d4;"></th>
+            <th style="text-align:left;padding:10px 14px;border-bottom:2px solid #7ab8d4;">Maillard Reaction</th>
+            <th style="text-align:left;padding:10px 14px;border-bottom:2px solid #7ab8d4;">Caramelisation</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding:9px 14px;border-bottom:1px solid #dde4ec;font-weight:600;color:#2a4868;">Reactants</td>
+            <td style="padding:9px 14px;border-bottom:1px solid #dde4ec;">Amino acids + reducing sugars</td>
+            <td style="padding:9px 14px;border-bottom:1px solid #dde4ec;">Sugars only (no protein needed)</td>
+          </tr>
+          <tr style="background:#f9f9f7;">
+            <td style="padding:9px 14px;border-bottom:1px solid #dde4ec;font-weight:600;color:#2a4868;">Onset temperature</td>
+            <td style="padding:9px 14px;border-bottom:1px solid #dde4ec;">~140°C surface temp</td>
+            <td style="padding:9px 14px;border-bottom:1px solid #dde4ec;">~160–180°C (depends on sugar type)</td>
+          </tr>
+          <tr>
+            <td style="padding:9px 14px;border-bottom:1px solid #dde4ec;font-weight:600;color:#2a4868;">Flavour profile</td>
+            <td style="padding:9px 14px;border-bottom:1px solid #dde4ec;">Roasty, meaty, complex, nutty</td>
+            <td style="padding:9px 14px;border-bottom:1px solid #dde4ec;">Sweet, buttery, butterscotch</td>
+          </tr>
+          <tr style="background:#f9f9f7;">
+            <td style="padding:9px 14px;border-bottom:1px solid #dde4ec;font-weight:600;color:#2a4868;">Key products</td>
+            <td style="padding:9px 14px;border-bottom:1px solid #dde4ec;">Hundreds of volatiles + melanoidins (brown polymers)</td>
+            <td style="padding:9px 14px;border-bottom:1px solid #dde4ec;">Furans, diacetyl, HMF, caramel pigments</td>
+          </tr>
+          <tr>
+            <td style="padding:9px 14px;font-weight:600;color:#2a4868;">Familiar examples</td>
+            <td style="padding:9px 14px;">Seared meat, bread crust, roasted coffee</td>
+            <td style="padding:9px 14px;">Caramel sauce, toffee, crème brûlée top</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p class="prose">
+        Most browned food involves both reactions to some degree. Bread crust is heavily
+        Maillard — wheat flour contains proteins (with free amino groups) and starch-derived
+        reducing sugars that react together. But the caramel-sweet notes in crust come from
+        pure caramelisation of surface sugars. Crème brûlée is almost entirely caramelisation —
+        the thin sugar layer has very little protein. Coffee roasting is heavily Maillard —
+        coffee beans are rich in chlorogenic acids, amino acids, and sucrose (which first
+        inverts to glucose + fructose, then participates in Maillard).
+      </p>
+      <p class="prose">
+        The key insight to carry forward: <strong>these are mechanistically distinct reactions,
+        not the same reaction at different temperatures.</strong> Conflating them will cause
+        confusion in everything that follows.
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="maillard">The Maillard reaction — what it is and what it needs</div>
+
+      <p class="prose">
+        The reaction is named after Louis-Camille Maillard, a French physician who described it
+        in 1912 while studying amino acid chemistry. He was not trying to explain cooking. He noticed
+        that when amino acids were heated with sugars, a brown colour appeared — and spent years
+        characterising the products. The cooking significance was recognised only decades later.
+      </p>
+
+      <p class="prose">
+        Two ingredients are required:
+      </p>
+      <ul class="prose" style="margin-top:6px;">
+        <li><strong>A reducing sugar</strong> — one with a free aldehyde (–CHO) or ketone (C=O) group.
+            Glucose, fructose, lactose, and maltose all qualify. <em>Sucrose does not</em> — its
+            aldehyde is locked in a glycosidic bond and unavailable. Sucrose-only glazes only caramelise;
+            they don't Maillard until sucrose splits into glucose + fructose (via heat or acid).</li>
+        <li><strong>A free amino group</strong> — from a free amino acid dissolved in the food, or
+            from the side chain of a lysine residue in a protein. Lysine is particularly reactive
+            because its side chain carries an ε-amino group that is free even when the lysine is
+            incorporated into a protein chain.</li>
+      </ul>
+
+      <div class="callout">
+        <strong>Why does sucrose need to split first?</strong><br>
+        Table sugar (sucrose) is a disaccharide — glucose and fructose joined by a glycosidic bond
+        at their anomeric carbons. This bond blocks both carbonyl groups from reacting with amines.
+        Heat or acid breaks the bond (inversion), releasing free glucose and fructose. This is why
+        acidic marinades (citrus, vinegar) on sugar-glazed food actually accelerate browning —
+        the acid inverts the sucrose and makes the reducing sugars available.
+      </div>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="mechanism">The mechanism — a cascade of hundreds of reactions</div>
+
+      <p class="prose">
+        The Maillard "reaction" is actually a cascade. The early steps are chemically understood;
+        the later stages produce such complexity that no complete description exists. Here is the
+        broad structure:
+      </p>
+
+      <p class="prose"><strong>Stage 1 — Condensation and Amadori rearrangement (colourless)</strong></p>
+      <p class="prose">
+        The free amino group (–NH₂) attacks the carbonyl carbon of the reducing sugar, forming
+        an unstable Schiff base (an N-substituted glycosylamine). This rearranges via the
+        <em>Amadori rearrangement</em> into a more stable 1-amino-1-deoxy-2-ketose — the Amadori
+        compound. No visible change yet. The food looks exactly the same.
+      </p>
+
+      <p class="prose"><strong>Stage 2 — Fragmentation and Strecker degradation (most of the flavour)</strong></p>
+      <p class="prose">
+        Amadori compounds decompose along several pathways depending on temperature and pH:
+      </p>
+      <ul class="prose" style="margin-top:6px;">
+        <li>At acidic conditions: 1,2-enolisation → furfural derivatives and HMF
+            (hydroxymethylfurfural, which smells of cooked sweetness and caramel).</li>
+        <li>At neutral to basic conditions: 2,3-enolisation → reductones and dehydroreductones.
+            These are highly reactive and feed back into later stages.</li>
+        <li><strong>Strecker degradation</strong>: reactive dicarbonyl intermediates from Stage 2
+            react with amino acids, stripping off CO₂ and producing short, volatile aldehydes
+            called <em>Strecker aldehydes</em>. These are among the most potent odour compounds in
+            cooked food. Every amino acid produces a characteristic Strecker aldehyde:
+            leucine → 3-methylbutanal (malty, cheese);
+            cysteine → methanethiol and thiophenes (meat, roasty);
+            proline → 2-acetyl-1-pyrroline (bread crust, popcorn, jasmine rice aroma).</li>
+      </ul>
+
+      <p class="prose"><strong>Stage 3 — Polymerisation → melanoidins (the colour)</strong></p>
+      <p class="prose">
+        Reactive intermediates undergo aldol condensations and polymerise into large,
+        nitrogen-containing polymers called <strong>melanoidins</strong> — the brown pigments.
+        Their exact structures are not known; they vary with starting materials and conditions.
+        The visible browning appears here.
+      </p>
+
+      <div class="callout">
+        <strong>Why does seared beef smell different from toasted bread?</strong><br>
+        Both involve Maillard, but with different amino acid profiles. Beef is rich in cysteine
+        (→ meaty, sulphurous Strecker aldehydes and thiazoles) and glutamic acid.
+        Wheat flour is rich in proline (→ 2-acetyl-1-pyrroline, the bread-crust aroma).
+        Same reaction class, profoundly different odour because the starting amino acid
+        determines which Strecker aldehydes are produced.
+      </div>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="conditions">What controls the rate of browning?</div>
+
+      <p class="prose">
+        Four variables dominate: temperature, water activity, pH, and the type of sugar present.
+        They are mostly independent, which means you can tune them separately.
+      </p>
+
+      <p class="prose"><strong>Temperature — the dominant variable</strong></p>
+      <p class="prose">
+        The Maillard reaction obeys Arrhenius kinetics: rate increases exponentially with temperature.
+        The activation energy is roughly 100–130 kJ/mol, which means the rate approximately
+        <em>doubles for every 10°C rise</em> in the relevant range. Practically:
+      </p>
+      <ul class="prose" style="margin-top:6px;">
+        <li>Below ~120°C: negligible Maillard (this is why stored dry foods brown only very slowly).</li>
+        <li>~140°C: noticeably begins. A dry oven at 140°C will eventually brown bread, just slowly.</li>
+        <li>~160–180°C: rapid browning. Most roasting and searing happens here.</li>
+        <li>Above ~200°C: risk of pyrolysis — burning and acrolein/acrylamide formation overtake
+            Maillard. The sweet spot for controlled browning is 155–185°C surface temperature.</li>
+      </ul>
+      <p class="prose">
+        Crucially: this is <strong>surface temperature</strong>, not internal temperature.
+        A water-based cooking medium (braise, poach, steam) is capped at 100°C —
+        too cold for meaningful Maillard, regardless of how long you cook.
+      </p>
+
+      <!-- Browning rate interactive -->
+      <div class="widget-card" style="margin:20px 0;">
+        <div class="widget-title">Relative browning rate vs. surface temperature</div>
+        <div id="maillard-plot" style="width:100%;height:320px;"></div>
+        <p style="font-size:0.82em;color:#9aabb8;margin:6px 0 0;text-align:center;">
+          Arrhenius model — illustrative, not exact. Key transition points labelled.
+          Both reactions are negligible at water boiling point (100°C).
+        </p>
+      </div>
+
+      <p class="prose"><strong>Water activity — the silent enemy of browning</strong></p>
+      <p class="prose">
+        Water inhibits the Maillard reaction in two ways simultaneously:
+      </p>
+      <ol class="prose" style="margin-top:6px;">
+        <li><em>Evaporative cooling:</em> while liquid water is present on a surface, that surface
+            cannot exceed 100°C. Steam production keeps it cool. No water = surface can reach 160°C+.</li>
+        <li><em>Reaction equilibrium:</em> the condensation step (Stage 1) releases water as a
+            by-product. Le Chatelier's principle: excess water pushes the equilibrium backward,
+            slowing the forward reaction.</li>
+      </ol>
+      <p class="prose">
+        The optimal water activity for Maillard is approximately 0.5–0.8 — moist enough for
+        reactant mobility, dry enough for the surface temperature to climb. At aw near 1.0
+        (wet surface), browning is strongly suppressed. At aw near 0 (bone dry), the reactants
+        cannot migrate to react. The sweet spot is a slightly damp hot surface that is actively
+        drying out.
+      </p>
+      <p class="prose">
+        This is why <em>patting meat dry before searing is one of the most impactful
+        technique decisions in the kitchen</em>. It is not about aesthetics — it is about
+        removing the water that is physically preventing browning.
+      </p>
+
+      <p class="prose"><strong>pH — alkaline conditions dramatically accelerate the reaction</strong></p>
+      <p class="prose">
+        At low pH, the amino group is protonated: –NH₃⁺. A protonated amine cannot act as a
+        nucleophile — it has no lone pair available to attack the carbonyl carbon. The condensation
+        step fails to proceed. Raising pH deprotonates the amine, freeing up the lone pair,
+        and the reaction accelerates strongly.
+      </p>
+      <ul class="prose" style="margin-top:6px;">
+        <li><strong>Lye-dipped pretzels</strong>: a brief dip in NaOH solution (~3–4%, pH ≈ 13)
+            before baking produces an extremely deep mahogany crust in minutes at 200°C.
+            Without the lye, the same pretzel would be light golden at best.</li>
+        <li><strong>Baking soda in cookies</strong>: a small addition (0.1–0.2% by flour weight)
+            raises dough pH to ~8–9 and noticeably accelerates browning without producing
+            a detectable soapy taste at these concentrations.</li>
+        <li><strong>Egg white brushed over pastry</strong>: egg white is mildly alkaline (pH ~8.5–9)
+            and rich in protein (lysine). Combined: excellent browning promoter.</li>
+      </ul>
+
+      <p class="prose"><strong>Reducing sugar type</strong></p>
+      <p class="prose">
+        Not all sugars react at the same rate. Pentoses (5-carbon sugars: ribose, xylose)
+        react fastest due to their higher proportion of open-chain form. Among hexoses:
+        fructose &gt; galactose &gt; glucose. Disaccharides (lactose, maltose) react more
+        slowly because they must partially hydrolyse first. Approximate relative rates at
+        equivalent conditions:
+      </p>
+      <div style="background:#f0f6fa;border-left:3px solid #7ab8d4;border-radius:0 5px 5px 0;padding:12px 16px;margin:10px 0 20px;font-size:13.5px;line-height:1.8;">
+        Ribose (~5×) &nbsp;&gt;&nbsp; Fructose (~7×) &nbsp;&gt;&nbsp; Glucose (1×) &nbsp;&gt;&nbsp; Lactose (~0.5×)
+        &nbsp;&nbsp;(relative to glucose = 1)
+      </div>
+      <p class="prose">
+        Honey is ~38% fructose already in free form — this is why honey glazes produce
+        deeper browning faster than pure sucrose glazes at the same temperature.
+        Milk contains lactose, which browns more slowly than glucose but steadily over time —
+        visible in long-simmered milk-based sauces.
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="caramelisation">Caramelisation — browning without protein</div>
+
+      <p class="prose">
+        Caramelisation is the thermal pyrolysis of sugars alone — no amino acids required.
+        When pure sucrose is heated above ~160°C, it begins to dehydrate and fragment,
+        producing a complex mixture of compounds:
+      </p>
+      <ul class="prose" style="margin-top:6px;">
+        <li>Furanones and furans (caramel-like, nutty aromas)</li>
+        <li>Diacetyl (buttery, characteristic of fresh caramel)</li>
+        <li>HMF (hydroxymethylfurfural — sweet, slightly chemical)</li>
+        <li>Caramel polymers (the brown colour — less complex than melanoidins)</li>
+      </ul>
+      <p class="prose">
+        Onset temperatures by sugar type: fructose (~110°C), glucose (~160°C),
+        sucrose (~185°C). The onset varies with heating rate and presence of acids/bases.
+        Caramelisation flavour is markedly different from Maillard: sweeter, more butterscotch,
+        less complex, and notably absent of the "roasty/meaty" notes that come from
+        amino acid involvement.
+      </p>
+      <p class="prose">
+        In practice, most browning in the kitchen involves both reactions overlapping.
+        A caramel sauce is dominated by caramelisation (pure sugar). Seared meat is
+        dominated by Maillard. Bread crust sits in between — both mechanisms contribute.
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="kitchen">Applying this in the kitchen</div>
+
+      <div class="callout">
+        <strong>The rule of two:</strong> for any browning goal, ask (1) is the surface temperature
+        above ~150°C? and (2) is the surface sufficiently dry? Both must be yes. Most browning
+        failures trace to one of these being violated.
+      </div>
+
+      <p class="prose"><strong>Searing meat</strong></p>
+      <p class="prose">
+        Pat the surface bone dry. Use a pan with high thermal mass (cast iron) that maintains
+        temperature when cold meat is added. Preheat until just smoking. Don't move the meat
+        immediately — allow the surface to dry and heat before it releases naturally.
+        Don't crowd the pan: each piece releases moisture; too many pieces creates steam,
+        drops pan temperature, and prevents browning. Add a small pinch of baking powder to
+        a dry brine (alkaline) for faster, darker crust formation.
+      </p>
+
+      <p class="prose"><strong>Bread baking</strong></p>
+      <p class="prose">
+        Steam early in the bake: this keeps the crust extensible for oven spring (the final
+        rise burst as yeast dies and trapped CO₂ expands). Remove steam midway — the crust then
+        dries, reaches 160°C+, and browns via Maillard from flour proteins and Strecker degradation.
+        Egg wash = protein + sugar brush = accelerated Maillard = deep golden crust.
+        Milk wash gives a softer, more even golden colour (lactose, which browns more slowly).
+      </p>
+
+      <p class="prose"><strong>Roasted vegetables</strong></p>
+      <p class="prose">
+        Vegetables contain both amino acids (from proteins) and natural sugars — both Maillard
+        reactants. They will brown if: (1) the oven or pan is hot enough, and (2) the surface
+        can dry out rather than steam. Overcrowding a roasting tray is the most common failure:
+        too much vegetable releases too much steam, the surface temperature stays near 100°C,
+        and the vegetables steam-roast instead of caramelising/Maillarding. Use enough surface
+        area. A light coat of oil helps heat transfer and promotes surface drying.
+      </p>
+
+      <p class="prose"><strong>Butter vs. clarified butter</strong></p>
+      <p class="prose">
+        Regular butter contains ~1.5% milk proteins and ~0.5% lactose. These are Maillard
+        reactants. Butter browns (beurre noisette) because the milk solids Maillard at the
+        fat-phase temperature. Clarified butter (ghee) has milk solids removed — it is pure
+        fat and does not brown on its own. It also has a smoke point of ~250°C vs.
+        butter's ~150°C. Use clarified butter when you need high heat without burning;
+        use whole butter when you want the nutty-milk Maillard flavour contribution.
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="examples">Worked examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Why a wet steak resists browning</strong></div>
+        <div class="example-problem">
+          Two identical steaks are seared in the same pan at the same temperature. One is patted
+          bone dry; the other is placed directly from its vacuum-sealed bag (still damp).
+          Explain the difference in browning behaviour using Maillard reaction principles.
+          Consider both the surface temperature mechanism and the reaction equilibrium argument.
+        </div>
+        <div class="example-body">
+          <p><strong>Surface temperature argument:</strong><br>
+          While liquid water is present on the steak's surface, evaporative cooling keeps that
+          surface at approximately 100°C. The latent heat of evaporation of water is 2260 J/g —
+          enormous compared to the heat capacity of the pan. As long as moisture is evaporating,
+          virtually all the heat going into the surface is consumed by vaporisation rather than
+          heating the surface itself. At 100°C, the Maillard reaction rate is negligible (roughly
+          10,000× slower than at 180°C by Arrhenius). The wet steak cannot brown until the
+          surface moisture is fully driven off — which can take minutes, during which the steak
+          is overcooking internally.</p>
+          <p><strong>Reaction equilibrium argument:</strong><br>
+          Stage 1 of the Maillard reaction (Amadori condensation) releases water as a by-product.
+          Le Chatelier's principle: high water concentration at the surface pushes the equilibrium
+          toward the reverse reaction, slowing the forward Maillard pathway. Even if the surface
+          somehow reached 150°C while still wet, the excess water would suppress the reaction
+          thermodynamically.</p>
+          <p><strong>The dry steak:</strong> No surface moisture means the pan's heat immediately
+          raises the surface to 160–180°C. At 180°C, Maillard rate is dramatically faster.
+          Browning begins within 30–60 seconds of contact.</p>
+          <p><em>Practical extension:</em> Salt the steak and leave it uncovered on a wire rack
+          in the fridge for 12–24 hours before cooking. Osmosis initially draws moisture to the
+          surface, but refrigerator airflow evaporates it. The result: a very dry surface and
+          lightly brined interior — optimal for both browning and seasoning.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — The pretzel lye bath</strong></div>
+        <div class="example-problem">
+          Traditional German pretzels are briefly dipped in food-grade lye (NaOH solution,
+          ~3–4%) before baking at 220°C. Predict and explain the effect on (a) browning rate
+          and depth, (b) flavour, and (c) texture, compared to an untreated pretzel.
+        </div>
+        <div class="example-body">
+          <p><strong>(a) Browning rate and depth:</strong><br>
+          The dip raises surface pH to approximately 12–13. At this pH:
+          amino groups on wheat proteins (especially lysine) are fully deprotonated and
+          available for the Amadori condensation step. The initial condensation is the
+          rate-limiting step at moderate temperatures; removing the protonation barrier
+          dramatically accelerates the overall cascade. Result: the pretzel achieves
+          a deep mahogany-brown crust within 12–15 minutes at 220°C, compared to a
+          pale golden-brown for the untreated version at the same time and temperature.</p>
+          <p><strong>(b) Flavour:</strong><br>
+          Faster Maillard means more Strecker aldehyde production. Wheat's proline content
+          drives production of 2-acetyl-1-pyrroline (bread-crust aroma) at higher
+          concentrations. The deep melanoidin formation also contributes slight bitterness —
+          characteristic of proper pretzels. At alkaline conditions, certain Amadori
+          decomposition pathways are also favoured that produce more pyrazines
+          (nutty, roasty aromas). The result is a more complex, intensely "baked" flavour
+          profile than an unbathed pretzel.</p>
+          <p><strong>(c) Texture:</strong><br>
+          NaOH saponifies a small amount of surface lipids in the dough and partially
+          gelatinises surface starch. This creates a distinct thick, chewy outer skin
+          rather than the thin crispy crust of an egg-washed bread. The gelatinised starch
+          also browns differently — contributing to the characteristic sheen.</p>
+          <p><em>Safety note:</em> Food-grade lye at 3–4% is safe with proper handling.
+          Baking soda (sodium bicarbonate) achieves pH ~8.5–9, which gives a milder but
+          real version of the same effect — suitable for home bakers.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Honey vs. sucrose glaze on roasted chicken</strong></div>
+        <div class="example-problem">
+          A recipe glazes a roasting chicken with either (A) diluted honey or (B) simple syrup
+          (dissolved sucrose). Both are brushed on at the same time, same oven temperature (200°C).
+          Predict which browns faster and to what degree, and explain the chemistry.
+        </div>
+        <div class="example-body">
+          <p><strong>Honey (Glaze A):</strong><br>
+          Honey is approximately 38% fructose, 31% glucose, 7% other sugars, plus trace
+          amino acids from pollen and yeast activity during nectar fermentation. The sugars
+          are already in free reducing form — no hydrolysis step needed. Fructose reacts
+          roughly 7× faster than glucose in the Maillard pathway. The trace amino acids
+          provide their own Maillard reactants independent of the chicken's proteins.
+          Expected: fast, deep browning; rich complex flavour with roasty Maillard character.</p>
+          <p><strong>Simple syrup (Glaze B):</strong><br>
+          Pure sucrose has its aldehyde locked in a glycosidic bond — it cannot participate
+          in Maillard without inversion. At 200°C, some thermal inversion occurs, releasing
+          free glucose and fructose, but this is slower than honey's pre-available reducing
+          sugars. Once inverted, it behaves similarly to honey's sugar fraction, but with
+          no amino acid contribution. Expected: slower initial browning than honey; eventual
+          similar caramelisation character but less Maillard complexity.</p>
+          <p><strong>Verdict:</strong> Honey browns earlier and darker, and produces a more
+          complex (more Maillard) flavour. Sucrose glaze produces a cleaner, sweeter,
+          more purely caramel-like result. Recipes that call for "deep golden glaze fast"
+          (Peking duck, glazed ham) use honey or glucose syrup specifically for this reason.</p>
+        </div>
+      </div>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="fft">Food for thought</div>
+
+      <ul class="fft-list">
+        <li class="fft-item">
+          The Maillard reaction produces hundreds of distinct volatile compounds simultaneously.
+          Why does this combinatorial complexity in reaction products tend to produce
+          <em>perceived</em> complexity in flavour — what does the human olfactory system
+          actually do with all of that?
+          <div class="fft-answer">
+            Humans have ~400 functional olfactory receptor types, each tuned to a range of
+            molecules (not one molecule per receptor). Flavour perception is a combinatorial
+            pattern across many simultaneously activated receptors, not a single match.
+            A mixture of 200 distinct volatiles activates dozens of receptor types in a
+            specific pattern that the brain reads as a complex "scene." A single purified
+            Strecker aldehyde smells sharp and chemical; the same aldehyde embedded in a mixture
+            of 200 Maillard products smells like roast chicken. The context — the pattern —
+            creates the perception. Evolution likely tuned this system to distinguish complex
+            mixtures (thoroughly cooked food: safe, calorie-dense, digestible) from simpler
+            profiles (raw food, spoiled food, unripe fruit). Maillard's complexity is essentially
+            the chemical signature of "well cooked" — a signal we are wired to find rewarding.
+          </div>
+        </li>
+        <li class="fft-item">
+          At room temperature, the Maillard reaction still proceeds — just very slowly.
+          What are the practical consequences for food storage, and what conditions
+          would you control to minimise unwanted browning?
+          <div class="fft-answer">
+            Room-temperature Maillard causes off-flavours and colour changes during storage —
+            called "non-enzymatic browning during storage" or "storage Maillard." It is
+            significant for: dried milk powder (develops stale/cooked off-flavours over months),
+            dried egg products, cereal products, spray-dried coffee, and any dried food with
+            both protein and reducing sugars. A nutritional consequence: lysine (an essential
+            amino acid) is especially reactive in the Maillard pathway and is consumed,
+            reducing the bioavailability of protein in stored dried milk.
+            Control strategies: (1) refrigerate or freeze — Arrhenius means rate drops ~2× per
+            10°C; at 4°C vs. 25°C, the rate is ~5× slower; (2) reduce water activity to ~0.3–0.4
+            (below the optimal but still nonzero, which limits reactant mobility); (3) vacuum or
+            inert atmosphere packaging (some Maillard pathways involve oxygen); (4) remove
+            reducing sugars (expensive) or use sugar alcohols (sorbitol, xylitol) which
+            participate weakly in Maillard. The lesson: Maillard is a kinetics problem,
+            not a threshold phenomenon.
+          </div>
+        </li>
+        <li class="fft-item">
+          2-Acetyl-1-pyrroline (2-AP) is the single compound most responsible for the aroma
+          of freshly baked bread crust. It is also the primary aroma compound in jasmine rice,
+          and appears at trace levels in basmati rice and popcorn. Speculate: why would
+          proline-derived Maillard chemistry produce a compound present in an uncooked grain?
+          <div class="fft-answer">
+            This is genuinely puzzling and not fully resolved, but the current understanding:
+            jasmine and basmati rice varieties are unusual in that they accumulate 2-AP
+            at measurable levels even before cooking, apparently produced via an enzymatic
+            pathway during grain development (possibly involving proline metabolism and a
+            Δ1-pyrroline intermediate). The Maillard reaction during cooking of any proline-rich
+            food produces 2-AP via the same Δ1-pyrroline intermediate — just by a thermal
+            route rather than enzymatic. So the same compound can be produced by entirely
+            different mechanisms converging on the same intermediate. This is a reminder
+            that flavour compounds are not the exclusive product of cooking — plants and
+            microorganisms produce many of the same volatiles via metabolic pathways,
+            which is why some raw foods smell remarkably like their cooked counterparts.
+          </div>
+        </li>
+      </ul>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="pitfalls">Common pitfalls</div>
+
+      <ul class="prose">
+        <li style="margin-bottom:10px;">
+          <strong>Equating Maillard with caramelisation.</strong>
+          Different reactants, different temperatures, different products, different flavour profiles.
+          A browned onion is Maillard. A caramel sauce from pure sugar is caramelisation.
+          Knowing which you are triggering matters for technique decisions.
+        </li>
+        <li style="margin-bottom:10px;">
+          <strong>Relying on internal temperature as a proxy for browning.</strong>
+          Internal temperature and surface temperature are independent variables.
+          A sous-vide steak perfectly cooked to 57°C internally still has a pale, wet surface.
+          Browning requires a separate high-heat step — these are not the same process.
+        </li>
+        <li style="margin-bottom:10px;">
+          <strong>Overcrowding the pan.</strong>
+          Each piece of food releases moisture as it heats. Too many pieces → collective steam →
+          pan temperature drops → surface temperature stays near 100°C → no browning.
+          Cook in batches or use a pan large enough that pieces are not touching.
+        </li>
+        <li style="margin-bottom:10px;">
+          <strong>Ignoring reducing sugar type in glazes.</strong>
+          Honey and glucose syrup brown faster and at lower temperatures than sucrose.
+          Honey-glazed items can over-brown quickly if not watched at high oven temperatures.
+          This is not a failure of the recipe — it is a predictable consequence of fructose
+          reactivity.
+        </li>
+        <li style="margin-bottom:10px;">
+          <strong>Thinking browning only happens at high heat.</strong>
+          Room-temperature Maillard is real, just slow. It affects stored dried foods,
+          causes off-flavours in powder products, and is why some baked goods stale faster
+          at higher humidity.
+        </li>
+      </ul>
+
+      <div class="section-head">Connects to</div>
+      <p class="prose">
+        <strong><a href="proteins.html">Proteins in the Kitchen</a></strong> — The amino groups
+        driving Maillard come from lysine in proteins; the same proteins that denature and
+        coagulate when heated. Heat does multiple things to protein simultaneously.
+        <br>
+        <strong>Flavour Science</strong> (planned) — Strecker aldehydes, furans, and pyrazines
+        are primary aroma compounds in cooked food. Flavour science covers how these are
+        perceived and how they interact.
+        <br>
+        <strong>Chemistry</strong> (planned) — The Amadori rearrangement and Strecker degradation
+        are specific organic mechanisms — nucleophilic addition to carbonyl, decarboxylation,
+        imine formation. Full organic chemistry context will be covered there.
+      </p>
+
+      <div class="lesson-nav">
+        <span class="lesson-nav-btn disabled">← Previous</span>
+        <a href="proteins.html" class="lesson-nav-btn">Proteins in the Kitchen →</a>
+      </div>
+
+    </div><!-- /main -->
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  // KaTeX
+  renderMathInElement(document.body, {
+    delimiters: [
+      { left: '$$', right: '$$', display: true },
+      { left: '$', right: '$', display: false }
+    ]
+  });
+
+  // ── Maillard + Caramelisation rate vs. temperature (Arrhenius model) ──────
+  var temps = [], mRate = [], cRate = [];
+  var R = 8.314;
+  var Ea_M = 128000;   // Maillard activation energy, J/mol
+  var T0_M = 155 + 273.15; // reference temp for normalisation
+  var Ea_C = 138000;   // Caramelisation Ea
+  var T0_C = 185 + 273.15;
+
+  for (var t = 98; t <= 230; t += 1) {
+    temps.push(t);
+    var T = t + 273.15;
+    // Maillard: Arrhenius, normalised to 1 at 155°C
+    var m = Math.exp((Ea_M / R) * (1 / T0_M - 1 / T));
+    mRate.push(Math.min(m, 22));
+    // Caramelisation: sigmoid onset (fructose ~110°C, sucrose ~180°C) × Arrhenius
+    var onset = 1 / (1 + Math.exp(-(t - 168) / 7));
+    var c = onset * Math.exp((Ea_C / R) * (1 / T0_C - 1 / T)) * 2.2;
+    cRate.push(Math.min(Math.max(c, 0), 22));
+  }
+
+  var layout = {
+    xaxis: {
+      title: 'Surface temperature (°C)',
+      range: [98, 230],
+      tickfont: { family: 'IBM Plex Sans', size: 12 },
+      titlefont: { family: 'IBM Plex Sans', size: 13 }
+    },
+    yaxis: {
+      title: 'Relative reaction rate',
+      range: [0, 22],
+      tickfont: { family: 'IBM Plex Sans', size: 12 },
+      titlefont: { family: 'IBM Plex Sans', size: 13 }
+    },
+    shapes: [
+      { type: 'line', x0: 100, x1: 100, y0: 0, y1: 22,
+        line: { color: '#7ab8d4', width: 2, dash: 'dot' } },
+      { type: 'line', x0: 140, x1: 140, y0: 0, y1: 22,
+        line: { color: '#aabbc8', width: 1.5, dash: 'dash' } },
+      { type: 'rect', x0: 155, x1: 185, y0: 0, y1: 22,
+        fillcolor: 'rgba(58,106,138,0.06)', line: { width: 0 } }
+    ],
+    annotations: [
+      { x: 100, y: 21.5, text: 'Boiling point', showarrow: false,
+        xanchor: 'left', xshift: 5, font: { color: '#7ab8d4', size: 11, family: 'IBM Plex Sans' } },
+      { x: 140, y: 21.5, text: 'Maillard onset', showarrow: false,
+        xanchor: 'left', xshift: 5, font: { color: '#9aabb8', size: 11, family: 'IBM Plex Sans' } },
+      { x: 170, y: 21.5, text: 'Sweet spot', showarrow: false,
+        xanchor: 'center', font: { color: '#3a6a8a', size: 11, family: 'IBM Plex Sans', weight: 600 } }
+    ],
+    legend: {
+      x: 0.04, y: 0.92,
+      font: { family: 'IBM Plex Sans', size: 12 },
+      bgcolor: 'rgba(249,249,247,0.85)',
+      bordercolor: '#dde4ec', borderwidth: 1
+    },
+    margin: { l: 60, r: 20, t: 18, b: 50 },
+    paper_bgcolor: '#f9f9f7',
+    plot_bgcolor: '#f9f9f7',
+    font: { family: 'IBM Plex Sans' }
+  };
+
+  Plotly.newPlot('maillard-plot', [
+    { x: temps, y: mRate, type: 'scatter', mode: 'lines', name: 'Maillard',
+      line: { color: '#3a6a8a', width: 3 } },
+    { x: temps, y: cRate, type: 'scatter', mode: 'lines', name: 'Caramelisation',
+      line: { color: '#b85c38', width: 3, dash: 'dash' } }
+  ], layout, { responsive: true, displayModeBar: false });
+});
+</script>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+</body>
+</html>

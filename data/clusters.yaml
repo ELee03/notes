@@ -1,0 +1,210 @@
+# clusters.yaml — master list of all cluster IDs
+# Used by build.py to auto-generate data/resource-gaps.md on every build.
+# Keep in sync with the portal (index.html) and CLAUDE.md Cluster Index.
+#
+# Fields:
+#   id:      cluster ID used in books.yaml (required)
+#   name:    display name (required)
+#   section: portal section (required)
+#   status:  active | planned (required)
+
+clusters:
+
+  # ── Engineering ────────────────────────────────────────────────────────────
+
+  - id: control
+    name: Control Theory
+    section: Engineering
+    status: active
+
+  - id: adaptive-control
+    name: Adaptive & Robust Control
+    section: Engineering
+    status: planned
+
+  - id: nonlinear-control
+    name: Nonlinear Control
+    section: Engineering
+    status: planned
+
+  - id: signals
+    name: Signals & Systems
+    section: Engineering
+    status: planned
+
+  - id: circuits
+    name: Circuit Theory
+    section: Engineering
+    status: planned
+
+  - id: bioelectricity
+    name: Bioelectricity
+    section: Engineering
+    status: planned
+
+  - id: analog
+    name: Analog & Semiconductor
+    section: Engineering
+    status: planned
+
+  - id: embedded
+    name: Embedded Systems
+    section: Engineering
+    status: active
+
+  - id: robotics
+    name: Robotics
+    section: Engineering
+    status: planned
+
+  # ── Computer Science ───────────────────────────────────────────────────────
+
+  - id: computing
+    name: Computing Systems
+    section: Computer Science
+    status: planned
+
+  # ── Machine Learning & AI ──────────────────────────────────────────────────
+
+  - id: rl
+    name: Reinforcement Learning
+    section: Machine Learning & AI
+    status: active
+
+  - id: supervised-learning
+    name: Supervised Learning
+    section: Machine Learning & AI
+    status: planned
+
+  - id: deep-learning
+    name: Deep Learning
+    section: Machine Learning & AI
+    status: planned
+
+  - id: unsupervised-generative
+    name: Unsupervised & Generative Models
+    section: Machine Learning & AI
+    status: planned
+
+  - id: optimization
+    name: Optimization
+    section: Machine Learning & AI
+    status: planned
+
+  # ── Mathematics ────────────────────────────────────────────────────────────
+
+  - id: calculus-analysis
+    name: Calculus & Analysis
+    section: Mathematics
+    status: planned
+
+  - id: linear-algebra
+    name: Linear Algebra
+    section: Mathematics
+    status: planned
+
+  - id: differential-equations
+    name: Differential Equations
+    section: Mathematics
+    status: planned
+
+  - id: probability
+    name: Probability Theory
+    section: Mathematics
+    status: planned
+
+  - id: statistics
+    name: Statistics & Inference
+    section: Mathematics
+    status: planned
+
+  - id: discrete-math
+    name: Discrete Mathematics
+    section: Mathematics
+    status: planned
+
+  - id: abstract-algebra
+    name: Abstract Algebra
+    section: Mathematics
+    status: planned
+
+  - id: game-theory
+    name: Game Theory & Decision Theory
+    section: Mathematics
+    status: planned
+
+  # ── Physics ────────────────────────────────────────────────────────────────
+
+  - id: classical-mechanics
+    name: Classical Mechanics
+    section: Physics
+    status: planned
+
+  - id: electromagnetism
+    name: Electromagnetism
+    section: Physics
+    status: planned
+
+  - id: waves-optics
+    name: Waves & Optics
+    section: Physics
+    status: planned
+
+  - id: thermodynamics
+    name: Thermodynamics & Statistical Mechanics
+    section: Physics
+    status: planned
+
+  - id: relativity
+    name: Relativity
+    section: Physics
+    status: planned
+
+  - id: quantum
+    name: Quantum Mechanics
+    section: Physics
+    status: planned
+
+  # ── Life Sciences ──────────────────────────────────────────────────────────
+
+  - id: chemistry
+    name: Chemistry
+    section: Life Sciences
+    status: planned
+
+  - id: biochemistry
+    name: Biochemistry & Molecular Biology
+    section: Life Sciences
+    status: planned
+
+  - id: biology
+    name: Biology
+    section: Life Sciences
+    status: planned
+
+  - id: neuroscience
+    name: Neuroscience
+    section: Life Sciences
+    status: planned
+
+  - id: food-science
+    name: Food Science
+    section: Life Sciences
+    status: active
+
+  # ── Miscellaneous ──────────────────────────────────────────────────────────
+
+  - id: linguistics
+    name: Linguistics
+    section: Miscellaneous
+    status: planned
+
+  - id: human-nature
+    name: Science of Human Nature
+    section: Miscellaneous
+    status: planned
+
+  - id: complex-systems
+    name: Complex Systems & Agent-Based Modeling
+    section: Miscellaneous
+    status: planned
