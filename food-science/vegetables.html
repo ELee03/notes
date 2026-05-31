@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vegetables &amp; Fruits — Food Science</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="food-science" data-current="vegetables.html"></div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb"><a href="../index.html">Field Notes</a> → <a href="index.html">Food Science</a> → Vegetables &amp; Fruits</div>
+
+      <h1 class="lesson-title">Vegetables &amp; Fruits</h1>
+      <div class="lesson-meta">Plant Biology · Pigment Chemistry · Cell Wall Biochemistry · Produce Science</div>
+
+      <p class="prose">
+        Why does asparagus turn army-drab after ten minutes of boiling? Why does red
+        cabbage turn blue when you add baking soda? Why does cut avocado brown within
+        minutes while cut potato browns more slowly? Why does garlic roasted whole taste
+        sweet and mellow, while garlic added raw to a dish tastes sharp for days? All of
+        these phenomena come from the same source: plant cell biology. Understanding plant
+        cells — their compartments, their pigments, their structural polymers — gives you
+        a unified explanation for the most common vegetable-cooking surprises.
+      </p>
+      <p class="prose">
+        Plants also differ fundamentally from animal foods in one crucial respect: they are
+        still biologically active at the time you cook them. The enzymes responsible for
+        browning, pungency, and off-flavour generation are alive in the cell until you
+        denature them with heat. This creates a category of kitchen chemistry that has no
+        analogue in meat or fish: damage-triggered reactions that begin the moment you cut
+        or bruise the tissue.
+      </p>
+
+      <div class="section-head">Plant Cell Architecture</div>
+
+      <p class="prose">
+        Animal cells are bounded by a lipid bilayer membrane. Plant cells have that too,
+        but outside it sits a rigid <strong>cell wall</strong> built from three interlocking
+        polysaccharide systems:
+      </p>
+      <ul class="prose" style="margin-top:0;">
+        <li><strong>Cellulose</strong> — long unbranched chains of glucose linked β(1→4),
+          forming crystalline microfibrils. Extremely tensile-strong; not digestible by humans
+          (no cellulase enzyme). The structural backbone.</li>
+        <li><strong>Hemicellulose</strong> — shorter, branched polysaccharides (xylans,
+          glucomannans) cross-linked to cellulose microfibrils. Provides flexibility.</li>
+        <li><strong>Pectin</strong> — polygalacturonic acid chains in the matrix between
+          cellulose fibrils and in the <em>middle lamella</em> (the layer that glues
+          adjacent cells together). Pectin determines texture more than any other component
+          — it is what cooking softens.</li>
+      </ul>
+      <p class="prose">
+        Inside the cell wall, the cell membrane encloses the cytoplasm. Most of the cell's
+        volume is taken up by a large central <strong>vacuole</strong> — an aqueous
+        compartment that stores pigments (anthocyanins), organic acids, phenolics, sugars,
+        enzymes, and many flavour precursors. The vacuole's contents are physically
+        separated from the cytoplasm. This separation is critical: several important
+        reactions — browning, pungency in alliums, heat in brassicas — only occur when
+        cell damage destroys the compartment boundary and vacuolar enzymes contact their
+        substrates.
+      </p>
+      <p class="prose">
+        <strong>Turgor pressure</strong> is what makes fresh vegetables crisp. The vacuole
+        is osmotically pressurized, pushing outward against the cell wall. As water is
+        lost (through heat, dehydration, or age), turgor drops and the vegetable wilts.
+        Cooking collapses turgor and softens texture by a different mechanism — degrading
+        the pectin that holds the cell wall rigid.
+      </p>
+
+      <div class="section-head">Plant Pigments</div>
+
+      <p class="prose">
+        Vegetable colour comes from four chemically distinct pigment families, each with
+        different stabilities and behaviours under heat, acid, and alkali.
+      </p>
+
+      <h3>Chlorophyll</h3>
+      <p class="prose">
+        Chlorophyll a (blue-green, dominant) and chlorophyll b (yellow-green, minor) are
+        porphyrin-ring structures with a central magnesium ion coordinated to four nitrogen
+        atoms, plus a 20-carbon phytol tail that anchors the molecule in the thylakoid
+        membrane of the chloroplast.
+      </p>
+      <p class="prose">
+        The colour of chlorophyll comes entirely from the conjugated double-bond system of
+        the porphyrin ring. Destroy the ring — or displace the Mg²⁺ — and you destroy the
+        green. That is exactly what cooking does. Heat loosens the protein scaffolding
+        holding the molecule, exposing the Mg²⁺. Hydrogen ions (abundant in cooking water,
+        from dissolved CO₂ and organic acids released by the vegetable) then substitute for
+        the magnesium:
+      </p>
+      <div class="callout">
+        Chlorophyll (bright green) → <strong>Pheophytin</strong> (olive drab)<br>
+        Mg²⁺ displaced by 2H⁺ · Porphyrin ring intact · Phytol tail intact<br>
+        Reaction begins significantly above ~70°C; half-life at boiling ~4–7 minutes
+      </div>
+      <p class="prose">
+        The practical consequences:
+      </p>
+      <ul class="prose" style="margin-top:0;">
+        <li><strong>Brief blanch + ice bath</strong> — inactivates the cell-wall enzymes
+          that release more acid during cooking; rapid chilling arrests further pheophytin
+          conversion. Best method for preserving green colour.</li>
+        <li><strong>Cook uncovered</strong> — lets volatile acids (CO₂, acetic acid)
+          escape, slowing acidification of cooking water.</li>
+        <li><strong>Avoid acid in the cooking water</strong> — adding lemon juice or
+          vinegar dramatically accelerates the Mg²⁺ displacement.</li>
+        <li><strong>Adding bicarb to the water</strong> raises pH, neutralising the
+          acids that drive the reaction. This really does keep vegetables vivid green —
+          but it comes at a cost: alkali attacks pectin and hemicellulose, turning the
+          vegetable mushy, and destroys vitamin C (ascorbic acid is labile in alkaline
+          conditions). Not recommended.</li>
+      </ul>
+      <p class="prose">
+        Pheophytin can be further degraded to <strong>pheophorbide</strong> (phytol tail
+        cleaved off) and then to colourless pyrroles over very prolonged cooking. This is
+        why grey-green canned peas look the way they do.
+      </p>
+
+      <h3>Carotenoids</h3>
+      <p class="prose">
+        Carotenoids — β-carotene (orange, carrots), lycopene (red, tomatoes), zeaxanthin
+        and lutein (yellow, corn/egg yolk) — are fat-soluble polyene hydrocarbons. Their
+        extended conjugated double-bond chains absorb blue/green light and reflect
+        orange/red.
+      </p>
+      <p class="prose">
+        Unlike chlorophyll, carotenoids are <strong>heat-stable</strong>. You cannot boil
+        the orange out of a carrot. In fact, cooking increases carotenoid bioavailability:
+        the intact cell wall physically traps carotenoids, and cooking disrupts it —
+        releasing lycopene from tomatoes and β-carotene from carrots into a form the
+        gut can absorb. Fat in the meal further enhances absorption, since carotenoids
+        are lipophilic and must be solubilised by dietary fat for uptake. This is why
+        cooked tomatoes in olive oil deliver more lycopene than raw tomatoes.
+      </p>
+      <p class="prose">
+        The colour change at fruit ripening is a carotenoid story: unripe fruit is green
+        because chlorophyll masks the carotenoids beneath. As ripening proceeds, chlorophyll
+        degrades (deliberately — the plant signals to seed-dispersers), revealing the
+        yellow/orange/red carotenoids that were present all along.
+      </p>
+
+      <h3>Anthocyanins</h3>
+      <p class="prose">
+        Anthocyanins are water-soluble flavonoid glycosides stored in the vacuole. They are
+        responsible for the red, purple, and blue colours of red cabbage, blueberries,
+        purple grapes, cherries, red onions, and many other foods. They are also remarkable
+        pH indicators — the same molecule produces dramatically different colours across the
+        pH scale:
+      </p>
+      <div class="callout">
+        <strong>pH &lt; 3:</strong> Flavylium cation — vivid <strong style="color:#c0392b;">red</strong><br>
+        <strong>pH 4–6:</strong> Quinonoidal base forms — <strong style="color:#7b2fbe;">purple</strong><br>
+        <strong>pH 7:</strong> Carbinol pseudobase — <strong style="color:#7b8fa1;">nearly colourless</strong><br>
+        <strong>pH &gt; 8:</strong> Chalcone / ionised forms — <strong style="color:#27ae60;">blue-green to yellow-green</strong>
+      </div>
+      <p class="prose">
+        This is why red cabbage turns blue when you add baking soda (pH ~8.5) and
+        returns to red when you add vinegar. It's also why braised red cabbage with
+        apple and vinegar stays vivid red, while red cabbage cooked in plain water with
+        a lid tends toward blue-purple (steam environment, slightly elevated pH).
+      </p>
+      <p class="prose">
+        Anthocyanins are heat-labile over long cooking times — the glycosidic bond
+        cleaves and the aglycone degrades. They are also sensitive to prolonged light
+        exposure. For maximum colour retention: brief cooking, acid environment, minimal
+        light exposure.
+      </p>
+
+      <h3>Betalains</h3>
+      <p class="prose">
+        Beets (and a few other plants) get their colour from betalains — nitrogen-containing
+        pigments that are completely distinct from anthocyanins despite superficial
+        similarity. Betacyanins (red-violet) and betaxanthins (yellow) are derived from
+        the amino acid tyrosine. They are heat-labile: prolonged cooking at high temperature
+        degrades the colour. Beet-red food dye problems in processed food come from this
+        instability. Beets also bleed profusely when cut — cooking them whole with the
+        skin on (roasting, or simmering unpeeled) reduces leaching.
+      </p>
+
+      <div class="section-head">Enzymatic Browning</div>
+
+      <p class="prose">
+        When you cut an apple, avocado, potato, or mushroom and leave it in air, it turns
+        brown within minutes. This is <strong>enzymatic browning</strong> — mechanistically
+        distinct from the Maillard reaction and from caramelisation, though all three
+        produce brown pigments.
+      </p>
+
+      <h3>The PPO mechanism</h3>
+      <p class="prose">
+        The enzyme is <strong>polyphenol oxidase (PPO)</strong>, a copper-containing
+        enzyme. In the intact cell, PPO is typically located in the chloroplast or
+        cytoplasm, physically separated from its phenolic substrates (chlorogenic acid,
+        caffeic acid, catechins) which sit in the vacuole. Cell damage — cutting, bruising,
+        peeling — destroys this compartmentation. PPO and its substrates mix, and in the
+        presence of atmospheric O₂:
+      </p>
+      <div class="callout">
+        Phenol + ½O₂ → <em>PPO (Cu²⁺)</em> → <strong>o-quinone</strong> (colourless/yellow)<br>
+        o-quinone + phenol → further oxidation → <strong>brown melanin polymers</strong>
+      </div>
+      <p class="prose">
+        The o-quinones spontaneously polymerise and react with proteins and other phenols
+        to produce the insoluble brown pigments. Unlike Maillard browning, this reaction
+        occurs at room temperature and requires molecular oxygen — it is not a thermal
+        reaction.
+      </p>
+
+      <h3>Prevention strategies</h3>
+      <p class="prose">
+        Understanding the mechanism points directly to four independent prevention routes:
+      </p>
+      <ol class="prose" style="margin-top:0;">
+        <li><strong>Lower pH</strong> — PPO activity is optimal at pH 6–7 and is
+          strongly inhibited below pH 4. Lemon juice (pH ~2.5) or citric acid solution
+          applied to cut surfaces is the most common kitchen approach. Also, protonating
+          the phenolic substrates reduces their reactivity.</li>
+        <li><strong>Heat denaturation</strong> — PPO is a protein; it is irreversibly
+          inactivated above ~70°C. Blanching (brief boil or steam + ice bath) kills the
+          enzyme and halts browning indefinitely. This is why commercially prepared cut
+          vegetables are blanched before refrigeration or freezing.</li>
+        <li><strong>Exclude oxygen</strong> — submerging cut surfaces in water or pressing
+          plastic wrap directly onto the surface eliminates the O₂ the reaction requires.
+          Effective but impractical in many contexts.</li>
+        <li><strong>Copper chelation and ascorbic acid</strong> — citric acid chelates
+          the Cu²⁺ cofactor, reducing PPO activity beyond the pH effect alone. Ascorbic
+          acid (vitamin C) acts as a reducing agent, converting o-quinones back to
+          o-diphenols before they can polymerise — a sacrificial antioxidant that buys
+          time until the ascorbic acid is exhausted.</li>
+      </ol>
+      <p class="prose">
+        The combination of low pH + ascorbic acid + citric acid (as in lemon juice) is
+        more effective than any single strategy alone, which is why lemon juice outperforms
+        simple acidulation.
+      </p>
+
+      <div class="callout">
+        <strong>Enzymatic browning vs. Maillard browning — key differences</strong><br>
+        Enzymatic: room temperature, requires O₂, requires an enzyme, killed by heat,
+        pH-sensitive (inhibited by acid), produces melanin polymers from phenolics.<br>
+        Maillard: requires heat (&gt;120°C for meaningful rate), no enzyme, O₂ not
+        required, produces melanoidins from amino acids + reducing sugars. An apple
+        left at room temperature will enzymatically brown; it will not Maillard brown
+        until you cook it at high heat.
+      </div>
+
+      <div class="section-head">Cell Wall Chemistry and Texture</div>
+
+      <p class="prose">
+        Vegetable texture is primarily a cell wall story. When you cook a carrot until
+        it is soft, you are degrading the pectin matrix that holds the cells together
+        and keeps the wall rigid. Understanding how pectin works explains why some
+        vegetables stay firm and others collapse, why acid in cooking water slows
+        softening, and why professional kitchens sometimes pre-cook vegetables at low
+        temperatures to make them firmer.
+      </p>
+
+      <h3>Pectin structure and calcium cross-linking</h3>
+      <p class="prose">
+        Pectin is a polygalacturonic acid backbone — a chain of galacturonic acid residues
+        linked α(1→4). Each galacturonic acid has a carboxyl group that can be either free
+        (–COOH) or methyl-esterified (–COOCH₃). The <strong>degree of methylation (DM)</strong>
+        determines how pectin behaves:
+      </p>
+      <ul class="prose" style="margin-top:0;">
+        <li><strong>High-DM pectin (&gt;50% methylated):</strong> free carboxyl groups
+          are scarce, so it doesn't bind Ca²⁺ strongly. Sets in the presence of high
+          sugar concentrations and acid — the basis of most fruit jams.</li>
+        <li><strong>Low-DM pectin (&lt;50% methylated):</strong> abundant free carboxyl
+          groups can form ionic cross-links with Ca²⁺ ions, creating the "egg-box model"
+          gel — two pectin chains bridged by calcium. Sets at lower sugar levels; used in
+          low-sugar preserves and many commercial applications.</li>
+      </ul>
+      <p class="prose">
+        In the middle lamella, pectin chains are cross-linked by Ca²⁺ to glue adjacent
+        cells together. Dissolving these cross-links — which happens when Ca²⁺ is removed
+        or when the pectin chains are hydrolysed — separates the cells and softens the
+        vegetable.
+      </p>
+      <p class="prose">
+        Two practical consequences:
+      </p>
+      <ul class="prose" style="margin-top:0;">
+        <li><strong>Acid slows softening</strong> — below pH ~5.5, hydronium ions compete
+          with Ca²⁺ for carboxyl sites and acid inhibits pectin-degrading enzymes
+          (pectinase). Potatoes in a highly acidic soup soften more slowly than potatoes
+          in plain water. The same is true for all vegetables in acidic cooking media.</li>
+        <li><strong>Adding calcium firms texture</strong> — soaking vegetables in a
+          dilute CaCl₂ solution (or using naturally calcium-rich water) adds Ca²⁺ to
+          cross-link more pectin, strengthening the cell wall. Food manufacturers add
+          CaCl₂ to canned tomatoes to preserve the texture through the sterilisation
+          process; home cooks use it in pickling to maintain crunch.</li>
+      </ul>
+
+      <h3>The PME pre-cook trick</h3>
+      <p class="prose">
+        Plants themselves contain an enzyme called <strong>pectin methylesterase (PME)</strong>
+        which demethylates pectin — converting high-DM pectin to low-DM pectin, thereby
+        creating more Ca²⁺-binding sites. PME is active between roughly 50°C and 65°C
+        and is irreversibly inactivated above ~70°C.
+      </p>
+      <p class="prose">
+        This creates a counterintuitive trick: heating vegetables to 50–65°C before the
+        final high-temperature cooking activates PME, which demethylates pectin and
+        multiplies Ca²⁺ cross-links, <em>firming</em> the cell wall. When you then cook
+        at full temperature, the cell wall starts from a more cross-linked state and
+        takes longer to soften to mush. This is used professionally for:
+      </p>
+      <ul class="prose" style="margin-top:0;">
+        <li>Parboiled roast potatoes — a brief low-temperature soak (or extended hold at
+          55–60°C) before the high-heat roast produces a crunchier crust because PME
+          has pre-strengthened the surface cells.</li>
+        <li>Pre-cooking carrots or root vegetables at 60°C for sous vide preparations
+          where you want defined texture at higher final temperatures.</li>
+      </ul>
+
+      <h3>Cooking softening mechanisms</h3>
+      <p class="prose">
+        Full-temperature cooking softens vegetables through two distinct but simultaneous
+        processes:
+      </p>
+      <ol class="prose" style="margin-top:0;">
+        <li><strong>Pectin dissolution</strong> — above ~70°C, thermal energy breaks
+          hydrogen bonds in the pectin network; at boiling, pectin chains are hydrolysed
+          and Ca²⁺ cross-links dissolved. The middle lamella disintegrates, cells
+          separate, and structure is lost.</li>
+        <li><strong>Turgor loss</strong> — cell membranes rupture, the vacuole
+          contents leak into the cytoplasm, and turgor pressure is gone. Even if the
+          cell walls remain partially intact, the vegetable is no longer crisp because
+          it is no longer inflated.</li>
+      </ol>
+
+      <div class="section-head">Ripening Chemistry</div>
+
+      <p class="prose">
+        Ripening is a precisely orchestrated developmental programme — the plant's strategy
+        for making its fruit attractive to seed-dispersers at exactly the right moment. The
+        central signal molecule is <strong>ethylene (C₂H₄)</strong>, a gaseous plant hormone.
+      </p>
+
+      <h3>Climacteric vs. non-climacteric fruits</h3>
+      <p class="prose">
+        <strong>Climacteric fruits</strong> — apples, pears, bananas, tomatoes, avocados,
+        peaches, mangoes, melons — have a characteristic ripening behaviour: they ripen
+        independently of the parent plant and produce a surge of their own ethylene that
+        triggers and coordinates the entire ripening programme. Critically, this is
+        <strong>autocatalytic</strong>: ethylene triggers more ethylene synthesis, which
+        means all the fruit in a batch ripens together once any one piece passes the
+        threshold. The ripening programme includes:
+      </p>
+      <ul class="prose" style="margin-top:0;">
+        <li>Starch hydrolysis to sugars (amylases and invertases activated)</li>
+        <li>Cell wall softening (pectinases, polygalacturonase, and cellulase expressed)</li>
+        <li>Chlorophyll degradation (revealing carotenoid colours underneath)</li>
+        <li>Synthesis of characteristic aroma volatiles (esters, terpenes)</li>
+        <li>Reduction of tannins and other astringent compounds</li>
+      </ul>
+      <p class="prose">
+        Because the signal is ethylene, you can manipulate ripening. Exposing bananas or
+        avocados to exogenous ethylene (or a ripe apple, which emits ethylene) accelerates
+        ripening. Removing ethylene — with activated carbon scrubbers in commercial
+        cold storage, or simply by keeping the fruit in a well-ventilated area —
+        delays it. This is why commercial bananas are picked green and gassed with
+        ethylene at the distribution stage.
+      </p>
+      <p class="prose">
+        <strong>Non-climacteric fruits</strong> — citrus, strawberries, grapes, cherries,
+        pineapples — do not produce a ripening ethylene surge and cannot ripen after
+        harvest. Their sugars, acids, and aroma compounds are fixed at the time they
+        leave the plant. A green-picked strawberry will not sweeten on the counter; it
+        will only rot. These fruits must be picked at peak maturity.
+      </p>
+
+      <div class="section-head">Individual Produce Chemistry</div>
+
+      <p class="prose">
+        The general principles above — pigment stability, enzymatic browning, cell wall
+        softening, ripening — explain the broad patterns. But each major produce category
+        has its own specific chemistry that drives its characteristic flavours and
+        kitchen behaviours.
+      </p>
+
+      <h3>Tomatoes</h3>
+      <p class="prose">
+        The characteristic "fresh tomato" aroma is dominated by compounds from the
+        <strong>lipoxygenase (LOX) pathway</strong> operating on linoleic and linolenic
+        acids in the cell membrane. Cell damage activates LOX, producing C6 aldehydes
+        and alcohols — principally (Z)-3-hexenal and hexanal (green, grassy), which
+        are enzymatically converted to (E)-2-hexenal. These six-carbon volatiles are
+        the immediate burst of flavour in a just-cut tomato.
+      </p>
+      <p class="prose">
+        Deeper flavour complexity comes from carotenoid degradation products: <strong>β-ionone</strong>
+        (violet, floral) from β-carotene; <strong>geranylacetone</strong> (floral-fruity).
+        Guaiacol (smoky, phenolic) and methylsalicylate (wintergreen-like) also contribute.
+        The distinctive "tomato leaf" note comes from <strong>2-isobutylthiazole</strong>.
+      </p>
+      <div class="callout">
+        <strong>Never refrigerate tomatoes.</strong> Below about 12°C, the LOX pathway
+        enzymes that produce aroma are irreversibly inactivated, and the genes encoding
+        key volatile synthesis enzymes are suppressed. A tomato chilled even briefly
+        loses its capacity to generate aroma — permanently. This is not a myth; there
+        is direct evidence that the aroma deficit persists even after returning the
+        tomato to room temperature, because the enzymatic machinery has been damaged.
+      </div>
+      <p class="prose">
+        Cooking concentrates tomato flavour dramatically: water evaporates, free glutamate
+        (umami) concentrates, lycopene is released from the cell matrix, and Maillard
+        products develop. Tomato paste has roughly 20× the free glutamate of fresh
+        tomato, which is why a small spoonful added to a braise deepens flavour out
+        of all proportion to its volume.
+      </p>
+
+      <h3>Alliums: Garlic, Onion, Leek, Chive</h3>
+      <p class="prose">
+        Alliums contain no aroma compounds in the intact cell. Their pungency is entirely
+        damage-triggered, through a precursor-enzyme system that mirrors the alliinase
+        arrangement of the fish TMAO story — but in reverse (here damage creates
+        desirable compounds rather than off-flavours).
+      </p>
+      <p class="prose">
+        In garlic, the precursor is <strong>alliin</strong> (S-allyl-L-cysteine sulfoxide),
+        stored in the cytoplasm. The enzyme <strong>alliinase</strong> is stored in
+        vacuoles. Cell damage (chopping, crushing, chewing) mixes them:
+      </p>
+      <div class="callout">
+        Alliin + alliinase → <strong>Allicin</strong> (diallyl thiosulfinate)<br>
+        Allicin (unstable) → diallyl disulfide, diallyl trisulfide, ajoene, vinyldithiins<br>
+        <em>These sulphur compounds give garlic its characteristic pungency and pharmacological activity.</em>
+      </div>
+      <p class="prose">
+        Alliinase is a protein — it is inactivated by heat. If you heat garlic before
+        cutting (roasting the whole bulb, microwaving a clove), alliinase is destroyed
+        and no allicin is ever formed. The result is a sweet, mild flavour: the non-volatile
+        fructans (sugars) undergo Maillard browning, and the sulfur compounds that did
+        form before cooking convert to milder thioethers and polysulfides. This is why
+        roasted garlic is sweet and spreadable while raw garlic added to a dish at the
+        end is sharp and persistent.
+      </p>
+      <p class="prose">
+        Professional technique: crush or mince garlic and let it rest for 10–15 minutes
+        before applying heat. This allows allicin synthesis to complete. Once allicin
+        has formed, brief subsequent cooking converts it to the more heat-stable
+        polysulfides, preserving garlic character better than cooking the uncut garlic
+        from the start.
+      </p>
+      <p class="prose">
+        <strong>Onion tears</strong> come from a different branch of the same pathway.
+        In onions, the substrate is isoalliin (1-propenyl cysteine sulfoxide). After
+        alliinase acts, a separate enzyme — <strong>lachrymatory factor synthase (LFS)</strong>
+        — converts the initial intermediate to <strong>syn-propanethial-S-oxide</strong>,
+        a volatile that diffuses to the eyes and activates TRPA1 and TRPV1 channels in
+        the conjunctiva. Refrigerating onions before cutting slows diffusion of this
+        volatile. Cutting under running water prevents airborne delivery. Garlic lacks
+        LFS, so it does not cause tears.
+      </p>
+
+      <h3>Brassicas: Broccoli, Cabbage, Brussels Sprouts, Mustard, Wasabi</h3>
+      <p class="prose">
+        Brassicas use yet another damage-triggered precursor system: <strong>glucosinolates</strong>
+        — sulphur-containing glycosides stored in vacuoles — and the enzyme
+        <strong>myrosinase</strong>, stored separately. Cell damage mixes them:
+      </p>
+      <div class="callout">
+        Glucosinolate + myrosinase (+ H₂O) → <strong>isothiocyanate</strong> + glucose + sulfate<br><br>
+        <strong>Sinigrin</strong> (mustard, Brussels sprouts, horseradish) →
+        <strong>allyl isothiocyanate (AIT)</strong> — sharp, pungent; the compound in mustard and wasabi<br>
+        <strong>Glucoraphanin</strong> (broccoli, kale) →
+        <strong>sulforaphane</strong> — less pungent; the most-studied brassica bioactive
+      </div>
+      <p class="prose">
+        <strong>Myrosinase is heat-labile.</strong> Brief cooking partially inactivates it,
+        which softens brassica pungency. Prolonged cooking fully inactivates it — and
+        simultaneously degrades the glucosinolates themselves at high temperature,
+        releasing <strong>hydrogen sulfide (H₂S)</strong> and <strong>dimethyl sulfide (DMS)</strong>.
+        These are the "overcooked cabbage" and "overcooked Brussels sprouts" off-flavours.
+        The fix: cook brassicas briefly (4–5 minutes of high heat), or roast at high
+        temperature, which drives off the sulfur volatiles before they accumulate.
+      </p>
+      <p class="prose">
+        Why do some people intensely dislike Brussels sprouts? The bitterness comes from
+        glucosinolates and their breakdown products. Perception depends partly on genetics:
+        the TAS2R38 bitter taste receptor gene has variants that make some people highly
+        sensitive to the isothiocyanate and phenylthiocarbamide (PTC)-like compounds in
+        brassicas. Breeding programmes have produced lower-glucosinolate Brussels sprouts
+        varieties, which is one reason modern supermarket Brussels sprouts are milder than
+        those eaten a generation ago.
+      </p>
+
+      <h3>Potatoes and Starchy Root Vegetables</h3>
+      <p class="prose">
+        The texture of cooked potatoes — mealy vs. waxy — is primarily a starch story.
+        Mealy potatoes (Russets) have large starch granules and low-sugar flesh; upon
+        cooking, the granules swell massively and burst through the cell walls, creating
+        the fluffy, starchy texture ideal for mashing and baking. Waxy potatoes (red
+        potatoes, fingerlings) have smaller granules and higher sugar; cells hold together
+        better after cooking, giving a firm, intact texture ideal for salads and roasting.
+      </p>
+      <p class="prose">
+        The PME pre-cook trick (see Cell Wall section) is particularly effective for
+        roasted potatoes: parboiling in salted water at moderate temperature (~60°C for
+        a few minutes, or a longer cool parboil before finishing at high heat) activates
+        PME, which firms the outer cell layers. At high roasting temperature, these cells
+        dehydrate and crust, while the interior has gelatinised starch — creating the
+        ideal contrast of crunchy exterior and fluffy interior.
+      </p>
+      <div class="callout">
+        <strong>Acrylamide in potatoes</strong><br>
+        Acrylamide forms via the Maillard reaction when asparagine (an amino acid
+        abundant in potato) reacts with reducing sugars (glucose, fructose) above about
+        120°C. It is classified as a probable human carcinogen at high doses. Risk is
+        highest in heavily browned/burnt potato products.<br><br>
+        Cold storage (&lt;8°C) causes starch to convert to reducing sugars
+        ("cold sweetening") — cold-stored potatoes make more acrylamide when fried.
+        Soaking cut potatoes in water for 30 min before frying leaches out surface
+        sugars, reducing acrylamide formation by 20–40%. Cooking to golden rather than
+        deep brown reduces it further. The practical rule: golden is fine, brown is
+        less so, black is to be avoided.
+      </div>
+
+      <div class="section-head">Chlorophyll Degradation — Interactive</div>
+
+      <div class="widget-card">
+        <div class="widget-title">Chlorophyll Retention vs. Cooking Time</div>
+        <div id="chlorophyll-chart" style="width:100%;height:380px;"></div>
+        <p style="font-size:0.85rem;color:#6a7f8a;margin:8px 16px 16px;">
+          Approximate chlorophyll retention (%) in green vegetables under three
+          cooking conditions. Blanch + ice bath rapidly inactivates degradative
+          enzymes; plain boiling causes progressive pheophytin conversion; an acidic
+          medium (pH ~3.5) dramatically accelerates Mg²⁺ displacement.
+        </p>
+      </div>
+
+      <div class="section-head">Worked Examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Red cabbage chemistry: why acid keeps it red and alkali turns it blue</strong></div>
+        <div class="example-problem">
+          You are braising red cabbage. You add a splash of apple cider vinegar to
+          the pot; the cabbage stays vivid red throughout cooking. Your partner adds
+          a pinch of baking soda "to soften the vegetables" — the cabbage immediately
+          turns blue-green. Explain what is happening at the molecular level and how
+          you would reverse it.
+        </div>
+        <div class="example-body">
+          <p>Red cabbage gets its colour from cyanidin-based anthocyanins dissolved
+          in the vacuole. These molecules are pH indicators with a structural transition
+          depending on the protonation state of the phenolic hydroxyl groups.</p>
+          <p><strong>In vinegar (pH ~3):</strong> The solution is acidic. Anthocyanin
+          molecules are predominantly in the flavylium cation form — a planar, fully
+          conjugated structure that absorbs strongly in the green/yellow region of the
+          spectrum, reflecting red. Adding vinegar keeps pH &lt; 4, stabilising the
+          flavylium form and maintaining the red colour.</p>
+          <p><strong>After baking soda (pH rises to ~8–9):</strong> Hydroxide ions
+          deprotonate the phenolic groups. At pH 6–7, the molecule is in the quinonoidal
+          base form (purple). Above pH 8, it shifts to the ionised chalcone/carbinol
+          forms, which absorb in the red region, reflecting blue-green. This is a
+          structural isomerisation, not degradation — the molecule itself is intact,
+          just in a different electronic state.</p>
+          <p><strong>Reversal:</strong> Add acid back (vinegar or lemon juice) to lower
+          pH below 4 — the colour reverts to red within seconds as the flavylium cation
+          re-forms. This is a reversible equilibrium as long as the anthocyanin has
+          not thermally degraded. If the cabbage was overcooked (glycosidic bond
+          cleavage), the pigment is destroyed and colour will not fully recover.</p>
+          <p><strong>Side effect of baking soda:</strong> The alkaline conditions also
+          attack pectin and hemicellulose, softening the cell walls — hence the
+          "softening vegetables" effect your partner was aiming for. This works, but
+          makes the cabbage mushy and destroys vitamin C.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Garlic aroma: three preparations, three flavours</strong></div>
+        <div class="example-problem">
+          Three garlic preparations are made from the same bulb: (A) raw garlic minced
+          and added directly to a sauce; (B) whole garlic cloves added to cold oil and
+          brought slowly to heat; (C) garlic minced and rested for 15 minutes, then
+          added to a hot pan. Predict how each will taste and explain the chemistry.
+        </div>
+        <div class="example-body">
+          <p><strong>Preparation A — raw, minced:</strong> Maximum allicin formation.
+          Mincing maximises alliinase–alliin contact; no heat to inactivate alliinase.
+          Allicin and its secondary breakdown products (diallyl disulfide, trisulfide)
+          are produced in full. Flavour: sharp, pungent, lingering. Raw garlic taste
+          persists hours after eating because the polysulfides are metabolised slowly
+          and excreted through the lungs.</p>
+          <p><strong>Preparation B — whole cloves, cold oil, slow heat:</strong>
+          Cells are not damaged initially, so alliinase cannot act. As temperature
+          rises, alliinase is progressively inactivated before cells are fully disrupted.
+          Little to no allicin forms. The fructans in garlic caramelise and undergo
+          Maillard reactions, developing sweet, nutty flavour. Flavour: mild, sweet,
+          slightly nutty. The basis of <em>aglio olio</em> and confit garlic.</p>
+          <p><strong>Preparation C — minced, rested, then hot pan:</strong>
+          Mincing immediately activates alliinase and allicin synthesis. The 15-minute
+          rest allows the reaction to go to near-completion: allicin concentrations
+          reach their maximum and begin converting to secondary compounds. When this
+          is added to a hot pan, alliinase is immediately denatured (already mostly done),
+          but the allicin and polysulfides already formed survive brief heating. Flavour:
+          strong, complex garlic flavour — stronger than quick-cooked garlic, softer
+          than fully raw. This is the approach used in many restaurant preparations for
+          maximum garlic intensity with less raw bite.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Why blanched green beans stay bright but boiled ones grey</strong></div>
+        <div class="example-problem">
+          Two portions of green beans are cooked: one is blanched for 2 minutes in
+          boiling water then shocked in ice water; the other is simmered for 8 minutes.
+          The blanched beans are vivid bright green; the simmered beans are olive-grey.
+          Using chlorophyll chemistry, explain the difference in detail.
+        </div>
+        <div class="example-body">
+          <p>Both samples start with identical chlorophyll content in chloroplasts
+          embedded in the green cells. The difference is time-at-temperature and the
+          accumulation of acidic cooking water.</p>
+          <p><strong>Pheophytin conversion kinetics:</strong> The Mg²⁺-to-2H⁺
+          substitution in chlorophyll (forming pheophytin) is an acid-catalysed reaction.
+          Its rate depends on both temperature and [H⁺]. At boiling, significant
+          conversion begins around 2–3 minutes and is extensive by 6–8 minutes.</p>
+          <p><strong>Simmered beans (8 min):</strong> Over 8 minutes of boiling, the
+          cooking water accumulates organic acids released from inside the beans (citric,
+          malic) plus CO₂. pH drops from ~7 to ~5–6. The combination of sustained high
+          temperature and elevated acid concentration drives extensive pheophytin
+          conversion. By 8 minutes, perhaps 60–70% of the chlorophyll has been
+          converted. The olive-grey colour is pheophytin's characteristic hue.</p>
+          <p><strong>Blanched beans (2 min + ice bath):</strong> At 2 minutes, the
+          conversion has barely begun — perhaps 5–10% of chlorophyll has been affected.
+          More importantly, the ice bath immediately drops the temperature, ending the
+          reaction. The enzymes that release acids inside the cells have also been
+          inactivated by the boiling water, so post-blanching acid accumulation in the
+          cell is halted. The beans can be held refrigerated at vivid green for hours.</p>
+          <p><strong>The practical rule:</strong> For maximum green colour retention,
+          blanch at full rolling boil for the minimum time to achieve desired texture,
+          then chill immediately. Never simmer slowly — higher temperature is actually
+          better here because it achieves the same texture faster with less total
+          time-at-temperature exposure for the chlorophyll.</p>
+        </div>
+      </div>
+
+      <div class="section-head">Food for Thought</div>
+      <ul class="fft-list">
+        <li class="fft-item">
+          Lemon juice prevents enzymatic browning in cut avocado — but avocado is still
+          exposed to air at the surface. How does the lemon juice work if it cannot
+          exclude all oxygen? What is the dominant prevention mechanism, and when does
+          it fail?
+          <div class="fft-answer">
+            Three mechanisms operate simultaneously. First, the acid (pH ~2.5) strongly
+            inhibits PPO (optimal ~pH 6.5) — this is the main effect. Second, citric
+            acid in lemon juice chelates the Cu²⁺ cofactor of PPO, providing additional
+            inhibition beyond pH alone. Third, ascorbic acid (vitamin C) in the juice
+            acts as a sacrificial reductant: as o-quinones form, ascorbic acid reduces
+            them back to o-diphenols before they can polymerise. When the ascorbic acid
+            supply is exhausted, browning resumes — this is the delayed failure mode.
+            A thin layer of lemon juice works even with surface oxygen because PPO
+            inhibition and ascorbic acid reduction are fast relative to browning.
+          </div>
+        </li>
+        <li class="fft-item">
+          Your grandmother adds a pinch of baking soda to the water when cooking peas,
+          claiming it keeps them green. Is she right? What is the tradeoff, and can
+          you achieve the same result without the tradeoff?
+          <div class="fft-answer">
+            She is right about the colour: alkaline cooking water neutralises the acids
+            released during cooking that drive the chlorophyll → pheophytin conversion.
+            At pH 8+, pheophytin formation is substantially slowed and the vivid green
+            is preserved longer. However, the tradeoff is severe: alkali attacks pectin
+            (saponification-adjacent reactions) and hemicellulose, turning peas mushy;
+            and it rapidly destroys vitamin C (ascorbic acid is oxidised quickly in
+            alkaline conditions). The same colour result can be achieved without these
+            penalties by blanching briefly and chilling — this physically stops the
+            reaction by cooling rather than by neutralising the acid. Alternatively,
+            simply cooking peas for a minimal time (2–3 minutes in vigorous boiling
+            water) achieves texture without giving the pheophytin reaction time to run far.
+          </div>
+        </li>
+        <li class="fft-item">
+          A tomato stored in the fridge for three days tastes bland even after being
+          brought back to room temperature for an hour. Is the aroma loss reversible?
+          Why or why not?
+          <div class="fft-answer">
+            The damage is largely irreversible. Below ~12°C, several aroma-synthesis
+            enzymes in tomatoes (including LOX pathway enzymes and the methylketone
+            synthase system) are cold-inactivated, and the genes encoding them are
+            transcriptionally suppressed. Once the enzymatic machinery has been
+            damaged or shut down during refrigeration, returning to room temperature
+            does not restore full enzymatic activity — the proteins have been altered
+            or the transcriptional state remains shifted. In addition, some aroma
+            precursor compounds (fatty acid polyunsaturated substrates for LOX)
+            may have been partially metabolised or oxidised during cold storage.
+            Brief cold exposure (&lt;24 hours) may cause partial but reversible
+            suppression; three days causes measurable permanent loss of volatile
+            production capacity, confirmed by analytical studies showing that
+            cold-treated tomatoes produce less hexanal and (Z)-3-hexenal even
+            after rewarming.
+          </div>
+        </li>
+      </ul>
+
+      <div class="section-head">Common Pitfalls</div>
+      <ol class="prose">
+        <li>
+          <strong>Treating enzymatic browning and Maillard browning as the same reaction.</strong>
+          They share an endpoint (brown colour) but nothing else. Enzymatic browning is
+          room-temperature, enzyme-driven, O₂-dependent, halted by heat. Maillard browning
+          requires heat, is O₂-independent, requires reducing sugars and amino acids, and
+          is not affected by the presence of PPO enzymes. Preventing one does nothing
+          for the other.
+        </li>
+        <li>
+          <strong>Adding acid to the water to preserve green vegetable colour.</strong>
+          This is exactly backwards. Acid accelerates pheophytin conversion by providing
+          the H⁺ that displaces Mg²⁺. Adding lemon juice to blanching water will grey
+          your green vegetables faster. Reserve the acid for stopping PPO browning on
+          cut surfaces.
+        </li>
+        <li>
+          <strong>Assuming non-climacteric fruit will sweeten after picking.</strong>
+          Strawberries, citrus, and grapes picked unripe will not improve. The sugars are
+          fixed at harvest. They will continue to degrade (rot, soften, lose acid) but
+          will not gain sweetness. Unlike bananas and avocados, there is nothing you can
+          do to ripen them further.
+        </li>
+        <li>
+          <strong>Adding garlic at the start vs. end of cooking by feel, without
+          understanding the mechanism.</strong> The garlic question is not "raw vs. cooked";
+          it is "did allicin have time to form?" Garlic added whole to cold oil and
+          cooked slowly develops almost no allicin (sweet, mild). Garlic minced and
+          rested then added to a hot pan is fully pungent despite brief cooking.
+          Garlic added raw at the end is maximum pungent. These are three distinct
+          chemical states.
+        </li>
+        <li>
+          <strong>Refrigerating tomatoes.</strong> The aroma damage is real, measurable,
+          and largely irreversible. Even brief cold exposure produces detectable aroma loss.
+          If a recipe absolutely requires a chilled tomato (gazpacho, certain salads),
+          chill it at the last minute and use it immediately.
+        </li>
+      </ol>
+
+      <div class="section-head">Connects to</div>
+      <p class="prose">
+        <strong>Heat &amp; Browning</strong> (Lesson 1) — Maillard browning in roasted
+        vegetables (onion caramelisation, roasted potato Maillard crust); compare enzymatic
+        vs. non-enzymatic browning.<br>
+        <strong>Carbohydrates &amp; Starches</strong> (Lesson 4) — Pectin gel chemistry;
+        potato starch gelatinisation; cell wall polysaccharides as dietary fibre.<br>
+        <strong>Fermentation</strong> (Lesson 5) — Lactobacillus fermentation of vegetables
+        (kimchi, sauerkraut, pickles); salt draws out plant juices by osmosis across cell walls.<br>
+        <strong>Flavour Science</strong> (Lesson 6) — LOX pathway C6 volatiles from plant
+        cell membranes; allium sulphur compounds; brassica isothiocyanates as flavour
+        and aroma compounds.
+      </p>
+
+      <div class="lesson-nav">
+        <a href="fish.html" class="lesson-nav-btn">← Lesson 8: Fish &amp; Shellfish</a>
+        <a href="spices.html" class="lesson-nav-btn">Lesson 10: Spices &amp; Aromatics →</a>
+      </div>
+
+    </div><!-- /main -->
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  renderMathInElement(document.body, {
+    delimiters: [
+      {left: '$$', right: '$$', display: true},
+      {left: '$', right: '$', display: false}
+    ]
+  });
+
+  /* Chlorophyll degradation kinetics chart */
+  var time = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  var blanched = [100, 97, 94, 93, 92, 91, 90, 90, 89, 89, 88];
+  var boiling  = [100, 92, 82, 70, 58, 47, 38, 31, 26, 23, 21];
+  var acidic   = [100, 84, 64, 44, 28, 18, 13, 10,  8,  7,  7];
+
+  var traces = [
+    {
+      x: time, y: blanched,
+      name: 'Blanch (2 min) + ice bath',
+      mode: 'lines+markers',
+      line: { color: '#27ae60', width: 2.5 },
+      marker: { size: 5 }
+    },
+    {
+      x: time, y: boiling,
+      name: 'Boiling water (plain)',
+      mode: 'lines+markers',
+      line: { color: '#e67e22', width: 2.5 },
+      marker: { size: 5 }
+    },
+    {
+      x: time, y: acidic,
+      name: 'Boiling water + acid (pH ~3.5)',
+      mode: 'lines+markers',
+      line: { color: '#c0392b', width: 2.5, dash: 'dot' },
+      marker: { size: 5 }
+    }
+  ];
+
+  var layout = {
+    xaxis: {
+      title: 'Cooking time (minutes)',
+      tickfont: { family: 'IBM Plex Sans', size: 12 },
+      gridcolor: '#e8ecee'
+    },
+    yaxis: {
+      title: 'Chlorophyll remaining (%)',
+      range: [0, 105],
+      tickfont: { family: 'IBM Plex Sans', size: 12 },
+      gridcolor: '#e8ecee'
+    },
+    legend: {
+      x: 0.98, xanchor: 'right', y: 0.98,
+      font: { family: 'IBM Plex Sans', size: 12 },
+      bgcolor: 'rgba(255,255,255,0.85)',
+      bordercolor: '#d0d8dd',
+      borderwidth: 1
+    },
+    annotations: [
+      {
+        x: 2, y: 88,
+        xref: 'x', yref: 'y',
+        text: 'Ice bath here<br>reaction stops',
+        showarrow: true, arrowhead: 2, arrowcolor: '#27ae60',
+        ax: 40, ay: -35,
+        font: { family: 'IBM Plex Sans', size: 11, color: '#27ae60' }
+      },
+      {
+        x: 8, y: 26,
+        xref: 'x', yref: 'y',
+        text: '~75% pheophytin',
+        showarrow: false,
+        font: { family: 'IBM Plex Sans', size: 11, color: '#e67e22' },
+        xanchor: 'left'
+      }
+    ],
+    shapes: [
+      {
+        type: 'line',
+        x0: 0, x1: 10,
+        y0: 50, y1: 50,
+        line: { color: '#aab8c2', width: 1, dash: 'dash' }
+      }
+    ],
+    margin: { t: 20, r: 20, b: 50, l: 60 },
+    paper_bgcolor: '#fafaf8',
+    plot_bgcolor: '#fafaf8',
+    font: { family: 'IBM Plex Sans' }
+  };
+
+  Plotly.newPlot('chlorophyll-chart', traces, layout, { responsive: true, displayModeBar: false });
+});
+</script>
+</body>
+</html>
