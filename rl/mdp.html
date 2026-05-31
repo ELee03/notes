@@ -476,31 +476,22 @@
       </div>
 
       <!-- ── Recycling robot ───────────────────────────────────────── -->
-      <div class="section-head" id="recycling-robot">Worked example: the recycling robot</div>
+      <div class="section-head" id="recycling-robot">Worked example</div>
 
-      <div class="prose">
-        The following MDP (adapted from S&amp;B §3.7) shows how to go from a verbal
-        problem description to a fully specified transition function $p(s',r \mid s, a)$.
-      </div>
-
-      <div class="prose">
-        <strong>Setup.</strong> A mobile robot collects empty cans. Its battery can be
-        <em>high</em> or <em>low</em>. From high battery it can <em>search</em>
-        (active, finds more cans but may drain the battery) or <em>wait</em>
-        (passive, conserves power). From low battery it can also <em>recharge</em>
-        (return to base, no cans collected). Searching from low battery risks running
-        completely flat, requiring a rescue with penalty $-3$.
-      </div>
-
-      <div class="prose">
-        Parameters: $\alpha$ = prob of staying high when searching from high;
-        $\beta$ = prob of staying low when searching from low. Rewards:
-        $r_\text{search} = 2$, $r_\text{wait} = 1$.
-        Using $\alpha = 0.7$, $\beta = 0.4$:
-      </div>
-
-      <div class="example-block">
-        <div class="ex-title">Transition table — p(s′, r | s, a) with α = 0.7, β = 0.4</div>
+      <details class="example-box">
+        <summary><strong>The recycling robot MDP: transition table and expected rewards</strong></summary>
+        <div class="example-problem">
+          A mobile robot collects empty cans. Battery can be <em>high</em> or <em>low</em>.
+          From high: search or wait. From low: search, wait, or recharge.
+          Searching from low battery risks a rescue penalty of $-3$.
+          With $\alpha = 0.7$ (prob stay-high when searching from high), $\beta = 0.4$
+          (prob stay-low when searching from low), $r_\text{search}=2$, $r_\text{wait}=1$:
+          build the full transition table and compute $r(s,a)$.
+        </div>
+        <div class="example-body">
+          <strong>Transition table — $p(s', r \mid s, a)$:</strong>
+          <div class="example-block" style="margin:10px 0;">
+            <div class="ex-title">Transition table — p(s′, r | s, a) with α = 0.7, β = 0.4</div>
         <table class="int-table" style="margin-top:0;">
           <thead><tr>
             <th>s</th><th>a</th><th>s′</th>
@@ -518,55 +509,25 @@
         </table>
       </div>
 
-      <div class="prose">
-        From this table, derive the <strong>expected reward</strong> $r(s,a)$ for each
-        state-action pair using $r(s,a) = \sum_{s'} p(s' \mid s,a)\, r(s,a,s')$:
-      </div>
-
-      <div class="example-block">
-        <div class="ex-title">Computing r(s, a) from the transition table</div>
-        <table class="int-table" style="margin-top:0;">
-          <thead><tr>
-            <th>s</th><th>a</th><th>Calculation</th><th>r(s, a)</th>
-          </tr></thead>
-          <tbody>
-            <tr>
-              <td style="text-align:left;">high</td><td style="text-align:left;">search</td>
-              <td style="text-align:left;font-size:11.5px;">0.70 × 2 + 0.30 × 2</td>
-              <td style="font-weight:600;">2.00</td>
-            </tr>
-            <tr style="background:#f8f9fb;">
-              <td style="text-align:left;">high</td><td style="text-align:left;">wait</td>
-              <td style="text-align:left;font-size:11.5px;">1.00 × 1</td>
-              <td style="font-weight:600;">1.00</td>
-            </tr>
-            <tr>
-              <td style="text-align:left;">low</td><td style="text-align:left;">search</td>
-              <td style="text-align:left;font-size:11.5px;">0.60 × (−3) + 0.40 × 2</td>
-              <td style="font-weight:600; color:#c04040;">−1.00</td>
-            </tr>
-            <tr style="background:#f8f9fb;">
-              <td style="text-align:left;">low</td><td style="text-align:left;">wait</td>
-              <td style="text-align:left;font-size:11.5px;">1.00 × 1</td>
-              <td style="font-weight:600;">1.00</td>
-            </tr>
-            <tr>
-              <td style="text-align:left;">low</td><td style="text-align:left;">recharge</td>
-              <td style="text-align:left;font-size:11.5px;">1.00 × 0</td>
-              <td style="font-weight:600;">0.00</td>
-            </tr>
-          </tbody>
-        </table>
-        <div style="margin-top:10px;font-size:12.5px;color:#4a5a6a;line-height:1.65;">
-          <strong>Key insight:</strong> searching from a <em>low</em> battery yields
-          $r(\text{low}, \text{search}) = -1.0$ on average — negative, despite a
-          reward of $+2$ when it succeeds — because the rescue penalty $-3$ is
-          heavily weighted by the 60% chance of running flat. Searching from
-          <em>high</em> battery always gives $+2$ regardless of where you end up.
-          This asymmetry drives the optimal policy: always search from high, never
-          from low.
+          <strong>Expected rewards $r(s,a)$:</strong>
+          <div class="example-block" style="margin:10px 0;">
+            <div class="ex-title">Computing r(s, a)</div>
+            <table class="int-table" style="margin-top:0;">
+              <thead><tr><th>s</th><th>a</th><th>Calculation</th><th>r(s, a)</th></tr></thead>
+              <tbody>
+                <tr><td style="text-align:left;">high</td><td style="text-align:left;">search</td><td style="text-align:left;font-size:11.5px;">0.70×2 + 0.30×2</td><td style="font-weight:600;">2.00</td></tr>
+                <tr style="background:#f8f9fb;"><td style="text-align:left;">high</td><td style="text-align:left;">wait</td><td style="text-align:left;font-size:11.5px;">1.00×1</td><td style="font-weight:600;">1.00</td></tr>
+                <tr><td style="text-align:left;">low</td><td style="text-align:left;">search</td><td style="text-align:left;font-size:11.5px;">0.60×(−3) + 0.40×2</td><td style="font-weight:600; color:#c04040;">−1.00</td></tr>
+                <tr style="background:#f8f9fb;"><td style="text-align:left;">low</td><td style="text-align:left;">wait</td><td style="text-align:left;font-size:11.5px;">1.00×1</td><td style="font-weight:600;">1.00</td></tr>
+                <tr><td style="text-align:left;">low</td><td style="text-align:left;">recharge</td><td style="text-align:left;font-size:11.5px;">1.00×0</td><td style="font-weight:600;">0.00</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <strong>Key insight:</strong> $r(\text{low}, \text{search}) = -1.0$ on average — negative
+          despite $+2$ on success — because the 60% rescue penalty $(-3)$ dominates.
+          This asymmetry drives the optimal policy: always search from high, never from low.
         </div>
-      </div>
+      </details>
 
       <!-- ── Dynamics explorer ──────────────────────────────────────── -->
       <div class="section-head" id="dynamics-explorer">Explorer: dynamics parameters</div>
@@ -673,18 +634,81 @@
       <div class="section-head" id="food-for-thought">Food for thought</div>
 
       <div class="fft-block">
-        <div class="fft-title">Reflection questions — no answers given</div>
+        <div class="fft-title">Reflection questions</div>
         <ol>
           <li>In blackjack, the state "my current hand" does not capture which cards have already
             been played. Does this mean blackjack is not an MDP — or is it? How would you augment
-            the state so that the game <em>is</em> Markov? Is there always a way to do this?</li>
+            the state so that the game <em>is</em> Markov? Is there always a way to do this?
+            <details class="fft-answer">
+              <summary>Answer</summary>
+              <div class="fft-answer-body">
+                The game <em>with a single deck</em> is technically not Markov under the "current hand"
+                state: knowing which cards remain in the deck affects the transition probabilities, and
+                that information isn't in the state. However, Sutton &amp; Barto treat blackjack as an MDP
+                with the <em>assumption</em> of infinite decks (cards are drawn with replacement), making
+                the transition probabilities depend only on the current hand — restoring the Markov property.
+
+                To make blackjack truly Markov with a finite deck, you would augment the state with
+                the full card count (a "count" of which cards have been dealt). This is exponentially
+                large but mathematically valid.
+
+                <strong>Is there always a way to do this?</strong> In principle, yes: for any system
+                with finite history, augmenting the state with the full history makes it Markov (the
+                "history state"). But this may be exponentially or infinitely large. The practical
+                question is whether a compact Markov representation exists — and often the answer is
+                to use a POMDP (partially observable MDP) with a belief state instead.
+              </div>
+            </details>
+          </li>
           <li>If you doubled all rewards in an MDP, would the optimal policy $\pi^*$ change?
             Would the value functions $v_{\pi^*}(s)$ change? Are these two questions the same
-            or different?</li>
+            or different?
+            <details class="fft-answer">
+              <summary>Answer</summary>
+              <div class="fft-answer-body">
+                <strong>Would $\pi^*$ change?</strong> No. Doubling all rewards multiplies every
+                policy's value function by 2: $v_\pi^\text{new}(s) = 2\, v_\pi(s)$. Since all values
+                scale uniformly, the ordering of policies is preserved — the policy with the highest
+                value at each state is still the same.
+
+                <strong>Would $v_{\pi^*}(s)$ change?</strong> Yes — it doubles: $v_{\pi^*}^\text{new}(s) = 2\, v_{\pi^*}(s)$.
+
+                <strong>Same or different questions?</strong> Different. The policy is defined by
+                the <em>relative</em> ordering of state values; the value function itself has an
+                absolute magnitude. Transformations that preserve order (positive scaling, shifting)
+                leave the optimal policy unchanged but can change the value function's magnitude.
+                This distinction matters in practice: reward scaling affects the learning rate of
+                value-based algorithms, even when the optimal policy is unchanged.
+              </div>
+            </details>
+          </li>
           <li>The Bellman equation says $v_\pi(s) = \mathbb{E}_\pi[R + \gamma v_\pi(S')]$,
             which defines $v_\pi$ in terms of itself — it looks circular. Why does a unique
             solution exist? What mathematical condition on $\gamma$ makes this work, and what
-            goes wrong if that condition fails?</li>
+            goes wrong if that condition fails?
+            <details class="fft-answer">
+              <summary>Answer</summary>
+              <div class="fft-answer-body">
+                The Bellman equation is a linear system: in matrix form, $v = r + \gamma P v$,
+                where $P$ is the transition probability matrix and $r$ is the expected reward
+                vector. This rearranges to $(I - \gamma P)v = r$. The solution is unique iff
+                $(I - \gamma P)$ is invertible, which requires that $\gamma \rho(P) &lt; 1$,
+                where $\rho(P)$ is the spectral radius of $P$.
+
+                Since $P$ is a stochastic matrix, $\rho(P) = 1$. So the condition becomes
+                $\gamma &lt; 1$ — the discount factor must be strictly less than 1 for a unique
+                finite solution to exist.
+
+                <strong>What goes wrong at $\gamma = 1$?</strong> $(I - P)$ is singular (it
+                always has eigenvalue 0, since $P$ has eigenvalue 1 for the stationary distribution).
+                The system either has no solution or infinitely many solutions. In practice, for
+                episodic tasks, you "escape" this because the terminal state absorbs probability and
+                the system is effectively finite. For continuing tasks, $\gamma = 1$ is undefined
+                unless rewards sum to zero under the stationary distribution (the "ergodic" case,
+                leading to the average-reward formulation).
+              </div>
+            </details>
+          </li>
         </ol>
       </div>
 

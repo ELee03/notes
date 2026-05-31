@@ -283,48 +283,46 @@
       </div>
 
       <!-- ── Worked example ────────────────────────────────────────── -->
-      <div class="section-head" id="worked-example">Worked example: computing returns</div>
+      <div class="section-head" id="worked-example">Worked example</div>
 
-      <div class="prose">
-        Consider a 5-step episode: an agent navigates a grid world, moving north
-        four times before reaching a terminal state. Each non-terminal step gives
-        reward $R = -1$; the terminal transition gives $R = 0$. With $\gamma = 0.9$,
-        apply the recursive formula $G_t = R_{t+1} + \gamma G_{t+1}$
-        <em>starting from the end</em> and working backward.
-      </div>
-
-      <div class="example-block">
-        <div class="ex-title">5-step episode · γ = 0.9</div>
-        <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#3a4a5a;margin-bottom:14px;line-height:1.9;">
-          S<sub>0</sub> &xrarr;<sup style="font-size:9px">−1</sup> S<sub>1</sub>
-          &xrarr;<sup style="font-size:9px">−1</sup> S<sub>2</sub>
-          &xrarr;<sup style="font-size:9px">−1</sup> S<sub>3</sub>
-          &xrarr;<sup style="font-size:9px">−1</sup> S<sub>4</sub>
-          &xrarr;<sup style="font-size:9px">0</sup> terminal
+      <details class="example-box">
+        <summary><strong>Computing returns backward through a 5-step episode</strong></summary>
+        <div class="example-problem">
+          A 5-step episode: the agent moves north four times before reaching a terminal state.
+          Each non-terminal step gives $R = -1$; the terminal transition gives $R = 0$.
+          With $\gamma = 0.9$, compute $G_t$ for each $t$ using the recursive formula
+          $G_t = R_{t+1} + \gamma G_{t+1}$ (work backward from $t=4$).
         </div>
-        <table class="int-table" style="margin-top:0;">
-          <thead><tr>
-            <th style="text-align:center;">t</th>
-            <th>R<sub>t+1</sub></th>
-            <th>γ · G<sub>t+1</sub></th>
-            <th>G<sub>t</sub> = R<sub>t+1</sub> + γ G<sub>t+1</sub></th>
-          </tr></thead>
-          <tbody>
-            <tr><td>4</td><td>0</td><td>0.9 × 0 = 0.000</td><td>0.000</td></tr>
-            <tr><td>3</td><td>−1</td><td>0.9 × 0 = 0.000</td><td>−1.000</td></tr>
-            <tr><td>2</td><td>−1</td><td>0.9 × (−1) = −0.900</td><td>−1.900</td></tr>
-            <tr><td>1</td><td>−1</td><td>0.9 × (−1.9) = −1.710</td><td>−2.710</td></tr>
-            <tr style="background:#ddeef8;font-weight:600;"><td>0</td><td>−1</td><td>0.9 × (−2.71) = −2.439</td><td>−3.439</td></tr>
-          </tbody>
-        </table>
-        <div style="margin-top:10px;font-size:12.5px;color:#4a5a6a;line-height:1.6;">
-          <strong>G<sub>0</sub> = −3.439.</strong> Compare to the undiscounted sum
-          $(−1) + (−1) + (−1) + (−1) + 0 = -4$. Discounting with $\gamma = 0.9$ makes
-          the return $-3.439$ — those distant $-1$ penalties shrink because reward
-          further in the future counts for less. The agent starting here has a slightly
-          "better" (less negative) return under discounting than under plain summing.
+        <div class="example-body">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#3a4a5a;margin-bottom:10px;line-height:1.9;">
+            S<sub>0</sub> &xrarr;<sup style="font-size:9px">−1</sup> S<sub>1</sub>
+            &xrarr;<sup style="font-size:9px">−1</sup> S<sub>2</sub>
+            &xrarr;<sup style="font-size:9px">−1</sup> S<sub>3</sub>
+            &xrarr;<sup style="font-size:9px">−1</sup> S<sub>4</sub>
+            &xrarr;<sup style="font-size:9px">0</sup> terminal
+          </div>
+          <table class="int-table" style="margin-top:0;">
+            <thead><tr>
+              <th style="text-align:center;">t</th>
+              <th>R<sub>t+1</sub></th>
+              <th>γ · G<sub>t+1</sub></th>
+              <th>G<sub>t</sub> = R<sub>t+1</sub> + γ G<sub>t+1</sub></th>
+            </tr></thead>
+            <tbody>
+              <tr><td>4</td><td>0</td><td>0.9 × 0 = 0.000</td><td>0.000</td></tr>
+              <tr><td>3</td><td>−1</td><td>0.9 × 0 = 0.000</td><td>−1.000</td></tr>
+              <tr><td>2</td><td>−1</td><td>0.9 × (−1) = −0.900</td><td>−1.900</td></tr>
+              <tr><td>1</td><td>−1</td><td>0.9 × (−1.9) = −1.710</td><td>−2.710</td></tr>
+              <tr style="background:#ddeef8;font-weight:600;"><td>0</td><td>−1</td><td>0.9 × (−2.71) = −2.439</td><td>−3.439</td></tr>
+            </tbody>
+          </table>
+          <div style="margin-top:10px;font-size:12.5px;color:#4a5a6a;line-height:1.6;">
+            <strong>G<sub>0</sub> = −3.439.</strong> The undiscounted sum would be $-4$.
+            Discounting makes the return $-3.439$ — distant penalties shrink because future
+            reward counts less. The backward recursion is efficient: $O(T)$ instead of $O(T^2)$.
+          </div>
         </div>
-      </div>
+      </details>
 
       <div class="interactive" id="gamma-explorer">
         <div class="int-title">Explorer — adjust γ and rewards</div>
@@ -468,18 +466,86 @@
       <div class="section-head" id="food-for-thought">Food for thought</div>
 
       <div class="fft-block">
-        <div class="fft-title">Reflection questions — no answers given</div>
+        <div class="fft-title">Reflection questions</div>
         <ol>
           <li>The <strong>reward hypothesis</strong> claims any goal can be encoded as a scalar reward
             signal. Is this actually true? Can you think of a goal that might be difficult or
-            impossible to capture faithfully this way — without creating unintended agent behaviour?</li>
+            impossible to capture faithfully this way — without creating unintended agent behaviour?
+            <details class="fft-answer">
+              <summary>Answer</summary>
+              <div class="fft-answer-body">
+                The reward hypothesis is more of a working assumption than a proven theorem.
+                Goals that are genuinely hard to encode:
+
+                <strong>Multi-objective goals:</strong> "Be fast AND safe AND fuel-efficient" — any
+                scalar combines them into one number, losing the original structure. The weighting is
+                arbitrary and may not match the designer's true preferences in edge cases.
+
+                <strong>Human preference:</strong> "Write a poem I like" — the reward signal
+                (human ratings) is expensive, noisy, and not perfectly aligned with actual preference.
+                RLHF systems face this: reward hacking (generating text that scores highly but is
+                subtly wrong) is a known failure mode.
+
+                <strong>Safety constraints:</strong> "Never do X, under any circumstances" —
+                encoding as a large negative reward $-M$ for $X$ still allows the agent to violate
+                $X$ if the positive reward elsewhere is large enough. Hard constraints are difficult
+                to represent as scalar rewards.
+
+                The hypothesis is useful as a framework, not a guarantee. Many real-world RL systems
+                require careful reward engineering to avoid unintended emergent behaviors.
+              </div>
+            </details>
+          </li>
           <li>If you added a constant $c$ to every reward $R_t$, would the optimal policy change?
             What about multiplying every reward by a positive constant? What if the constant were
-            negative? Think through the effect on $G_t$ and on the ordering of policies.</li>
+            negative? Think through the effect on $G_t$ and on the ordering of policies.
+            <details class="fft-answer">
+              <summary>Answer</summary>
+              <div class="fft-answer-body">
+                <strong>Adding a constant $c$ to every reward:</strong>
+                For an episodic task with $T$ steps, $G_t^\text{new} = G_t + c/(1-\gamma)$ (continuous)
+                or $G_t + c \cdot \sum_{k=0}^{T-t-1}\gamma^k$ (episodic). This adds the same constant
+                to every policy's return, preserving the ordering of policies — the optimal policy
+                is unchanged. This is the basis of <strong>reward shaping</strong> techniques.
+
+                <strong>Multiplying by a positive constant $\alpha > 0$:</strong>
+                $G_t^\text{new} = \alpha G_t$. Every return scales uniformly; the ordering is preserved.
+                Optimal policy unchanged (but learning rates and convergence of value-based methods
+                are affected since value estimates change scale).
+
+                <strong>Multiplying by a negative constant $\alpha < 0$:</strong>
+                The sign of every return flips. A policy that was optimal (highest return) becomes
+                the worst policy. The <em>optimal policy reverses</em>. If you accidentally negate
+                your rewards, your agent learns to minimize reward instead of maximize it.
+              </div>
+            </details>
+          </li>
           <li>Discounting with $\gamma < 1$ ensures the infinite sum $G_t$ converges (as long as rewards
             are bounded). But $\gamma = 1$ is also used in practice for episodic tasks. Why doesn't
             the return diverge in that case — and when might $\gamma = 1$ cause problems even for
-            tasks that do terminate?</li>
+            tasks that do terminate?
+            <details class="fft-answer">
+              <summary>Answer</summary>
+              <div class="fft-answer-body">
+                For episodic tasks (finite episodes), $G_t = \sum_{k=0}^{T-t-1} R_{t+k+1}$ is a
+                finite sum regardless of $\gamma$ — there are only $T-t$ terms. So $\gamma = 1$
+                doesn't cause divergence when episodes always terminate in finite time.
+
+                <strong>When $\gamma = 1$ causes problems even for terminating tasks:</strong>
+                (1) <strong>Very long episodes:</strong> If an episode can last thousands of steps,
+                the return $G_0$ can be very large in magnitude, causing numerical instability in
+                value function estimates and gradient updates.
+
+                (2) <strong>Non-termination risk:</strong> If the agent's policy can cause the
+                episode never to terminate (e.g., the agent wanders in a cycle), $G_0 = \infty$ is
+                undefined. With $\gamma < 1$, a cycling agent's return is still finite.
+
+                (3) <strong>Variance:</strong> $\gamma = 1$ gives no preference for earlier rewards,
+                so the variance of $G_t$ is the sum of variances of all future rewards — potentially
+                very high for long episodes. This slows learning compared to discounted returns.
+              </div>
+            </details>
+          </li>
         </ol>
       </div>
 

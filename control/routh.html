@@ -435,113 +435,94 @@
       <!-- ── Worked examples ─────────────────────────────────────────── -->
       <div class="section-head" id="examples">Worked examples</div>
 
-      <div class="prose">
-        <strong>Example 1: Third-order system.</strong>
-        Determine stability of $\Delta(s) = s^3 + 6s^2 + 11s + 6$.
-      </div>
+      <details class="example-box">
+        <summary><strong>Example 1 — Third-order stable system</strong></summary>
+        <div class="example-problem">
+          Determine the stability of $\Delta(s) = s^3 + 6s^2 + 11s + 6$ using the Routh array.
+        </div>
+        <div class="example-body">
+          All coefficients positive → necessary condition satisfied. Build the array:
+          <div style="overflow-x:auto; margin:10px 0;">
+            <table class="routh-table">
+              <tr><td class="row-label">$s^3$</td><td class="first-col positive">1</td><td>11</td></tr>
+              <tr><td class="row-label">$s^2$</td><td class="first-col positive">6</td><td>6</td></tr>
+              <tr><td class="row-label">$s^1$</td>
+                <td class="first-col positive">$\dfrac{6\cdot11-1\cdot6}{6}=10$</td><td>0</td></tr>
+              <tr><td class="row-label">$s^0$</td><td class="first-col positive">6</td><td></td></tr>
+            </table>
+          </div>
+          First column: $1, 6, 10, 6$ — all positive, zero sign changes. <strong>Stable.</strong>
+          (Roots are $s = -1, -2, -3$.)
+        </div>
+      </details>
 
-      <div class="prose">All coefficients positive → passes necessary check. Build the array:</div>
+      <details class="example-box">
+        <summary><strong>Example 2 — Unstable polynomial (fails necessary condition)</strong></summary>
+        <div class="example-problem">
+          Is $\Delta(s) = s^3 + 2s^2 - s + 2$ stable?
+        </div>
+        <div class="example-body">
+          The coefficient of $s$ is $-1 &lt; 0$. The necessary condition (all coefficients same sign)
+          fails immediately. <strong>Unstable</strong> — no need to build the array.
+          (There must be at least one root in the RHP.)
+        </div>
+      </details>
 
-      <div style="overflow-x:auto;">
-        <table class="routh-table">
-          <tr><td class="row-label">$s^3$</td><td class="first-col positive">1</td><td>11</td></tr>
-          <tr><td class="row-label">$s^2$</td><td class="first-col positive">6</td><td>6</td></tr>
-          <tr><td class="row-label">$s^1$</td>
-            <td class="first-col positive">$\dfrac{6\cdot11-1\cdot6}{6}=10$</td>
-            <td>0</td></tr>
-          <tr><td class="row-label">$s^0$</td><td class="first-col positive">6</td><td></td></tr>
-        </table>
-      </div>
+      <details class="example-box">
+        <summary><strong>Example 3 — Stability range of gain $K$ (parametric Routh)</strong></summary>
+        <div class="example-problem">
+          For the unity-feedback loop with $L(s) = K/[s(s+1)(s+3)]$, find the range of $K > 0$
+          for closed-loop stability and the critical oscillation frequency.
+        </div>
+        <div class="example-body">
+          Characteristic polynomial (numerator of $1 + L(s)$):
+          $$\Delta(s) = s^3 + 4s^2 + 3s + K$$
+          Build the Routh array with $K$ as a free parameter:
+          <div style="overflow-x:auto; margin:10px 0;">
+            <table class="routh-table">
+              <tr><td class="row-label">$s^3$</td><td class="first-col">1</td><td>3</td></tr>
+              <tr><td class="row-label">$s^2$</td><td class="first-col">4</td><td>$K$</td></tr>
+              <tr><td class="row-label">$s^1$</td>
+                <td class="first-col">$\dfrac{12-K}{4}$</td><td>0</td></tr>
+              <tr><td class="row-label">$s^0$</td><td class="first-col">$K$</td><td></td></tr>
+            </table>
+          </div>
+          For all first-column entries to be positive: $K > 0$ and $(12-K)/4 > 0 \Rightarrow K < 12$.
+          $$\boxed{0 < K < 12}$$
+          At $K = K_{cr} = 12$: the $s^1$ row is zero. Auxiliary polynomial from the $s^2$ row:
+          $P_\text{aux}(s) = 4s^2 + 12$, giving $\omega_{cr} = \sqrt{3} \approx 1.73$ rad/s.
+        </div>
+      </details>
 
-      <div class="prose">
-        First column: $1, 6, 10, 6$ — all positive, zero sign changes.
-        <strong>System is stable.</strong> (The roots are $s = -1, -2, -3$, all in the LHP —
-        this is the characteristic polynomial of a fully-damped third-order system.)
-      </div>
-
-      <div class="prose" style="margin-top:20px;">
-        <strong>Example 2: An unstable polynomial.</strong>
-        $\Delta(s) = s^3 + 2s^2 - s + 2$.
-      </div>
-
-      <div class="prose">Coefficient of $s$ is $-1 < 0$ → fails the necessary condition immediately. Unstable. (No need to build the array.)</div>
-
-      <div class="prose" style="margin-top:20px;">
-        <strong>Example 3: Stability range of gain $K$.</strong>
-        Unity-feedback system with open-loop $L(s) = K/[s(s+1)(s+3)]$.
-        Find the range of $K > 0$ for stability.
-      </div>
-
-      <div class="prose">
-        Characteristic polynomial:
-        $$\Delta(s) = 1 + L(s) = 1 + \frac{K}{s(s+1)(s+3)} = \frac{s(s+1)(s+3) + K}{s(s+1)(s+3)}$$
-        Numerator: $s(s+1)(s+3) + K = s^3 + 4s^2 + 3s + K$.
-        All coefficients: $1, 4, 3, K$. For $K > 0$, the necessary condition is satisfied.
-      </div>
-
-      <div class="prose">Build the Routh array with $K$ as a parameter:</div>
-
-      <div style="overflow-x:auto;">
-        <table class="routh-table">
-          <tr><td class="row-label">$s^3$</td><td class="first-col">1</td><td>3</td></tr>
-          <tr><td class="row-label">$s^2$</td><td class="first-col">4</td><td>K</td></tr>
-          <tr><td class="row-label">$s^1$</td>
-            <td class="first-col">$\dfrac{4\cdot3-1\cdot K}{4}=\dfrac{12-K}{4}$</td>
-            <td>0</td></tr>
-          <tr><td class="row-label">$s^0$</td><td class="first-col">$K$</td><td></td></tr>
-        </table>
-      </div>
-
-      <div class="prose">
-        First-column elements: $1,\; 4,\; \dfrac{12-K}{4},\; K$.
-        For all to be positive:
-        $$1 > 0 \;\checkmark, \quad 4 > 0 \;\checkmark, \quad \frac{12-K}{4} > 0 \Rightarrow K < 12, \quad K > 0$$
-        <strong>Stable for $0 < K < 12$.</strong>
-      </div>
-
-      <div class="prose">
-        Critical gain: $K_{cr} = 12$. At this gain, the $s^1$ row is zero. The auxiliary polynomial
-        comes from the $s^2$ row: $P_{\text{aux}}(s) = 4s^2 + 12 = 4(s^2 + 3)$.
-        So $\omega_{cr} = \sqrt{3} \approx 1.73$ rad/s — the system oscillates at this frequency
-        when on the stability boundary.
-      </div>
-
-      <div class="prose" style="margin-top:20px;">
-        <strong>Example 4: Fourth-order with zero row (purely imaginary roots).</strong>
-        $\Delta(s) = s^4 + s^3 + 3s^2 + 3s + 2$. Check for stability.
-      </div>
-
-      <div style="overflow-x:auto;">
-        <table class="routh-table">
-          <tr><td class="row-label">$s^4$</td><td>1</td><td>3</td><td>2</td></tr>
-          <tr><td class="row-label">$s^3$</td><td>1</td><td>3</td><td>0</td></tr>
-          <tr><td class="row-label">$s^2$</td><td>$\dfrac{1\cdot3-1\cdot3}{1}=0$</td><td>$\dfrac{1\cdot2-1\cdot0}{1}=2$</td><td></td></tr>
-        </table>
-      </div>
-
-      <div class="prose">
-        The $s^2$ row starts with zero — not an entire zero row, but a zero in the first column.
-        Replace with $\varepsilon > 0$, continue:
-      </div>
-
-      <div style="overflow-x:auto;">
-        <table class="routh-table">
-          <tr><td class="row-label">$s^4$</td><td>1</td><td>3</td><td>2</td></tr>
-          <tr><td class="row-label">$s^3$</td><td>1</td><td>3</td><td>0</td></tr>
-          <tr><td class="row-label">$s^2$</td><td class="zero-val">$\varepsilon$</td><td>2</td><td></td></tr>
-          <tr><td class="row-label">$s^1$</td>
-            <td>$\dfrac{3\varepsilon - 2}{\varepsilon}=3-\dfrac{2}{\varepsilon}$</td>
-            <td>0</td></tr>
-          <tr><td class="row-label">$s^0$</td><td>2</td><td></td></tr>
-        </table>
-      </div>
-
-      <div class="prose">
-        As $\varepsilon \to 0^+$: $3 - 2/\varepsilon \to -\infty$ (negative). First column:
-        $1,\;1,\;\varepsilon^+,\;-\infty,\;2$. Sign changes: $(+) \to (+)$, $(+) \to (+)$,
-        $(+) \to (-)$, $(-) \to (+)$ — <strong>two sign changes</strong>.
-        This polynomial has 2 roots in the RHP. <strong>Unstable.</strong>
-      </div>
+      <details class="example-box">
+        <summary><strong>Example 4 — Zero first-column entry ($\varepsilon$ substitution)</strong></summary>
+        <div class="example-problem">
+          Determine the stability of $\Delta(s) = s^4 + s^3 + 3s^2 + 3s + 2$.
+        </div>
+        <div class="example-body">
+          Begin the array:
+          <div style="overflow-x:auto; margin:10px 0;">
+            <table class="routh-table">
+              <tr><td class="row-label">$s^4$</td><td>1</td><td>3</td><td>2</td></tr>
+              <tr><td class="row-label">$s^3$</td><td>1</td><td>3</td><td>0</td></tr>
+              <tr><td class="row-label">$s^2$</td><td>$\dfrac{1\cdot3-1\cdot3}{1}=0$</td><td>$\dfrac{1\cdot2-0}{1}=2$</td><td></td></tr>
+            </table>
+          </div>
+          The $s^2$ row has a zero first entry. Replace with $\varepsilon > 0$ and continue:
+          <div style="overflow-x:auto; margin:10px 0;">
+            <table class="routh-table">
+              <tr><td class="row-label">$s^4$</td><td>1</td><td>3</td><td>2</td></tr>
+              <tr><td class="row-label">$s^3$</td><td>1</td><td>3</td><td>0</td></tr>
+              <tr><td class="row-label">$s^2$</td><td class="zero-val">$\varepsilon$</td><td>2</td><td></td></tr>
+              <tr><td class="row-label">$s^1$</td>
+                <td>$3 - \dfrac{2}{\varepsilon}$</td><td>0</td></tr>
+              <tr><td class="row-label">$s^0$</td><td>2</td><td></td></tr>
+            </table>
+          </div>
+          As $\varepsilon \to 0^+$: $3 - 2/\varepsilon \to -\infty$. First column signs:
+          $+, +, +, -, +$ — <strong>two sign changes</strong>. <strong>Two roots in the RHP. Unstable.</strong>
+        </div>
+      </details>
 
       <!-- ── Interactive ──────────────────────────────────────────────── -->
       <div class="section-head" id="interactive">Interactive: Routh array calculator</div>
@@ -734,22 +715,82 @@
       <div class="section-head" id="food-for-thought">Food for thought</div>
 
       <div class="fft-block" style="border-left:3px solid #b89040;background:#faf8f2;padding:14px 18px;border-radius:0 4px 4px 0;margin:20px 0;">
-        <div style="font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#8a6010;margin-bottom:10px;">Reflection questions — no answers given</div>
+        <div style="font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#8a6010;margin-bottom:10px;">Reflection questions</div>
         <ol style="padding-left:1.4em;color:#2a3a4a;font-size:14px;line-height:1.7;">
           <li style="margin-bottom:12px;">Routh-Hurwitz tells you <em>how many</em> roots are
             in the RHP but not <em>where</em> they are. How does this compare to the root locus
             (Lesson 5), which shows you exactly where the closed-loop poles move as $K$ varies?
-            When would you use Routh-Hurwitz instead of root locus, and vice versa?</li>
+            When would you use Routh-Hurwitz instead of root locus, and vice versa?
+            <details class="fft-answer">
+              <summary>Answer</summary>
+              <div class="fft-answer-body">
+                <strong>Routh-Hurwitz advantages:</strong> Fast, algebraic, works directly with the
+                characteristic polynomial (no factoring needed). Ideal for: (1) checking if a given
+                set of parameters produces a stable system, (2) finding stability <em>ranges</em> for
+                a single parameter in closed form (as in Example 3), (3) stability analysis of high-order
+                systems where computing roots numerically is impractical without a computer.
+
+                <strong>Root locus advantages:</strong> Shows the complete trajectory of all closed-loop
+                poles as $K$ varies — you see not just where instability begins but how the transient
+                response changes (damping, natural frequency) across the entire range. Better for design
+                (choosing $K$ to achieve a desired $\zeta$, $\omega_n$), and for understanding the qualitative
+                behavior of the system.
+
+                Use Routh when you need a quick yes/no stability check or a parametric stability range.
+                Use root locus when you need to understand how closed-loop pole locations change and
+                want to choose design parameters beyond just "stable or not."
+              </div>
+            </details>
+          </li>
           <li style="margin-bottom:12px;">The critical gain $K_{cr}$ in Example 3 is 12. If
             the plant gain drifts by 20% (a real physical system is not perfectly modeled), by how
             much does the closed-loop gain margin shrink? Express this as a percentage of $K_{cr}$.
-            This is the practical meaning of a <em>gain margin</em>.</li>
+            This is the practical meaning of a <em>gain margin</em>.
+            <details class="fft-answer">
+              <summary>Answer</summary>
+              <div class="fft-answer-body">
+                If the plant gain drifts by $+20\%$, the effective loop gain becomes $1.2K$. For stability we
+                need $1.2K < 12$, i.e., $K < 10$. The stability range shrinks from $K < 12$ to $K < 10$
+                — a reduction of $2/12 \approx 17\%$ of $K_{cr}$.
+
+                In terms of gain margin: if the nominal design uses $K = K_\text{design}$, the actual
+                gain margin is $K_{cr}/(1.2 K_\text{design})$ rather than $K_{cr}/K_\text{design}$.
+                A 20% upward plant gain drift reduces the gain margin by a factor of 1.2 — from 12 dB
+                to $20\log_{10}(K_{cr}/(1.2 K)) = 20\log_{10}(K_{cr}/K) - 20\log_{10}(1.2) \approx
+                \text{GM}_\text{nominal} - 1.6$ dB.
+
+                This is why a nominal GM of $\geq 6$ dB is recommended: it provides buffer against
+                gain variations, parameter uncertainty, and the inevitable mismatch between model and plant.
+              </div>
+            </details>
+          </li>
           <li>For a first-order system $s + a_0$, the Routh array is trivially two entries:
             $a_1=1$ and $a_0$. Stable iff $a_0 > 0$. For a second-order system
             $s^2 + a_1 s + a_0$, the condition is $a_1 > 0$ and $a_0 > 0$. Verify these
             match the Routh criterion. Can you derive a general Routh-like condition for
             third-order systems $s^3 + a_2 s^2 + a_1 s + a_0$ directly from the table
-            (without looking it up)?</li>
+            (without looking it up)?
+            <details class="fft-answer">
+              <summary>Answer</summary>
+              <div class="fft-answer-body">
+                <strong>First order:</strong> $s + a_0$. Routh array: $[1;\; a_0]$. Stable iff $a_0 > 0$. ✓
+
+                <strong>Second order:</strong> $s^2 + a_1 s + a_0$. Routh array:
+                Row $s^2$: $1,\; a_0$. Row $s^1$: $a_1,\; 0$. Row $s^0$: $a_0$.
+                First column: $1, a_1, a_0$. Stable iff $a_1 > 0$ and $a_0 > 0$. ✓
+
+                <strong>Third order:</strong> $s^3 + a_2 s^2 + a_1 s + a_0$.
+                Row $s^3$: $1,\; a_1$. Row $s^2$: $a_2,\; a_0$.
+                Row $s^1$: $\dfrac{a_2 a_1 - a_0}{a_2},\; 0$.
+                Row $s^0$: $a_0$.
+
+                First column positive: $a_2 > 0$, $\dfrac{a_2 a_1 - a_0}{a_2} > 0$, $a_0 > 0$.
+                Combined: $a_2 > 0$, $a_1 > 0$, $a_0 > 0$, <strong>and</strong> $a_2 a_1 > a_0$.
+                The last condition is the extra Hurwitz condition for third-order systems — beyond
+                just requiring all coefficients positive.
+              </div>
+            </details>
+          </li>
         </ol>
       </div>
 

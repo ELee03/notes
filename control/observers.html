@@ -678,56 +678,80 @@
       <div id="worked-examples"></div>
       <div class="section-head">Worked Examples</div>
 
-      <div class="callout">
-        <strong>Example 1 — Observer design by duality.</strong>
-        Design an observer for:
-        $$A = \begin{bmatrix}0&1\\-2&-3\end{bmatrix},\quad C = \begin{bmatrix}1&0\end{bmatrix}$$
-        with observer poles at $-5 \pm 5j$.
-        <br><br>
-        <strong>Check observability:</strong>
-        $\mathcal{O} = \begin{bmatrix}C \\ CA\end{bmatrix} = \begin{bmatrix}1&0\\0&1\end{bmatrix}$,\;$\det\mathcal{O} = 1 \neq 0$. ✓
-        <br><br>
-        <strong>Transpose the system:</strong> Apply pole placement to $(A^T, C^T)$:
-        $$A^T = \begin{bmatrix}0&-2\\1&-3\end{bmatrix},\quad C^T = \begin{bmatrix}1\\0\end{bmatrix}$$
-        Gain $\tilde K$ for $A^T - C^T\tilde K$ with poles $-5 \pm 5j$:
-        Desired polynomial: $(s+5-5j)(s+5+5j) = s^2 + 10s + 50$.
-        <br><br>
-        $A^T - C^T\tilde K = \begin{bmatrix}-\tilde k_1 & -2 \\ 1 & -3\end{bmatrix}$,\;
-        char poly: $s^2 + (3+\tilde k_1)s + (3\tilde k_1 - 2)$.
-        <br><br>
-        Matching: $3+\tilde k_1=10 \Rightarrow \tilde k_1=7$;\;$3(7)-2=19 \neq 50$. Need to also solve for $\tilde k_2$.
-        With $K = [\tilde k_1, \tilde k_2]$:
-        $A^T - C^T\tilde K = \begin{bmatrix}-\tilde k_1 & -2-\tilde k_2 \\ 1 & -3\end{bmatrix}$,\;
-        char poly: $s^2+(\tilde k_1+3)s+(3\tilde k_1-2-\tilde k_2+2)$... working it through gives
-        $\tilde k_1=7,\;\tilde k_2=28$. Observer gain: $L = \tilde K^T = \begin{bmatrix}7\\28\end{bmatrix}$.
-      </div>
+      <details class="example-box">
+        <summary><strong>Example 1 — Observer design by duality</strong></summary>
+        <div class="example-problem">
+          Design a Luenberger observer for:
+          $$A = \begin{bmatrix}0&1\\-2&-3\end{bmatrix},\quad C = \begin{bmatrix}1&0\end{bmatrix}$$
+          with observer poles at $-5 \pm 5j$. Use the duality/pole-placement approach.
+        </div>
+        <div class="example-body">
+          <strong>Step 1 — Check observability.</strong>
+          $\mathcal{O} = \begin{bmatrix}C \\ CA\end{bmatrix} = \begin{bmatrix}1&0\\0&1\end{bmatrix}$, $\det\mathcal{O} = 1 \neq 0$. ✓
+          <br><br>
+          <strong>Step 2 — Transpose the problem.</strong> Apply pole placement to $(A^T,\, C^T)$
+          with gain $\tilde{K} = [\tilde k_1,\, \tilde k_2]$:
+          $$A^T - C^T\tilde{K} = \begin{bmatrix}-\tilde k_1 & -2-\tilde k_2 \\ 1 & -3\end{bmatrix}$$
+          Characteristic polynomial: $s^2 + (\tilde k_1 + 3)s + (3\tilde k_1 - \tilde k_2 - 2 + 2)$.
+          <br><br>
+          <strong>Step 3 — Match desired polynomial.</strong> Desired poles $-5 \pm 5j$:
+          $(s+5)^2 + 25 = s^2 + 10s + 50$.
+          $$\tilde k_1 + 3 = 10 \;\Rightarrow\; \tilde k_1 = 7$$
+          $$3(7) - \tilde k_2 = 50 \;\Rightarrow\; \tilde k_2 = 21 - 50 = -29$$
+          Wait — recheck the $(2,2)$ entry: $\det(A^T - C^T\tilde K) = (-\tilde k_1)(-3) - (1)(-2-\tilde k_2) = 3\tilde k_1 + 2 + \tilde k_2$.
+          For the char poly constant term: $3(7) + 2 + \tilde k_2 = 50 \Rightarrow \tilde k_2 = 27$.
+          So $\tilde K = [7,\, 27]$ and the observer gain is:
+          $$L = \tilde K^T = \begin{bmatrix}7\\27\end{bmatrix}$$
+          Verify: $A - LC = \begin{bmatrix}0-7&1\\-2-27&-3\end{bmatrix} = \begin{bmatrix}-7&1\\-29&-3\end{bmatrix}$.
+          Char poly: $s^2 + 10s + (21+29) = s^2 + 10s + 50$. ✓
+        </div>
+      </details>
 
-      <div class="callout">
-        <strong>Example 2 — Verifying the separation principle.</strong>
-        For the double integrator with $K=[1,\sqrt{3}]$ and observer poles at $-3\pm 3j$,
-        the combined closed-loop matrix is:
-        $$A_{cl} = \begin{bmatrix}A-BK & BK \\ 0 & A-LC\end{bmatrix}
-          = \begin{bmatrix}0&1&0&0\\-1&-\sqrt{3}&1&\sqrt{3}\\0&0&0&1\\0&0&-18&-6\end{bmatrix}$$
-        The eigenvalues are exactly $\{-\sqrt{3}/2 \pm 0.5j\} \cup \{-3 \pm 3j\}$ — confirming that
-        the combined eigenvalues are the union of the state-feedback and observer eigenvalues, with no coupling between the two sets.
-      </div>
+      <details class="example-box">
+        <summary><strong>Example 2 — Verifying the separation principle</strong></summary>
+        <div class="example-problem">
+          For the double integrator ($A = \begin{bmatrix}0&1\\0&0\end{bmatrix}$, $B = \begin{bmatrix}0\\1\end{bmatrix}$, $C=[1,0]$)
+          with state-feedback gain $K = [1,\,\sqrt{3}]$ and observer poles at $-3 \pm 3j$,
+          write the combined closed-loop matrix and verify the separation principle by computing its eigenvalues.
+        </div>
+        <div class="example-body">
+          <strong>Step 1 — Find observer gain.</strong> Observer desired poly: $(s+3)^2 + 9 = s^2 + 6s + 18$.
+          $A - LC = \begin{bmatrix}-l_1 & 1 \\ -l_2 & 0\end{bmatrix}$, char poly $s^2 + l_1 s + l_2$.
+          So $l_1 = 6$, $l_2 = 18$. $L = [6,\, 18]^T$.
+          <br><br>
+          <strong>Step 2 — Form $A_{cl}$.</strong>
+          $$A_{cl} = \begin{bmatrix}A-BK & BK \\ 0 & A-LC\end{bmatrix}
+            = \begin{bmatrix}0&1&0&0\\-1&-\sqrt{3}&1&\sqrt{3}\\0&0&-6&1\\0&0&-18&0\end{bmatrix}$$
+          <strong>Step 3 — Eigenvalues.</strong> Since $A_{cl}$ is block upper-triangular, eigenvalues are
+          $\text{eig}(A-BK) \cup \text{eig}(A-LC)$.
+          $A-BK$: char poly $s^2 + \sqrt{3}s + 1$, roots $-\sqrt{3}/2 \pm j/2 \approx -0.866 \pm 0.5j$.
+          $A-LC$: char poly $s^2 + 6s + 18$, roots $-3 \pm 3j$.
+          Combined eigenvalues: $\{-0.866 \pm 0.5j,\ -3 \pm 3j\}$ — the two designs are completely decoupled. ✓
+        </div>
+      </details>
 
-      <div class="callout">
-        <strong>Example 3 — LQG design.</strong>
-        Suppose the double integrator has process noise $w \sim \mathcal{N}(0,0.1)$
-        (acting on the acceleration channel) and position measurement noise $v \sim \mathcal{N}(0,0.01)$.
-        <br>
-        Here $G = [0;\,1]$, $W = 0.1$, $V = 0.01$, so $GWG^T = \begin{bmatrix}0&0\\0&0.1\end{bmatrix}$.
-        <br><br>
-        The Kalman filter ARE: $A\Sigma + \Sigma A^T - \Sigma C^T V^{-1} C\Sigma + GWG^T = 0$.
-        With $C = [1,\,0]$, $V^{-1} = 100$:
-        $$-100\sigma_{11}^2 + 0 = 0 \;\text{ from (1,1) entry } \Rightarrow \sigma_{11} = 0$$
-        Full solution (by direct computation or MATLAB <span class="inline-code">kalman()</span>):
-        the steady-state Kalman gain $L_{KF}$ balances model trust vs measurement noise,
-        placing effective observer poles determined by the noise ratio $W/V = 10$.
-        As $W \to 0$ (perfect model), $L_{KF} \to 0$ (trust the model, ignore measurements).
-        As $V \to 0$ (perfect sensors), $L_{KF} \to \infty$ (follow measurements closely).
-      </div>
+      <details class="example-box">
+        <summary><strong>Example 3 — Kalman filter gain for a noisy double integrator</strong></summary>
+        <div class="example-problem">
+          The double integrator has process noise entering through acceleration ($G = [0;\,1]$, $W = 0.1$)
+          and position measurement noise ($V = 0.01$). Describe how the Kalman filter gain is determined
+          and what happens at the noise extremes $W \to 0$ and $V \to 0$.
+        </div>
+        <div class="example-body">
+          The filter ARE is $A\Sigma + \Sigma A^T - \Sigma C^T V^{-1} C\Sigma + GWG^T = 0$
+          where $GWG^T = \begin{bmatrix}0&0\\0&0.1\end{bmatrix}$ and $C^T V^{-1} C = 100\begin{bmatrix}1&0\\0&0\end{bmatrix}$.
+          <br><br>
+          The $(1,1)$ entry of the ARE gives $-100\sigma_{11}^2 = 0 \Rightarrow \sigma_{11} = 0$, meaning the
+          steady-state position estimation error covariance vanishes (the position measurement is accurate enough to be trusted exactly). The Kalman gain $L = \Sigma C^T V^{-1}$ concentrates on correcting the velocity estimate from position measurements.
+          <br><br>
+          <strong>Limiting behaviour:</strong>
+          <ul style="margin:8px 0 0 16px;">
+            <li>$W \to 0$ (model perfect): $\Sigma \to 0$, $L \to 0$ — trust the model completely, ignore measurements.</li>
+            <li>$V \to 0$ (sensor perfect): $\Sigma \to 0$ but $L = \Sigma C^T V^{-1}$ remains finite as the ratio $\Sigma/V$ stays bounded — follow measurements closely.</li>
+            <li>$W/V$ large (noisy model, good sensors): large $L$, aggressive correction each measurement step.</li>
+          </ul>
+        </div>
+      </details>
 
       <!-- ── Food for Thought ──────────────────────────────────── -->
       <div id="food-for-thought"></div>
@@ -739,16 +763,56 @@
           and observer eigenvalues. But the LQR guarantee of $\geq 60°$ phase margin does
           not carry over to the combined LQG controller. Why not — what changes when the
           observer is in the loop?
+          <details class="fft-answer">
+            <summary>Answer</summary>
+            <div class="fft-answer-body">
+              The LQR margin proof relies on the return-difference inequality
+              $\|I + K^*(j\omega I-A)^{-1}B\| \geq 1$, which holds because the feedback path
+              is the direct state $x$. When an observer is inserted, the actual
+              closed-loop transfer function from plant input to feedback becomes
+              $K^*(sI - A + BK^* + LC)^{-1}L \cdot C(sI-A)^{-1}B$ — it involves the
+              observer's poles and zeros and introduces additional phase lag. The
+              return-difference is no longer bounded away from zero in general, so
+              margins can shrink to near zero even when both $K^*$ and $L$ are individually well-designed.
+              This failure mode is known as the "LQG fragility" problem; loop transfer recovery (LTR) is the standard fix.
+            </div>
+          </details>
         </li>
         <li>
           In the observer error dynamics $\dot{e} = (A-LC)e$, the input $u$ does not appear.
           Does this mean the control design has no effect on how fast the observer converges?
           What would happen if you used a very bad state-feedback gain $K$?
+          <details class="fft-answer">
+            <summary>Answer</summary>
+            <div class="fft-answer-body">
+              Correct — the error $e = x - \hat x$ converges at the rate of $A-LC$ eigenvalues,
+              independent of $K$. A bad $K$ doesn't slow the observer. However, a destabilising
+              $K$ causes the true state $x(t)$ to grow without bound. The observer faithfully
+              estimates this diverging state (if $A-LC$ is stable), so $\hat x \to x$ while
+              $x \to \infty$. You get a very accurate estimate of a runaway system — the control
+              signal $u = -K\hat x$ also grows, but in the wrong direction. The separation
+              principle guarantees stability only when <em>both</em> $A-BK$ and $A-LC$ are
+              independently stable.
+            </div>
+          </details>
         </li>
         <li>
           The Kalman filter is optimal for Gaussian noise. If the noise is heavy-tailed
           (occasional large outliers), would a Kalman filter still work well? What might
           you use instead?
+          <details class="fft-answer">
+            <summary>Answer</summary>
+            <div class="fft-answer-body">
+              No — the Kalman filter is optimal for minimum mean-squared error under Gaussian
+              assumptions. Heavy-tailed noise (e.g. Cauchy, Student-$t$) means occasional very
+              large measurement residuals. A standard Kalman filter treats these outliers as high-probability events and overcorrects, producing large transient estimation errors.
+              Alternatives: (1) <em>Huber-based robust Kalman filter</em> — replaces the quadratic
+              cost with a Huber loss that caps the influence of large residuals; (2)
+              <em>unscented Kalman filter (UKF)</em> with heavy-tailed noise models;
+              (3) <em>particle filter</em> — represents the posterior distribution with a set of
+              weighted samples, making no Gaussian assumption and handling arbitrary noise distributions.
+            </div>
+          </details>
         </li>
       </ul>
 

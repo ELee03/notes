@@ -527,82 +527,65 @@
       <!-- ── Worked examples ─────────────────────────────────────── -->
       <div class="section-head" id="worked-examples">Worked examples</div>
 
-      <div class="prose" style="font-weight:600;color:#2a3a4a;margin-bottom:6px;">
-        Example 1 — TD(0) update, step by step
-      </div>
+      <details class="example-box">
+        <summary><strong>Example 1 — TD(0) update, step by step</strong></summary>
+        <div class="example-problem">
+          Current estimates: $V(s_3) = -1.5$, $V(s_7) = -3.0$. An agent in state $s_3$ takes
+          an action, receives reward $R = -1$, and transitions to $s_7$.
+          Use $\alpha = 0.1$, $\gamma = 0.9$. Compute the TD target, TD error, and updated $V(s_3)$.
+        </div>
+        <div class="example-body">
+          <div class="prose">TD target: $R + \gamma V(s_7) = -1 + 0.9 \times (-3.0) = -1 - 2.7 = -3.7$</div>
+          <div class="prose">TD error: $\delta = -3.7 - (-1.5) = -2.2$</div>
+          <div class="prose">Update: $V(s_3) \leftarrow -1.5 + 0.1 \times (-2.2) = -1.5 - 0.22 = \mathbf{-1.72}$</div>
+          <div class="prose">
+            The negative TD error means the outcome was worse than predicted — $s_3$ is further from
+            a good future than $V$ thought. The update moves $V(s_3)$ downward. Notice this update
+            happens immediately after one step; MC would wait for the whole episode.
+          </div>
+        </div>
+      </details>
 
-      <div class="prose">
-        Suppose the current estimates are $V(s_3) = -1.5$ and $V(s_7) = -3.0$. An agent in
-        state $s_3$ takes an action, receives reward $R = -1$, and transitions to $s_7$.
-        Use $\alpha = 0.1$ and $\gamma = 0.9$.
-      </div>
+      <details class="example-box">
+        <summary><strong>Example 2 — Q-learning update</strong></summary>
+        <div class="example-problem">
+          State $s$: $Q(s,\text{N})=-2.0$, $Q(s,\text{E})=-1.5$, $Q(s,\text{S})=-3.0$, $Q(s,\text{W})=-2.5$.
+          Agent takes East, receives $R=-1$, arrives at $s'$: $Q(s',\text{N})=Q(s',\text{E})=-0.5$,
+          $Q(s',\text{S})=Q(s',\text{W})=-1.0$. Use $\alpha=0.2$, $\gamma=1$.
+          Compute the Q-learning update to $Q(s,\text{E})$.
+        </div>
+        <div class="example-body">
+          <div class="prose">$\max_{a'} Q(s', a') = -0.5$ (North or East from $s'$).</div>
+          <div class="prose">TD target: $R + \gamma \max_{a'} Q(s', a') = -1 + 1.0 \times (-0.5) = -1.5$</div>
+          <div class="prose">TD error: $\delta = -1.5 - (-1.5) = 0$</div>
+          <div class="prose">
+            No update! $Q(s, \text{E})$ is already consistent with the optimal value of $s'$.
+            This is a fixed-point: if the rest of $Q$ is correct, no further update is needed here.
+            In practice this happens near convergence — once $Q$ is close to $q_*$, TD errors become
+            small everywhere.
+          </div>
+        </div>
+      </details>
 
-      <div class="prose">
-        TD target: $R + \gamma V(s_7) = -1 + 0.9 \times (-3.0) = -1 - 2.7 = -3.7$
-      </div>
-
-      <div class="prose">
-        TD error: $\delta = -3.7 - (-1.5) = -2.2$
-      </div>
-
-      <div class="prose">
-        Update: $V(s_3) \leftarrow -1.5 + 0.1 \times (-2.2) = -1.5 - 0.22 = -1.72$
-      </div>
-
-      <div class="prose">
-        The negative TD error means the outcome was worse than predicted — $s_3$ is further from
-        a good future than $V$ thought. The update moves $V(s_3)$ downward. Notice this update
-        happens immediately after one step; MC would wait for the whole episode.
-      </div>
-
-      <div class="prose" style="font-weight:600;color:#2a3a4a;margin-bottom:6px;margin-top:24px;">
-        Example 2 — Q-learning update
-      </div>
-
-      <div class="prose">
-        State $s$, current $Q$ values: $Q(s, \text{N}) = -2.0$, $Q(s, \text{E}) = -1.5$,
-        $Q(s, \text{S}) = -3.0$, $Q(s, \text{W}) = -2.5$. Agent takes action East, receives
-        $R = -1$, arrives at $s'$ with $Q(s', \text{N}) = -0.5$, $Q(s', \text{E}) = -0.5$,
-        $Q(s', \text{S}) = -1.0$, $Q(s', \text{W}) = -1.0$. Use $\alpha = 0.2$, $\gamma = 1$.
-      </div>
-
-      <div class="prose">
-        $\max_{a'} Q(s', a') = -0.5$ (North or East from $s'$).
-      </div>
-
-      <div class="prose">
-        TD target: $R + \gamma \max_{a'} Q(s', a') = -1 + 1.0 \times (-0.5) = -1.5$
-      </div>
-
-      <div class="prose">
-        TD error: $\delta = -1.5 - (-1.5) = 0$
-      </div>
-
-      <div class="prose">
-        No update! $Q(s, \text{E})$ is already consistent with the optimal value of $s'$.
-        This is a fixed-point: if the rest of $Q$ is correct, no further update is needed here.
-        In practice this happens near convergence — once $Q$ is close to $q_*$, TD errors become
-        small everywhere.
-      </div>
-
-      <div class="prose" style="font-weight:600;color:#2a3a4a;margin-bottom:6px;margin-top:24px;">
-        Example 3 — n-step return calculation
-      </div>
-
-      <div class="prose">
-        An episode proceeds: $S_3 \xrightarrow{R_4=-1} S_4 \xrightarrow{R_5=-1} S_5 \xrightarrow{R_6=-1} S_6$.
-        Current estimate $V(S_6) = -2.0$. Compute the 3-step return for state $S_3$ with $\gamma=1$:
-      </div>
-
-      <div class="prose">
-        $$G_3^{(3)} = R_4 + \gamma R_5 + \gamma^2 R_6 + \gamma^3 V(S_6) = -1 + (-1) + (-1) + (-2) = -5$$
-      </div>
-
-      <div class="prose">
-        Compare to TD(0) for $S_3$: $G_3^{(1)} = R_4 + \gamma V(S_4)$. This requires $V(S_4)$
-        but only one real observation. The 3-step version uses three real reward observations and
-        then bootstraps — lower variance, but needs to wait 3 steps.
-      </div>
+      <details class="example-box">
+        <summary><strong>Example 3 — n-step return calculation</strong></summary>
+        <div class="example-problem">
+          An episode proceeds: $S_3 \xrightarrow{R_4=-1} S_4 \xrightarrow{R_5=-1} S_5 \xrightarrow{R_6=-1} S_6$.
+          Current estimate $V(S_6) = -2.0$. Compute the 3-step return $G_3^{(3)}$ for state $S_3$
+          with $\gamma=1$, and compare it to the TD(0) target for the same state.
+        </div>
+        <div class="example-body">
+          <div class="prose">
+            $$G_3^{(3)} = R_4 + \gamma R_5 + \gamma^2 R_6 + \gamma^3 V(S_6) = -1 + (-1) + (-1) + (-2) = -5$$
+          </div>
+          <div class="prose">
+            Compare to TD(0) for $S_3$: $G_3^{(1)} = R_4 + \gamma V(S_4)$. This requires $V(S_4)$
+            but only one real observation. The 3-step version uses three real reward observations and
+            then bootstraps — lower variance, but needs to wait 3 steps before the update can be
+            applied.
+          </div>
+        </div>
+      </details>
 
       <!-- ── Interactive ─────────────────────────────────────────── -->
       <div class="section-head" id="interactive">Interactive: Q-learning on the grid</div>
@@ -793,20 +776,72 @@
       <div class="section-head" id="food-for-thought">Food for thought</div>
 
       <div class="fft-block">
-        <div class="fft-title">Reflection questions — no answers given</div>
+        <div class="fft-title">Reflection questions</div>
         <ol>
           <li>TD(0) bootstraps from $V(S_{t+1})$, which is itself an estimate. This makes
             the target a moving target — as $V$ changes, so do all past TD targets. Does this
             cause a problem for convergence? What assumption about the step size $\alpha$ is
-            needed to guarantee convergence, and why does that assumption address the issue?</li>
+            needed to guarantee convergence, and why does that assumption address the issue?
+            <details class="fft-answer">
+              <summary>Answer / hint</summary>
+              <div class="fft-answer-body">
+                The moving target is a genuine complication — TD is not gradient descent on a
+                fixed loss, so the standard convergence proofs don't apply directly. The classic
+                Robbins-Monro conditions handle it: $\sum_t \alpha_t = \infty$ (enough total
+                learning to overcome any initialization) and $\sum_t \alpha_t^2 < \infty$ (updates
+                shrink fast enough that noise averages out and the algorithm "settles"). As
+                $\alpha_t \to 0$, the target is moving slower and slower relative to the update
+                size, so the algorithm can converge to a fixed point even though the target was
+                never truly fixed. With a constant $\alpha$, TD(0) converges in the mean for
+                linear function approximation but oscillates around the true values — useful in
+                practice but technically non-convergent in the classic sense.
+              </div>
+            </details>
+          </li>
           <li>Q-learning converges to $q_*$ regardless of the behavior policy (as long as
             the behavior policy covers all actions). Does this mean you could use <em>any</em>
             data — even data from a completely different task — to learn $q_*$ for your task?
-            What would go wrong (or right) in practice?</li>
+            What would go wrong (or right) in practice?
+            <details class="fft-answer">
+              <summary>Answer / hint</summary>
+              <div class="fft-answer-body">
+                No — "any behavior policy" means any policy acting in <em>the same MDP</em>. The
+                reward signal in the data must come from the task you're learning. Data from a
+                different task has different rewards, so Q-learning on it would converge to $q_*$
+                of that other task, not yours. What you <em>can</em> reuse: transitions $(s,a,s')$
+                collected under any policy in your MDP — you just replace the reward with the
+                correct reward for your task. This is exactly experience replay in DQN: stored
+                transitions are resampled with your own rewards regardless of when or how they
+                were collected. Cross-task reuse requires transfer learning or meta-learning, not
+                just Q-learning's off-policy property.
+              </div>
+            </details>
+          </li>
           <li>In the cliff walking example, SARSA learns a safer policy while Q-learning
             learns the optimal policy. Which would you prefer in a real robot deployment?
             Does the answer change depending on whether the robot is in training or in
-            production?</li>
+            production?
+            <details class="fft-answer">
+              <summary>Answer / hint</summary>
+              <div class="fft-answer-body">
+                <strong>During training:</strong> SARSA is typically safer for physical robots.
+                Its on-policy update accounts for the ε-greedy exploration noise — so the learned
+                policy stays away from catastrophic states even when the robot takes random actions.
+                Q-learning's target policy ignores the exploration; the cliff edge is avoided only
+                once exploration stops.
+                <br><br>
+                <strong>In production:</strong> With ε=0 (purely greedy), both algorithms'
+                policies converge to the same behaviour in most MDPs. Q-learning's optimal policy
+                (shorter path along the cliff) is strictly better in terms of expected reward. If
+                the deployment environment is safe and well-controlled, Q-learning's policy is
+                preferable.
+                <br><br>
+                <strong>The practical answer:</strong> Train with SARSA (safe exploration), then
+                at deployment switch to the greedy policy derived from Q-learning's Q-values for
+                optimal performance. This is a common pattern in real robotics.
+              </div>
+            </details>
+          </li>
         </ol>
       </div>
 

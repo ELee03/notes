@@ -686,18 +686,81 @@
       <div class="section-head" id="food-for-thought">Food for thought</div>
 
       <div class="fft-block" style="border-left:3px solid #b89040;background:#faf8f2;padding:14px 18px;border-radius:0 4px 4px 0;margin:20px 0;">
-        <div style="font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#8a6010;margin-bottom:10px;">Reflection questions — no answers given</div>
+        <div style="font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#8a6010;margin-bottom:10px;">Reflection questions</div>
         <ol style="padding-left:1.4em;color:#2a3a4a;font-size:14px;line-height:1.7;">
           <li style="margin-bottom:12px;">The interactive shows that open-loop control reaches
             the correct steady state ($y=1$) without any disturbance. But does it track a
             time-varying reference — say, a sinusoidal $r(t) = \sin(t)$? What would you need
-            to know about the plant to make open-loop tracking work?</li>
+            to know about the plant to make open-loop tracking work?
+            <details class="fft-answer">
+              <summary>Answer</summary>
+              <div class="fft-answer-body">
+                For open-loop tracking of a sinusoidal reference $r(t) = A\sin(\omega t)$, you need
+                to know the plant's frequency response $P(j\omega)$ exactly. The open-loop controller
+                must apply $u(t) = A|P(j\omega)|^{-1}\sin(\omega t - \angle P(j\omega))$ to cancel the
+                plant's gain and phase distortion. This requires: (1) perfect knowledge of $P(j\omega)$
+                at every frequency of interest — any modelling error propagates directly to output error;
+                (2) that $P(j\omega)$ is invertible (minimum-phase) — a plant with RHP zeros cannot be
+                inverted stably; (3) the controller itself must be realizable (proper, stable).
+
+                In practice, open-loop tracking works only for very simple, well-characterized, slow
+                plants with no disturbances. For any dynamic reference or uncertain plant, feedback is
+                necessary to adapt to model errors in real time.
+              </div>
+            </details>
+          </li>
           <li style="margin-bottom:12px;">Feedback can stabilize an unstable plant. But can
             feedback make a stable plant unstable? Under what conditions would a feedback
-            controller make things worse? (Think about high gain and time delays.)</li>
+            controller make things worse? (Think about high gain and time delays.)
+            <details class="fft-answer">
+              <summary>Answer</summary>
+              <div class="fft-answer-body">
+                Yes — feedback can absolutely destabilize a stable plant. The closed-loop characteristic
+                equation is $1 + C(s)P(s) = 0$, whose roots depend on both $C$ and $P$. Specific scenarios:
+
+                <strong>High gain:</strong> For any stable plant with more poles than zeros ($n > m$),
+                the phase lag eventually exceeds $-180°$ at some frequency. Increasing gain raises the
+                loop crossover frequency toward this phase-crossing frequency, eventually causing the
+                Nyquist plot to encircle $-1$ — instability. This is the classic gain-induced instability
+                (Lesson 6).
+
+                <strong>Time delays:</strong> Even a small transport delay $e^{-\tau s}$ adds unbounded
+                phase lag at high frequencies. Any finite bandwidth controller combined with a delay
+                will eventually push the phase below $-180°$, limiting how much gain or bandwidth can
+                be used.
+
+                <strong>Wrong sign:</strong> Positive feedback ($e = r + y$ instead of $e = r - y$)
+                immediately makes the loop gain add rather than cancel, causing instability for any
+                stable positive-DC-gain plant.
+
+                The general lesson: feedback helps in the frequency band where the loop gain is large,
+                but at frequencies where the phase lag exceeds $-180°$, feedback actively hurts stability.
+              </div>
+            </details>
+          </li>
           <li>The closed-loop transfer function is $T(s) = CP/(1+CP)$. What happens to $T(s)$
             when $CP \gg 1$? What does this tell you about what the output does at frequencies
-            where the loop gain is large?</li>
+            where the loop gain is large?
+            <details class="fft-answer">
+              <summary>Answer</summary>
+              <div class="fft-answer-body">
+                When $|C(j\omega)P(j\omega)| \gg 1$:
+                $$T(j\omega) = \frac{C(j\omega)P(j\omega)}{1 + C(j\omega)P(j\omega)} \approx \frac{C(j\omega)P(j\omega)}{C(j\omega)P(j\omega)} = 1$$
+                The closed-loop gain approaches 1 at all frequencies where the loop gain is large.
+                In other words: <strong>where the loop gain is large, $y(t) \approx r(t)$</strong>.
+
+                This is the fundamental mechanism of feedback: high loop gain forces the output to
+                track the reference regardless of plant variations (as long as the loop is stable).
+                The sensitivity $S(j\omega) = 1/(1+L(j\omega)) \approx 0$ when $|L| \gg 1$, meaning
+                disturbances are rejected and model errors don't matter much.
+
+                The implication for design: concentrate loop gain at the frequencies that matter for
+                your application (e.g., below the reference bandwidth), and let the gain fall off at
+                higher frequencies to preserve stability margins. This is the intuition behind the
+                "loop shaping" approach to control design.
+              </div>
+            </details>
+          </li>
         </ol>
       </div>
 

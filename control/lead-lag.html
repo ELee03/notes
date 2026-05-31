@@ -718,101 +718,78 @@
       <!-- ═══ WORKED EXAMPLES ═══ -->
       <div class="section-head" id="worked-examples">Worked examples</div>
 
-      <!-- Example 1 -->
-      <div class="callout" style="border-color:#a0c8a0; background:#f4fbf4;">
-        <strong>Example 1 — Lead design for a second-order plant.</strong><br>
-        Plant: $G(s) = 1/((s+1)(s+5))$, K = 15. Required: PM $\geq$ 50°.
-
-        <div style="margin-top:12px;">
-          <strong>Step 1 — Uncompensated system.</strong>
-          $L_0(s) = 15/((s+1)(s+5))$. DC gain = $15/5 = 3$ (9.5 dB).
-          Phase: $\angle L_0(j\omega) = -\arctan(\omega) - \arctan(\omega/5)$.
-
-          Find $\omega_{c0}$: $|L_0(j\omega)| = 15/\sqrt{(\omega^2+1)(\omega^2+25)} = 1$
-          → $(\omega^2+1)(\omega^2+25) = 225$. At $\omega = 2$: $(5)(29) = 145 \neq 225$. At $\omega = 1.5$: $(3.25)(27.25) = 88.6 \neq 225$. At $\omega = 2.5$: $(7.25)(31.25) = 226.6 \approx 225$. So $\omega_{c0} \approx 2.49$ rad/s.
-
-          Phase at $\omega_{c0} = 2.49$: $-\arctan(2.49) - \arctan(0.498) = -68.2° - 26.5° = -94.7°$.
-          PM$_0$ = $180° - 94.7° = 85.3°$. (Very comfortable — the plant is inherently well-damped.)
+      <details class="example-box">
+        <summary><strong>Example 1 — Lead design for a second-order plant</strong></summary>
+        <div class="example-problem">
+          Plant: $G(s) = \dfrac{15}{(s+1)(s+5)}$. Required: PM $\geq 50°$. Is a lead compensator needed?
         </div>
+        <div class="example-body">
+          <strong>Step 1 — Uncompensated crossover frequency.</strong>
+          Find $\omega_{c0}$ where $|L_0(j\omega)| = 1$: solving $(\omega^2+1)(\omega^2+25) = 225$
+          gives $\omega_{c0} \approx 2.49$ rad/s.
 
-        <div style="margin-top:10px; padding:10px 14px; background:#fffbe8; border:1px solid #e0d080; border-radius:4px; font-size:13px;">
-          <em>Result:</em> PM = 85.3° — already above 50°. No lead compensator is needed here.
-          This example shows why you must always compute PM <em>first</em> before designing a
-          compensator. Adding a lead would only increase bandwidth and HF gain with no benefit.
+          <strong>Step 2 — Uncompensated phase margin.</strong>
+          $\angle L_0(j\cdot 2.49) = -\arctan(2.49) - \arctan(0.498) = -68.2° - 26.5° = -94.7°$.
+          PM$_0 = 180° - 94.7° = 85.3°$.
+
+          <strong>Conclusion:</strong> PM = 85.3° already exceeds 50°. <em>No lead compensator is needed.</em>
+          This example illustrates why you must always compute PM first — adding a lead here would
+          only increase bandwidth and HF noise sensitivity with no stability benefit.
         </div>
-      </div>
+      </details>
 
-      <!-- Example 2 -->
-      <div class="callout" style="border-color:#a0c8a0; background:#f4fbf4; margin-top:18px;">
-        <strong>Example 2 — Lead design for a type-1 plant.</strong><br>
-        Plant: $G(s) = 1/(s(s+2)(s+8))$, $K = 20$. Required: PM $\geq 45°$.
-
-        <div style="margin-top:12px;">
+      <details class="example-box">
+        <summary><strong>Example 2 — Lead design for a type-1 plant</strong></summary>
+        <div class="example-problem">
+          Plant: $G(s) = \dfrac{20}{s(s+2)(s+8)}$. Design a lead compensator to achieve PM $\geq 60°$.
+        </div>
+        <div class="example-body">
           <strong>Uncompensated analysis.</strong>
-          $L_0(s) = 20/(s(s+2)(s+8))$.
-          Velocity constant $K_v = \lim_{s\to 0}\, s L_0(s) = 20/16 = 1.25$.
+          Searching $|L_0| = 1$: $\omega_{c0} \approx 1.08$ rad/s.
+          Phase: $-90° - \arctan(0.54) - \arctan(0.135) = -90° - 28.3° - 7.7° = -126°$.
+          PM$_0 = 54°$.
 
-          $|L_0(j\omega)| = 20 / (\omega\sqrt{\omega^2+4}\sqrt{\omega^2+64})$.
+          <strong>Lead design (target PM = 60°).</strong>
+          Need $\phi_\text{max} = 60° - 54° + 8°$ (safety buffer) $= 14°$.
+          $$\alpha = \frac{1 - \sin 14°}{1 + \sin 14°} = \frac{0.758}{1.242} = 0.610$$
 
-          Searching for $|L_0| = 1$: at $\omega = 0.8$:
-          $20/(0.8 \cdot \sqrt{4.64} \cdot \sqrt{64.64}) \approx 20/(0.8 \cdot 2.154 \cdot 8.040) \approx 20/13.85 \approx 1.44$.
-          At $\omega = 1.0$: $20/(1 \cdot \sqrt{5} \cdot \sqrt{65}) \approx 20/18.03 = 1.11$.
-          At $\omega = 1.1$: $20/(1.1 \cdot \sqrt{5.21} \cdot \sqrt{65.21}) \approx 20/20.2 = 0.99$.
-          So $\omega_{c0} \approx 1.08$ rad/s.
+          Find $\omega_\text{max}$ where $|L_0| = \sqrt{\alpha} = 0.781$ (i.e., $-2.1$ dB):
+          interpolation gives $\omega_\text{max} \approx 1.22$ rad/s.
 
-          Phase at $\omega = 1.08$:
-          $-90° - \arctan(1.08/2) - \arctan(1.08/8) = -90° - 28.3° - 7.7° = -126°$.
-          PM$_0 = 54°$. Already meets 45° — but let's say we want 60° and need more PM.
+          $$T = \frac{1}{\omega_\text{max}\sqrt{\alpha}} = \frac{1}{1.22 \times 0.781} = 1.05$$
+
+          Zero $z = 1/T = 0.952$, pole $p = z/\alpha = 1.56$.
+
+          $$C(s) = \frac{s + 0.95}{s + 1.56}$$
+
+          <strong>Verify:</strong> At $\omega = 1.22$: $\angle C = \arctan(1.28) - \arctan(0.782) = 52° - 38° = 14°$ ✓.
+          Compensated PM $\approx 54° + 14° \approx 60°$ ✓ (with slight shift correction).
         </div>
+      </details>
 
-        <div style="margin-top:10px;">
-          <strong>Lead design targeting PM = 60°.</strong><br>
-          Need $\phi_\text{max} = 60° - 54° + 8° = 14°$ (with 8° extra).
-          $\alpha = (1 - \sin 14°)/(1 + \sin 14°) = (1 - 0.242)/(1 + 0.242) = 0.758/1.242 = 0.610$.
-
-          Need $|L_0(j\omega_\text{max})| = \sqrt{0.610} = 0.781$, i.e., $-2.1$ dB.
-          At $\omega = 0.9$: $|L_0| \approx 1.22$; at $\omega = 1.1$: $|L_0| \approx 0.99$; at $\omega = 1.15$: $\approx 0.90$; at $\omega = 1.3$: $\approx 0.74$.
-          Interpolating: $\omega_\text{max} \approx 1.22$ rad/s.
-
-          $T = 1/(1.22\sqrt{0.610}) = 1/(1.22 \times 0.781) = 1.05$.
-          $z = 1/T = 0.952$, $p = z/\alpha = 0.952/0.610 = 1.56$.
-
-          Compensator: $C(s) = (s + 0.95)/(s + 1.56)$.
-
-          Verify: at $\omega = 1.22$, $\angle C = \arctan(1.22/0.95) - \arctan(1.22/1.56) = \arctan(1.28) - \arctan(0.782) = 52.0° - 38.0° = 14°$ ✓.
-          Compensated PM $\approx 54° + 14° - (\text{small correction}) \approx 60°$.
+      <details class="example-box">
+        <summary><strong>Example 3 — Lag design to improve velocity constant</strong></summary>
+        <div class="example-problem">
+          Plant: $G(s) = \dfrac{4}{s(s+4)}$. Current $K_v = 1$. Design a lag compensator to achieve
+          $K_v \geq 5$ while approximately preserving PM.
         </div>
-      </div>
-
-      <!-- Example 3 -->
-      <div class="callout" style="border-color:#a0c8a0; background:#f4fbf4; margin-top:18px;">
-        <strong>Example 3 — Lag design to improve velocity constant.</strong><br>
-        Plant: $G(s) = 4/(s(s+4))$ with $K = 1$.
-        Current $K_v = \lim_{s\to 0} s \cdot G(s) = 4/4 = 1$ (rad/s steady-state ramp error = 1).
-        Required: $K_v \geq 5$, PM unchanged.
-
-        <div style="margin-top:12px;">
+        <div class="example-body">
           <strong>Uncompensated.</strong>
-          $|L_0(j\omega)| = 4/(\omega\sqrt{\omega^2+16})$.
-          At $\omega = 0.97$: $4/(0.97\sqrt{16.94}) \approx 4/(0.97 \times 4.116) = 1.00$.
-          So $\omega_{c0} \approx 0.97$ rad/s.
-          PM$_0 = 180° - 90° - \arctan(0.97/4) = 90° - 13.6° = 76.4°$. Excellent PM.
-        </div>
+          $\omega_{c0} \approx 0.97$ rad/s, PM$_0 = 90° - \arctan(0.97/4) = 76.4°$.
 
-        <div style="margin-top:10px;">
           <strong>Lag design.</strong>
-          Need $\beta = K_v^\text{new}/K_v^\text{old} = 5/1 = 5$.
-          Place zero at $z = \omega_{c0}/10 = 0.097$. Pole at $p = z/\beta = 0.097/5 = 0.0194$.
+          Required DC gain boost: $\beta = K_v^\text{new}/K_v^\text{old} = 5$.
+          Place zero a decade below crossover: $z = \omega_{c0}/10 = 0.097$ rad/s.
+          Pole: $p = z/\beta = 0.097/5 = 0.0194$ rad/s.
 
-          Compensator: $C_\text{lag}(s) = (s + 0.097)/(s + 0.0194)$.
+          $$C_\text{lag}(s) = \frac{s + 0.097}{s + 0.0194}$$
 
           <strong>PM check.</strong>
-          At $\omega = 0.97$, the lag contributes:
-          $\angle C = \arctan(0.97/0.097) - \arctan(0.97/0.0194) = \arctan(10) - \arctan(50)$
-          $= 84.3° - 88.9° = -4.6°$.
-          New PM $\approx 76.4° - 4.6° = 71.8°$ — still excellent, $K_v$ now = 5. ✓
+          Phase of lag at $\omega = 0.97$:
+          $\angle C = \arctan(10) - \arctan(50) = 84.3° - 88.9° = -4.6°$.
+          New PM $\approx 76.4° - 4.6° = 71.8°$ — well above requirement. $K_v = 5$ ✓.
         </div>
-      </div>
+      </details>
 
       <!-- ═══ FOOD FOR THOUGHT ═══ -->
       <div class="section-head" id="food-for-thought">Food for thought</div>
@@ -822,11 +799,48 @@
           faster, but it also means it responds to high-frequency noise faster. When does
           increasing bandwidth become counterproductive, and how does this shape the practical
           upper limit on $\phi_\text{max}$ (i.e., how small $\alpha$ can be)?
+          <details class="fft-answer">
+            <summary>Answer</summary>
+            <div class="fft-answer-body">
+              Bandwidth becomes counterproductive when it reaches the noise floor of the sensors.
+              At frequencies above the signal bandwidth, the output is dominated by measurement
+              noise. A high-bandwidth controller faithfully tracks this noise with large, rapid
+              actuator movements — causing actuator wear, mechanical resonance excitation, heat
+              dissipation, and (in precision systems) actual position errors from the noise being
+              fed through the plant.
+
+              For a lead compensator, smaller $\alpha$ means greater phase boost but also greater
+              HF gain amplification. The maximum practical phase boost is around 60°–70° (achieved
+              at $\alpha \approx 0.05$), but the corresponding $1/\sqrt{\alpha} \approx 4.5$ gain
+              amplification at high frequencies means sensor noise gets amplified by 4.5× before
+              entering the plant. In practice, a second lead stage or a roll-off filter is added to
+              attenuate this noise. Practical designs rarely use $\alpha &lt; 0.1$ ($\phi_\text{max} \approx 55°$)
+              without explicitly accounting for noise.
+            </div>
+          </details>
         </li>
         <li style="margin-bottom:10px;">
           A lag compensator boosts DC gain by $\beta$ relative to HF gain. Why doesn't this
           simply allow you to substitute it for a gain increase of $\beta$? What does a flat
           gain increase of $\beta$ do that the lag compensator does <em>not</em>?
+          <details class="fft-answer">
+            <summary>Answer</summary>
+            <div class="fft-answer-body">
+              A flat gain increase of $\beta$ multiplies the loop gain at <em>all</em> frequencies by
+              $\beta$ — including at the gain crossover frequency $\omega_c$. This shifts $\omega_c$
+              up, moving the operating point on the Bode plot to a region of more negative phase.
+              Depending on the plant, this can dramatically reduce PM or even destabilize the system.
+
+              A lag compensator achieves the same DC gain boost while leaving the HF gain (and
+              therefore $\omega_c$) approximately unchanged. It does this by attenuation at frequencies
+              above its zero — the zero-to-pole ratio $\beta$ boosts DC but the pole restores the gain
+              above the zero frequency. The trade-off: the lag adds a small phase lag near $\omega_c$
+              (mitigated by placing the break frequencies well below $\omega_c$) and significantly
+              slows the closed-loop disturbance rejection below the lag break frequency. A flat gain
+              increase would be simpler to implement but risks instability; the lag achieves the
+              steady-state goal without destabilizing.
+            </div>
+          </details>
         </li>
         <li>
           Consider a plant with a RHP zero (non-minimum phase). The phase of a RHP zero is
@@ -834,6 +848,27 @@
           as frequency increases. How does this constrain the achievable phase margin and
           bandwidth, and why do both lead and lag compensators become much less effective in
           this case?
+          <details class="fft-answer">
+            <summary>Answer</summary>
+            <div class="fft-answer-body">
+              A RHP zero at $s = +z$ contributes a phase lag of $-\arctan(\omega/z)$ that starts at 0°
+              and approaches $-90°$ as $\omega \to \infty$. Near and above $\omega = z$, the plant phase
+              is severely lagging. If the desired bandwidth exceeds roughly $0.1z$–$0.5z$, the phase
+              lost to the RHP zero cannot be recovered by a lead compensator — lead adds phase only
+              in a frequency band; the RHP zero steals it back at higher frequencies.
+
+              The fundamental constraint (Bode's phase-gain relationship for NMP systems) says that
+              the phase at crossover is bounded below by the phase lag of the RHP zeros — you cannot
+              achieve PM above about $180° - 90° = 90°$ if your bandwidth is near $z$. In practice,
+              bandwidth must be kept well below $z$ to maintain adequate PM.
+
+              Lead compensators become ineffective because: to add more phase at a higher bandwidth,
+              you need $\omega_\text{max}$ above $z$, but above $z$ the RHP zero has already consumed
+              ~90° of phase. No amount of lead can compensate a 90° deficit. Lag compensators cannot
+              help either — they would reduce bandwidth even further (worsening tracking) without
+              recovering phase. Non-minimum phase plants fundamentally limit achievable bandwidth.
+            </div>
+          </details>
         </li>
       </ol>
 

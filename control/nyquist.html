@@ -374,45 +374,50 @@
       <!-- ── Worked examples ─────────────────────────────────────────── -->
       <div class="section-head" id="examples">Worked examples</div>
 
-      <div class="prose">
-        <strong>Example 1: Compute margins for $L(s) = K/[s(s+1)(s+3)]$, $K=3$.</strong>
-      </div>
+      <details class="example-box">
+        <summary><strong>Example 1 — Gain and phase margins for a Type-1 third-order loop</strong></summary>
+        <div class="example-problem">
+          Compute the gain margin (GM) and phase margin (PM) for $L(s) = \dfrac{3}{s(s+1)(s+3)}$.
+        </div>
+        <div class="example-body">
+          <strong>Phase crossover frequency $\omega_\phi$ (where $\angle L = -180°$):</strong>
+          $$-90° - \arctan(\omega) - \arctan(\omega/3) = -180°$$
+          $$\arctan(\omega) + \arctan(\omega/3) = 90°$$
+          Using $\arctan(a)+\arctan(b) = 90°$ iff $ab = 1$: $\omega \cdot (\omega/3) = 1 \Rightarrow \omega_\phi = \sqrt{3}$ rad/s.
 
-      <div class="prose">
-        <em>Phase crossover:</em> Find $\omega_\phi$ where $\angle L = -180°$.
-        $\angle L(j\omega) = -90° - \arctan(\omega) - \arctan(\omega/3) = -180°$
-        → $\arctan(\omega) + \arctan(\omega/3) = 90°$.
-        Using $\arctan(a)+\arctan(b) = 90°$ when $ab=1$: $\omega \cdot (\omega/3)=1$ → $\omega^2=3$
-        → $\omega_\phi = \sqrt{3}$.
-      </div>
+          <strong>Gain margin:</strong>
+          $|L(j\sqrt{3})| = 3\big/\!\left[\sqrt{3}\cdot\sqrt{1+3}\cdot\sqrt{9+3}\right] = 3\big/\!\left[\sqrt{3}\cdot 2\cdot 2\sqrt{3}\right] = 3/12 = \tfrac{1}{4}$.
+          $$\text{GM} = \frac{1}{1/4} = 4 \quad (\approx 12 \text{ dB})$$
 
-      <div class="prose">
-        $|L(j\sqrt{3})| = 3/[\sqrt{3}\cdot\sqrt{4}\cdot\sqrt{12}] = 3/[\sqrt{3}\cdot 2\cdot 2\sqrt{3}]
-        = 3/12 = 1/4$.
-        $$GM = 1/(1/4) = 4 \quad (\approx 12\text{ dB})$$
-      </div>
+          <strong>Gain crossover frequency $\omega_c$ (where $|L|=1$):</strong>
+          Numerically $\omega_c \approx 0.74$ rad/s.
+          Phase at $\omega_c$: $-90° - \arctan(0.74) - \arctan(0.247) \approx -90° - 36.4° - 13.9° = -140.3°$.
+          $$\text{PM} = 180° - 140.3° = 39.7° \approx 40°$$
+          Both margins are acceptable (GM $\geq 6$ dB, PM $\approx 40°$), indicating reasonable robustness.
+        </div>
+      </details>
 
-      <div class="prose">
-        <em>Gain crossover:</em> Find $\omega_c$ where $|L|=1$. Numerically: $\omega_c \approx 0.74$ rad/s.
-        Phase at $\omega_c$: $-90° - \arctan(0.74) - \arctan(0.74/3) \approx -90° - 36.4° - 13.9° = -140.3°$.
-        $$PM = 180° - 140.3° = 39.7° \approx 40°$$
-        Both margins are adequate (GM $\ge 6$ dB, PM $\approx 45°$). This system has reasonable robustness.
-      </div>
+      <details class="example-box">
+        <summary><strong>Example 2 — Delay margin: how much transport delay is tolerable?</strong></summary>
+        <div class="example-problem">
+          Using the same loop $L(s) = 3/[s(s+1)(s+3)]$, add a transport delay $e^{-\tau s}$.
+          Find the maximum delay $\tau_\text{max}$ before the system becomes unstable.
+        </div>
+        <div class="example-body">
+          A pure delay $e^{-\tau s}$ has unit gain at all frequencies ($|e^{-j\omega\tau}| = 1$),
+          so it does not change the gain crossover frequency $\omega_c \approx 0.74$ rad/s.
 
-      <div class="prose" style="margin-top:18px;">
-        <strong>Example 2: Effect of a time delay.</strong>
-        Add a transport delay $e^{-\tau s}$ to the plant (unavoidable in networked systems,
-        hydraulics, chemical processes). The delay doesn't change the gain: $|e^{-j\omega\tau}|=1$.
-        But it adds phase lag: $\angle e^{-j\omega\tau} = -\omega\tau$ radians.
-      </div>
+          It does add phase lag: $\angle e^{-j\omega\tau} = -\omega\tau$ radians.
 
-      <div class="prose">
-        The new phase at $\omega_c$ is: original phase $-140.3°$ minus additional $-\omega_c\tau \cdot (180°/\pi)$.
-        Phase margin goes to zero when:
-        $$\omega_c \tau = PM_\text{original} \cdot \frac{\pi}{180°} = 39.7° \cdot \frac{\pi}{180°} \approx 0.69 \text{ rad}$$
-        $$\tau_{max} = 0.69 / \omega_c \approx 0.69/0.74 \approx 0.93 \text{ s}$$
-        Any delay beyond $0.93$ s will destabilize this system. This is the <em>delay margin</em>.
-      </div>
+          PM goes to zero when the additional lag at $\omega_c$ equals the existing PM:
+          $$\omega_c \,\tau_\text{max} = \text{PM}_\text{original} \cdot \frac{\pi}{180°} = 39.7° \cdot \frac{\pi}{180°} \approx 0.693 \text{ rad}$$
+          $$\tau_\text{max} = \frac{0.693}{\omega_c} \approx \frac{0.693}{0.74} \approx 0.94 \text{ s}$$
+
+          Any transport delay above $\approx 0.94$ s will destabilize this loop. This is the
+          <strong>delay margin</strong> — a direct measure of how sensitive the system is to communication
+          or sensing latency.
+        </div>
+      </details>
 
       <!-- ── Interactive ──────────────────────────────────────────────── -->
       <div class="section-head" id="interactive">Interactive: Bode plot with stability margins</div>
@@ -677,21 +682,79 @@
       <div class="section-head" id="food-for-thought">Food for thought</div>
 
       <div class="fft-block" style="border-left:3px solid #b89040;background:#faf8f2;padding:14px 18px;border-radius:0 4px 4px 0;margin:20px 0;">
-        <div style="font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#8a6010;margin-bottom:10px;">Reflection questions — no answers given</div>
+        <div style="font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#8a6010;margin-bottom:10px;">Reflection questions</div>
         <ol style="padding-left:1.4em;color:#2a3a4a;font-size:14px;line-height:1.7;">
           <li style="margin-bottom:12px;">The Nyquist criterion handles open-loop unstable plants
             by counting encirclements relative to the number of RHP open-loop poles ($Z=P-N$).
             Sketch qualitatively what the Nyquist plot must look like for a closed-loop system
             with one open-loop unstable pole ($P=1$) to be stable. How many counterclockwise
-            encirclements of $-1$ are required?</li>
+            encirclements of $-1$ are required?
+            <details class="fft-answer">
+              <summary>Answer</summary>
+              <div class="fft-answer-body">
+                The Nyquist stability criterion: $Z = P - N$, where $Z$ = closed-loop RHP poles,
+                $P$ = open-loop RHP poles, $N$ = net clockwise encirclements of $-1$.
+                For stability, $Z = 0$, so we need $N = -P$ — that is, $P$ <em>counterclockwise</em>
+                encirclements.
+
+                For $P = 1$: the Nyquist plot must encircle $-1$ exactly <strong>once counterclockwise</strong>
+                ($N = -1$, so $Z = 1 - (-1) = 0$). This looks like a loop that wraps around the $-1$ point
+                from the left side — the plot starts outside the $-1$ point, goes around it
+                counterclockwise, and ends outside again. A classic example: a single unstable pole $1/(s-1)$
+                in the loop requires active feedback to stabilize, and the stabilizing feedback produces
+                exactly this wrapping behavior in the Nyquist plot.
+              </div>
+            </details>
+          </li>
           <li style="margin-bottom:12px;">The interactive shows that higher $K$ reduces phase
             margin. But what if you could add phase to the loop — a "phase lead" network — at
             the gain crossover frequency? How would this change the Bode phase plot and the PM?
-            What does this suggest about what a lead compensator (Lesson 8) would do?</li>
+            What does this suggest about what a lead compensator (Lesson 8) would do?
+            <details class="fft-answer">
+              <summary>Answer</summary>
+              <div class="fft-answer-body">
+                Adding a phase lead network $C(s) = (s+z)/(s+p)$ with $p > z > 0$ inserts
+                positive phase around a frequency band centered near $\sqrt{zp}$. On the Bode
+                phase plot, this appears as a "hump" of positive phase centered at the lead
+                frequency. If this hump is placed at the gain crossover frequency $\omega_c$,
+                the phase at crossover increases — directly increasing PM.
+
+                This is exactly what a lead compensator (Lesson 8) does: it is a phase-lead network
+                designed to add positive phase at $\omega_c$. The magnitude also increases slightly
+                (the lead has a high-pass character), which shifts $\omega_c$ upward — this is why
+                you have to account for the new $\omega_c$ when designing the compensator, not just
+                the original one. The overall effect is: more phase margin, higher bandwidth, slightly
+                more noise sensitivity.
+              </div>
+            </details>
+          </li>
           <li>Gain and phase margins are two separate robustness measures. Is it possible to
             have a large GM but a small PM? A large PM but a small GM? What physical scenario
             would produce each? (Think about where on the Nyquist plot the system comes close
-            to $-1$ in each case.)</li>
+            to $-1$ in each case.)
+            <details class="fft-answer">
+              <summary>Answer</summary>
+              <div class="fft-answer-body">
+                <strong>Large GM, small PM:</strong> The Nyquist plot crosses the negative real axis
+                far from $-1$ (large GM), but passes close to the unit circle at some angle near $-180°$
+                (small PM). This happens when the gain rolls off quickly but the phase stays near
+                $-180°$ for a wide frequency range. Example: a system with a very lightly damped
+                resonant mode near $\omega_c$ — the magnitude peak at the resonance is moderate (GM OK)
+                but the rapid phase drop through the resonance brings the phase close to $-180°$ near
+                crossover (small PM). The system is robustly gain-stable but sensitive to phase perturbations.
+
+                <strong>Large PM, small GM:</strong> The Nyquist plot has a comfortable phase margin at
+                crossover (passes far from the negative real axis in terms of angle) but crosses
+                the real axis very close to $-1$ at a higher frequency (small GM). This typically
+                occurs with a high-gain system where the loop gain at the phase crossover frequency
+                is close to 1. Lightly-damped higher-frequency resonances can cause this.
+
+                In practice, both must be checked. The $M_s = \max|S(j\omega)|$ (sensitivity peak)
+                is a single measure that reflects both simultaneously — it equals the inverse of
+                the minimum distance from the Nyquist plot to the $-1$ point.
+              </div>
+            </details>
+          </li>
         </ol>
       </div>
 

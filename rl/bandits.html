@@ -467,73 +467,72 @@
       </div>
 
       <!-- ── Worked example ────────────────────────────────────────── -->
-      <div class="section-head" id="worked-example">Worked example: tracing ε-greedy by hand</div>
+      <div class="section-head" id="worked-example">Worked example</div>
 
-      <div class="prose">
-        Trace the first five steps of ε-greedy ($\varepsilon = 0.1$) on a 3-armed
-        bandit. True values: $q_*(1) = 1.0$, $q_*(2) = 1.5$, $q_*(3) = 0.5$.
-        Start with $Q_1(a) = 0$ for all arms. Rewards are deterministic for
-        simplicity (equal to the true value each pull).
-      </div>
-
-      <div class="example-block">
-        <div class="ex-title">5 steps · ε = 0.1 · Q initialized to 0</div>
-        <table class="int-table" style="margin-top:0;">
-          <thead><tr>
-            <th style="text-align:center;">t</th>
-            <th>Selection rule</th>
-            <th>A<sub>t</sub></th>
-            <th>R<sub>t</sub></th>
-            <th>Q update</th>
-            <th>Q after: (a1, a2, a3)</th>
-          </tr></thead>
-          <tbody>
-            <tr>
-              <td>1</td>
-              <td style="text-align:left;font-size:11.5px;">All tied at 0 → greedy picks any; say a=1</td>
-              <td>1</td><td>1.0</td>
-              <td style="text-align:left;font-size:11.5px;">Q(1) = 0 + (1/1)[1.0−0] = 1.0</td>
-              <td>(1.0, 0, 0)</td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td style="text-align:left;font-size:11.5px;">Greedy: a=1 (Q=1.0 highest)</td>
-              <td>1</td><td>1.0</td>
-              <td style="text-align:left;font-size:11.5px;">Q(1) = 1.0 + (1/2)[1.0−1.0] = 1.0</td>
-              <td>(1.0, 0, 0)</td>
-            </tr>
-            <tr>
-              <td>3</td>
-              <td style="text-align:left;font-size:11.5px;">ε-explore (10% chance) → random → a=2</td>
-              <td>2</td><td>1.5</td>
-              <td style="text-align:left;font-size:11.5px;">Q(2) = 0 + (1/1)[1.5−0] = 1.5</td>
-              <td>(1.0, 1.5, 0)</td>
-            </tr>
-            <tr>
-              <td>4</td>
-              <td style="text-align:left;font-size:11.5px;">Greedy: a=2 (Q=1.5 highest)</td>
-              <td>2</td><td>1.5</td>
-              <td style="text-align:left;font-size:11.5px;">Q(2) = 1.5 + (1/2)[1.5−1.5] = 1.5</td>
-              <td>(1.0, 1.5, 0)</td>
-            </tr>
-            <tr>
-              <td>5</td>
-              <td style="text-align:left;font-size:11.5px;">Greedy: a=2 (Q=1.5 highest)</td>
-              <td>2</td><td>1.5</td>
-              <td style="text-align:left;font-size:11.5px;">Q(2) = 1.5 + (1/3)[1.5−1.5] = 1.5</td>
-              <td>(1.0, 1.5, 0)</td>
-            </tr>
-          </tbody>
-        </table>
-        <div style="margin-top:10px;font-size:12.5px;color:#4a5a6a;line-height:1.65;">
-          After step 2 the agent is stuck exploiting arm 1. The single ε-exploration
-          at step 3 accidentally discovers arm 2 (the true best). From step 4 onward
-          it exploits arm 2 correctly. <strong>Key observation:</strong> arm 3 ($q_*(3)=0.5$,
-          worst arm) was never pulled — ε-greedy provides no guarantee of trying every
-          arm within a fixed horizon. It will get there eventually, but the rate is
-          uniform random, not uncertainty-driven. This is UCB's advantage.
+      <details class="example-box">
+        <summary><strong>Tracing ε-greedy by hand (3-armed bandit, 5 steps)</strong></summary>
+        <div class="example-problem">
+          Trace the first five steps of ε-greedy ($\varepsilon = 0.1$) on a 3-armed
+          bandit. True values: $q_*(1) = 1.0$, $q_*(2) = 1.5$, $q_*(3) = 0.5$.
+          Start with $Q_1(a) = 0$ for all arms. Rewards are deterministic
+          (equal to the true value each pull).
         </div>
-      </div>
+        <div class="example-body">
+          <table class="int-table" style="margin-top:0;">
+            <thead><tr>
+              <th style="text-align:center;">t</th>
+              <th>Selection rule</th>
+              <th>A<sub>t</sub></th>
+              <th>R<sub>t</sub></th>
+              <th>Q update</th>
+              <th>Q after: (a1, a2, a3)</th>
+            </tr></thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td style="text-align:left;font-size:11.5px;">All tied at 0 → greedy picks any; say a=1</td>
+                <td>1</td><td>1.0</td>
+                <td style="text-align:left;font-size:11.5px;">Q(1) = 0 + (1/1)[1.0−0] = 1.0</td>
+                <td>(1.0, 0, 0)</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td style="text-align:left;font-size:11.5px;">Greedy: a=1 (Q=1.0 highest)</td>
+                <td>1</td><td>1.0</td>
+                <td style="text-align:left;font-size:11.5px;">Q(1) = 1.0 + (1/2)[1.0−1.0] = 1.0</td>
+                <td>(1.0, 0, 0)</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td style="text-align:left;font-size:11.5px;">ε-explore (10% chance) → random → a=2</td>
+                <td>2</td><td>1.5</td>
+                <td style="text-align:left;font-size:11.5px;">Q(2) = 0 + (1/1)[1.5−0] = 1.5</td>
+                <td>(1.0, 1.5, 0)</td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td style="text-align:left;font-size:11.5px;">Greedy: a=2 (Q=1.5 highest)</td>
+                <td>2</td><td>1.5</td>
+                <td style="text-align:left;font-size:11.5px;">Q(2) = 1.5 + (1/2)[1.5−1.5] = 1.5</td>
+                <td>(1.0, 1.5, 0)</td>
+              </tr>
+              <tr>
+                <td>5</td>
+                <td style="text-align:left;font-size:11.5px;">Greedy: a=2 (Q=1.5 highest)</td>
+                <td>2</td><td>1.5</td>
+                <td style="text-align:left;font-size:11.5px;">Q(2) = 1.5 + (1/3)[1.5−1.5] = 1.5</td>
+                <td>(1.0, 1.5, 0)</td>
+              </tr>
+            </tbody>
+          </table>
+          <div style="margin-top:10px;font-size:12.5px;color:#4a5a6a;line-height:1.65;">
+            After step 2 the agent exploits arm 1. The ε-exploration at step 3 discovers arm 2
+            (the true best), and from step 4 onward it exploits arm 2 correctly.
+            <strong>Key observation:</strong> arm 3 ($q_*(3)=0.5$) was never pulled — ε-greedy
+            gives no guarantee of visiting every arm within a fixed horizon. This is UCB's advantage.
+          </div>
+        </div>
+      </details>
 
       <!-- ── Bandit simulator ───────────────────────────────────────── -->
       <div class="section-head" id="simulator">Simulator: live bandit experiment</div>
@@ -714,19 +713,80 @@
       <div class="section-head" id="food-for-thought">Food for thought</div>
 
       <div class="fft-block">
-        <div class="fft-title">Reflection questions — no answers given</div>
+        <div class="fft-title">Reflection questions</div>
         <ol>
           <li>UCB achieves near-optimal <em>regret</em> — the total reward lost by not always
             pulling the true best arm. If you ran ε-greedy ($\varepsilon = 0.1$) and UCB-1 side
             by side on the same 5-armed bandit for 1000 steps, which would you expect to accumulate
-            more total reward? Why — and does your answer depend on the spread of the true values?</li>
+            more total reward? Why — and does your answer depend on the spread of the true values?
+            <details class="fft-answer">
+              <summary>Answer</summary>
+              <div class="fft-answer-body">
+                UCB-1 generally accumulates more total reward over 1000 steps because it has
+                $O(\log T)$ regret — regret grows slowly. ε-greedy with fixed $\varepsilon = 0.1$
+                has $O(T)$ (linear) regret in the worst case, since 10% of pulls are always random
+                regardless of how confident the agent is about the best arm.
+
+                After the initial exploration phase, UCB naturally concentrates on the best arm
+                while ε-greedy keeps wasting 10% of pulls on random arms forever.
+
+                The spread of true values does matter. If values are close together (e.g.,
+                $q_*(a) \approx 1$ for all arms), ε-greedy's random pulls cost less since all
+                arms are nearly equally good. When the gap between the best and worst arm is
+                large, ε-greedy's undirected exploration wastes many high-cost pulls on clearly
+                inferior arms, while UCB would have confidently stopped pulling those arms early.
+              </div>
+            </details>
+          </li>
           <li>The gradient bandit increases the selected arm's preference when $R_t > \bar{R}_t$
             and decreases it when $R_t < \bar{R}_t$. The update is doing stochastic gradient ascent
             on expected reward — but the algorithm never explicitly computes a gradient. How is this
-            possible? What is the algorithm actually differentiating with respect to?</li>
+            possible? What is the algorithm actually differentiating with respect to?
+            <details class="fft-answer">
+              <summary>Answer</summary>
+              <div class="fft-answer-body">
+                The algorithm is differentiating the expected reward with respect to the
+                softmax <strong>preference parameters</strong> $H_t(a)$. The key identity is:
+
+                $\nabla_{H_t(a)} \mathbb{E}[R_t] = \mathbb{E}\!\left[(R_t - \bar{R}_t)\nabla_{H_t(a)}\ln\pi_t(A_t)\right]$
+
+                This is the <strong>policy gradient theorem</strong> (in its bandit form). The gradient
+                of the log-policy is computable: $\nabla_{H_t(a_k)}\ln\pi_t(a) = \mathbf{1}[a = a_k] - \pi_t(a_k)$.
+                The update rule directly implements this stochastic gradient estimate — the sample
+                $(R_t - \bar{R}_t)$ serves as a variance-reduced estimate of the reward signal, and
+                the "explicit gradient computation" is implicit in the structure of the softmax update.
+
+                This is powerful because it works even when you have no model of the reward distribution —
+                just samples. The same idea underlies REINFORCE and actor-critic methods in deep RL.
+              </div>
+            </details>
+          </li>
           <li>Suppose the true best arm has very high variance: rewards range from $-10$ to $+10$
             with a mean of 1.5, while all other arms give exactly 1.0. How would high variance affect
-            UCB compared to ε-greedy? Which converges to the correct answer faster, and why?</li>
+            UCB compared to ε-greedy? Which converges to the correct answer faster, and why?
+            <details class="fft-answer">
+              <summary>Answer</summary>
+              <div class="fft-answer-body">
+                High variance hurts UCB more in early exploration, but UCB still wins in the long run.
+
+                <strong>UCB:</strong> The UCB bonus is $\sqrt{2\ln t / n_t(a)}$, which depends only
+                on how many times each arm has been pulled, not on the reward variance. For the high-variance
+                arm, the sample mean $Q_t$ will fluctuate wildly around 1.5 before settling. This means
+                UCB's confidence interval may actually <em>underestimate</em> the arm's value for a while
+                (if early samples were unlucky), causing slower convergence than in the low-variance case.
+
+                <strong>ε-greedy:</strong> Also hurt by variance — $Q_t$ for the best arm oscillates
+                more before converging, and the agent may switch away from the best arm if early samples
+                were bad. However, since 10% of pulls are always random, the best arm gets sampled
+                regardless of its estimated value.
+
+                <strong>Which wins:</strong> In the long run UCB wins because its $\log T$ exploration
+                rate is inherently more efficient. But high variance lengthens the "warm-up" period
+                where UCB is still learning. For very high-variance environments, UCB-variance
+                (which explicitly tracks variance) or Thompson sampling would be more appropriate.
+              </div>
+            </details>
+          </li>
         </ol>
       </div>
 

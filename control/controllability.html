@@ -525,54 +525,77 @@
       <!-- ═══ WORKED EXAMPLES ═══ -->
       <div class="section-head" id="worked-examples">Worked examples</div>
 
-      <div class="callout" style="border-color:#a0c8a0; background:#f4fbf4;">
-        <strong>Example 1 — Controllability check by rank test.</strong><br>
-        $$A = \begin{bmatrix}1 & 0 \\ 0 & 2\end{bmatrix}, \quad B = \begin{bmatrix}1 \\ 3\end{bmatrix}$$
+      <details class="example-box">
+        <summary><strong>Example 1 — Controllability check by rank test</strong></summary>
+        <div class="example-problem">
+          Given $A = \begin{bmatrix}1 & 0 \\ 0 & 2\end{bmatrix}$, $B = \begin{bmatrix}1 \\ 3\end{bmatrix}$.
+          Is the system $(A, B)$ controllable?
+        </div>
+        <div class="example-body">
+          Compute $AB$:
+          $$AB = \begin{bmatrix}1&0\\0&2\end{bmatrix}\begin{bmatrix}1\\3\end{bmatrix} = \begin{bmatrix}1\\6\end{bmatrix}$$
+          Form the controllability matrix:
+          $$\mathcal{C} = [B \;|\; AB] = \begin{bmatrix}1 & 1 \\ 3 & 6\end{bmatrix}$$
+          $\det(\mathcal{C}) = 6 - 3 = 3 \neq 0$, so $\text{rank}(\mathcal{C}) = 2 = n$. <strong>The system is controllable.</strong>
 
-        $\mathcal{C} = [B \;|\; AB] = \begin{bmatrix}1 & 1 \\ 3 & 6\end{bmatrix}$
+          Both modes ($\lambda = 1$ and $\lambda = 2$) are reachable from the input. Both eigenvalues
+          lie in the right half-plane — the system is open-loop unstable — but since it is fully
+          controllable, state feedback can assign the closed-loop poles to any desired stable locations.
+          This is the standard motivating case for state feedback design.
+        </div>
+      </details>
 
-        $\det(\mathcal{C}) = 6 - 3 = 3 \neq 0$. So $\text{rank}(\mathcal{C}) = 2$ — <strong>controllable</strong>.
+      <details class="example-box">
+        <summary><strong>Example 2 — Uncontrollable mode via PBH test</strong></summary>
+        <div class="example-problem">
+          Given $A = \begin{bmatrix}-1 & 0 \\ 1 & -2\end{bmatrix}$, $B = \begin{bmatrix}0 \\ 1\end{bmatrix}$.
+          Use the PBH test to determine which eigenvalue (if any) is uncontrollable, then verify with the controllability matrix.
+        </div>
+        <div class="example-body">
+          Eigenvalues of $A$: $\lambda_1 = -1$, $\lambda_2 = -2$.
 
-        Both modes (eigenvalues $\lambda=1$ and $\lambda=2$) are reachable from the input.
-        Note that both eigenvalues have positive real part: the system is open-loop unstable,
-        but stabilizable by state feedback (controllable). This is the normal use case for
-        state feedback design.
-      </div>
+          <strong>PBH test for $\lambda_1 = -1$:</strong>
+          $$\begin{bmatrix}A - \lambda_1 I & B\end{bmatrix} = \begin{bmatrix}A + I & B\end{bmatrix} = \begin{bmatrix}0 & 0 & 0 \\ 1 & -1 & 1\end{bmatrix}$$
+          Rank = 1 (first row is all zeros) $< n = 2$. The mode at $\lambda_1 = -1$ is <strong>uncontrollable</strong>.
 
-      <div class="callout" style="border-color:#a0c8a0; background:#f4fbf4; margin-top:18px;">
-        <strong>Example 2 — Uncontrollable mode via PBH test.</strong><br>
-        $$A = \begin{bmatrix}-1 & 0 \\ 1 & -2\end{bmatrix}, \quad B = \begin{bmatrix}0 \\ 1\end{bmatrix}$$
+          <strong>PBH test for $\lambda_2 = -2$:</strong>
+          $$\begin{bmatrix}A + 2I & B\end{bmatrix} = \begin{bmatrix}1 & 0 & 0 \\ 1 & 0 & 1\end{bmatrix}$$
+          Rank = 2. The mode at $\lambda_2 = -2$ is controllable.
 
-        Eigenvalues: $\lambda_1 = -1$, $\lambda_2 = -2$.
+          <strong>Verification via $\mathcal{C}$:</strong> $AB = \begin{bmatrix}0\\-2\end{bmatrix}$, so
+          $\mathcal{C} = \begin{bmatrix}0 & 0 \\ 1 & -2\end{bmatrix}$, $\det(\mathcal{C}) = 0$. ✓ Not controllable.
 
-        PBH test for $\lambda_1 = -1$:
-        $\begin{bmatrix}A+I & B\end{bmatrix} = \begin{bmatrix}0 & 0 & 0 \\ 1 & -1 & 1\end{bmatrix}$
+          <strong>Physical picture:</strong> $B = [0;\,1]$ drives $x_2$ only. The entry $A_{11} = -1$ means
+          $x_1$ is driven only by itself — there is no off-diagonal term $A_{12}$ and no direct input path
+          from $u$ to $x_1$. The $e^{-t}$ mode in $x_1$ is completely decoupled from the input.
+        </div>
+      </details>
 
-        Rank = 1 (first row is all zeros). So $\lambda_1 = -1$ is uncontrollable: the input cannot
-        excite the mode $e^{-t}$.
+      <details class="example-box">
+        <summary><strong>Example 3 — Non-minimal realization: hidden unobservable mode</strong></summary>
+        <div class="example-problem">
+          The transfer function $G(s) = \dfrac{1}{s+2}$ is realized as:
+          $$A = \begin{bmatrix}-2 & 0 \\ 0 & -5\end{bmatrix}, \quad B = \begin{bmatrix}1 \\ 1\end{bmatrix}, \quad C = \begin{bmatrix}1 & 0\end{bmatrix}$$
+          Classify the realization (controllable? observable?) and find the minimal realization.
+        </div>
+        <div class="example-body">
+          <strong>Verify the TF:</strong> Since $A$ is diagonal,
+          $G(s) = \dfrac{C_1 B_1}{s+2} + \dfrac{C_2 B_2}{s+5} = \dfrac{1 \cdot 1}{s+2} + \dfrac{0 \cdot 1}{s+5} = \dfrac{1}{s+2}$. ✓
 
-        Verify via $\mathcal{C}$: $AB = \begin{bmatrix}0\\-2\end{bmatrix}$, so
-        $\mathcal{C} = \begin{bmatrix}0 & 0 \\ 1 & -2\end{bmatrix}$, $\det(\mathcal{C}) = 0$. ✓
+          <strong>Controllability:</strong> $AB = [-2;\;-5]$, so
+          $\mathcal{C} = \begin{bmatrix}1&-2\\1&-5\end{bmatrix}$, $\det(\mathcal{C}) = -3 \neq 0$. <strong>Controllable.</strong>
 
-        Physical interpretation: $B = [0;1]$ drives only $x_2$. Through $A$, the $-1$ mode in $x_1$
-        is only driven by $x_1$ itself (the $(1,1)$ entry of $A$) — there's no path from the input to $x_1$.
-      </div>
+          <strong>Observability:</strong> $CA = [-2,\;0]$, so
+          $\mathcal{O} = \begin{bmatrix}1&0\\-2&0\end{bmatrix}$, $\det(\mathcal{O}) = 0$. <strong>Not observable.</strong>
 
-      <div class="callout" style="border-color:#a0c8a0; background:#f4fbf4; margin-top:18px;">
-        <strong>Example 3 — Cancellation in TF = hidden unobservable mode.</strong><br>
-        Consider the transfer function $G(s) = 1/(s+2)$ realized as:
-        $$A = \begin{bmatrix}-2 & 0 \\ 0 & -5\end{bmatrix}, \quad B = \begin{bmatrix}1 \\ 1\end{bmatrix}, \quad C = \begin{bmatrix}1 & 0\end{bmatrix}$$
+          The mode $e^{-5t}$ lies in the C$\bar{\text{O}}$ class: the input excites it ($B_2 = 1$) but
+          $C = [1\;0]$ is blind to $x_2$, so the output cannot see it. The realization is non-minimal —
+          the hidden mode contributes nothing to $G(s)$ yet occupies a state dimension.
 
-        $G(s) = C(sI-A)^{-1}B = \frac{1}{s+2} + \frac{0}{s+5} = \frac{1}{s+2}$.
-
-        Controllability: $AB = [-2; -5]$, $\mathcal{C} = \begin{bmatrix}1&-2\\1&-5\end{bmatrix}$, $\det = -3 \neq 0$. Controllable.
-
-        Observability: $CA = [-2, 0]$, $\mathcal{O} = \begin{bmatrix}1&0\\-2&0\end{bmatrix}$, $\det = 0$. <em>Not observable</em>!
-
-        The mode $e^{-5t}$ is controllable (the input excites it) but unobservable (the output
-        can't see it). This is a non-minimal realization — the TF shows only $1/(s+2)$.
-        Minimal realization: $A = [-2]$, $B = [1]$, $C = [1]$.
-      </div>
+          <strong>Minimal realization:</strong> $A = [-2]$, $B = [1]$, $C = [1]$, order 1, matching the
+          degree of $G(s)$.
+        </div>
+      </details>
 
       <!-- ═══ FOOD FOR THOUGHT ═══ -->
       <div class="section-head" id="food-for-thought">Food for thought</div>
@@ -581,6 +604,25 @@
           An uncontrollable but stable mode will decay on its own regardless of input.
           Is an uncontrollable stable mode a problem in practice? Under what circumstances
           would you accept a design that leaves a stable uncontrollable mode in the system?
+          <details class="fft-answer">
+            <summary>Answer</summary>
+            <div class="fft-answer-body">
+              An uncontrollable stable mode is often <em>acceptable</em> if: (1) it decays fast enough
+              that it settles before the controlled dynamics matter — a high-frequency structural mode
+              with $\text{Re}(\lambda) \ll -1$ is gone before the output transient begins; (2) it is also
+              unobservable (in the $\bar{\text{C}}\bar{\text{O}}$ class), so it never appears in the output
+              at all; (3) you only need <em>stabilizability</em>, not full controllability, and the
+              uncontrollable mode is already stable.
+
+              It becomes a <em>problem</em> when: the mode is slow (its time constant is comparable to or
+              longer than the task timescale — you can't speed it up, so you must wait for it to die out
+              on its own); when modelling uncertainty could make it marginally stable (a mode at
+              $\lambda = -0.01$ may shift to the right half-plane under small parameter perturbations);
+              or when it is observable (it then produces a long-lived output transient that the controller
+              cannot remove). In practice, uncontrollable fast well-damped modes are routinely ignored;
+              uncontrollable slow or lightly-damped modes demand careful attention.
+            </div>
+          </details>
         </li>
         <li style="margin-bottom:10px;">
           The PBH test says that if any left eigenvector of $A$ is orthogonal to $B$, the
@@ -588,6 +630,27 @@
           nonzero projection onto every left eigenvector. What is the geometric interpretation
           of this condition? What does it say about where the actuators (represented by $B$)
           should be placed in a physical system to ensure controllability?
+          <details class="fft-answer">
+            <summary>Answer</summary>
+            <div class="fft-answer-body">
+              Each left eigenvector $w_i$ (satisfying $w_i^T A = \lambda_i w_i^T$) defines a
+              co-invariant direction — a direction that is preserved by the adjoint dynamics.
+              The PBH condition $w_i^T B \neq 0$ means: the input column $B$ must not be
+              <em>perpendicular</em> to any of these invariant co-directions.
+
+              In a physical system (e.g., a flexible beam or multi-mass system), the mode shapes
+              describe how each natural mode deforms. A <strong>node</strong> of mode $i$ is a spatial
+              location with zero displacement in that mode. Placing an actuator at a node means the
+              force has no projection onto mode $i$ — geometrically, $B \perp w_i$ — and mode $i$
+              becomes uncontrollable. The design rule follows directly: <em>actuators must be
+              placed away from the nodes of every mode you intend to control.</em>
+
+              For multi-actuator systems, having more actuators than modes provides redundancy: if
+              one actuator is near a node, another can cover that mode. In practice, optimal actuator
+              placement is itself an optimization problem involving the Gramian — you want to
+              maximize the minimum eigenvalue of $W_c(T)$ so all modes are equally reachable.
+            </div>
+          </details>
         </li>
         <li>
           The Kalman decomposition splits the system into CO, C$\bar{\text{O}}$, $\bar{\text{C}}$O,
@@ -595,6 +658,35 @@
           If the $\bar{\text{C}}$O (uncontrollable-observable) part has an unstable eigenvalue,
           the system is "input-output stable" (the TF is stable) but internally unstable. Why
           is this dangerous even if you only care about the output being bounded?
+          <details class="fft-answer">
+            <summary>Answer</summary>
+            <div class="fft-answer-body">
+              Several reasons this is dangerous in practice:
+
+              <strong>(1) The state itself diverges.</strong> Even while $y(t)$ appears bounded, $x(t)$ grows
+              exponentially in the $\bar{\text{C}}$O subspace. Physical states — voltages, currents,
+              structural displacements, temperatures — grow without bound, causing component failure
+              or actuator saturation long before the output reflects the problem.
+
+              <strong>(2) Saturation destroys the cancellation.</strong> The TF's pole-zero cancellation is
+              only exact in the linear regime. Once actuators saturate, the linear model no longer
+              holds, and the cancelled pole "reappears." The output then begins to diverge too.
+
+              <strong>(3) Perfect cancellation is impossible.</strong> Even in simulation, finite precision means
+              the cancellation leaves a tiny residue. In hardware, parameter variations (temperature,
+              wear, modelling error) ensure the unstable pole is never exactly cancelled. The true
+              system has a near-unstable residual that will eventually manifest as a slowly growing
+              transient.
+
+              <strong>(4) External disturbances excite the unstable mode.</strong> Even if the nominal state
+              starts at zero, any disturbance with a component in the $\bar{\text{C}}$O subspace will
+              send the state growing — and since the mode is uncontrollable, no input can bring it back.
+              The output will eventually diverge once the state becomes large enough that nonlinearities
+              couple the unstable mode into the observable subspace.
+
+              The lesson: never rely on pole-zero cancellations involving unstable modes.
+            </div>
+          </details>
         </li>
       </ol>
 

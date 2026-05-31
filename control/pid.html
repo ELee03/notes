@@ -330,42 +330,50 @@
       <!-- ── Worked examples ─────────────────────────────────────────── -->
       <div class="section-head" id="examples">Worked examples</div>
 
-      <div class="prose">
-        <strong>Example 1: PI control of a first-order plant.</strong>
-        Plant: $P(s) = 1/(2s+1)$. Design a PI controller to track step references with zero
-        steady-state error and $PM \approx 60°$.
-      </div>
+      <details class="example-box">
+        <summary><strong>Example 1 — PI control of a first-order plant</strong></summary>
+        <div class="example-problem">
+          Plant: $P(s) = \dfrac{1}{2s+1}$. Design a PI controller for zero steady-state error
+          to a step reference with phase margin $\approx 90°$ and crossover frequency $\omega_c = 1$ rad/s.
+        </div>
+        <div class="example-body">
+          PI controller: $C(s) = K_p\!\left(1 + \dfrac{1}{T_i s}\right) = \dfrac{K_p(T_i s + 1)}{T_i s}$.
 
-      <div class="prose">
-        PI controller: $C(s) = K_p(1 + 1/(T_i s)) = K_p(T_i s + 1)/(T_i s)$.
-        Open loop: $L(s) = K_p(T_i s + 1)/[T_i s (2s+1)]$.
-        Choose $T_i = 2$ (cancel the plant pole at $s = -1/2$, called PI-cancellation):
-        $L(s) = K_p / (2s^2)$ — wait, that's wrong; let me redo.
-        $T_i = 2$: $L(s) = K_p(2s+1)/(2s(2s+1)) = K_p/(2s)$. This is a Type 1, first-order loop.
-      </div>
+          <strong>Pole-zero cancellation:</strong> Set $T_i = 2$ to cancel the plant pole at $s = -\tfrac{1}{2}$:
+          $$L(s) = C(s)P(s) = \frac{K_p(2s+1)}{2s(2s+1)} = \frac{K_p}{2s}$$
+          A clean Type 1 first-order loop.
 
-      <ul class="prose" style="padding-left:1.4em;">
-        <li style="margin-bottom:6px;">Phase of $L(j\omega) = K_p/(2j\omega)$: always $-90°$.
-          $PM = 180° - 90° = 90°$ regardless of $K_p$. Excellent margin.</li>
-        <li style="margin-bottom:6px;">Gain crossover: $|K_p/(2\omega_c)| = 1$ → $\omega_c = K_p/2$.
-          Choose $\omega_c = 1$ rad/s for a time constant of $\approx 1$ s → $K_p = 2$.</li>
-        <li>Final controller: $C(s) = 2(1 + 1/(2s)) = 2 + 1/s$. Zero steady-state error to step; 90° phase margin.</li>
-      </ul>
+          <strong>Phase margin:</strong> $\angle L(j\omega) = -90°$ at all frequencies → PM = 90° regardless of $K_p$. ✓
 
-      <div class="prose" style="margin-top:18px;">
-        <strong>Example 2: Effect of derivative on a second-order plant.</strong>
-        Plant: $P(s) = 1/(s(s+1))$ (position servo, Type 1). Proportional control alone with
-        $K_p = 1$: characteristic polynomial $s^2+s+1$, $\zeta=0.5$, 16% overshoot.
-        Adding $K_d=1$ (PD control): $C(s)P(s) = (s+1)/s(s+1) = 1/s$. Characteristic polynomial
-        $s^2 + s + 1$ → wait, $1+C(s)P(s) = 1 + (1+s)/s(s+1) = 1 + 1/s$... let me redo cleanly.
-      </div>
+          <strong>Gain crossover:</strong> $|K_p/(2\omega_c)| = 1 \Rightarrow \omega_c = K_p/2$.
+          For $\omega_c = 1$ rad/s: $K_p = 2$.
 
-      <div class="prose">
-        With $K_p=1$, $K_d=1$: $C(s) = 1+s$, $C(s)P(s) = (1+s)/[s(s+1)] = 1/s$.
-        Closed-loop: $T(s) = (1/s)/(1+1/s) = 1/(s+1)$. First-order, no overshoot, $\tau=1$ s.
-        The derivative zero at $s=-1$ exactly cancelled the plant pole at $s=-1$ — a convenient
-        example showing how derivative action can dramatically change the closed-loop behavior.
-      </div>
+          <strong>Final controller:</strong> $C(s) = 2\!\left(1 + \dfrac{1}{2s}\right) = 2 + \dfrac{1}{s}$.
+          Zero steady-state error to steps (integrator), PM = 90°.
+        </div>
+      </details>
+
+      <details class="example-box">
+        <summary><strong>Example 2 — Effect of derivative on a second-order plant</strong></summary>
+        <div class="example-problem">
+          Plant: $P(s) = \dfrac{1}{s(s+1)}$ (Type 1 position servo). Compare proportional control
+          ($K_p=1$, $K_d=0$) with PD control ($K_p=1$, $K_d=1$).
+        </div>
+        <div class="example-body">
+          <strong>P only ($K_p=1$):</strong> $1 + L(s) = 1 + \dfrac{1}{s(s+1)} = 0$
+          → $s^2 + s + 1 = 0$, $\zeta = 0.5$, $\approx 16\%$ overshoot.
+
+          <strong>PD ($K_p=1$, $K_d=1$):</strong> $C(s) = 1 + s$,
+          $$L(s) = \frac{1+s}{s(s+1)} = \frac{1}{s}$$
+          The derivative zero at $s = -1$ exactly cancels the plant pole. Closed-loop:
+          $$T(s) = \frac{1/s}{1 + 1/s} = \frac{1}{s+1}$$
+          First-order, $\tau = 1$ s, <strong>no overshoot</strong>.
+
+          Adding one unit of derivative action completely eliminated overshoot by cancelling the
+          lightly-damped plant pole — a clean illustration of how derivative action can reshape
+          the closed-loop dynamics.
+        </div>
+      </details>
 
       <!-- ── Interactive ──────────────────────────────────────────────── -->
       <div class="section-head" id="interactive">Interactive: PID step response simulator</div>
@@ -581,20 +589,75 @@
       <div class="section-head" id="food-for-thought">Food for thought</div>
 
       <div class="fft-block" style="border-left:3px solid #b89040;background:#faf8f2;padding:14px 18px;border-radius:0 4px 4px 0;margin:20px 0;">
-        <div style="font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#8a6010;margin-bottom:10px;">Reflection questions — no answers given</div>
+        <div style="font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#8a6010;margin-bottom:10px;">Reflection questions</div>
         <ol style="padding-left:1.4em;color:#2a3a4a;font-size:14px;line-height:1.7;">
           <li style="margin-bottom:12px;">The integral action eliminates steady-state error for
             step references. But what happens to the integral term at steady state — what value
             does $\int e\,dt$ converge to, and why does a nonzero integral not cause the output
-            to keep drifting past the reference?</li>
+            to keep drifting past the reference?
+            <details class="fft-answer">
+              <summary>Answer</summary>
+              <div class="fft-answer-body">
+                At steady state, $e(\infty) = 0$ (the whole point of integral action), so the integrator
+                stops accumulating. But the integral $I(\infty) = \int_0^\infty e\,dt$ is nonzero —
+                it has settled to a constant value. This constant value is exactly what's needed to
+                produce the control output that holds the plant output at the reference.
+
+                Consider: at steady state, $u^\infty = K_i I(\infty)$ must equal the input needed to
+                maintain $y = r$. For a first-order plant $P(s) = k/(s+a)$, the steady-state
+                requirement is $u^\infty = a \cdot r / k$ (to produce $y = r$). The integral winds
+                up to $I(\infty) = u^\infty / K_i$ — no more, no less. The output doesn't keep drifting
+                because $e = 0$ means the integrator has stopped changing; the integral is frozen at
+                its steady-state value. The "driving force" for drift is gone.
+              </div>
+            </details>
+          </li>
           <li style="margin-bottom:12px;">A PID controller has two zeros and one pole (at the
             origin). Where are these zeros in terms of $K_p$, $T_i$, $T_d$? Using the root locus,
             sketch qualitatively how the closed-loop poles of a first-order plant $P(s)=1/(s+1)$
-            under PID control move as $K_p$ increases from 0 to $\infty$ (with fixed $T_i$, $T_d$).</li>
+            under PID control move as $K_p$ increases from 0 to $\infty$ (with fixed $T_i$, $T_d$).
+            <details class="fft-answer">
+              <summary>Answer</summary>
+              <div class="fft-answer-body">
+                The standard PID: $C(s) = K_p + K_i/s + K_d s = K_d(s^2 + (K_p/K_d)s + K_i/K_d)/s$.
+                The two zeros are at the roots of $s^2 + (K_p/K_d)s + K_i/K_d = 0$. In terms of
+                $T_i = K_p/K_i$ and $T_d = K_d/K_p$: the zeros are at
+                $s = -\dfrac{1}{2T_d}\!\left(1 \pm \sqrt{1 - 4T_d/T_i}\right)$.
+                For typical $T_i \gg 4T_d$, these are two real negative zeros.
+
+                For $P(s) = 1/(s+1)$, the open-loop has poles at $s=0$ (integrator) and $s=-1$ (plant),
+                and two zeros from the PID. The root locus starts ($K_p=0$) at the open-loop poles
+                $\{0, -1\}$ (plus the infinite pole from the cubic characteristic equation). As $K_p$ increases,
+                two poles move toward the two zeros; the third goes to $-\infty$ along the real axis.
+                For small $K_p$ the system is underdamped; near the zeros the poles settle; for large
+                $K_p$ one pole races to $-\infty$ and the closed-loop becomes fast but with large overshoot.
+              </div>
+            </details>
+          </li>
           <li>Anti-windup clamping stops integration when the output is saturated.
             But this means the integral state $I(t)$ no longer reflects the true $\int e\,dt$.
             When the saturation lifts and the integral resumes, is there any offset or transient
-            due to the clamping? How does back-calculation anti-windup avoid this issue?</li>
+            due to the clamping? How does back-calculation anti-windup avoid this issue?
+            <details class="fft-answer">
+              <summary>Answer</summary>
+              <div class="fft-answer-body">
+                Simple clamping prevents the integral from growing <em>further</em> during saturation,
+                so when saturation lifts, the integral is at the value it held when clamping began.
+                This value may be too large (it wound up before the clamp) — leading to a transient
+                overshoot as the controller drives with this excess integral. Or it may be too small
+                (if the reference changed during saturation). Either way, there's a mismatch between
+                what the integral says and what the plant state actually needs.
+
+                <strong>Back-calculation (tracking anti-windup)</strong> avoids this by modifying the integrator
+                itself. Rather than freezing the integrator, it feeds back the saturation error
+                $u_\text{actual} - u_\text{desired}$ into the integrator at a rate $1/T_t$ (the
+                tracking time constant). When saturated, this feedback drives the integrator toward
+                the value that would produce the actual (saturated) output — so when saturation lifts,
+                the integral is already at the "right" value and no transient occurs. The integral
+                actively tracks the achievable control, not the ideal one.
+              </div>
+            </details>
+          </li>
         </ol>
       </div>
 

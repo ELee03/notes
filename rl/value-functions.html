@@ -496,71 +496,77 @@
       <!-- ── Worked example ──────────────────────────────────────── -->
       <div class="section-head" id="worked-example">Worked example: value functions for the recycling robot</div>
 
-      <div class="prose">
-        Using the recycling robot MDP from Lesson 3 ($\alpha = 0.7$, $\beta = 0.4$,
-        $r_\text{search} = 2$, $r_\text{wait} = 1$, $r_\text{rescue} = -3$, $\gamma = 0.9$),
-        compute $v_\pi$ for two specific policies and compare them.
-      </div>
-
-      <div class="prose">
-        <strong>Policy A</strong> — always search from high, always recharge from low.
-        Under this policy the Bellman equations are:
-      </div>
-
-      <div class="example-block">
-        <div class="ex-title">Policy A: search/high, recharge/low · γ = 0.9</div>
-        <div class="prose" style="margin:0 0 10px;font-size:13.5px;">
-          From <strong>high</strong>, search always: reward is 2 regardless of outcome.
-          Transitions: high→high with 0.7, high→low with 0.3.
+      <details class="example-box">
+        <summary><strong>Example 1 — Comparing two policies on the recycling robot</strong></summary>
+        <div class="example-problem">
+          Using the recycling robot MDP from Lesson 3 ($\alpha = 0.7$, $\beta = 0.4$,
+          $r_\text{search} = 2$, $r_\text{wait} = 1$, $r_\text{rescue} = -3$, $\gamma = 0.9$),
+          compute $v_\pi$ for two specific policies and determine which dominates.
         </div>
-        <div class="math-block" style="margin:8px 0;">$$v_\pi(\text{high}) = 2 + 0.9\bigl[0.7\cdot v_\pi(\text{high}) + 0.3\cdot v_\pi(\text{low})\bigr]$$</div>
-        <div class="prose" style="margin:0 0 10px;font-size:13.5px;">
-          From <strong>low</strong>, recharge always: reward is 0, always→high.
-        </div>
-        <div class="math-block" style="margin:8px 0;">$$v_\pi(\text{low}) = 0 + 0.9\cdot v_\pi(\text{high})$$</div>
-        <div class="prose" style="margin:10px 0 6px;font-size:13.5px;"><strong>Solve:</strong></div>
-        <div class="prose" style="font-size:13.5px;color:#3a4a5a;line-height:1.9;font-family:'IBM Plex Mono',monospace;">
-          Substitute $v_\pi(\text{low}) = 0.9\,v_\pi(\text{high})$:<br>
-          $v_\pi(\text{high}) = 2 + 0.9[0.7 + 0.3 \times 0.9]\,v_\pi(\text{high})$<br>
-          $v_\pi(\text{high}) = 2 + 0.9 \times 0.97\,v_\pi(\text{high})$<br>
-          $v_\pi(\text{high})(1 - 0.873) = 2$<br>
-          $v_\pi(\text{high}) = 2 / 0.127 \approx \mathbf{15.75}$<br>
-          $v_\pi(\text{low}) = 0.9 \times 15.75 \approx \mathbf{14.17}$
-        </div>
-      </div>
+        <div class="example-body">
 
-      <div class="prose">
-        <strong>Policy B</strong> — always search from high, always search from low (risky).
-        Under this policy:
-      </div>
+          <div class="prose">
+            <strong>Policy A</strong> — always search from high, always recharge from low.
+            Under this policy the Bellman equations are:
+          </div>
 
-      <div class="example-block">
-        <div class="ex-title">Policy B: search/high, search/low · γ = 0.9</div>
-        <div class="prose" style="font-size:13.5px;margin:0 0 10px;">
-          From <strong>low</strong>, search: $r(\text{low,search}) = 0.6(-3) + 0.4(2) = -1$.
-          Transitions: low→high with 0.6, low→low with 0.4.
-        </div>
-        <div class="math-block" style="margin:8px 0;">$$v_\pi(\text{high}) = 2 + 0.9[0.7\,v_h + 0.3\,v_l]$$</div>
-        <div class="math-block" style="margin:8px 0;">$$v_\pi(\text{low}) = -1 + 0.9[0.6\,v_h + 0.4\,v_l]$$</div>
-        <div class="prose" style="margin:10px 0 6px;font-size:13.5px;"><strong>Solve the 2×2 linear system:</strong></div>
-        <div class="prose" style="font-size:13.5px;color:#3a4a5a;line-height:1.9;font-family:'IBM Plex Mono',monospace;">
-          $0.37\,v_h - 0.27\,v_l = 2$ &nbsp;&nbsp;...(1)<br>
-          $-0.54\,v_h + 0.64\,v_l = -1$ &nbsp;...(2)<br><br>
-          From (2): $v_l = (-1 + 0.54\,v_h)\,/\,0.64$<br>
-          Sub into (1): $0.37\,v_h - 0.27(-1+0.54\,v_h)/0.64 = 2$<br>
-          $0.091\,v_h = 1.01$<br>
-          $v_\pi(\text{high}) \approx \mathbf{11.10}$, &nbsp; $v_\pi(\text{low}) \approx \mathbf{7.80}$
-        </div>
-      </div>
+          <div class="example-block">
+            <div class="ex-title">Policy A: search/high, recharge/low · γ = 0.9</div>
+            <div class="prose" style="margin:0 0 10px;font-size:13.5px;">
+              From <strong>high</strong>, search always: reward is 2 regardless of outcome.
+              Transitions: high→high with 0.7, high→low with 0.3.
+            </div>
+            <div class="math-block" style="margin:8px 0;">$$v_\pi(\text{high}) = 2 + 0.9\bigl[0.7\cdot v_\pi(\text{high}) + 0.3\cdot v_\pi(\text{low})\bigr]$$</div>
+            <div class="prose" style="margin:0 0 10px;font-size:13.5px;">
+              From <strong>low</strong>, recharge always: reward is 0, always→high.
+            </div>
+            <div class="math-block" style="margin:8px 0;">$$v_\pi(\text{low}) = 0 + 0.9\cdot v_\pi(\text{high})$$</div>
+            <div class="prose" style="margin:10px 0 6px;font-size:13.5px;"><strong>Solve:</strong></div>
+            <div class="prose" style="font-size:13.5px;color:#3a4a5a;line-height:1.9;font-family:'IBM Plex Mono',monospace;">
+              Substitute $v_\pi(\text{low}) = 0.9\,v_\pi(\text{high})$:<br>
+              $v_\pi(\text{high}) = 2 + 0.9[0.7 + 0.3 \times 0.9]\,v_\pi(\text{high})$<br>
+              $v_\pi(\text{high}) = 2 + 0.9 \times 0.97\,v_\pi(\text{high})$<br>
+              $v_\pi(\text{high})(1 - 0.873) = 2$<br>
+              $v_\pi(\text{high}) = 2 / 0.127 \approx \mathbf{15.75}$<br>
+              $v_\pi(\text{low}) = 0.9 \times 15.75 \approx \mathbf{14.17}$
+            </div>
+          </div>
 
-      <div class="callout">
-        <strong>Comparison.</strong> Policy A (search/recharge): $v_\pi(\text{high}) = 15.75$,
-        $v_\pi(\text{low}) = 14.17$. Policy B (search/search): $v_\pi(\text{high}) = 11.10$,
-        $v_\pi(\text{low}) = 7.80$. Policy A dominates Policy B in every state — the expected
-        penalty of running flat is too high to justify searching from low battery.
-        This is exactly the kind of comparison value functions make possible: given two policies,
-        compute their values and pick the better one.
-      </div>
+          <div class="prose">
+            <strong>Policy B</strong> — always search from high, always search from low (risky).
+            Under this policy:
+          </div>
+
+          <div class="example-block">
+            <div class="ex-title">Policy B: search/high, search/low · γ = 0.9</div>
+            <div class="prose" style="font-size:13.5px;margin:0 0 10px;">
+              From <strong>low</strong>, search: $r(\text{low,search}) = 0.6(-3) + 0.4(2) = -1$.
+              Transitions: low→high with 0.6, low→low with 0.4.
+            </div>
+            <div class="math-block" style="margin:8px 0;">$$v_\pi(\text{high}) = 2 + 0.9[0.7\,v_h + 0.3\,v_l]$$</div>
+            <div class="math-block" style="margin:8px 0;">$$v_\pi(\text{low}) = -1 + 0.9[0.6\,v_h + 0.4\,v_l]$$</div>
+            <div class="prose" style="margin:10px 0 6px;font-size:13.5px;"><strong>Solve the 2×2 linear system:</strong></div>
+            <div class="prose" style="font-size:13.5px;color:#3a4a5a;line-height:1.9;font-family:'IBM Plex Mono',monospace;">
+              $0.37\,v_h - 0.27\,v_l = 2$ &nbsp;&nbsp;...(1)<br>
+              $-0.54\,v_h + 0.64\,v_l = -1$ &nbsp;...(2)<br><br>
+              From (2): $v_l = (-1 + 0.54\,v_h)\,/\,0.64$<br>
+              Sub into (1): $0.37\,v_h - 0.27(-1+0.54\,v_h)/0.64 = 2$<br>
+              $0.091\,v_h = 1.01$<br>
+              $v_\pi(\text{high}) \approx \mathbf{11.10}$, &nbsp; $v_\pi(\text{low}) \approx \mathbf{7.80}$
+            </div>
+          </div>
+
+          <div class="callout">
+            <strong>Comparison.</strong> Policy A (search/recharge): $v_\pi(\text{high}) = 15.75$,
+            $v_\pi(\text{low}) = 14.17$. Policy B (search/search): $v_\pi(\text{high}) = 11.10$,
+            $v_\pi(\text{low}) = 7.80$. Policy A dominates Policy B in every state — the expected
+            penalty of running flat is too high to justify searching from low battery.
+            This is exactly the kind of comparison value functions make possible: given two policies,
+            compute their values and pick the better one.
+          </div>
+
+        </div>
+      </details>
 
       <!-- ── Interactive explorer ────────────────────────────────── -->
       <div class="section-head" id="explorer">Policy value explorer — recycling robot</div>
@@ -736,20 +742,64 @@
       <div class="section-head" id="food-for-thought">Food for thought</div>
 
       <div class="fft-block">
-        <div class="fft-title">Reflection questions — no answers given</div>
+        <div class="fft-title">Reflection questions</div>
         <ol>
           <li>The Bellman equations form a linear system $v = r + \gamma P v$, where $P$ is the
             transition matrix under policy $\pi$ and $r$ is the expected reward vector. The solution
             is $v = (I - \gamma P)^{-1} r$. Why is $I - \gamma P$ guaranteed to be invertible
             for $\gamma < 1$? What happens at $\gamma = 1$ for a continuing task with no
-            absorbing state?</li>
+            absorbing state?
+            <details class="fft-answer">
+              <summary>Answer / hint</summary>
+              <div class="fft-answer-body">
+                The stochastic transition matrix $P$ has spectral radius exactly 1 (all eigenvalues
+                satisfy $|\lambda| \leq 1$; the dominant eigenvalue is 1). Scaling by $\gamma < 1$
+                shrinks the spectral radius to $\gamma < 1$. By the Neumann series,
+                $(I - M)^{-1} = \sum_{k=0}^\infty M^k$ converges whenever the spectral radius of
+                $M$ is less than 1 — so $(I - \gamma P)$ is invertible. At $\gamma = 1$, if $P$ is
+                irreducible (continuing task, no absorbing state), eigenvalue 1 of $P$ means $I - P$
+                has a zero eigenvalue and is singular. The linear system has no unique solution —
+                undiscounted values diverge for a task that never terminates.
+              </div>
+            </details>
+          </li>
           <li>An agent knows $v_*(s)$ for every state but does <em>not</em> know $q_*(s,a)$ or
             the dynamics $p(s',r|s,a)$. Can it still recover the optimal policy? If yes, how?
-            If no, why not?</li>
+            If no, why not?
+            <details class="fft-answer">
+              <summary>Answer / hint</summary>
+              <div class="fft-answer-body">
+                No — not without the model. Acting greedily with respect to $v_*$ requires
+                $\arg\max_a \sum_{s',r} p(s',r \mid s,a)[r + \gamma v_*(s')]$, which needs
+                the dynamics $p(s',r \mid s,a)$ to evaluate the one-step lookahead.
+                This is why $q_*$ is strictly more useful than $v_*$ in the model-free setting:
+                $\pi_*(s) = \arg\max_a\, q_*(s,a)$ requires no model at all. When designing a
+                model-free RL algorithm, prefer learning $q$ over $v$ — unless you separately
+                learn a model of the environment.
+              </div>
+            </details>
+          </li>
           <li>Consider an MDP where all reward is received only at terminal states (zero reward
             everywhere else). How does the value function behave as $\gamma \to 0$ vs
             $\gamma \to 1$? What does this tell you about the role of discounting in
-            credit assignment?</li>
+            credit assignment?
+            <details class="fft-answer">
+              <summary>Answer / hint</summary>
+              <div class="fft-answer-body">
+                As $\gamma \to 0$: the agent becomes purely myopic — only the immediate next
+                reward matters. Since all non-terminal rewards are 0, $v_\pi(s) \to 0$ for
+                every non-terminal state regardless of how close $s$ is to the terminal reward.
+                The agent cannot see the end of the task at all.
+                As $\gamma \to 1$: the terminal reward is discounted by $\gamma^T$ where $T$ is
+                the time-to-terminal; as $\gamma \to 1$ this approaches 1, so $v_\pi(s)$
+                approaches the undiscounted expected terminal reward. The whole trajectory is
+                valued equally. This illustrates that $\gamma$ is a credit-assignment dial: low
+                $\gamma$ collapses credit to the immediate future; high $\gamma$ distributes it
+                over arbitrarily long horizons. Sparse-reward tasks (reward only at goal)
+                require $\gamma$ close to 1.
+              </div>
+            </details>
+          </li>
         </ol>
       </div>
 

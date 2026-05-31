@@ -482,80 +482,77 @@
       <!-- ── Worked examples ─────────────────────────────────────── -->
       <div class="section-head" id="worked-examples">Worked examples</div>
 
-      <div class="prose" style="font-weight:600;color:#2a3a4a;margin-bottom:6px;">
-        Example 1 — REINFORCE update on a softmax policy
-      </div>
+      <details class="example-box">
+        <summary><strong>Example 1 — REINFORCE update on a softmax policy</strong></summary>
+        <div class="example-problem">
+          Two-action problem at state $M$. Softmax preferences: $\theta_1 = h(M,\text{right}) = 0.5$,
+          $\theta_2 = h(M,\text{left}) = 0.0$. An episode starts at $M$, takes action right, return
+          $G_0 = +2$. Use $\alpha = 0.1$. Compute the update to $\theta_1$ and the new $\pi(\text{right}|M)$.
+        </div>
+        <div class="example-body">
+          <div class="prose">
+            Current policy: $\pi(\text{right}|M) = e^{0.5}/(e^{0.5}+e^0) = 1.649/2.649 \approx 0.622$.
+          </div>
+          <div class="prose">
+            Log-gradient: $\nabla_{\theta_1}\ln\pi(\text{right}|M) = 1 - \pi(\text{right}|M) = 0.378$.
+            (Softmax log-gradient w.r.t. the logit of the chosen action equals $1 - \pi(a|s)$.)
+          </div>
+          <div class="prose">
+            Update: $\theta_1 \leftarrow 0.5 + 0.1 \times 2 \times 0.378 = 0.5 + 0.076 = \mathbf{0.576}$.
+          </div>
+          <div class="prose">
+            New policy: $\pi(\text{right}|M) = e^{0.576}/(e^{0.576}+e^0) \approx \mathbf{0.640}$.
+            The probability of "right" increased by ~2% — the policy was nudged toward the
+            action that produced a positive return.
+          </div>
+        </div>
+      </details>
 
-      <div class="prose">
-        Two-action problem, states $\{L, M, R\}$. Policy: softmax with preferences
-        $h(M, \text{right}, \boldsymbol{\theta}) = \theta_1 = 0.5$,
-        $h(M, \text{left}, \boldsymbol{\theta}) = \theta_2 = 0.0$.
-        $\pi(\text{right}|M) = e^{0.5}/(e^{0.5}+e^0) = 1.649/2.649 \approx 0.622$.
-      </div>
+      <details class="example-box">
+        <summary><strong>Example 2 — Actor-critic update</strong></summary>
+        <div class="example-problem">
+          $\hat{v}(S_t=3)=2.0$, $\hat{v}(S_{t+1}=7)=3.5$. Observed $R_{t+1}=0$,
+          $\gamma=0.9$, $\alpha_\theta=0.05$, $\alpha_w=0.1$. Compute the TD error and
+          write out the critic and actor update directions.
+        </div>
+        <div class="example-body">
+          <div class="prose">
+            TD error: $\delta_t = 0 + 0.9 \times 3.5 - 2.0 = 3.15 - 2.0 = \mathbf{1.15}$
+          </div>
+          <div class="prose">
+            Critic update: $\mathbf{w} \leftarrow \mathbf{w} + 0.1 \times 1.15 \times \nabla_\mathbf{w}\hat{v}(3,\mathbf{w})$.
+            For linear FA, $\nabla\hat{v}(3,\mathbf{w}) = \mathbf{x}(3)$ (feature vector of state 3).
+          </div>
+          <div class="prose">
+            Actor update: $\boldsymbol{\theta} \leftarrow \boldsymbol{\theta} + 0.05 \times 1.15 \times \nabla_{\boldsymbol{\theta}}\ln\pi(A_t|3,\boldsymbol{\theta})$.
+            The positive TD error ($\delta_t = 1.15 > 0$) means the next state was better than
+            the critic predicted — the actor is nudged toward action $A_t$ because it led to a
+            pleasant surprise.
+          </div>
+        </div>
+      </details>
 
-      <div class="prose">
-        An episode starts at $M$, action = right, return $G_0 = +2$.
-        Compute the update for $\theta_1$ (the right-action preference in state $M$).
-      </div>
-
-      <div class="prose">
-        Log-gradient: $\nabla_{\theta_1} \ln \pi(\text{right}|M) = 1 - \pi(\text{right}|M) = 1 - 0.622 = 0.378$.
-        (This is the standard softmax gradient: the gradient of $\ln\pi(a|s)$ w.r.t. the logit $h(s,a)$
-        equals $1 - \pi(a|s)$.)
-      </div>
-
-      <div class="prose">
-        Update: $\theta_1 \leftarrow \theta_1 + \alpha G_0 \times 0.378 = 0.5 + 0.1 \times 2 \times 0.378 = 0.5 + 0.076 = 0.576$.
-      </div>
-
-      <div class="prose">
-        After the update: $\pi(\text{right}|M) = e^{0.576}/(e^{0.576}+e^0) = 1.779/2.779 \approx 0.640$.
-        The probability of "right" increased by about 2% — the policy was nudged toward the
-        action that produced a positive return.
-      </div>
-
-      <div class="prose" style="font-weight:600;color:#2a3a4a;margin-bottom:6px;margin-top:24px;">
-        Example 2 — Actor-critic update
-      </div>
-
-      <div class="prose">
-        Current estimates: $\hat{v}(S_t = 3) = 2.0$, $\hat{v}(S_{t+1} = 7) = 3.5$.
-        Observed $R_{t+1} = 0$, $\gamma = 0.9$, $\alpha_\theta = 0.05$, $\alpha_w = 0.1$.
-      </div>
-
-      <div class="prose">
-        TD error: $\delta_t = 0 + 0.9 \times 3.5 - 2.0 = 3.15 - 2.0 = 1.15$
-      </div>
-
-      <div class="prose">
-        Critic update: $\mathbf{w} \leftarrow \mathbf{w} + 0.1 \times 1.15 \times \nabla_\mathbf{w}\hat{v}(3, \mathbf{w})$.
-        (For linear FA, $\nabla\hat{v}(3,\mathbf{w}) = \mathbf{x}(3)$, the feature vector of state 3.)
-      </div>
-
-      <div class="prose">
-        Actor update: $\boldsymbol{\theta} \leftarrow \boldsymbol{\theta} + 0.05 \times 1.15 \times \nabla_{\boldsymbol{\theta}}\ln\pi(A_t|3,\boldsymbol{\theta})$.
-        The positive TD error ($\delta_t = 1.15$) means the next state was better than the critic
-        predicted — the actor is nudged toward action $A_t$, which "caused" the pleasant surprise.
-      </div>
-
-      <div class="prose" style="font-weight:600;color:#2a3a4a;margin-bottom:6px;margin-top:24px;">
-        Example 3 — Why the baseline doesn't introduce bias
-      </div>
-
-      <div class="prose">
-        Verify that $\mathbb{E}_{A\sim\pi}[b(s)\nabla_\theta\ln\pi(A|s)] = 0$ for any constant $b(s)$
-        (where constant means not depending on $A$). This is the key property that makes baselines valid.
-      </div>
-
-      <div class="prose">
-        $$\sum_a \pi(a|s) b(s)\nabla_\theta\ln\pi(a|s)
-          = b(s)\sum_a \pi(a|s)\frac{\nabla_\theta\pi(a|s)}{\pi(a|s)}
-          = b(s)\sum_a\nabla_\theta\pi(a|s)
-          = b(s)\nabla_\theta\underbrace{\sum_a\pi(a|s)}_{=1}
-          = b(s)\nabla_\theta(1) = 0$$
-        The probabilities always sum to 1, so their gradient is zero — the baseline contributes
-        nothing to the expected gradient. It only affects the variance.
-      </div>
+      <details class="example-box">
+        <summary><strong>Example 3 — Why the baseline doesn't introduce bias</strong></summary>
+        <div class="example-problem">
+          Show that $\mathbb{E}_{A\sim\pi}[b(s)\,\nabla_\theta\ln\pi(A|s)] = 0$ for any $b(s)$
+          that does not depend on $A$. This is the key identity that makes baselines bias-free.
+        </div>
+        <div class="example-body">
+          <div class="prose">
+            $$\sum_a \pi(a|s)\,b(s)\,\nabla_\theta\ln\pi(a|s)
+              = b(s)\sum_a \pi(a|s)\frac{\nabla_\theta\pi(a|s)}{\pi(a|s)}
+              = b(s)\sum_a\nabla_\theta\pi(a|s)
+              = b(s)\,\nabla_\theta\underbrace{\sum_a\pi(a|s)}_{=1}
+              = b(s)\,\nabla_\theta(1) = 0$$
+          </div>
+          <div class="prose">
+            The probabilities always sum to 1, so their gradient (w.r.t. $\theta$) is zero — the
+            baseline contributes nothing to the expected gradient. It affects only the variance of
+            the estimate, which is why the optimal baseline is the one that minimises that variance.
+          </div>
+        </div>
+      </details>
 
       <!-- ── Interactive ─────────────────────────────────────────── -->
       <div class="section-head" id="interactive">Interactive: REINFORCE with and without baseline</div>
@@ -792,24 +789,82 @@
       <div class="section-head" id="food-for-thought">Food for thought</div>
 
       <div class="fft-block">
-        <div class="fft-title">Reflection questions — no answers given</div>
+        <div class="fft-title">Reflection questions</div>
         <ol>
           <li>The policy gradient theorem says we can estimate $\nabla J(\boldsymbol{\theta})$
             without differentiating through the state distribution $d_\pi(s)$. But changing
             $\boldsymbol{\theta}$ clearly changes which states are visited. Intuitively, why
             doesn't this matter? And in what sense does $d_\pi(s)$ "show up" anyway —
-            look at how we sample $S_t \sim d_\pi$.</li>
+            look at how we sample $S_t \sim d_\pi$.
+            <details class="fft-answer">
+              <summary>Answer / hint</summary>
+              <div class="fft-answer-body">
+                The policy gradient theorem proves mathematically that the gradient of $J$ can be
+                written as $\mathbb{E}_{S\sim d_\pi, A\sim\pi}[G_t\,\nabla_\theta\ln\pi(A|S)]$
+                — a term involving $d_\pi$ appears in the derivation but then cancels with its
+                own reciprocal, leaving only the derivative of $\ln\pi$. Intuitively: the fact
+                that $d_\pi$ changes with $\theta$ produces a second-order effect; the dominant
+                (first-order) effect comes from changing how likely each action is, not from
+                changing which states are visited.
+                <br><br>
+                $d_\pi$ "shows up" as the sampling distribution: when we run the agent and collect
+                trajectories, the states we visit are automatically distributed according to $d_\pi$.
+                So we're estimating the expectation over $d_\pi$ by Monte Carlo, just not
+                differentiating through it.
+              </div>
+            </details>
+          </li>
           <li>PPO clips the policy ratio $\pi_\text{new}/\pi_\text{old}$ to $[1-\varepsilon, 1+\varepsilon]$.
             Suppose a particular transition had a very large estimated advantage $A_t = 10$.
             Without clipping, the update would be large and might overshoot. With clipping
             ($\varepsilon = 0.2$), the ratio is capped at 1.2. Trace through what this means
             for the magnitude of the gradient step — and why repeated smaller steps can still
-            get to the same place without the instability of a single large step.</li>
+            get to the same place without the instability of a single large step.
+            <details class="fft-answer">
+              <summary>Answer / hint</summary>
+              <div class="fft-answer-body">
+                Without clipping: objective contribution from this transition is $r_t(\theta) A_t$.
+                Gradient w.r.t. $\theta$ is large — potentially catastrophically so when $A_t = 10$.
+                <br><br>
+                With clipping: when $r_t > 1.2$ (policy already moved in the right direction),
+                the gradient of the clipped objective is zero — further increasing the probability
+                of $A_t$ brings no additional gradient signal. This prevents the single step from
+                overshooting to near-deterministic policies.
+                <br><br>
+                Repeated steps: PPO runs multiple gradient steps on the same batch of data. Each
+                step is limited to a ratio in $[0.8, 1.2]$. After a step, the ratio is recalculated
+                from the new $\theta$ — so the constraint applies fresh each time. Accumulating
+                multiple small moves can achieve the same total policy change as one large step,
+                but each individual step avoids the instability of a large gradient magnitude.
+              </div>
+            </details>
+          </li>
           <li>Actor-critic uses the TD error $\delta_t$ as the advantage estimate. But the TD
             error is an estimate of the advantage only when the critic is accurate. Early in
             training, the critic is poor, so $\delta_t$ is a noisy and biased signal for the actor.
             How might you handle this? What would happen if you trained the critic for several
-            epochs before each actor update?</li>
+            epochs before each actor update?
+            <details class="fft-answer">
+              <summary>Answer / hint</summary>
+              <div class="fft-answer-body">
+                Training the critic for multiple epochs before each actor update sounds appealing
+                but has a catch: the critic is fitting Bellman targets that depend on the current
+                policy. As long as the actor doesn't move, those targets are stationary and more
+                epochs improve the critic. But if the actor then makes a large update, the critic's
+                learned values are immediately stale — no longer accurate for the new policy.
+                <br><br>
+                PPO's approach: collect data, run multiple (3–10) gradient steps on both critic
+                and actor from the same batch, but constrain the actor to stay close to the data
+                collection policy (via clipping). The constraint prevents the "stale critic" problem
+                by limiting how far the actor moves per batch.
+                <br><br>
+                More generally: the critic bootstrapping bias problem is fundamental to AC methods.
+                One practical mitigation is to use a larger $n$-step return for the advantage
+                estimate — more observed reward steps reduce the reliance on the (inaccurate)
+                critic's value estimate.
+              </div>
+            </details>
+          </li>
         </ol>
       </div>
 

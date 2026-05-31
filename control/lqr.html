@@ -639,52 +639,65 @@ K = np.linalg.solve(R, B.T @ P)  # K = R^{-1} B^T P</pre>
       <div id="worked-examples"></div>
       <div class="section-head">Worked Examples</div>
 
-      <div class="callout">
-        <strong>Example 1 — Double integrator, analytic LQR.</strong>
-        System: $A = \begin{bmatrix}0&1\\0&0\end{bmatrix}$, $B = \begin{bmatrix}0\\1\end{bmatrix}$,
-        $Q = I$, $R = 1$.
-        <br><br>
-        Let $P = \begin{bmatrix}p & q \\ q & s\end{bmatrix}$. The ARE gives three equations:
-        <ul style="margin:8px 0 0 16px;">
-          <li>$(1,1)$: $-q^2 + 1 = 0 \;\Rightarrow\; q = 1$</li>
-          <li>$(1,2)$: $p - qs = 0 \;\Rightarrow\; p = s$</li>
-          <li>$(2,2)$: $2q - s^2 + 1 = 0 \;\Rightarrow\; s^2 = 3 \;\Rightarrow\; s = \sqrt{3}$</li>
-        </ul>
-        So $P = \begin{bmatrix}\sqrt{3} & 1 \\ 1 & \sqrt{3}\end{bmatrix}$.
-        The optimal gain:
-        $$K^* = R^{-1}B^TP = [0,\;1]\begin{bmatrix}\sqrt{3}&1\\1&\sqrt{3}\end{bmatrix} = [1,\;\sqrt{3}]$$
-        Closed-loop: $A - BK^* = \begin{bmatrix}0&1\\-1&-\sqrt{3}\end{bmatrix}$,
-        eigenvalues $s = -\frac{\sqrt{3}}{2} \pm \frac{1}{2}j$ (underdamped, $\zeta = \sqrt{3}/2 \approx 0.866$, $\omega_n = 1$).
-        Minimum cost from $x_0 = [1,0]^T$:
-        $J^* = x_0^T P x_0 = \sqrt{3} \approx 1.73$.
-      </div>
+      <details class="example-box">
+        <summary><strong>Example 1 — Double integrator, analytic LQR</strong></summary>
+        <div class="example-problem">
+          Given $A = \begin{bmatrix}0&1\\0&0\end{bmatrix}$, $B = \begin{bmatrix}0\\1\end{bmatrix}$,
+          $Q = I$, $R = 1$. Solve the ARE analytically and find the optimal gain $K^*$ and minimum cost $J^*$ from $x_0 = [1,\,0]^T$.
+        </div>
+        <div class="example-body">
+          Let $P = \begin{bmatrix}p & q \\ q & s\end{bmatrix}$ (symmetric). The ARE gives three equations:
+          <ul style="margin:8px 0 8px 16px;">
+            <li>$(1,1)$: $-q^2 + 1 = 0 \;\Rightarrow\; q = 1$</li>
+            <li>$(1,2)$: $p - qs = 0 \;\Rightarrow\; p = s$</li>
+            <li>$(2,2)$: $2q - s^2 + 1 = 0 \;\Rightarrow\; s^2 = 3 \;\Rightarrow\; s = \sqrt{3}$</li>
+          </ul>
+          So $P = \begin{bmatrix}\sqrt{3} & 1 \\ 1 & \sqrt{3}\end{bmatrix}$.
+          The optimal gain:
+          $$K^* = R^{-1}B^TP = [0,\;1]\begin{bmatrix}\sqrt{3}&1\\1&\sqrt{3}\end{bmatrix} = [1,\;\sqrt{3}]$$
+          Closed-loop: $A - BK^* = \begin{bmatrix}0&1\\-1&-\sqrt{3}\end{bmatrix}$,
+          eigenvalues $s = -\tfrac{\sqrt{3}}{2} \pm \tfrac{1}{2}j$ (underdamped, $\zeta = \sqrt{3}/2 \approx 0.866$, $\omega_n = 1$).
+          Minimum cost: $J^* = x_0^T P x_0 = \sqrt{3} \approx 1.73$.
+        </div>
+      </details>
 
-      <div class="callout">
-        <strong>Example 2 — DC motor, LQR design.</strong>
-        A motor velocity control system: $\dot{x} = -5x + 10u$ (first-order, $n=1$).
-        With $Q = q$, $R = r$ (scalars), the ARE becomes:
-        $$-10p + 2(-5)p - \frac{(10p)^2}{r} + q = 0 \;\Rightarrow\; -10p - \frac{100p^2}{r} + q = 0$$
-        This is a quadratic in $p$:
-        $$\frac{100}{r}p^2 + 10p - q = 0 \;\Rightarrow\; p = \frac{-10 + \sqrt{100 + 400q/r}}{200/r}$$
-        Taking the positive root (we need $P > 0$):
-        $$p = \frac{r}{200}\left(-10 + \sqrt{100 + \frac{400q}{r}}\right)$$
-        Optimal gain: $K^* = \frac{10p}{r}$.
-        For $q = 1$, $r = 1$: $p = \frac{1}{200}(-10 + \sqrt{500}) \approx 0.062$, $K^* \approx 0.62$.
-        Closed-loop pole: $-5 - 10 \times 0.62 = -11.2$ (faster than open-loop $-5$).
-      </div>
+      <details class="example-box">
+        <summary><strong>Example 2 — First-order motor, closed-form solution</strong></summary>
+        <div class="example-problem">
+          A motor velocity system: $\dot{x} = -5x + 10u$. With scalar weights $Q = q$, $R = r$, find
+          the optimal gain $K^*$ and evaluate for $q = r = 1$.
+        </div>
+        <div class="example-body">
+          The ARE reduces to a scalar quadratic (since $n=1$, $P = p$):
+          $$A^T p + pA - pBR^{-1}B^T p + Q = 0 \;\Rightarrow\; -10p - \frac{100p^2}{r} + q = 0$$
+          Rearranging: $\frac{100}{r}p^2 + 10p - q = 0$. Taking the positive root:
+          $$p = \frac{r}{200}\!\left(-10 + \sqrt{100 + \frac{400q}{r}}\right)$$
+          Optimal gain: $K^* = R^{-1}B^T p = 10p/r$.
+          For $q = r = 1$: $p = \tfrac{1}{200}(-10 + \sqrt{500}) \approx 0.062$, so $K^* \approx 0.62$.
+          Closed-loop pole: $-5 - 10(0.62) = -11.2$, well to the left of the open-loop pole $-5$.
+        </div>
+      </details>
 
-      <div class="callout">
-        <strong>Example 3 — Effect of $Q/R$ ratio on pole locations.</strong>
-        For the double integrator with $Q = I$, $R = \rho$, the closed-loop poles from
-        the analytic solution are at $s = -k_2/2 \pm j\sqrt{k_1 - k_2^2/4}$ where
-        $k_1 = 1/\sqrt{\rho}$ and $k_2 = \sqrt{(1+2\sqrt{\rho})/\rho}$.
-        As $\rho \to 0$ (large control, cheap effort):
-        $k_1 \approx 1/\sqrt{\rho} \to \infty$, poles move far left at $s \approx -1/\rho^{1/4}$.
-        As $\rho \to \infty$ (expensive effort):
-        $k_1 \to 0$, $k_2 \to 0$, poles approach $s = 0$ (but always in the left half-plane).
-        The LQR constraint that the closed-loop be stable is maintained automatically —
-        the optimal poles never leave the left half-plane no matter how you tune $\rho$.
-      </div>
+      <details class="example-box">
+        <summary><strong>Example 3 — How LQR poles move as $\rho = R/Q$ varies</strong></summary>
+        <div class="example-problem">
+          For the double integrator with $Q = I$, $R = \rho$, use the analytic solution $k_1 = 1/\!\sqrt{\rho}$,
+          $k_2 = \sqrt{(1+2\sqrt{\rho})/\rho}$ to describe how the optimal closed-loop poles behave as
+          $\rho \to 0$ (cheap effort) and $\rho \to \infty$ (expensive effort).
+        </div>
+        <div class="example-body">
+          The closed-loop poles are at $s = -k_2/2 \pm j\sqrt{k_1 - k_2^2/4}$.
+          <br><br>
+          <strong>$\rho \to 0$ (aggressive):</strong> $k_1 \approx \rho^{-1/2} \to \infty$, $k_2 \approx \rho^{-1/4}\sqrt{2} \to \infty$.
+          Poles move far into the left half-plane at $|s| \sim \rho^{-1/4}$ — fast settling, large $K$, large actuator effort.
+          <br><br>
+          <strong>$\rho \to \infty$ (conservative):</strong> $k_1 \to 0$, $k_2 \to 0$. Poles approach the
+          imaginary axis but remain in the left half-plane for all finite $\rho > 0$ — the optimal solution is always stable.
+          (At $\rho = \infty$, effort is infinitely expensive, so $u = 0$ and the "poles" are those of the open-loop system at $s = 0$.)
+          <br><br>
+          Key insight: LQR poles never cross into the right half-plane no matter how $\rho$ is tuned — stability is built into the formulation.
+        </div>
+      </details>
 
       <!-- ── Food for Thought ──────────────────────────────────── -->
       <div id="food-for-thought"></div>
@@ -695,16 +708,54 @@ K = np.linalg.solve(R, B.T @ P)  # K = R^{-1} B^T P</pre>
           The minimum cost is $J^* = x_0^T P x_0$. What does it mean that the cost
           depends on the initial condition? If the system starts near the origin, is
           the cost always low regardless of the gain?
+          <details class="fft-answer">
+            <summary>Answer</summary>
+            <div class="fft-answer-body">
+              $J^* = x_0^T P x_0$ is a quadratic form — it measures the "size" of the initial
+              condition in the metric defined by $P$. Starting near the origin means $\|x_0\|$ is
+              small, so $J^*$ is small regardless of $P$'s magnitude. However, this is only the
+              <em>optimal</em> cost under $K^*$. A suboptimal or bad gain could produce a much
+              larger cost from the same initial condition — the value $x_0^T P x_0$ is a lower
+              bound, achieved only by the LQR controller. So yes, near the origin the cost is
+              always small under the LQR gain, but that's also when control is easiest.
+            </div>
+          </details>
         </li>
         <li>
           LQR theory says: if $Q = 0$ (no state penalty), then $u = 0$ is "optimal"
           in some trivial sense. What does this tell you about how to set $Q$? Can you
           always set $Q = 0$ and still get a meaningful design?
+          <details class="fft-answer">
+            <summary>Answer</summary>
+            <div class="fft-answer-body">
+              With $Q = 0$, the cost is purely $\int u^T R u\,dt$ — the optimizer minimises effort
+              with no regard for where $x$ ends up, so $u = 0$ trivially wins. The system is
+              "optimally controlled" by doing nothing, which is useless for regulation.
+              You cannot set $Q = 0$ for states you actually need to regulate. At minimum, $Q$
+              must be positive on the subspace of states you care about. The requirement is that
+              $(A, C_Q)$ is detectable where $Q = C_Q^T C_Q$ — if any unobservable mode of
+              $(A, C_Q)$ is unstable, the ARE has no stabilising solution.
+            </div>
+          </details>
         </li>
         <li>
           The stability margin result says LQR tolerates a gain reduction to $0.5K^*$.
           When an observer is added (Lesson 14), this margin disappears in general.
           Why does adding the observer degrade the robustness guarantees?
+          <details class="fft-answer">
+            <summary>Answer</summary>
+            <div class="fft-answer-body">
+              The LQR margin proof relies on a specific algebraic inequality for the loop gain
+              $L(j\omega) = K^*(j\omega I - A)^{-1}B$ — namely $\|I + L(j\omega)\| \geq 1$ for all $\omega$.
+              This holds because the feedback path is the identity (direct state measurement).
+              When an observer is inserted, the actual loop gain becomes
+              $K^*(j\omega I - A + LC)^{-1}L \cdot C(j\omega I - A)^{-1}B$,
+              which involves the observer dynamics and introduces additional phase lag. The
+              return-difference inequality no longer holds in general, and the phase margin can
+              be arbitrarily close to 0°. This is why LQG (LQR + Kalman filter) requires loop
+              transfer recovery (LTR) or $H_\infty$ methods to restore robustness.
+            </div>
+          </details>
         </li>
       </ul>
 

@@ -531,64 +531,69 @@
       <!-- ═══ WORKED EXAMPLES ═══ -->
       <div class="section-head" id="worked-examples">Worked examples</div>
 
-      <!-- Example 1 -->
-      <div class="callout" style="border-color:#a0c8a0; background:#f4fbf4;">
-        <strong>Example 1 — $e^{At}$ via eigendecomposition.</strong><br>
-        $$A = \begin{bmatrix}-3 & 1 \\ 0 & -1\end{bmatrix}$$
-
-        Eigenvalues: $\lambda_1 = -1$ (from $s = -1$), $\lambda_2 = -3$ (from $s = -3$).
-
-        Eigenvectors:
-        <ul style="padding-left:20px;">
-          <li>$\lambda_1 = -1$: $(A + I)v = 0 \Rightarrow \begin{bmatrix}-2&1\\0&0\end{bmatrix}v = 0 \Rightarrow v_1 = \begin{bmatrix}1\\2\end{bmatrix}$</li>
-          <li>$\lambda_2 = -3$: $(A + 3I)v = 0 \Rightarrow \begin{bmatrix}0&1\\0&2\end{bmatrix}v = 0 \Rightarrow v_2 = \begin{bmatrix}1\\0\end{bmatrix}$</li>
-        </ul>
-
-        $T = \begin{bmatrix}1&1\\2&0\end{bmatrix}$, $T^{-1} = \frac{1}{-2}\begin{bmatrix}0&-1\\-2&1\end{bmatrix} = \begin{bmatrix}0&1/2\\1&-1/2\end{bmatrix}$
-
-        $$e^{At} = T\begin{bmatrix}e^{-t}&0\\0&e^{-3t}\end{bmatrix}T^{-1} = \begin{bmatrix}e^{-3t} & \frac{e^{-t}-e^{-3t}}{2} \\ 0 & e^{-t}\end{bmatrix}$$
-
-        <div style="margin-top:8px; font-size:13px; color:#4a6a4a;">Check: at $t=0$, $e^{A\cdot0} = I$ ✓. As $t\to\infty$, $e^{At}\to 0$ (stable) ✓.</div>
-      </div>
-
-      <!-- Example 2 -->
-      <div class="callout" style="border-color:#a0c8a0; background:#f4fbf4; margin-top:18px;">
-        <strong>Example 2 — $e^{At}$ via Laplace transform.</strong><br>
-        $$A = \begin{bmatrix}0 & 1 \\ -2 & -3\end{bmatrix}$$
-
-        $(sI-A)^{-1} = \frac{1}{s^2+3s+2}\begin{bmatrix}s+3&1\\-2&s\end{bmatrix} = \frac{1}{(s+1)(s+2)}\begin{bmatrix}s+3&1\\-2&s\end{bmatrix}$
-
-        Partial fractions for each entry:
-        $\dfrac{s+3}{(s+1)(s+2)} = \dfrac{2}{s+1} - \dfrac{1}{s+2}$, &emsp;
-        $\dfrac{1}{(s+1)(s+2)} = \dfrac{1}{s+1} - \dfrac{1}{s+2}$
-
-        $\dfrac{-2}{(s+1)(s+2)} = \dfrac{-2}{s+1} + \dfrac{2}{s+2}$, &emsp;
-        $\dfrac{s}{(s+1)(s+2)} = \dfrac{-1}{s+1} + \dfrac{2}{s+2}$
-
-        $$e^{At} = \begin{bmatrix}2e^{-t}-e^{-2t} & e^{-t}-e^{-2t} \\ -2e^{-t}+2e^{-2t} & -e^{-t}+2e^{-2t}\end{bmatrix}$$
-      </div>
-
-      <!-- Example 3 -->
-      <div class="callout" style="border-color:#a0c8a0; background:#f4fbf4; margin-top:18px;">
-        <strong>Example 3 — Cayley-Hamilton for $2\times 2$ matrix.</strong><br>
-        For $A = \begin{bmatrix}-1 & 2 \\ 0 & -3\end{bmatrix}$, find $e^{At}$ using Cayley-Hamilton.
-
-        Characteristic polynomial: $p(\lambda) = \lambda^2 + 4\lambda + 3 = (\lambda+1)(\lambda+3)$.
-        Eigenvalues: $\lambda_1 = -1$, $\lambda_2 = -3$.
-
-        By Cayley-Hamilton: $e^{At} = \alpha_0(t)I + \alpha_1(t)A$.
-
-        Evaluating at both eigenvalues:
-        $$e^{-t} = \alpha_0 + \alpha_1(-1), \qquad e^{-3t} = \alpha_0 + \alpha_1(-3)$$
-
-        Solving: $\alpha_1 = \frac{e^{-t} - e^{-3t}}{2}$, $\alpha_0 = e^{-t} - (-1)\alpha_1 = e^{-t} + \frac{e^{-t}-e^{-3t}}{2} = \frac{3e^{-t}-e^{-3t}}{2}$
-
-        $$e^{At} = \frac{3e^{-t}-e^{-3t}}{2}I + \frac{e^{-t}-e^{-3t}}{2}A = \begin{bmatrix}e^{-t} & e^{-t}-e^{-3t} \\ 0 & e^{-3t}\end{bmatrix}$$
-
-        <div style="margin-top:8px; font-size:13px; color:#4a6a4a;">
-          Check: at $t=0$: $e^{A\cdot 0} = I$ ✓. Differentiate and check $\dot{\Phi} = A\Phi$ at $t=0$: $\dot{\Phi}(0) = A$ ✓.
+      <details class="example-box">
+        <summary><strong>Example 1 — $e^{At}$ via eigendecomposition</strong></summary>
+        <div class="example-problem">
+          Compute $e^{At}$ for $A = \begin{bmatrix}-3 & 1 \\ 0 & -1\end{bmatrix}$ using eigendecomposition.
         </div>
-      </div>
+        <div class="example-body">
+          Eigenvalues: $\lambda_1 = -1$, $\lambda_2 = -3$.
+
+          Eigenvectors:
+          <ul style="padding-left:20px; margin:6px 0;">
+            <li>$\lambda_1 = -1$: $(A+I)v=0 \Rightarrow v_1 = \begin{bmatrix}1\\2\end{bmatrix}$</li>
+            <li>$\lambda_2 = -3$: $(A+3I)v=0 \Rightarrow v_2 = \begin{bmatrix}1\\0\end{bmatrix}$</li>
+          </ul>
+
+          Modal matrix and its inverse:
+          $$T = \begin{bmatrix}1&1\\2&0\end{bmatrix}, \qquad T^{-1} = \begin{bmatrix}0&\tfrac{1}{2}\\1&-\tfrac{1}{2}\end{bmatrix}$$
+
+          $$e^{At} = T\begin{bmatrix}e^{-t}&0\\0&e^{-3t}\end{bmatrix}T^{-1} = \begin{bmatrix}e^{-3t} & \dfrac{e^{-t}-e^{-3t}}{2} \\[6pt] 0 & e^{-t}\end{bmatrix}$$
+
+          <span style="font-size:12.5px; color:#4a6a4a;">Check: $e^{A\cdot 0} = I$ ✓. All entries $\to 0$ as $t\to\infty$ (both eigenvalues in LHP) ✓.</span>
+        </div>
+      </details>
+
+      <details class="example-box">
+        <summary><strong>Example 2 — $e^{At}$ via Laplace transform (resolvent)</strong></summary>
+        <div class="example-problem">
+          Compute $e^{At}$ for $A = \begin{bmatrix}0 & 1 \\ -2 & -3\end{bmatrix}$ using the resolvent $(sI-A)^{-1}$.
+        </div>
+        <div class="example-body">
+          The resolvent:
+          $$(sI-A)^{-1} = \frac{1}{s^2+3s+2}\begin{bmatrix}s+3&1\\-2&s\end{bmatrix} = \frac{1}{(s+1)(s+2)}\begin{bmatrix}s+3&1\\-2&s\end{bmatrix}$$
+
+          Partial fractions for each entry (taking inverse Laplace):
+          $$\frac{s+3}{(s+1)(s+2)} = \frac{2}{s+1} - \frac{1}{s+2} \;\xrightarrow{\mathcal{L}^{-1}}\; 2e^{-t} - e^{-2t}$$
+          $$\frac{1}{(s+1)(s+2)} = \frac{1}{s+1} - \frac{1}{s+2} \;\xrightarrow{\mathcal{L}^{-1}}\; e^{-t} - e^{-2t}$$
+          $$\frac{-2}{(s+1)(s+2)} = \frac{-2}{s+1} + \frac{2}{s+2} \;\xrightarrow{\mathcal{L}^{-1}}\; -2e^{-t} + 2e^{-2t}$$
+          $$\frac{s}{(s+1)(s+2)} = \frac{-1}{s+1} + \frac{2}{s+2} \;\xrightarrow{\mathcal{L}^{-1}}\; -e^{-t} + 2e^{-2t}$$
+
+          $$e^{At} = \begin{bmatrix}2e^{-t}-e^{-2t} & e^{-t}-e^{-2t} \\ -2e^{-t}+2e^{-2t} & -e^{-t}+2e^{-2t}\end{bmatrix}$$
+        </div>
+      </details>
+
+      <details class="example-box">
+        <summary><strong>Example 3 — $e^{At}$ via Cayley-Hamilton ($2\times 2$)</strong></summary>
+        <div class="example-problem">
+          Find $e^{At}$ for $A = \begin{bmatrix}-1 & 2 \\ 0 & -3\end{bmatrix}$ using the Cayley-Hamilton approach.
+        </div>
+        <div class="example-body">
+          Characteristic polynomial: $p(\lambda) = \lambda^2 + 4\lambda + 3 = (\lambda+1)(\lambda+3)$.
+          Eigenvalues: $\lambda_1 = -1$, $\lambda_2 = -3$.
+
+          By Cayley-Hamilton, write $e^{At} = \alpha_0(t)I + \alpha_1(t)A$. Evaluating at each eigenvalue:
+          $$e^{-t} = \alpha_0 - \alpha_1, \qquad e^{-3t} = \alpha_0 - 3\alpha_1$$
+
+          Subtracting: $e^{-t} - e^{-3t} = 2\alpha_1 \Rightarrow \alpha_1 = \dfrac{e^{-t} - e^{-3t}}{2}$
+
+          Then $\alpha_0 = e^{-t} + \alpha_1 = \dfrac{3e^{-t} - e^{-3t}}{2}$.
+
+          $$e^{At} = \frac{3e^{-t}-e^{-3t}}{2}I + \frac{e^{-t}-e^{-3t}}{2}A = \begin{bmatrix}e^{-t} & e^{-t}-e^{-3t} \\ 0 & e^{-3t}\end{bmatrix}$$
+
+          <span style="font-size:12.5px; color:#4a6a4a;">Check: $t=0$ gives $I$ ✓. Differentiate: $\dot{\Phi}(0) = A$ ✓.</span>
+        </div>
+      </details>
 
       <!-- ═══ FOOD FOR THOUGHT ═══ -->
       <div class="section-head" id="food-for-thought">Food for thought</div>
@@ -600,12 +605,48 @@
           the same — why does the matrix case require strictly negative real parts while the
           scalar case allows $a = 0$ for marginal stability (constant solution $x(t) = x_0$)?
           (Hint: think about Jordan blocks.)
+          <details class="fft-answer">
+            <summary>Answer</summary>
+            <div class="fft-answer-body">
+              For a scalar, $a = 0$ gives $e^{0 \cdot t} = 1$ — perfectly bounded, marginally stable.
+              In the matrix case, $\lambda = 0$ alone does not guarantee boundedness. The issue is
+              <strong>Jordan blocks</strong>: if $\lambda = 0$ has geometric multiplicity less than its
+              algebraic multiplicity, the Jordan form contains a block like
+              $J = \begin{bmatrix}0&1\\0&0\end{bmatrix}$, and $e^{Jt} = \begin{bmatrix}1&t\\0&1\end{bmatrix}$.
+              The off-diagonal entry grows as $t$ — the state diverges polynomially even though the
+              eigenvalue is zero.
+
+              Similarly, $\lambda = j\omega$ (pure imaginary) gives bounded oscillation in the scalar
+              case, but a Jordan block at $j\omega$ leads to $t\cos(\omega t)$, which grows.
+              The matrix case demands strictly negative real parts to guarantee all Jordan block entries
+              decay, even when eigenvalues are repeated. Strict stability is the price of the more
+              complex algebraic structure of matrices.
+            </div>
+          </details>
         </li>
         <li style="margin-bottom:10px;">
           The Cayley-Hamilton theorem says $A$ satisfies its own characteristic polynomial.
           Does this mean you can compute $e^{At}$ for any $n \times n$ matrix using only a
           degree-$(n-1)$ polynomial in $A$? What does this imply about the computational
           complexity of evaluating $e^{At}$ for a high-dimensional system?
+          <details class="fft-answer">
+            <summary>Answer</summary>
+            <div class="fft-answer-body">
+              Yes — Cayley-Hamilton guarantees that $A^n = -(a_{n-1}A^{n-1} + \cdots + a_0 I)$, so
+              every power $A^k$ for $k \geq n$ can be reduced to a linear combination of
+              $I, A, \ldots, A^{n-1}$. Since $e^{At} = \sum_{k=0}^\infty \frac{(At)^k}{k!}$ and
+              each $A^k$ collapses into this basis, the entire infinite series reduces to
+              $e^{At} = \alpha_0(t)I + \alpha_1(t)A + \cdots + \alpha_{n-1}(t)A^{n-1}$.
+
+              Computationally, the challenge is finding the $\alpha_i(t)$ — you solve an $n \times n$
+              Vandermonde system (one equation per eigenvalue, including derivatives at repeated roots).
+              For distinct eigenvalues this is straightforward; for repeated eigenvalues it requires
+              solving a generalized Vandermonde system. For large $n$, the matrices $A^2, A^3, \ldots, A^{n-1}$
+              themselves are expensive to form (each matrix multiply is $O(n^3)$), so this approach is
+              mainly useful for small systems. In practice, <code>scipy.linalg.expm</code> uses Padé
+              approximations with scaling and squaring — a much more numerically stable algorithm.
+            </div>
+          </details>
         </li>
         <li>
           The state response $x(t) = e^{At}x_0 + \int_0^t e^{A(t-\tau)}Bu(\tau)\,d\tau$
@@ -613,6 +654,27 @@
           is no such closed form. The linear time-invariant assumption is doing a lot of
           work here — what specifically does linearity buy you (superposition), and what does
           time-invariance buy you (the convolution structure)?
+          <details class="fft-answer">
+            <summary>Answer</summary>
+            <div class="fft-answer-body">
+              <strong>Linearity → superposition.</strong> Because $f(x,u) = Ax + Bu$ is linear in both $x$
+              and $u$, the solution is the sum of two independent contributions: the homogeneous
+              response $e^{At}x_0$ (due to initial conditions, as if $u=0$) and the particular
+              response (due to input, as if $x_0=0$). This decomposition is impossible for nonlinear
+              systems where initial conditions and inputs interact multiplicatively. Superposition also
+              lets you compute the response to a sum of inputs as the sum of individual responses —
+              the foundation of Fourier and Laplace analysis.
+
+              <strong>Time-invariance → convolution.</strong> Because $A$ and $B$ are constant (not
+              functions of $t$), the impulse response of the forced system at time $\tau$ is identical
+              regardless of when $\tau$ occurs — it's always $e^{A(t-\tau)}B$. This shift-invariance
+              means the forced response is a <em>convolution</em> of the input with a fixed kernel.
+              For a time-varying system $\dot{x} = A(t)x + B(t)u$, the state transition matrix
+              $\Phi(t, \tau)$ depends on both $t$ and $\tau$ separately (not just $t - \tau$), so there's
+              no convolution, no transfer function, and no frequency-domain analysis in the usual sense.
+              Time-invariance is what makes the $\mathcal{L}$-transform approach exact, not approximate.
+            </div>
+          </details>
         </li>
       </ol>
 

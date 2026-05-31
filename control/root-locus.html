@@ -315,45 +315,37 @@
       <!-- ── Worked examples ─────────────────────────────────────────── -->
       <div class="section-head" id="examples">Worked examples</div>
 
-      <div class="prose">
-        <strong>Example 1: Two poles at the origin (double integrator).</strong>
-        $G(s) = 1/s^2$. Poles: $s=0$ (multiplicity 2). Zeros: none. $n=2$, $m=0$.
-      </div>
+      <details class="example-box">
+        <summary><strong>Example 1 — Root locus of the double integrator</strong></summary>
+        <div class="example-problem">
+          Sketch the root locus for $G(s) = 1/s^2$ (two poles at the origin, no zeros).
+          Can proportional control stabilize this plant?
+        </div>
+        <div class="example-body">
+          <ul style="padding-left:1.4em; margin:0;">
+            <li style="margin-bottom:6px;"><strong>Branches:</strong> $n=2$, $m=0$ → 2 branches starting at $s=0$.</li>
+            <li style="margin-bottom:6px;"><strong>Asymptotes:</strong> $n-m=2$, centroid $\sigma_A = 0/2 = 0$, angles $\pm 90°$.</li>
+            <li style="margin-bottom:6px;"><strong>Real axis:</strong> Any $\sigma < 0$ has 2 poles to its right (even) → no real-axis segment to the left.</li>
+            <li><strong>Locus:</strong> Both branches leave $s=0$ along $\pm j$ — straight up and down the imaginary axis. The closed-loop poles are <em>always</em> at $\pm j\sqrt{K}$ for all $K > 0$: marginally stable, never asymptotically stable. Proportional control alone cannot stabilize a double integrator.</li>
+          </ul>
+        </div>
+      </details>
 
-      <ul class="prose" style="padding-left:1.4em;">
-        <li style="margin-bottom:6px;">Branches: 2, both start at $s=0$.</li>
-        <li style="margin-bottom:6px;">Asymptotes: $n-m=2$. Centroid: $\sigma_A = (0+0)/2 = 0$.
-          Angles: $90°$ and $270°$.</li>
-        <li style="margin-bottom:6px;">Real axis: to the left of $s=0$ (one pole to the right is odd?).
-          The count at any real $\sigma < 0$ is 2 poles to the right — even — so no real-axis segments.</li>
-        <li>Locus: two branches leave the double pole at $s=0$ and go straight up and down
-          along the imaginary axis. The system is <em>marginally stable for all $K>0$</em> — the
-          poles are always on the imaginary axis. A plain proportional controller can never
-          stabilize a double integrator. (This is why double-integrator plants require derivative action.)</li>
-      </ul>
-
-      <div class="prose" style="margin-top:18px;">
-        <strong>Example 2: Three-pole system (the running example from Lesson 4).</strong>
-        $G(s) = 1/[s(s+1)(s+3)]$. Poles: $0, -1, -3$. No zeros. $n=3$, $m=0$.
-      </div>
-
-      <ul class="prose" style="padding-left:1.4em;">
-        <li style="margin-bottom:6px;"><strong>Asymptotes:</strong> $n-m=3$.
-          Centroid: $\sigma_A = (0-1-3)/3 = -4/3 \approx -1.33$.
-          Angles: $60°$, $180°$, $300°$.</li>
-        <li style="margin-bottom:6px;"><strong>Real axis:</strong>
-          On segment $(-1, 0)$: 1 pole to the right ($s=0$) — odd → on the locus.
-          On $(-\infty, -3)$: 3 poles to the right — odd → on the locus.
-          On $(-3, -1)$: 2 poles to the right — even → not on the locus.</li>
-        <li style="margin-bottom:6px;"><strong>Breakaway:</strong>
-          On the real-axis segment $(-1,0)$ between poles 0 and $-1$, two branches collide
-          and leave as a conjugate pair. The breakaway point satisfies
-          $1/s + 1/(s+1) + 1/(s+3) = 0$, giving a cubic — numerically, $s \approx -0.42$.</li>
-        <li style="margin-bottom:6px;"><strong>Imaginary-axis crossing:</strong>
-          From Lesson 4: $K_{cr} = 12$ at $\omega_{cr} = \sqrt{3}$.
-          At $K=12$, the conjugate branch pair crosses the imaginary axis at $\pm j\sqrt{3}$.</li>
-        <li><strong>Stability:</strong> System stable for $0 < K < 12$.</li>
-      </ul>
+      <details class="example-box">
+        <summary><strong>Example 2 — Three-pole type-1 system</strong></summary>
+        <div class="example-problem">
+          Sketch the root locus for $G(s) = K/[s(s+1)(s+3)]$ (poles at $0, -1, -3$, no zeros)
+          and find the critical gain $K_{cr}$.
+        </div>
+        <div class="example-body">
+          <ul style="padding-left:1.4em; margin:0;">
+            <li style="margin-bottom:6px;"><strong>Asymptotes:</strong> $n-m=3$. Centroid: $\sigma_A = (0-1-3)/3 = -4/3$. Angles: $60°, 180°, 300°$.</li>
+            <li style="margin-bottom:6px;"><strong>Real-axis segments:</strong> $(-1, 0)$ (1 pole to right: odd ✓) and $(-\infty, -3)$ (3 poles: odd ✓). Segment $(-3,-1)$: 2 poles (even ✗).</li>
+            <li style="margin-bottom:6px;"><strong>Breakaway:</strong> Two branches meet and depart as a conjugate pair from $s \approx -0.42$ on $(-1,0)$. (Solving $1/s + 1/(s+1) + 1/(s+3) = 0$.)</li>
+            <li style="margin-bottom:6px;"><strong>Imaginary-axis crossing:</strong> From Routh (Lesson 4): $K_{cr} = 12$ at $\omega = \sqrt{3}$. System stable for $0 < K < 12$.</li>
+          </ul>
+        </div>
+      </details>
 
       <!-- SVG: Annotated root locus for Example 2 -->
       <svg viewBox="0 0 500 340" style="width:100%;max-width:540px;display:block;margin:22px auto 8px;font-family:'IBM Plex Sans',sans-serif;">
@@ -460,23 +452,23 @@
         Root locus for $G(s) = 1/[s(s+1)(s+3)]$. Green = locus; orange dashed = asymptotes; red circles = $j\omega$ crossing at $K_{cr}=12$.
       </div>
 
-      <div class="prose">
-        <strong>Example 3: Adding a zero (lead compensation preview).</strong>
-        Add a zero at $z = -2$ to the previous plant: $G(s) = (s+2)/[s(s+1)(s+3)]$.
-        The zero "attracts" nearby locus branches.
-      </div>
-
-      <ul class="prose" style="padding-left:1.4em;">
-        <li style="margin-bottom:6px;">$n=3$, $m=1$. Asymptotes: $n-m=2$, centroid
-          $\sigma_A = (0-1-3-(-2))/2 = -1$, angles $90°$ and $270°$.</li>
-        <li style="margin-bottom:6px;">Real axis: segment $(-1,0)$: 1 pole, 0 zeros to the right (odd) → on locus.
-          Segment $(-2,-1)$: 2 poles, 0 zeros to the right (even) → not on locus.
-          Wait: zero at $-2$ counts too. Segment $(-3,-2)$: 2 poles, 1 zero = 3 OA objects → odd → on locus.
-          Segment $(-\infty,-3)$: 3 poles + 1 zero = 4 (even) → not on locus.</li>
-        <li>The asymptotes now go straight up and down from $\sigma_A=-1$, and the locus
-          stays further to the left. Adding the zero improves stability — a smaller portion of
-          the locus lies in the RHP for any practical gain.</li>
-      </ul>
+      <details class="example-box">
+        <summary><strong>Example 3 — Adding a zero (lead compensation preview)</strong></summary>
+        <div class="example-problem">
+          Add a zero at $z = -2$ to give $G(s) = K(s+2)/[s(s+1)(s+3)]$. How does the zero change the root locus?
+        </div>
+        <div class="example-body">
+          <ul style="padding-left:1.4em; margin:0;">
+            <li style="margin-bottom:6px;"><strong>Asymptotes:</strong> $n-m = 3-1 = 2$. Centroid: $\sigma_A = (0-1-3-(-2))/2 = -1$. Angles: $\pm 90°$.</li>
+            <li style="margin-bottom:6px;"><strong>Real-axis segments:</strong>
+              $(-1,0)$: 1 real pole to right (odd ✓).
+              $(-2,-1)$: 2 real poles to right (even ✗).
+              $(-3,-2)$: 2 poles + 1 zero = 3 objects to right (odd ✓).
+              $(-\infty,-3)$: 3+1 = 4 objects (even ✗).</li>
+            <li>The asymptotes now shoot straight up/down from $\sigma_A = -1$, and the complex branches stay further left. The added zero "attracts" nearby branches, pulling the locus toward more negative real parts. The critical gain increases significantly — the zero improves stability and demonstrates the principle behind lead compensation.</li>
+          </ul>
+        </div>
+      </details>
 
       <!-- ── Interactive ──────────────────────────────────────────────── -->
       <div class="section-head" id="interactive">Interactive: root locus with gain slider</div>
@@ -696,22 +688,78 @@
       <div class="section-head" id="food-for-thought">Food for thought</div>
 
       <div class="fft-block" style="border-left:3px solid #b89040;background:#faf8f2;padding:14px 18px;border-radius:0 4px 4px 0;margin:20px 0;">
-        <div style="font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#8a6010;margin-bottom:10px;">Reflection questions — no answers given</div>
+        <div style="font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#8a6010;margin-bottom:10px;">Reflection questions</div>
         <ol style="padding-left:1.4em;color:#2a3a4a;font-size:14px;line-height:1.7;">
           <li style="margin-bottom:12px;">The root locus for $G(s) = 1/[s(s+1)(s+3)]$ crosses
             the imaginary axis at $K_{cr}=12$. What happens to $K_{cr}$ if you move the pole
             at $s=-3$ to $s=-10$? Does the locus cross the imaginary axis at a higher or lower
             gain? Why? (Try modifying the interactive by mentally changing the breakaway and
-            asymptote calculations.)</li>
+            asymptote calculations.)
+            <details class="fft-answer">
+              <summary>Answer</summary>
+              <div class="fft-answer-body">
+                Moving the pole from $s=-3$ to $s=-10$ makes $K_{cr}$ larger — the locus crosses the
+                imaginary axis at a higher gain. Intuitively: the pole at $-10$ is now "far" from the
+                imaginary axis and contributes less phase lag near the crossover frequency. With less
+                phase lag from that pole, a higher gain is needed before the total loop phase reaches $-180°$.
+
+                Quantitatively, the new characteristic polynomial is $s(s+1)(s+10) + K = s^3 + 11s^2 + 10s + K$.
+                Routh array: $K_{cr} = 11 \times 10 / 1 = 110$ — nearly 10× larger than before.
+                The asymptote centroid also moves to $\sigma_A = (0-1-10)/3 = -3.67$ (further left),
+                which means the branches leave in more stable directions and the locus stays in the LHP
+                for a much larger range of $K$.
+              </div>
+            </details>
+          </li>
           <li style="margin-bottom:12px;">The root locus shows only the paths for $K > 0$
             (positive gain). What would you sketch for $K < 0$ (negative gain, or positive
             feedback)? The angle condition becomes $\angle G(s^*) = 0°$ instead of $180°$ —
-            how does this change the real-axis rule and the asymptote angles?</li>
+            how does this change the real-axis rule and the asymptote angles?
+            <details class="fft-answer">
+              <summary>Answer</summary>
+              <div class="fft-answer-body">
+                For $K < 0$ (complementary root locus), the angle condition changes to
+                $\angle G(s^*) = 0°, \pm 360°, \ldots$ (even multiples of $180°$).
+
+                <strong>Real-axis rule:</strong> A real point is on the locus if there are an <em>even</em>
+                number of real poles and zeros to its right (instead of odd). So the real-axis segments
+                are exactly the complement of the positive-$K$ locus.
+
+                <strong>Asymptote angles:</strong> The angles become $k \cdot 360°/(n-m)$ for integer $k$
+                — the asymptotes point at $0°, 360°/(n-m), 2\times360°/(n-m), \ldots$ rather than at odd
+                multiples of $180°/(n-m)$. For $n-m = 2$, the asymptotes point at $0°$ and $180°$ (along
+                the real axis) instead of $\pm 90°$.
+
+                The complementary locus is used in the design of positive feedback systems (rare in
+                practice) and in analyzing gain variations below zero.
+              </div>
+            </details>
+          </li>
           <li>Rule 4 says a real-axis point is on the locus if there are an odd number of
             real poles+zeros to its right. Prove this from the angle condition: for a real test
             point, all complex poles and zeros come in conjugate pairs whose angle contributions
             cancel in pairs. The only surviving angle contributions are from the real poles and
-            zeros.</li>
+            zeros.
+            <details class="fft-answer">
+              <summary>Answer</summary>
+              <div class="fft-answer-body">
+                Let $s_0$ be a real test point. For each complex pole $p = -a + jb$ (with $b > 0$),
+                there is a conjugate pole $\bar{p} = -a - jb$. The angle contribution of $p$ to
+                $\angle(s_0 - p)$ is $\angle(s_0 + a - jb)$. For the conjugate: $\angle(s_0 + a + jb)$.
+                Since $s_0 + a$ is real, these two angles are $+\theta$ and $-\theta$ for some $\theta$,
+                summing to $0°$. The same argument applies to complex zeros.
+
+                Therefore, all complex poles and zeros contribute zero net angle, and
+                $\angle G(s_0) = \sum_i \angle(s_0 - p_i) - \sum_j \angle(s_0 - z_j)$
+                reduces to contributions from real poles and zeros only. Each real pole to the right of
+                $s_0$ (i.e., $p_i > s_0$) contributes $\angle(s_0 - p_i) = \angle(\text{negative real}) = 180°$.
+                Each real zero to the right contributes $-180°$. Each real pole or zero to the left
+                contributes $0°$. For the angle condition $\angle G = -180°$, we need the total to be
+                $(2k+1) \times 180°$, which requires an odd number of $+180°$ contributions — i.e., an
+                odd total count of real poles and zeros to the right. □
+              </div>
+            </details>
+          </li>
         </ol>
       </div>
 

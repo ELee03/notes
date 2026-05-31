@@ -326,47 +326,53 @@
       <!-- ── Worked example ──────────────────────────────────────── -->
       <div class="section-head" id="worked-example">Worked example: two-step policy evaluation</div>
 
-      <div class="prose">
-        Consider a 3-state chain MDP: states A → B → C (terminal). Under a deterministic
-        policy: from A, go right to B; from B, go right to C. Reward $-1$ per step. $\gamma = 1$.
-        Start with $V_0 = [0, 0, 0]$.
-      </div>
-
-      <div class="example-block">
-        <div class="ex-title">Policy evaluation — 3-state chain, γ = 1</div>
-        <div style="font-size:13px;color:#4a5a6a;margin-bottom:10px;">
-          Transitions: A→B (r=−1), B→C (r=−1). C is terminal with V(C)=0 always.
+      <details class="example-box">
+        <summary><strong>Example 1 — Policy evaluation on a 3-state chain (γ = 1)</strong></summary>
+        <div class="example-problem">
+          Consider a 3-state chain MDP: states A → B → C (terminal). Under a deterministic
+          policy — from A go right to B; from B go right to C. Reward $-1$ per step, $\gamma = 1$.
+          Start with $V_0 = [0, 0, 0]$ and perform two sweeps of synchronous policy evaluation.
+          How many sweeps are needed to converge, and why?
         </div>
-        <table class="int-table" style="margin-top:0;">
-          <thead><tr>
-            <th>Sweep k</th><th>V(A)</th><th>V(B)</th><th>V(C)</th><th>Max change</th>
-          </tr></thead>
-          <tbody>
-            <tr><td>0</td><td>0</td><td>0</td><td>0</td><td>—</td></tr>
-            <tr style="background:#f8f9fb;"><td>1</td>
-              <td style="text-align:right;">−1+V<sub>0</sub>(B)=<strong>−1</strong></td>
-              <td style="text-align:right;">−1+V<sub>0</sub>(C)=<strong>−1</strong></td>
-              <td>0</td>
-              <td>1.0</td>
-            </tr>
-            <tr><td>2</td>
-              <td style="text-align:right;">−1+V<sub>1</sub>(B)=<strong>−2</strong></td>
-              <td style="text-align:right;">−1+V<sub>1</sub>(C)=<strong>−1</strong></td>
-              <td>0</td>
-              <td>1.0</td>
-            </tr>
-            <tr style="background:#ddeef8;font-weight:600;"><td>∞</td>
-              <td>−2</td><td>−1</td><td>0</td><td>0</td>
-            </tr>
-          </tbody>
-        </table>
-        <div style="margin-top:10px;font-size:12.5px;color:#4a5a6a;line-height:1.6;">
-          After sweep 2, V(A)=−2 and V(B)=−1 — both have converged to their true values
-          (A is 2 steps from terminal; B is 1 step). The sweep propagates value information
-          one step backward per iteration: after sweep $k$, states $k$ steps from the terminal
-          have correct values.
+        <div class="example-body">
+          <div class="example-block">
+            <div class="ex-title">Policy evaluation — 3-state chain, γ = 1</div>
+            <div style="font-size:13px;color:#4a5a6a;margin-bottom:10px;">
+              Transitions: A→B (r=−1), B→C (r=−1). C is terminal with V(C)=0 always.
+            </div>
+            <table class="int-table" style="margin-top:0;">
+              <thead><tr>
+                <th>Sweep k</th><th>V(A)</th><th>V(B)</th><th>V(C)</th><th>Max change</th>
+              </tr></thead>
+              <tbody>
+                <tr><td>0</td><td>0</td><td>0</td><td>0</td><td>—</td></tr>
+                <tr style="background:#f8f9fb;"><td>1</td>
+                  <td style="text-align:right;">−1+V<sub>0</sub>(B)=<strong>−1</strong></td>
+                  <td style="text-align:right;">−1+V<sub>0</sub>(C)=<strong>−1</strong></td>
+                  <td>0</td>
+                  <td>1.0</td>
+                </tr>
+                <tr><td>2</td>
+                  <td style="text-align:right;">−1+V<sub>1</sub>(B)=<strong>−2</strong></td>
+                  <td style="text-align:right;">−1+V<sub>1</sub>(C)=<strong>−1</strong></td>
+                  <td>0</td>
+                  <td>1.0</td>
+                </tr>
+                <tr style="background:#ddeef8;font-weight:600;"><td>∞</td>
+                  <td>−2</td><td>−1</td><td>0</td><td>0</td>
+                </tr>
+              </tbody>
+            </table>
+            <div style="margin-top:10px;font-size:12.5px;color:#4a5a6a;line-height:1.6;">
+              After sweep 2, V(A)=−2 and V(B)=−1 — both have converged to their true values
+              (A is 2 steps from terminal; B is 1 step). The sweep propagates value information
+              one step backward per iteration: after sweep $k$, states $k$ steps from the terminal
+              have correct values. This chain converges in exactly 2 sweeps because it is only
+              2 steps deep.
+            </div>
+          </div>
         </div>
-      </div>
+      </details>
 
       <!-- ── Grid world explorer ────────────────────────────────── -->
       <div class="section-head" id="grid-explorer">Interactive: 4×4 grid world</div>
@@ -624,21 +630,63 @@
       <div class="section-head" id="food-for-thought">Food for thought</div>
 
       <div class="fft-block">
-        <div class="fft-title">Reflection questions — no answers given</div>
+        <div class="fft-title">Reflection questions</div>
         <ol>
           <li>Policy iteration uses exact evaluation before each improvement. But you only
             need an estimate good enough to identify which action is best — not exact values.
             How much work do you think you're wasting, and what would you do differently?
             (This question is essentially asking you to re-invent <em>modified policy
-            iteration</em> — look it up after thinking it through.)</li>
+            iteration</em> — look it up after thinking it through.)
+            <details class="fft-answer">
+              <summary>Answer / hint</summary>
+              <div class="fft-answer-body">
+                Most of the evaluation sweeps are wasted: after the first few sweeps the relative
+                ordering of states has stabilised, and extra sweeps are just refining differences
+                that don't change the greedy action. Modified policy iteration performs exactly $k$
+                evaluation sweeps between improvements (standard policy iteration is $k = \infty$;
+                value iteration is $k = 1$). Any $k \geq 1$ still guarantees monotone improvement
+                and convergence — you just trade faster iterations for potentially more improvement
+                steps. In practice $k = 5$–$20$ sweeps is often enough to get a good approximation
+                while skipping the bulk of the redundant work.
+              </div>
+            </details>
+          </li>
           <li>In value iteration, a single state can influence all its neighbours in one
             sweep, but those neighbours haven't yet "seen" their new values from other
             directions. How does the information about terminal states propagate outward
             with each sweep? How many sweeps does a state $k$ steps from a terminal need
-            before its value first becomes nonzero?</li>
+            before its value first becomes nonzero?
+            <details class="fft-answer">
+              <summary>Answer / hint</summary>
+              <div class="fft-answer-body">
+                Exactly $k$ sweeps. In sweep 1, only the direct neighbours of terminal states
+                (1 step away) receive nonzero values from the Bellman backup. In sweep 2, states
+                2 steps away receive their first nonzero value via the states that just became
+                nonzero. In general, value information propagates outward at a rate of exactly
+                one hop per sweep (with synchronous updates). This "wavefront" picture explains
+                why DP convergence for episodic tasks takes at least as many sweeps as the
+                diameter of the longest path to a terminal state.
+              </div>
+            </details>
+          </li>
           <li>DP assumes the model is known. But what if you knew the model approximately —
             say, you had samples from $p(s',r|s,a)$ but not the exact distribution? Could you
-            still run something like policy evaluation? What would you lose?</li>
+            still run something like policy evaluation? What would you lose?
+            <details class="fft-answer">
+              <summary>Answer / hint</summary>
+              <div class="fft-answer-body">
+                Yes — you could use sample means in place of the exact expectation: estimate
+                $r(s,a)$ and $p(s'|s,a)$ from observed transitions and then plug those estimates
+                into the Bellman update. This is called sample-based or approximate DP. What you
+                lose: (a) stochastic noise — updates are now random, so convergence is noisy and
+                slower; (b) coverage — states or actions never sampled have no estimate at all;
+                (c) this path leads naturally to Monte Carlo methods (Lesson 6), which avoid the
+                model entirely by averaging observed returns, and TD learning (Lesson 7), which
+                bootstraps single-step samples. The core idea — replace an expectation with a
+                sample average — is the bridge from model-based DP to model-free RL.
+              </div>
+            </details>
+          </li>
         </ol>
       </div>
 

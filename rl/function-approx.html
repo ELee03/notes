@@ -495,82 +495,61 @@
       <!-- ── Worked examples ─────────────────────────────────────── -->
       <div class="section-head" id="worked-examples">Worked examples</div>
 
-      <div class="prose" style="font-weight:600;color:#2a3a4a;margin-bottom:6px;">
-        Example 1 — Linear FA with state aggregation: two update steps
-      </div>
+      <details class="example-box">
+        <summary><strong>Example 1 — Linear FA with state aggregation: three update steps</strong></summary>
+        <div class="example-problem">
+          1D random walk, states $\{1,\ldots,7\}$, terminals 0 (reward 0) and 8 (reward +1).
+          True value: $v_\pi(s) = s/8$. State aggregation: Group A = $\{1,2,3,4\}$, Group B = $\{5,6,7\}$.
+          Features: $\mathbf{x}(s)=[1,0]^\top$ for A, $[0,1]^\top$ for B. Initialize $\mathbf{w}=[0,0]^\top$,
+          $\alpha=0.1$, $\gamma=1$. Walk through three transitions and determine which produce updates.
+        </div>
+        <div class="example-body">
+          <div class="prose">
+            <strong>Step 1:</strong> Agent at $s=2$ (Group A). Goes right to $s=3$ (Group A), $R=0$.
+            TD error: $\delta = 0 + w_A - w_A = 0$. No update — same group, same estimate, no information gained.
+          </div>
+          <div class="prose">
+            <strong>Step 2:</strong> Agent at $s=4$ (Group A). Goes right to $s=5$ (Group B), $R=0$.
+            TD error: $\delta = 0 + w_B - w_A = 0 - 0 = 0$. Still no update — both weights at 0.
+          </div>
+          <div class="prose">
+            <strong>Step 3:</strong> Agent at $s=7$ (Group B). Goes right to terminal $s=8$, $R=+1$.
+            TD target: $1 + 0 = 1$. TD error: $\delta = 1 - w_B = 1$.
+            Update: $\mathbf{w} \leftarrow [0,0] + 0.1 \times 1 \times [0,1]^\top = [0,\; 0.1]$.
+          </div>
+          <div class="prose">
+            After Step 3, $\hat{v}(5) = \hat{v}(6) = \hat{v}(7) = 0.1$ — all Group B states immediately
+            benefit from the single observation at $s=7$. This is generalization: updating $\hat{v}(7)$
+            also improves estimates for states 5 and 6 that haven't been visited yet.
+          </div>
+        </div>
+      </details>
 
-      <div class="prose">
-        Environment: 1D random walk, states $\{1, 2, \ldots, 7\}$, terminals 0 (reward 0) and 8
-        (reward +1). True value: $v_\pi(s) = s/8$. State aggregation into two groups:
-        Group A = $\{1,2,3,4\}$, Group B = $\{5,6,7\}$. Feature vectors:
-        $\mathbf{x}(s) = [1,0]^\top$ for Group A, $\mathbf{x}(s) = [0,1]^\top$ for Group B.
-        So $\hat{v}(s,\mathbf{w}) = w_A$ for Group A states, $w_B$ for Group B states.
-        Initialize $\mathbf{w} = [0, 0]^\top$. Use $\alpha = 0.1$, $\gamma = 1$.
-      </div>
-
-      <div class="prose">
-        <strong>Step 1:</strong> Agent is at $s=2$ (Group A). Takes action right, reaches $s=3$
-        (Group A), reward $R = 0$.
-      </div>
-
-      <div class="prose">
-        TD error: $\delta = R + \gamma\hat{v}(3,\mathbf{w}) - \hat{v}(2,\mathbf{w}) = 0 + w_A - w_A = 0$.
-        No update. (Both are in the same group with the same estimate — no information gained.)
-      </div>
-
-      <div class="prose">
-        <strong>Step 2:</strong> Agent at $s=4$ (Group A). Takes action right, reaches $s=5$
-        (Group B), reward $R = 0$.
-      </div>
-
-      <div class="prose">
-        TD error: $\delta = 0 + w_B - w_A = 0 - 0 = 0$. Still no update — both weights start at 0.
-      </div>
-
-      <div class="prose">
-        <strong>Step 3:</strong> Agent at $s=7$ (Group B). Takes action right, reaches $s=8$
-        (terminal), reward $R = +1$.
-      </div>
-
-      <div class="prose">
-        TD target: $R + \gamma V(\text{terminal}) = 1 + 0 = 1$. TD error: $\delta = 1 - w_B = 1 - 0 = 1$.
-        Update: $\mathbf{w} \leftarrow \mathbf{w} + 0.1 \times 1 \times \mathbf{x}(7)
-        = [0,0] + [0, 0.1] = [0, 0.1]$.
-      </div>
-
-      <div class="prose">
-        After this update, $\hat{v}(5) = \hat{v}(6) = \hat{v}(7) = 0.1$ — all Group B states
-        immediately benefit from the single observation at $s=7$. This is generalization in action:
-        we updated $\hat{v}(7)$ but also improved estimates for states 5 and 6 that we haven't visited yet.
-      </div>
-
-      <div class="prose" style="font-weight:600;color:#2a3a4a;margin-bottom:6px;margin-top:24px;">
-        Example 2 — Semi-gradient TD vs true gradient descent
-      </div>
-
-      <div class="prose">
-        Suppose $\hat{v}(s,\mathbf{w}) = w \cdot s$ (linear in one parameter). The TD target from
-        $(s=3, R=0, s'=4)$ is $0 + 1 \cdot w \cdot 4 = 4w$. The TD error is $4w - 3w = w$.
-      </div>
-
-      <div class="prose">
-        <strong>Semi-gradient update:</strong> treat $4w$ as a constant (don't differentiate through it).
-        Gradient of $\hat{v}(3,w) = 3w$ w.r.t. $w$ is just $3$.
-        Update: $w \leftarrow w + \alpha \cdot w \cdot 3 = w(1 + 3\alpha)$.
-      </div>
-
-      <div class="prose">
-        If $\alpha > 0$ and $w > 0$, this increases $w$ on every step — <em>diverging</em>!
-        This is a simple case where semi-gradient TD diverges for this particular FA.
-        (Note: this specific $\hat{v}(s,\mathbf{w}) = ws$ is unusual; standard linear FA with
-        proper feature vectors converges on-policy.)
-      </div>
-
-      <div class="prose">
-        <strong>True gradient descent</strong> would differentiate through the target:
-        $\nabla_w[\hat{v}(3,w) - (R + \hat{v}(4,w))]^2 = 2(3w - 4w)(-3 + 4) = 2(-w)(1) = -2w$.
-        This pushes $w$ toward zero — stable. The full gradient is stabilizing; the semi-gradient is not.
-      </div>
+      <details class="example-box">
+        <summary><strong>Example 2 — Semi-gradient TD vs true gradient descent</strong></summary>
+        <div class="example-problem">
+          $\hat{v}(s,w) = w \cdot s$ (linear in one scalar parameter $w$). Transition: $(s=3, R=0, s'=4)$.
+          Show what the semi-gradient TD update does to $w$, and contrast with what a full
+          gradient step would do. Explain why they differ.
+        </div>
+        <div class="example-body">
+          <div class="prose">
+            TD target: $0 + 1 \cdot w \cdot 4 = 4w$. TD error: $\delta = 4w - 3w = w$.
+          </div>
+          <div class="prose">
+            <strong>Semi-gradient:</strong> treat $4w$ as a constant. Gradient of $\hat{v}(3,w) = 3w$
+            w.r.t. $w$ is 3. Update: $w \leftarrow w + \alpha \cdot w \cdot 3 = w(1 + 3\alpha)$.
+            If $\alpha > 0$, $w$ grows on every step — <em>diverges</em>. (This $\hat{v} = ws$ is
+            a pathological FA; standard linear FA with proper feature vectors converges on-policy.)
+          </div>
+          <div class="prose">
+            <strong>True gradient:</strong> differentiate through the target too.
+            $\nabla_w[\hat{v}(3,w) - (R + \hat{v}(4,w))]^2 = 2(3w - 4w)(-3 + 4) = 2(-w)(1) = -2w$.
+            This pushes $w$ toward zero — stable. The full gradient corrects for the fact that
+            increasing $w$ also increases the target, which semi-gradient ignores.
+          </div>
+        </div>
+      </details>
 
       <!-- ── Interactive ─────────────────────────────────────────── -->
       <div class="section-head" id="interactive">Interactive: semi-gradient TD on the 1D random walk</div>
@@ -743,19 +722,71 @@
       <div class="section-head" id="food-for-thought">Food for thought</div>
 
       <div class="fft-block">
-        <div class="fft-title">Reflection questions — no answers given</div>
+        <div class="fft-title">Reflection questions</div>
         <ol>
           <li>Experience replay requires storing transitions and sampling them randomly —
             it turns an online method into something batch-like. What happens if your environment
             changes over time (non-stationarity)? How would you modify the replay buffer to
-            handle a slowly drifting environment?</li>
+            handle a slowly drifting environment?
+            <details class="fft-answer">
+              <summary>Answer / hint</summary>
+              <div class="fft-answer-body">
+                With a fixed-size FIFO buffer, old transitions are evicted as new ones arrive —
+                this naturally handles slow drift, since the buffer always reflects the most
+                recent $N$ transitions. For more control: use a sliding window (small $N$ for
+                fast drift, large $N$ for slow drift) or exponentially weight recent transitions
+                more heavily during sampling. If the environment changes abruptly (e.g., a
+                regime switch), detecting the change and flushing the buffer is the cleanest
+                solution — stale data from before the switch will actively mislead learning.
+                This tension between data efficiency (larger buffer) and adaptability (smaller
+                buffer) is a fundamental trade-off in non-stationary RL.
+              </div>
+            </details>
+          </li>
           <li>The target network in DQN is updated every $C$ steps. If $C$ is very large,
             the target is very stable but potentially very wrong (stale). If $C = 1$, you're
             back to the unstable semi-gradient TD. How would you choose $C$ in practice?
-            Is there a principled argument for a particular value?</li>
+            Is there a principled argument for a particular value?
+            <details class="fft-answer">
+              <summary>Answer / hint</summary>
+              <div class="fft-answer-body">
+                Choosing $C$ is largely empirical — the original DQN paper used $C \approx
+                1000$–$10000$ steps, chosen by sweep. A semi-principled heuristic: $C$ should
+                be long enough that $Q$ has made meaningful progress between updates (otherwise
+                the target network provides no additional stability), but short enough that the
+                target hasn't drifted so far from truth that updates correct in the wrong direction.
+                <br><br>
+                An alternative that sidesteps the discrete choice: <em>Polyak (soft) target updates</em>
+                $\mathbf{w}_\text{target} \leftarrow \tau\,\mathbf{w} + (1-\tau)\,\mathbf{w}_\text{target}$
+                applied every step with $\tau \approx 0.005$. This is equivalent to a continuous,
+                exponentially-weighted blend — more principled and removes the cliff-edge instability
+                at $C=1$. Used in most modern deep RL (SAC, TD3, DDPG).
+              </div>
+            </details>
+          </li>
           <li>State aggregation groups nearby states and assigns them the same value.
             What implicit assumption does this make about the value function? When does
-            this assumption hold, and when does it fail badly?</li>
+            this assumption hold, and when does it fail badly?
+            <details class="fft-answer">
+              <summary>Answer / hint</summary>
+              <div class="fft-answer-body">
+                State aggregation assumes the value function is approximately constant within
+                each group — i.e., the true $v_\pi$ varies slowly relative to the group boundaries.
+                <br><br>
+                <strong>Holds well:</strong> tasks with smooth, monotone value functions (e.g.,
+                1D random walk, where value increases linearly from left to right). Nearby states
+                really do have similar values.
+                <br><br>
+                <strong>Fails badly:</strong> (a) when the optimal policy changes action at a
+                boundary that falls inside a group — the two halves of the group need different
+                values but share one; (b) when the environment has irregular geometry, so
+                "nearby by index" ≠ "nearby by dynamics"; (c) in high-dimensional spaces where
+                coarse grouping is the only option but groups contain very diverse states.
+                In these cases, the approximation error floor is large no matter how many
+                episodes you run — a representation limitation, not a data limitation.
+              </div>
+            </details>
+          </li>
         </ol>
       </div>
 

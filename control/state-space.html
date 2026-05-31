@@ -615,59 +615,64 @@
       <!-- ═══ WORKED EXAMPLES ═══ -->
       <div class="section-head" id="worked-examples">Worked examples</div>
 
-      <!-- Example 1 -->
-      <div class="callout" style="border-color:#a0c8a0; background:#f4fbf4;">
-        <strong>Example 1 — State-space of a double integrator.</strong><br>
-        The <em>double integrator</em> $G(s) = 1/s^2$ models position control of a mass
-        under a force input with no damping: $\ddot{q} = u$.
-
-        Choose $x_1 = q$ (position) and $x_2 = \dot{q}$ (velocity):
-        $$\dot{x} = \begin{bmatrix}0 & 1 \\ 0 & 0\end{bmatrix}x + \begin{bmatrix}0\\1\end{bmatrix}u, \qquad y = \begin{bmatrix}1 & 0\end{bmatrix}x$$
-
-        Eigenvalues of $A$: $\lambda_{1,2} = 0$ (repeated). The double integrator sits at
-        the boundary of stability — not unstable, but not asymptotically stable either. Any
-        perturbation persists forever. This is why position control of an unactuated mass
-        (satellite, cart) is challenging: you must add feedback to stabilize it.
-
-        <div style="margin-top:10px;">
-          Verify via formula: $G(s) = C(sI-A)^{-1}B = [1\;0]\begin{bmatrix}s & -1 \\ 0 & s\end{bmatrix}^{-1}\!\begin{bmatrix}0\\1\end{bmatrix}$.
-          $(sI-A)^{-1} = \frac{1}{s^2}\begin{bmatrix}s & 1 \\ 0 & s\end{bmatrix}$.
-          So $C(sI-A)^{-1}B = [1\;0]\frac{1}{s^2}\begin{bmatrix}1\\s\end{bmatrix} = \frac{1}{s^2}$ ✓
+      <details class="example-box">
+        <summary><strong>Example 1 — State-space of a double integrator</strong></summary>
+        <div class="example-problem">
+          Derive a state-space realization for the double integrator $G(s) = 1/s^2$
+          (a point mass $\ddot{q} = u$ with no damping) and verify the transfer function.
         </div>
-      </div>
+        <div class="example-body">
+          Choose $x_1 = q$ (position), $x_2 = \dot{q}$ (velocity). Then $\dot{x}_1 = x_2$
+          and $\dot{x}_2 = u$:
+          $$\dot{x} = \underbrace{\begin{bmatrix}0 & 1 \\ 0 & 0\end{bmatrix}}_{A}x + \underbrace{\begin{bmatrix}0\\1\end{bmatrix}}_{B}u, \qquad y = \underbrace{\begin{bmatrix}1 & 0\end{bmatrix}}_{C}x$$
 
-      <!-- Example 2 -->
-      <div class="callout" style="border-color:#a0c8a0; background:#f4fbf4; margin-top:18px;">
-        <strong>Example 2 — Eigenvalues from a given $A$ matrix.</strong><br>
-        $$A = \begin{bmatrix}-3 & 1 \\ -2 & 0\end{bmatrix}$$
+          <strong>Eigenvalues of $A$:</strong> $\lambda_{1,2} = 0$ (repeated). The double integrator
+          sits at the stability boundary — perturbations persist without growing or decaying.
+          State feedback (Lesson 12) is needed to make it stable.
 
-        Characteristic polynomial: $\det(sI - A) = \det\begin{bmatrix}s+3 & -1 \\ 2 & s\end{bmatrix} = s(s+3) + 2 = s^2 + 3s + 2$.
+          <strong>Verify:</strong> $(sI-A)^{-1} = \dfrac{1}{s^2}\begin{bmatrix}s & 1 \\ 0 & s\end{bmatrix}$, so
+          $G(s) = [1\;0]\cdot\dfrac{1}{s^2}\begin{bmatrix}1 \\ s\end{bmatrix} = \dfrac{1}{s^2}$ ✓
+        </div>
+      </details>
 
-        Roots: $(s+1)(s+2) = 0 \Rightarrow \lambda_1 = -1, \lambda_2 = -2$.
+      <details class="example-box">
+        <summary><strong>Example 2 — Eigenvalues and transfer function from $(A,B,C)$</strong></summary>
+        <div class="example-problem">
+          Given $A = \begin{bmatrix}-3 & 1 \\ -2 & 0\end{bmatrix}$, $B = \begin{bmatrix}0 \\ 1\end{bmatrix}$, $C = \begin{bmatrix}1 & 0\end{bmatrix}$.
+          Find the eigenvalues and the transfer function.
+        </div>
+        <div class="example-body">
+          <strong>Characteristic polynomial:</strong>
+          $$\det(sI - A) = \det\begin{bmatrix}s+3 & -1 \\ 2 & s\end{bmatrix} = s(s+3) + 2 = s^2 + 3s + 2 = (s+1)(s+2)$$
 
-        Both eigenvalues have negative real parts: the system is <strong>asymptotically stable</strong>.
+          Eigenvalues: $\lambda_1 = -1$, $\lambda_2 = -2$. Both in LHP → <strong>asymptotically stable</strong>.
 
-        Transfer function (with $B = [0; 1]$, $C = [1\; 0]$, $D = 0$):
-        $G(s) = C(sI-A)^{-1}B = [1\;0] \cdot \frac{1}{s^2+3s+2}\begin{bmatrix}s & 1 \\ -2 & s+3\end{bmatrix}\begin{bmatrix}0\\1\end{bmatrix} = \frac{1}{s^2+3s+2}$.
+          <strong>Transfer function:</strong>
+          $$G(s) = C(sI-A)^{-1}B = [1\;0]\cdot\frac{1}{s^2+3s+2}\begin{bmatrix}s & 1 \\ -2 & s+3\end{bmatrix}\begin{bmatrix}0\\1\end{bmatrix} = \frac{1}{s^2+3s+2}$$
 
-        Poles at $s = -1, -2$ match the eigenvalues of $A$ ✓.
-      </div>
+          Poles at $s = -1, -2$ match the eigenvalues of $A$ — this is a minimal realization ✓.
+        </div>
+      </details>
 
-      <!-- Example 3 -->
-      <div class="callout" style="border-color:#a0c8a0; background:#f4fbf4; margin-top:18px;">
-        <strong>Example 3 — Minimal vs non-minimal realization.</strong><br>
-        Consider $G(s) = 1/(s+2)$ and a "padded" 2-state realization:
-        $$A = \begin{bmatrix}-2 & 0 \\ 0 & -5\end{bmatrix}, \quad B = \begin{bmatrix}1 \\ 1\end{bmatrix}, \quad C = \begin{bmatrix}1 & 0\end{bmatrix}$$
+      <details class="example-box">
+        <summary><strong>Example 3 — Minimal vs non-minimal realization</strong></summary>
+        <div class="example-problem">
+          Show that $A = \begin{bmatrix}-2&0\\0&-5\end{bmatrix}$, $B = \begin{bmatrix}1\\1\end{bmatrix}$, $C = \begin{bmatrix}1&0\end{bmatrix}$
+          is a non-minimal realization of $G(s) = \dfrac{1}{s+2}$ and state the minimal realization.
+        </div>
+        <div class="example-body">
+          <strong>Verify the TF:</strong> With $A$ diagonal,
+          $G(s) = \dfrac{C_1 B_1}{s+2} + \dfrac{C_2 B_2}{s+5} = \dfrac{1}{s+2} + \dfrac{0}{s+5} = \dfrac{1}{s+2}$ ✓
 
-        Eigenvalues of $A$: $\{-2, -5\}$. Two states, two poles — but:
-        $G(s) = C(sI-A)^{-1}B = \frac{1}{s+2} + \frac{0}{s+5} = \frac{1}{s+2}$.
+          <strong>Why non-minimal?</strong> The system has 2 states ($n=2$) but $G(s)$ has degree 1.
+          Eigenvalue $\lambda = -5$ is present in $A$ but invisible in $G(s)$: $C = [1\;0]$ only reads
+          $x_1$, so $x_2$ (the $-5$ mode) never appears in the output. It is an unobservable mode.
+          Because it can be driven by the input ($B_2 = 1 \neq 0$), it is controllable but unobservable
+          — a C$\bar{\text{O}}$ mode.
 
-        The mode at $s = -5$ is present in $A$ but doesn't appear in $G(s)$.
-        Why? Because $C[1\; 0]$ selects only $x_1$, so $x_2$ (the $-5$ mode) is never
-        observed in the output. This is a non-minimal realization — it uses 2 states to
-        describe a first-order system. The minimal realization is the 1-state version:
-        $A = [-2]$, $B = [1]$, $C = [1]$.
-      </div>
+          <strong>Minimal realization:</strong> $A = [-2]$, $B = [1]$, $C = [1]$, order $n = 1$.
+        </div>
+      </details>
 
       <!-- ═══ FOOD FOR THOUGHT ═══ -->
       <div class="section-head" id="food-for-thought">Food for thought</div>
@@ -677,6 +682,23 @@
           have the same state-space structure with different parameter names. What does this
           tell you about the relationship between the mathematics of a system and its physical
           implementation? What other systems share this structure?
+          <details class="fft-answer">
+            <summary>Answer</summary>
+            <div class="fft-answer-body">
+              The same differential equation can describe many physically different systems.
+              A spring-mass-damper $m\ddot{q} + c\dot{q} + kq = u$ and an RLC circuit
+              $L\ddot{q} + R\dot{q} + \frac{1}{C}q = u$ (where $q$ is charge) are governed
+              by identical second-order ODEs with $m \leftrightarrow L$, $c \leftrightarrow R$,
+              $k \leftrightarrow 1/C$. The mathematics is universal; only the physical meanings
+              of the states and parameters differ.
+
+              Other systems with this second-order structure include: a pendulum (linearized near
+              the upright), a torsional oscillator, a water tank with a restoring valve, and any
+              second-order PDE mode after spatial discretization. This universality is a core reason
+              control theory is so broadly applicable — you design for the abstract $(A,B,C)$ structure,
+              and the result applies to any physical realization of that structure.
+            </div>
+          </details>
         </li>
         <li style="margin-bottom:10px;">
           The state vector $x$ is not unique — any invertible transformation $z = Tx$ gives
@@ -684,12 +706,48 @@
           Since the transfer function $G(s) = C(sI-A)^{-1}B$ doesn't change under this
           transformation, what properties of the system are "coordinate-invariant" (same
           regardless of which state basis you choose)?
+          <details class="fft-answer">
+            <summary>Answer</summary>
+            <div class="fft-answer-body">
+              Coordinate-invariant properties — sometimes called <em>similarity invariants</em>
+              — include: the eigenvalues of $A$ (hence the pole locations and stability), the
+              characteristic polynomial of $A$, the transfer function $G(s)$, the rank of the
+              controllability and observability matrices, and whether the system is controllable
+              or observable. These are intrinsic properties of the dynamics, not of the coordinate
+              system used to describe them.
+
+              Coordinate-<em>dependent</em> quantities include: the individual entries of $A$, $B$, $C$,
+              the eigenvectors of $A$, and the specific state trajectories $x(t)$ (the trajectory
+              of $z(t) = Tx(t)$ looks different from $x(t)$, even though they describe the same
+              physical evolution). This distinction is important in practice: when comparing two
+              realizations of the same system, check eigenvalues and the TF — not the $A$ matrix entries.
+            </div>
+          </details>
         </li>
         <li>
           The phase variable realization always produces an $A$ matrix in companion form.
           This is numerically convenient for small systems but problematic for large ones —
           why might the companion matrix have poor numerical conditioning, and how does this
           matter for simulation or control design?
+          <details class="fft-answer">
+            <summary>Answer</summary>
+            <div class="fft-answer-body">
+              The companion matrix has the form with 1s on the superdiagonal and the negated
+              polynomial coefficients in the bottom row. Its condition number grows rapidly with
+              system order $n$ — the entries $a_0, a_1, \ldots, a_{n-1}$ of the characteristic
+              polynomial can span many decades for high-order systems, leading to a very ill-conditioned
+              matrix. Computing eigenvalues from the companion matrix in floating point becomes
+              inaccurate once $n$ is moderate (roughly $n > 10$–20).
+
+              For simulation, this means numerical integration of the state ODE can be inaccurate —
+              the poorly conditioned $A$ matrix amplifies floating-point rounding at each step.
+              For control design (e.g., pole placement using Ackermann's formula, which uses the
+              controllability matrix $\mathcal{C}$), the companion form makes $\mathcal{C}$ poorly
+              conditioned, causing large errors in the computed gain $K$. In practice, one transforms
+              to a balanced or Schur form before doing numerical work. MATLAB's <code>ss()</code> and
+              <code>place()</code> use numerically robust formulations rather than the raw companion form.
+            </div>
+          </details>
         </li>
       </ol>
 

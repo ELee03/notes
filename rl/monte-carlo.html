@@ -420,121 +420,120 @@
       <!-- ── Worked examples ─────────────────────────────────────── -->
       <div class="section-head" id="worked-examples">Worked examples</div>
 
-      <div class="prose" style="font-weight:600; color:#2a3a4a; margin-bottom:6px;">
-        Example 1 — Tracing first-visit MC on the 4×4 grid
-      </div>
+      <details class="example-box">
+        <summary><strong>Example 1 — Tracing first-visit MC on the 4×4 grid</strong></summary>
+        <div class="example-problem">
+          Use the same 4×4 grid world from Lesson 5: states $\{0, 1, \ldots, 15\}$ numbered
+          row-major, terminals at 0 (top-left) and 15 (bottom-right), reward $-1$ on all
+          transitions, $\gamma = 1$. Start with $V(s) = 0$ everywhere. Two episodes are played
+          below — trace the first-visit MC updates after each.
+        </div>
+        <div class="example-body">
 
-      <div class="prose">
-        Use the same 4×4 grid world from Lesson 5: states $\{0, 1, \ldots, 15\}$ numbered
-        row-major, terminals at 0 (top-left) and 15 (bottom-right), reward $-1$ on all
-        transitions, $\gamma = 1$. Start with $V(s) = 0$ everywhere.
-      </div>
+          <!-- SVG: grid with numbering -->
+          <svg viewBox="0 0 340 100" style="width:100%;max-width:360px;display:block;margin:18px auto 10px;font-family:'IBM Plex Sans',sans-serif;">
+            <rect x="10" y="10" width="80" height="80" rx="4" fill="#c8e8c4" stroke="#6aa06a" stroke-width="1.5"/>
+            <text x="50" y="43" text-anchor="middle" font-size="11" fill="#2a4a2a">0</text>
+            <text x="50" y="58" text-anchor="middle" font-size="10" fill="#2a4a2a">terminal</text>
+            <rect x="95" y="10" width="80" height="80" rx="4" fill="#f0f4f7" stroke="#c0d0dc" stroke-width="1"/>
+            <text x="135" y="55" text-anchor="middle" font-size="11" fill="#5a6a7a">1</text>
+            <rect x="180" y="10" width="80" height="80" rx="4" fill="#f0f4f7" stroke="#c0d0dc" stroke-width="1"/>
+            <text x="220" y="55" text-anchor="middle" font-size="11" fill="#5a6a7a">2</text>
+            <rect x="265" y="10" width="80" height="80" rx="4" fill="#f0f4f7" stroke="#c0d0dc" stroke-width="1"/>
+            <text x="305" y="55" text-anchor="middle" font-size="11" fill="#5a6a7a">3</text>
+            <!-- Row label -->
+            <text x="5" y="55" text-anchor="end" font-size="9" fill="#9aabb8">row 0</text>
+          </svg>
+          <p class="prose" style="font-size:12.5px;color:#5a6a7a;margin-top:-4px;text-align:center;">
+            States 0–15; only the top row shown. Terminal 0 (top-left) is shaded green.
+            Terminal 15 (bottom-right) is also shaded green in the full grid.
+          </p>
 
-      <!-- SVG: grid with numbering -->
-      <svg viewBox="0 0 340 100" style="width:100%;max-width:360px;display:block;margin:18px auto 10px;font-family:'IBM Plex Sans',sans-serif;">
-        <rect x="10" y="10" width="80" height="80" rx="4" fill="#c8e8c4" stroke="#6aa06a" stroke-width="1.5"/>
-        <text x="50" y="43" text-anchor="middle" font-size="11" fill="#2a4a2a">0</text>
-        <text x="50" y="58" text-anchor="middle" font-size="10" fill="#2a4a2a">terminal</text>
-        <rect x="95" y="10" width="80" height="80" rx="4" fill="#f0f4f7" stroke="#c0d0dc" stroke-width="1"/>
-        <text x="135" y="55" text-anchor="middle" font-size="11" fill="#5a6a7a">1</text>
-        <rect x="180" y="10" width="80" height="80" rx="4" fill="#f0f4f7" stroke="#c0d0dc" stroke-width="1"/>
-        <text x="220" y="55" text-anchor="middle" font-size="11" fill="#5a6a7a">2</text>
-        <rect x="265" y="10" width="80" height="80" rx="4" fill="#f0f4f7" stroke="#c0d0dc" stroke-width="1"/>
-        <text x="305" y="55" text-anchor="middle" font-size="11" fill="#5a6a7a">3</text>
-        <!-- Row label -->
-        <text x="5" y="55" text-anchor="end" font-size="9" fill="#9aabb8">row 0</text>
-      </svg>
-      <p class="prose" style="font-size:12.5px;color:#5a6a7a;margin-top:-4px;text-align:center;">
-        States 0–15; only the top row shown. Terminal 0 (top-left) is shaded green.
-        Terminal 15 (bottom-right) is also shaded green in the full grid.
-      </p>
+          <div class="prose">
+            <strong>Episode 1:</strong> Start at state 10. Random actions lead to the path:
+            $10 \xrightarrow{N} 6 \xrightarrow{N} 2 \xrightarrow{E} 3 \xrightarrow{S} 7 \xrightarrow{S} 11 \xrightarrow{S} 15$
+            (terminal). Each step gives reward $-1$.
+          </div>
 
-      <div class="prose">
-        <strong>Episode 1:</strong> Start at state 10. Random actions lead to the path:
-        $10 \xrightarrow{N} 6 \xrightarrow{N} 2 \xrightarrow{E} 3 \xrightarrow{S} 7 \xrightarrow{S} 11 \xrightarrow{S} 15$
-        (terminal). Each step gives reward $-1$.
-      </div>
+          <div class="prose">
+            Computing returns backward ($G = \gamma G + R_{t+1}$, starting from $G = 0$ at the terminal):
+          </div>
 
-      <div class="prose">
-        Computing returns backward ($G = \gamma G + R_{t+1}$, starting from $G = 0$ at the terminal):
-      </div>
+          <div style="overflow-x:auto;margin:12px 0 20px;">
+            <table style="width:100%;border-collapse:collapse;font-size:13px;">
+              <thead>
+                <tr style="background:#f0f4f7;">
+                  <th style="padding:7px 12px;text-align:center;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.05em;color:#3a5a78;">$t$</th>
+                  <th style="padding:7px 12px;text-align:center;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.05em;color:#3a5a78;">$S_t$</th>
+                  <th style="padding:7px 12px;text-align:center;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.05em;color:#3a5a78;">$R_{t+1}$</th>
+                  <th style="padding:7px 12px;text-align:center;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.05em;color:#3a5a78;">$G_t$</th>
+                  <th style="padding:7px 12px;text-align:left;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.05em;color:#3a5a78;">$V(S_t)$ after update</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">5</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">11</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">−1</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;font-family:'IBM Plex Mono',monospace;">−1</td><td style="padding:6px 12px;border-bottom:1px solid #e8eef2;">$V(11) = -1$</td></tr>
+                <tr style="background:#f8fafb;"><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">4</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">7</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">−1</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;font-family:'IBM Plex Mono',monospace;">−2</td><td style="padding:6px 12px;border-bottom:1px solid #e8eef2;">$V(7) = -2$</td></tr>
+                <tr><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">3</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">3</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">−1</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;font-family:'IBM Plex Mono',monospace;">−3</td><td style="padding:6px 12px;border-bottom:1px solid #e8eef2;">$V(3) = -3$</td></tr>
+                <tr style="background:#f8fafb;"><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">2</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">2</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">−1</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;font-family:'IBM Plex Mono',monospace;">−4</td><td style="padding:6px 12px;border-bottom:1px solid #e8eef2;">$V(2) = -4$</td></tr>
+                <tr><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">1</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">6</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">−1</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;font-family:'IBM Plex Mono',monospace;">−5</td><td style="padding:6px 12px;border-bottom:1px solid #e8eef2;">$V(6) = -5$</td></tr>
+                <tr style="background:#f8fafb;"><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">0</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">10</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">−1</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;font-family:'IBM Plex Mono',monospace;">−6</td><td style="padding:6px 12px;border-bottom:1px solid #e8eef2;">$V(10) = -6$</td></tr>
+              </tbody>
+            </table>
+          </div>
 
-      <div style="overflow-x:auto;margin:12px 0 20px;">
-        <table style="width:100%;border-collapse:collapse;font-size:13px;">
-          <thead>
-            <tr style="background:#f0f4f7;">
-              <th style="padding:7px 12px;text-align:center;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.05em;color:#3a5a78;">$t$</th>
-              <th style="padding:7px 12px;text-align:center;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.05em;color:#3a5a78;">$S_t$</th>
-              <th style="padding:7px 12px;text-align:center;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.05em;color:#3a5a78;">$R_{t+1}$</th>
-              <th style="padding:7px 12px;text-align:center;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.05em;color:#3a5a78;">$G_t$</th>
-              <th style="padding:7px 12px;text-align:left;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.05em;color:#3a5a78;">$V(S_t)$ after update</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">5</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">11</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">−1</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;font-family:'IBM Plex Mono',monospace;">−1</td><td style="padding:6px 12px;border-bottom:1px solid #e8eef2;">$V(11) = -1$</td></tr>
-            <tr style="background:#f8fafb;"><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">4</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">7</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">−1</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;font-family:'IBM Plex Mono',monospace;">−2</td><td style="padding:6px 12px;border-bottom:1px solid #e8eef2;">$V(7) = -2$</td></tr>
-            <tr><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">3</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">3</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">−1</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;font-family:'IBM Plex Mono',monospace;">−3</td><td style="padding:6px 12px;border-bottom:1px solid #e8eef2;">$V(3) = -3$</td></tr>
-            <tr style="background:#f8fafb;"><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">2</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">2</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">−1</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;font-family:'IBM Plex Mono',monospace;">−4</td><td style="padding:6px 12px;border-bottom:1px solid #e8eef2;">$V(2) = -4$</td></tr>
-            <tr><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">1</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">6</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">−1</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;font-family:'IBM Plex Mono',monospace;">−5</td><td style="padding:6px 12px;border-bottom:1px solid #e8eef2;">$V(6) = -5$</td></tr>
-            <tr style="background:#f8fafb;"><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">0</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">10</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;">−1</td><td style="text-align:center;padding:6px 12px;border-bottom:1px solid #e8eef2;font-family:'IBM Plex Mono',monospace;">−6</td><td style="padding:6px 12px;border-bottom:1px solid #e8eef2;">$V(10) = -6$</td></tr>
-          </tbody>
-        </table>
-      </div>
+          <div class="prose">
+            <strong>Episode 2:</strong> Start at state 5. Path: $5 \xrightarrow{E} 6 \xrightarrow{S} 10 \xrightarrow{S} 14 \xrightarrow{E} 15$ (terminal).
+          </div>
 
-      <div class="prose">
-        <strong>Episode 2:</strong> Start at state 5. Path: $5 \xrightarrow{E} 6 \xrightarrow{S} 10 \xrightarrow{S} 14 \xrightarrow{E} 15$ (terminal).
-      </div>
+          <div class="prose">
+            Returns: $G_3 = -1$ (state 14), $G_2 = -2$ (state 10), $G_1 = -3$ (state 6), $G_0 = -4$ (state 5).
+          </div>
 
-      <div class="prose">
-        Returns: $G_3 = -1$ (state 14), $G_2 = -2$ (state 10), $G_1 = -3$ (state 6), $G_0 = -4$ (state 5).
-      </div>
+          <div class="prose">Updates:</div>
 
-      <div class="prose">
-        Updates:
-      </div>
+          <ul class="prose" style="padding-left:1.4em;">
+            <li>$V(5)$: first visit, $N(5)=1$. $V(5) \leftarrow -4$.</li>
+            <li>$V(6)$: second visit (first was in episode 1). $N(6)=2$. $V(6) \leftarrow \frac{-5 + (-3)}{2} = -4$.</li>
+            <li>$V(10)$: second visit. $N(10)=2$. $V(10) \leftarrow \frac{-6 + (-2)}{2} = -4$.</li>
+            <li>$V(14)$: first visit. $N(14)=1$. $V(14) \leftarrow -1$.</li>
+          </ul>
 
-      <ul class="prose" style="padding-left:1.4em;">
-        <li>$V(5)$: first visit, $N(5)=1$. $V(5) \leftarrow -4$.</li>
-        <li>$V(6)$: second visit (first was in episode 1). $N(6)=2$. $V(6) \leftarrow \frac{-5 + (-3)}{2} = -4$.</li>
-        <li>$V(10)$: second visit. $N(10)=2$. $V(10) \leftarrow \frac{-6 + (-2)}{2} = -4$.</li>
-        <li>$V(14)$: first visit. $N(14)=1$. $V(14) \leftarrow -1$.</li>
-      </ul>
+          <div class="prose">
+            After just two episodes, states near the terminal corners already have accurate estimates
+            ($V(11) = V(14) = -1$, which equals the true distance to the nearest terminal).
+            States farther in (like 10) have noisier estimates — they converge slower because
+            they appear in fewer episode trajectories, and when they do appear, their return depends
+            on the random walk taken from that point.
+          </div>
 
-      <div class="prose">
-        After just two episodes, states near the terminal corners already have accurate estimates
-        ($V(11) = V(14) = -1$, which equals the true distance to the nearest terminal).
-        States farther in (like 10) have noisier estimates — they converge slower because
-        they appear in fewer episode trajectories, and when they do appear, their return depends
-        on the random walk taken from that point.
-      </div>
+        </div>
+      </details>
 
-      <div class="prose" style="font-weight:600;color:#2a3a4a;margin-bottom:6px;margin-top:24px;">
-        Example 2 — Importance sampling calculation
-      </div>
-
-      <div class="prose">
-        Suppose you are in a 2-action MDP. The behavior policy is $b(a=\text{left} \mid s) = 0.5$,
-        $b(a=\text{right} \mid s) = 0.5$. The target policy is $\pi(a=\text{left} \mid s) = 1.0$
-        (deterministic left). A 3-step episode under $b$ takes actions (left, left, right).
-        Compute the importance sampling ratio.
-      </div>
-
-      <div class="prose">
-        $$\rho_{0:2} = \frac{\pi(\text{left})}{b(\text{left})} \cdot \frac{\pi(\text{left})}{b(\text{left})} \cdot \frac{\pi(\text{right})}{b(\text{right})} = \frac{1.0}{0.5} \cdot \frac{1.0}{0.5} \cdot \frac{0.0}{0.5} = 0$$
-      </div>
-
-      <div class="prose">
-        The ratio is zero because $\pi$ would never take the third action (right). This episode is
-        irrelevant for estimating $v_\pi$ — it followed a path that $\pi$ would never follow, so
-        its return carries zero weight. Only episodes where <em>every</em> action taken is
-        consistent with $\pi$ contribute nonzero weight.
-      </div>
-
-      <div class="prose">
-        Now suppose all three actions were left: $\rho_{0:2} = (1/0.5)^3 = 8$. This episode's
-        return gets multiplied by 8 — it counts heavily because $\pi$ would always take this
-        path, but $b$ only took it by chance.
-      </div>
+      <details class="example-box">
+        <summary><strong>Example 2 — Importance sampling calculation</strong></summary>
+        <div class="example-problem">
+          Suppose you are in a 2-action MDP. The behavior policy is $b(a=\text{left} \mid s) = 0.5$,
+          $b(a=\text{right} \mid s) = 0.5$. The target policy is $\pi(a=\text{left} \mid s) = 1.0$
+          (deterministic left). A 3-step episode under $b$ takes actions (left, left, right).
+          Compute the importance sampling ratio $\rho_{0:2}$ and explain what the result means.
+        </div>
+        <div class="example-body">
+          <div class="prose">
+            $$\rho_{0:2} = \frac{\pi(\text{left})}{b(\text{left})} \cdot \frac{\pi(\text{left})}{b(\text{left})} \cdot \frac{\pi(\text{right})}{b(\text{right})} = \frac{1.0}{0.5} \cdot \frac{1.0}{0.5} \cdot \frac{0.0}{0.5} = 0$$
+          </div>
+          <div class="prose">
+            The ratio is zero because $\pi$ would never take the third action (right). This episode is
+            irrelevant for estimating $v_\pi$ — it followed a path that $\pi$ would never follow, so
+            its return carries zero weight. Only episodes where <em>every</em> action taken is
+            consistent with $\pi$ contribute nonzero weight.
+          </div>
+          <div class="prose">
+            Now suppose all three actions were left: $\rho_{0:2} = (1/0.5)^3 = 8$. This episode's
+            return gets multiplied by 8 — it counts heavily because $\pi$ would always take this
+            path, but $b$ only took it by chance.
+          </div>
+        </div>
+      </details>
 
       <!-- ── Interactive ─────────────────────────────────────────── -->
       <div class="section-head" id="interactive">Interactive: MC value estimator</div>
@@ -777,20 +776,67 @@
       <div class="section-head" id="food-for-thought">Food for thought</div>
 
       <div class="fft-block">
-        <div class="fft-title">Reflection questions — no answers given</div>
+        <div class="fft-title">Reflection questions</div>
         <ol>
           <li>First-visit MC is unbiased — the expected value of the estimate is exactly
             $v_\pi(s)$ regardless of how $V$ was initialized. Every-visit MC is also
             unbiased in the limit, but subtly biased for finite samples. Why? (Hint: think
             about what happens when a state appears twice in one episode and what the two
-            returns represent relative to the definition of $v_\pi(s)$.)</li>
+            returns represent relative to the definition of $v_\pi(s)$.)
+            <details class="fft-answer">
+              <summary>Answer / hint</summary>
+              <div class="fft-answer-body">
+                When a state $s$ appears at time $t_1$ and again at $t_2 > t_1$ in the same episode,
+                first-visit MC uses only $G_{t_1}$ — which is the return from the first visit,
+                an unbiased sample of $v_\pi(s)$. Every-visit MC also uses $G_{t_2}$, but this
+                return is not an independent sample: the trajectory from $t_2$ is a <em>subset</em>
+                of the trajectory from $t_1$, so $G_{t_2}$ is correlated with $G_{t_1}$ and is
+                strictly shorter. For a finite number of episodes, averaging these correlated
+                returns introduces a bias. As episodes → ∞, the fraction of "re-visit" returns
+                goes to zero relative to total samples, so every-visit MC becomes asymptotically
+                unbiased — but at finite sample sizes it overweights states that loop back to
+                themselves.
+              </div>
+            </details>
+          </li>
           <li>In the importance sampling derivation, the ratio $\rho_{t:T-1}$ only involves
             the <em>actions</em> taken ($\pi(A_k|S_k)/b(A_k|S_k)$), not the transition
             probabilities $p(s'|s,a)$. Why does the state transition probability cancel out?
-            What assumption about the environment makes this cancellation valid?</li>
+            What assumption about the environment makes this cancellation valid?
+            <details class="fft-answer">
+              <summary>Answer / hint</summary>
+              <div class="fft-answer-body">
+                The IS ratio is the ratio of trajectory probabilities under $\pi$ vs. $b$:
+                $$\rho = \frac{\prod_k \pi(A_k|S_k)\,p(S_{k+1}|S_k,A_k)}{\prod_k b(A_k|S_k)\,p(S_{k+1}|S_k,A_k)}$$
+                The transition probability $p(S_{k+1}|S_k,A_k)$ appears identically in numerator
+                and denominator and cancels. The key assumption is that the transition dynamics are
+                the same for both $\pi$ and $b$ — they are policies acting in the same environment.
+                This always holds when both policies interact with a fixed MDP: the environment
+                dynamics are independent of the policy.
+              </div>
+            </details>
+          </li>
           <li>Suppose the environment has very long episodes — thousands of steps to reach
             a terminal. How does this affect the relative performance of MC vs. DP (assuming
-            DP had a model)? What about very short episodes of 2–3 steps?</li>
+            DP had a model)? What about very short episodes of 2–3 steps?
+            <details class="fft-answer">
+              <summary>Answer / hint</summary>
+              <div class="fft-answer-body">
+                <strong>Long episodes:</strong> MC suffers badly. Each episode is expensive to
+                collect, and the variance of the return (a sum of T random variables) grows with
+                episode length. Off-policy IS ratios become exponentially extreme over long
+                trajectories. DP, with a known model, suffers none of this — each sweep is a
+                deterministic matrix operation, and information propagates back efficiently.
+                MC is practical only when DP's model assumption fails.
+                <br><br>
+                <strong>Short episodes (2–3 steps):</strong> MC shines. Returns have very low
+                variance (just 2–3 reward terms). Episodes are cheap to collect. Even without a
+                model, you get accurate estimates quickly. Off-policy ratios are just 2–3 terms —
+                manageable. For short tasks (e.g., simple bandit-like decision problems), MC can
+                outperform DP in wall-clock time even when the model is known.
+              </div>
+            </details>
+          </li>
         </ol>
       </div>
 

@@ -568,52 +568,60 @@
       <!-- ── Worked examples ──────────────────────────────────────── -->
       <div class="section-head" id="examples">Worked examples</div>
 
-      <div class="prose">
-        <strong>Example 1: RC circuit.</strong>
-        A series RC circuit with resistor $R = 1\,\mathrm{k\Omega}$ and capacitor
-        $C = 100\,\mathrm{\mu F}$. The voltage across $C$ as a function of input voltage
-        satisfies $RC\,\dot{V}_C + V_C = V_{in}$.
-      </div>
+      <details class="example-box">
+        <summary><strong>Example 1 — RC circuit: first-order system</strong></summary>
+        <div class="example-problem">
+          A series RC circuit with $R = 1\,\text{k}\Omega$, $C = 100\,\mu\text{F}$.
+          The voltage across $C$ satisfies $RC\dot{V}_C + V_C = V_\text{in}$.
+          Find the transfer function, time constant, and step response.
+        </div>
+        <div class="example-body">
+          Taking the Laplace transform: $(RCs + 1)V_C(s) = V_\text{in}(s)$.
+          $$G(s) = \frac{V_C(s)}{V_\text{in}(s)} = \frac{1}{RCs + 1} = \frac{1}{0.1s + 1}$$
+          <ul style="padding-left:1.4em; margin:6px 0;">
+            <li style="margin-bottom:4px;">Time constant: $\tau = RC = 0.1$ s.</li>
+            <li style="margin-bottom:4px;">Pole at $s = -1/\tau = -10$.</li>
+            <li style="margin-bottom:4px;">DC gain: $G(0) = 1$ (capacitor fully charges to input).</li>
+            <li>Step response: $V_C(t) = 1 - e^{-10t}$.
+              Reaches 63.2% at $t = 0.1$ s, settled (2%) at $t \approx 0.4$ s.</li>
+          </ul>
+        </div>
+      </details>
 
-      <ul class="prose" style="padding-left:1.4em;">
-        <li style="margin-bottom:6px;">Transfer function: $G(s) = \dfrac{1}{RCs + 1} = \dfrac{1}{0.1s + 1}$.</li>
-        <li style="margin-bottom:6px;">Time constant: $\tau = RC = 0.1$ s.</li>
-        <li style="margin-bottom:6px;">DC gain: $G(0) = 1$ (output equals input at steady state).</li>
-        <li style="margin-bottom:6px;">Pole at $s = -10$ (i.e., $-1/\tau$).</li>
-        <li>Step response: $V_C(t) = 1 - e^{-10t}$. Reaches 63.2% at $t=0.1$ s,
-          essentially settled at $t = 0.4$ s.</li>
-      </ul>
+      <details class="example-box">
+        <summary><strong>Example 2 — DC motor: Type 1 plant</strong></summary>
+        <div class="example-problem">
+          A DC motor has velocity transfer function $\omega(s)/V(s) = K_m/(Js+b)$.
+          Derive the transfer function for position control (input = voltage, output = angle).
+        </div>
+        <div class="example-body">
+          Position is the integral of velocity: $\theta = \int \omega\,dt \Rightarrow \theta(s) = \omega(s)/s$.
+          $$P(s) = \frac{\theta(s)}{V(s)} = \frac{K_m}{s(Js + b)} = \frac{K_m/b}{s\!\left(\dfrac{J}{b}s + 1\right)}$$
+          <ul style="padding-left:1.4em; margin:6px 0;">
+            <li style="margin-bottom:4px;">Pole at $s=0$: the integrator from velocity to position. <strong>Type 1 plant.</strong></li>
+            <li style="margin-bottom:4px;">Pole at $s = -b/J$: mechanical time constant $\tau_m = J/b$.</li>
+            <li>A proportional controller gives zero SSE to a step position reference — the plant
+              integrator ensures this without needing an integral controller term.</li>
+          </ul>
+        </div>
+      </details>
 
-      <div class="prose">
-        <strong>Example 2: DC motor position control.</strong>
-        A simplified DC motor model gives velocity $\omega(s)/V(s) = K_m/(Js + b)$.
-        If we want to control <em>position</em> $\theta = \int \omega\,dt$, the plant
-        transfer function from $V$ to $\theta$ is:
-      </div>
-
-      $$P(s) = \frac{\theta(s)}{V(s)} = \frac{K_m}{s(Js + b)} = \frac{K_m/b}{s\left(\frac{J}{b}s + 1\right)}$$
-
-      <ul class="prose" style="padding-left:1.4em;">
-        <li style="margin-bottom:6px;">One pole at $s=0$ (the integrator from velocity to position). <strong>Type 1 plant.</strong></li>
-        <li style="margin-bottom:6px;">One pole at $s = -b/J$ (mechanical time constant $\tau_m = J/b$).</li>
-        <li>Zero steady-state error to step position reference, even with a proportional
-          controller — because the plant already contains an integrator.</li>
-      </ul>
-
-      <div class="prose">
-        <strong>Example 3: Read poles, zeros, DC gain.</strong>
-        Given
-        $G(s) = \dfrac{5(s+2)}{(s+1)(s+4)}$.
-      </div>
-
-      <ul class="prose" style="padding-left:1.4em;">
-        <li style="margin-bottom:6px;">Zero: $s = -2$.</li>
-        <li style="margin-bottom:6px;">Poles: $s = -1$, $s = -4$.</li>
-        <li style="margin-bottom:6px;">All poles in the left half-plane → stable.</li>
-        <li style="margin-bottom:6px;">DC gain: $G(0) = \dfrac{5(2)}{(1)(4)} = \dfrac{10}{4} = 2.5$.</li>
-        <li>Dominant pole: $s = -1$ (closest to imaginary axis) → the step response is
-          governed mainly by $e^{-t}$, time constant $\tau = 1$ s.</li>
-      </ul>
+      <details class="example-box">
+        <summary><strong>Example 3 — Reading poles, zeros, and DC gain</strong></summary>
+        <div class="example-problem">
+          For $G(s) = \dfrac{5(s+2)}{(s+1)(s+4)}$, identify poles, zeros, DC gain, and dominant behavior.
+        </div>
+        <div class="example-body">
+          <ul style="padding-left:1.4em; margin:6px 0;">
+            <li style="margin-bottom:4px;"><strong>Zero:</strong> $s = -2$.</li>
+            <li style="margin-bottom:4px;"><strong>Poles:</strong> $s = -1$ and $s = -4$. Both in the LHP → stable.</li>
+            <li style="margin-bottom:4px;"><strong>DC gain:</strong> $G(0) = 5 \cdot 2 / (1 \cdot 4) = 2.5$.</li>
+            <li><strong>Dominant pole:</strong> $s = -1$ (closest to the imaginary axis, slowest mode).
+              The step response is primarily governed by $e^{-t}$ with time constant $\tau = 1$ s.
+              The $e^{-4t}$ mode settles in $\approx 1$ s and barely affects the overall response.</li>
+          </ul>
+        </div>
+      </details>
 
       <!-- ── Interactive ────────────────────────────────────────────── -->
       <div class="section-head" id="interactive">Interactive: first-order system explorer</div>
@@ -803,23 +811,74 @@
       <div class="section-head" id="food-for-thought">Food for thought</div>
 
       <div class="fft-block" style="border-left:3px solid #b89040;background:#faf8f2;padding:14px 18px;border-radius:0 4px 4px 0;margin:20px 0;">
-        <div style="font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#8a6010;margin-bottom:10px;">Reflection questions — no answers given</div>
+        <div style="font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#8a6010;margin-bottom:10px;">Reflection questions</div>
         <ol style="padding-left:1.4em;color:#2a3a4a;font-size:14px;line-height:1.7;">
           <li style="margin-bottom:12px;">The DC gain is $G(0) = K$. What does $G(j\omega)$
             represent physically? If you drive the system with a sinusoidal input
             $u(t) = A\sin(\omega t)$, what is the steady-state output?
             (Hint: the magnitude is $A|G(j\omega)|$ and the phase shift is $\angle G(j\omega)$.)
-            What happens to $|G(j\omega)|$ as $\omega \to \infty$ for the first-order system?</li>
+            What happens to $|G(j\omega)|$ as $\omega \to \infty$ for the first-order system?
+            <details class="fft-answer">
+              <summary>Answer</summary>
+              <div class="fft-answer-body">
+                $G(j\omega)$ is the <strong>frequency response</strong> — it describes how the system
+                responds to sinusoidal inputs at frequency $\omega$. For a stable LTI system driven
+                by $u(t) = A\sin(\omega t)$, the steady-state output is:
+                $$y_{ss}(t) = A|G(j\omega)|\sin(\omega t + \angle G(j\omega))$$
+                The magnitude $|G(j\omega)|$ scales the amplitude; the phase $\angle G(j\omega)$ shifts
+                the sinusoid in time. For the first-order system $G(s) = K/(\tau s + 1)$:
+                $|G(j\omega)| = K/\sqrt{(\tau\omega)^2+1} \to 0$ as $\omega \to \infty$.
+                The system attenuates high-frequency inputs — it is a <strong>low-pass filter</strong>.
+                At $\omega = 1/\tau$ (the corner frequency), the output is $K/\sqrt{2} \approx 0.707K$
+                (−3 dB), and the phase is −45°.
+              </div>
+            </details>
+          </li>
           <li style="margin-bottom:12px;">Two first-order systems in series:
             $G_1(s) = 1/(\tau_1 s + 1)$ and $G_2(s) = 1/(\tau_2 s + 1)$.
             The combined transfer function is $G_1 G_2 = 1/((\tau_1 s+1)(\tau_2 s+1))$.
             Is this still "first-order"? How does its step response differ from a single
-            first-order system with $\tau = \tau_1 + \tau_2$? Does it still have no overshoot?</li>
+            first-order system with $\tau = \tau_1 + \tau_2$? Does it still have no overshoot?
+            <details class="fft-answer">
+              <summary>Answer</summary>
+              <div class="fft-answer-body">
+                No, $G_1 G_2$ is <strong>second-order</strong> (denominator degree 2), not first-order.
+                It has two real poles at $-1/\tau_1$ and $-1/\tau_2$.
+
+                The step response is $y(t) = 1 - \dfrac{\tau_1 e^{-t/\tau_1} - \tau_2 e^{-t/\tau_2}}{\tau_1 - \tau_2}$
+                (for $\tau_1 \neq \tau_2$). This has an S-shape: it starts with zero slope (unlike a single
+                first-order system which starts with maximum slope), then rises, then levels off.
+
+                No, there is no overshoot — both poles are real and negative, giving a monotone
+                non-oscillatory step response. However, the rise and settling times are longer than a
+                single first-order system with time constant $\tau_1 + \tau_2$: the two-stage system is
+                slower, and the initial slope is zero, not $K/\tau$.
+              </div>
+            </details>
+          </li>
           <li>The final value theorem says $\lim_{t\to\infty} y(t) = \lim_{s\to 0} s\,Y(s)$
             (when the limit exists). Use this to derive the steady-state error formula
             $e_{ss} = \lim_{s\to 0} s \cdot E(s)$ for the closed-loop system, where
             $E(s) = R(s)/(1+L(s))$. When does the final-value theorem fail to give the
-            correct answer?</li>
+            correct answer?
+            <details class="fft-answer">
+              <summary>Answer</summary>
+              <div class="fft-answer-body">
+                For a unit step input $r(t) = 1(t)$, $R(s) = 1/s$. The error signal is
+                $E(s) = R(s)/(1+L(s))$. Applying the FVT:
+                $$e_{ss} = \lim_{s\to 0} s \cdot E(s) = \lim_{s\to 0} s \cdot \frac{1/s}{1+L(s)} = \frac{1}{1 + L(0)}$$
+                For a Type 0 loop (no integrator), $L(0) = K_p$ (position constant), so $e_{ss} = 1/(1+K_p)$.
+                For a Type 1 loop, $L(0) \to \infty$, so $e_{ss} = 0$.
+
+                <strong>When the FVT fails:</strong> The FVT requires all poles of $sY(s)$ to be in the
+                <em>open</em> LHP (strictly stable). It fails when:
+                (1) the closed-loop is unstable (poles in the RHP or on the imaginary axis — $y(t)$ doesn't converge);
+                (2) the input $R(s)$ has poles on the imaginary axis (e.g., a ramp $1/s^2$ combined with an unstable closed-loop);
+                (3) the system oscillates at steady state ($y(t)$ doesn't settle to a constant).
+                In all these cases, the formula gives a number that doesn't correspond to any physical limit.
+              </div>
+            </details>
+          </li>
         </ol>
       </div>
 
