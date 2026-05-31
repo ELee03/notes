@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meat Science — Food Science | Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/plotly.js-dist@2.27.0/plotly.min.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="food-science" data-current="meat.html"></div>
+      <hr class="sidebar-rule">
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#muscle-structure" class="nav-item">Muscle structure</a>
+        <a href="#fibre-types" class="nav-item">Fibre types & colour</a>
+        <a href="#myoglobin" class="nav-item">Myoglobin chemistry</a>
+        <a href="#postmortem" class="nav-item">Post-mortem biochemistry</a>
+        <a href="#whc" class="nav-item">Water-holding capacity</a>
+        <a href="#connective" class="nav-item">Connective tissue</a>
+        <a href="#aging" class="nav-item">Aging</a>
+        <a href="#cooking-heat" class="nav-item">Heat, doneness & juiciness</a>
+        <a href="#examples" class="nav-item">Worked examples</a>
+        <a href="#fft" class="nav-item">Food for thought</a>
+        <a href="#pitfalls" class="nav-item">Common pitfalls</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a> → <a href="index.html">Food Science</a> → Meat Science
+      </div>
+
+      <h1 class="lesson-title">Meat Science</h1>
+      <div class="lesson-meta">Muscle Structure · Myoglobin · Post-mortem Biochemistry · Aging · Doneness</div>
+
+      <p class="prose">
+        Meat is muscle — and muscle is a remarkably precise piece of molecular machinery
+        repurposed as food. The difference between a tender ribeye and a shoe-leather
+        overcook, between a juicy braise and a waterlogged mess, between rare pink and
+        well-done grey: all of it is chemistry and physics playing out in a tissue whose
+        architecture was built for completely different purposes. Understanding that
+        architecture explains every useful rule of meat cookery from first principles —
+        and exposes most popular cooking myths for what they are.
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="muscle-structure">Muscle structure</div>
+
+      <p class="prose">
+        A muscle is built from a hierarchy of bundled tubes. At the smallest scale, the
+        <strong>myofibril</strong> — a cylindrical structure ~1 µm in diameter — is the
+        basic contractile unit. Thousands of myofibrils pack a single
+        <strong>muscle fibre</strong> (a multinucleated cell, 10–100 µm in diameter, that
+        can run the full length of the muscle). Fibres bundle together into
+        <strong>fascicles</strong> (~50–150 fibres each), and fascicles bundle into the
+        whole <strong>muscle</strong>.
+      </p>
+      <p class="prose">
+        Each myofibril is divided into repeating units called <strong>sarcomeres</strong> —
+        the actual contractile mechanism. A sarcomere consists of:
+      </p>
+      <ul class="prose" style="margin-top:4px;">
+        <li><strong>Thick filaments</strong> of <em>myosin</em> — large motor proteins with
+          globular "heads" that can bind actin and hydrolyse ATP to generate force.</li>
+        <li><strong>Thin filaments</strong> of <em>actin</em> — paired helical strands that
+          the myosin heads pull against.</li>
+        <li><strong>Titin</strong> — an enormous elastic protein (~3,000 kDa) spanning each
+          half-sarcomere, connecting myosin to the Z-disc. Titin acts as a molecular spring
+          that resists over-extension and stores passive recoil energy.</li>
+        <li><strong>Z-discs</strong> — the protein scaffolds that anchor the thin filaments
+          and define sarcomere boundaries.</li>
+      </ul>
+      <p class="prose">
+        Contraction is the sliding filament mechanism: myosin heads bind actin, pivot (the
+        "power stroke"), release, and rebind — ratcheting the thin filaments toward the
+        sarcomere centre. This requires ATP to release the bond; without ATP,
+        myosin locks to actin permanently. This is rigor mortis.
+      </p>
+      <p class="prose">
+        Each bundle level is wrapped in connective tissue: <strong>endomysium</strong>
+        around individual fibres, <strong>perimysium</strong> around fascicles,
+        <strong>epimysium</strong> around the whole muscle. These sheaths are mostly
+        collagen. Their thickness and cross-linking determine the structural toughness
+        of a cut — the aspect of toughness that cooking must address by converting
+        collagen to gelatin.
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="fibre-types">Muscle fibre types and why meat colour varies</div>
+
+      <p class="prose">
+        Not all muscle fibres are the same. Mammals have two major functional types,
+        differentiated by their energy metabolism and the activity they support:
+      </p>
+
+      <table style="width:100%;border-collapse:collapse;font-size:13.5px;margin:14px 0 18px;">
+        <thead>
+          <tr style="background:#e8f0f5;">
+            <th style="padding:8px 12px;text-align:left;border-bottom:2px solid #c8d8e8;color:#1a2840;">Property</th>
+            <th style="padding:8px 12px;text-align:left;border-bottom:2px solid #c8d8e8;color:#1a2840;">Type I (slow-twitch)</th>
+            <th style="padding:8px 12px;text-align:left;border-bottom:2px solid #c8d8e8;color:#1a2840;">Type IIb (fast-twitch)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom:1px solid #e0eaf0;">
+            <td style="padding:7px 12px;color:#2a3a4a;font-weight:500;">Energy source</td>
+            <td style="padding:7px 12px;color:#2a3a4a;">Oxidative (fat + O₂)</td>
+            <td style="padding:7px 12px;color:#2a3a4a;">Glycolytic (glucose, anaerobic)</td>
+          </tr>
+          <tr style="border-bottom:1px solid #e0eaf0;background:#f8fbfd;">
+            <td style="padding:7px 12px;color:#2a3a4a;font-weight:500;">Myoglobin content</td>
+            <td style="padding:7px 12px;color:#2a3a4a;">High → red/dark colour</td>
+            <td style="padding:7px 12px;color:#2a3a4a;">Low → pale/white colour</td>
+          </tr>
+          <tr style="border-bottom:1px solid #e0eaf0;">
+            <td style="padding:7px 12px;color:#2a3a4a;font-weight:500;">Mitochondria</td>
+            <td style="padding:7px 12px;color:#2a3a4a;">Abundant</td>
+            <td style="padding:7px 12px;color:#2a3a4a;">Few</td>
+          </tr>
+          <tr style="border-bottom:1px solid #e0eaf0;background:#f8fbfd;">
+            <td style="padding:7px 12px;color:#2a3a4a;font-weight:500;">Fatigue resistance</td>
+            <td style="padding:7px 12px;color:#2a3a4a;">High — sustained activity</td>
+            <td style="padding:7px 12px;color:#2a3a4a;">Low — rapid bursts only</td>
+          </tr>
+          <tr style="border-bottom:1px solid #e0eaf0;">
+            <td style="padding:7px 12px;color:#2a3a4a;font-weight:500;">Examples</td>
+            <td style="padding:7px 12px;color:#2a3a4a;">Chicken thigh, beef (most cuts), tuna red muscle</td>
+            <td style="padding:7px 12px;color:#2a3a4a;">Chicken breast, pork loin, white fish muscle</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p class="prose">
+        The colour difference comes from <strong>myoglobin</strong> — the oxygen-storage
+        protein in muscle cells (distinct from haemoglobin in blood). Myoglobin contains
+        iron; muscles that run oxidative metabolism need a local O₂ reserve, so they express
+        high myoglobin. Muscles used for burst glycolytic activity don't.
+      </p>
+      <p class="prose">
+        This explains patterns that seem arbitrary until you know the biology:
+      </p>
+      <ul class="prose" style="margin-top:4px;">
+        <li><strong>Chicken breast vs. thigh</strong> — breast muscles (pectorals) are for
+          explosive flapping bursts (Type IIb, low myoglobin, white). Thigh and leg muscles
+          support sustained weight-bearing (Type I, high myoglobin, dark).</li>
+        <li><strong>Beef is red throughout</strong> — cattle evolved as long-distance
+          walkers; almost all bovine skeletal muscle is Type I/IIa.</li>
+        <li><strong>Pork is pale pink</strong> — pigs have a higher proportion of Type IIb
+          fibres than ruminants; intermediate myoglobin.</li>
+        <li><strong>Tuna is red; cod is white</strong> — tuna are continuous high-speed
+          swimmers (red oxidative muscle throughout). Cod and flatfish are ambush hunters
+          that sprint rarely; their white muscle is almost entirely glycolytic.</li>
+        <li><strong>Duck breast is darker than chicken breast</strong> — ducks fly
+          continuously (migratory); their pectoral muscles are oxidative and myoglobin-rich.
+          Factory chickens never fly.</li>
+      </ul>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="myoglobin">Myoglobin chemistry and meat colour</div>
+
+      <p class="prose">
+        Myoglobin has an iron-containing heme group at its centre. The iron's oxidation state
+        and ligand determine the colour of meat — a fact with direct practical implications
+        for freshness assessment and cooking.
+      </p>
+
+      <table style="width:100%;border-collapse:collapse;font-size:13.5px;margin:14px 0 18px;">
+        <thead>
+          <tr style="background:#e8f0f5;">
+            <th style="padding:8px 12px;text-align:left;border-bottom:2px solid #c8d8e8;color:#1a2840;">Form</th>
+            <th style="padding:8px 12px;text-align:left;border-bottom:2px solid #c8d8e8;color:#1a2840;">Iron state</th>
+            <th style="padding:8px 12px;text-align:left;border-bottom:2px solid #c8d8e8;color:#1a2840;">Ligand</th>
+            <th style="padding:8px 12px;text-align:left;border-bottom:2px solid #c8d8e8;color:#1a2840;">Colour</th>
+            <th style="padding:8px 12px;text-align:left;border-bottom:2px solid #c8d8e8;color:#1a2840;">When seen</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom:1px solid #e0eaf0;">
+            <td style="padding:7px 12px;color:#2a3a4a;font-weight:500;">Deoxymyoglobin (Mb)</td>
+            <td style="padding:7px 12px;color:#2a3a4a;">Fe²⁺</td>
+            <td style="padding:7px 12px;color:#2a3a4a;">None</td>
+            <td style="padding:7px 12px;color:#7a3a6a;font-weight:600;">Purple-red</td>
+            <td style="padding:7px 12px;color:#2a3a4a;">Freshly cut / vacuum-packed meat</td>
+          </tr>
+          <tr style="border-bottom:1px solid #e0eaf0;background:#f8fbfd;">
+            <td style="padding:7px 12px;color:#2a3a4a;font-weight:500;">Oxymyoglobin (MbO₂)</td>
+            <td style="padding:7px 12px;color:#2a3a4a;">Fe²⁺</td>
+            <td style="padding:7px 12px;color:#2a3a4a;">O₂</td>
+            <td style="padding:7px 12px;color:#aa2a2a;font-weight:600;">Bright cherry-red</td>
+            <td style="padding:7px 12px;color:#2a3a4a;">Surface of fresh meat, open display</td>
+          </tr>
+          <tr style="border-bottom:1px solid #e0eaf0;">
+            <td style="padding:7px 12px;color:#2a3a4a;font-weight:500;">Metmyoglobin (MMb)</td>
+            <td style="padding:7px 12px;color:#2a3a4a;">Fe³⁺</td>
+            <td style="padding:7px 12px;color:#2a3a4a;">H₂O</td>
+            <td style="padding:7px 12px;color:#6a5a3a;font-weight:600;">Brown / grey-brown</td>
+            <td style="padding:7px 12px;color:#2a3a4a;">Aged surface, cooked meat, stale meat</td>
+          </tr>
+          <tr style="border-bottom:1px solid #e0eaf0;background:#f8fbfd;">
+            <td style="padding:7px 12px;color:#2a3a4a;font-weight:500;">Carboxymyoglobin (MbCO)</td>
+            <td style="padding:7px 12px;color:#2a3a4a;">Fe²⁺</td>
+            <td style="padding:7px 12px;color:#2a3a4a;">CO</td>
+            <td style="padding:7px 12px;color:#aa2a2a;font-weight:600;">Stable bright-red</td>
+            <td style="padding:7px 12px;color:#2a3a4a;">Modified-atmosphere packaging</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p class="prose">
+        The <strong>bloom</strong> reaction: freshly cut meat is purple-red (deoxy), because
+        the interior has no oxygen supply. After 15–30 minutes on a surface exposed to air,
+        oxygen diffuses into the top ~5 mm of the meat and binds myoglobin iron → bright
+        cherry-red oxymyoglobin. This is why a thick steak cut open at the butcher is purple
+        but looks vivid red after sitting briefly. The interior of a vacuum-packed steak
+        is purple for the same reason; it blooms red minutes after opening.
+      </p>
+      <p class="prose">
+        Brown metmyoglobin accumulates as meat ages: Fe²⁺ spontaneously oxidises to Fe³⁺
+        over time, faster at warmer temperatures. A brown surface layer does not mean
+        the meat is spoiled — metmyoglobin is harmless — but it does indicate the meat
+        is no longer freshly cut. In display cases with low O₂ pockets beneath the surface
+        (e.g. from stacking), you can get internal brown bands within otherwise red meat.
+      </p>
+      <p class="prose">
+        <strong>Modified-atmosphere packaging</strong> (MAP) often contains ~0.4% CO.
+        CO binds heme iron with ~200× the affinity of O₂, forming stable carboxymyoglobin
+        that does not oxidise to brown. This keeps meat bright red for weeks. The practice
+        is permitted in the US, controversial in Europe (some argue it misleads consumers
+        about freshness), and banned in some countries.
+      </p>
+      <p class="prose">
+        <strong>Cooking turns meat brown/grey</strong> because heat denatures myoglobin,
+        destabilising the heme-protein interaction and allowing Fe²⁺ to oxidise to Fe³⁺
+        (metmyoglobin and then denatured globin-hemin complexes). The transition from
+        pink to brown is not abrupt — it tracks the progressive denaturation of myosin
+        and then sarcoplasmic proteins across the 55–70°C range.
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="postmortem">Post-mortem biochemistry</div>
+
+      <p class="prose">
+        The transformation from living muscle to meat is a cascade of biochemical events
+        triggered by death. Understanding it explains rigor mortis, ultimate meat pH,
+        and why handling and chilling immediately after slaughter matters enormously.
+      </p>
+
+      <div class="subsection-head">ATP depletion and rigor mortis</div>
+      <p class="prose">
+        In living muscle, myosin heads bind actin during a power stroke, then require
+        ATP to detach. At death, blood flow stops and oxidative phosphorylation ceases.
+        Residual ATP (~5 mM) and creatine phosphate (via creatine kinase) sustain
+        brief post-mortem relaxation. Within 1–6 hours (species- and temperature-dependent),
+        ATP falls below the level needed to release myosin from actin.
+        <strong>Rigor mortis</strong> sets in: all cross-bridges lock, muscle becomes
+        rigid and inextensible.
+      </p>
+      <p class="prose">
+        Rigor shortens the sarcomere — myosin pulls actin inward and cannot let go.
+        A muscle that enters rigor while clamped or under load shortens ~10–15%.
+        A muscle that enters rigor freely shortens more. This mechanical shortening
+        increases toughness: compressed sarcomeres resist the shearing forces of chewing.
+      </p>
+
+      <div class="subsection-head">pH drop and its consequences</div>
+      <p class="prose">
+        Simultaneously, residual glycolytic enzymes continue converting muscle glycogen
+        to lactate anaerobically. Lactate and H⁺ accumulate; muscle pH drops from
+        the physiological ~7.2 to an <strong>ultimate pH of ~5.4–5.6</strong> in most
+        well-rested animals (closer to the pKa of lactic acid, ~3.86, than is comfortable —
+        the buffer capacity of muscle proteins limits the drop).
+      </p>
+      <p class="prose">
+        This pH drop has several effects:
+      </p>
+      <ul class="prose" style="margin-top:4px;">
+        <li><strong>Colour:</strong> metmyoglobin forms faster at lower pH.</li>
+        <li><strong>Water-holding capacity:</strong> muscle proteins near their isoelectric
+          point (myosin pI ~5.4) lose water-binding capacity — discussed in the next section.</li>
+        <li><strong>Microbial safety:</strong> pH 5.4–5.6 is mildly bacteriostatic,
+          slowing spoilage organisms.</li>
+        <li><strong>Flavour:</strong> the slightly acidic environment (along with subsequent
+          enzymatic proteolysis) contributes to the savoury depth of well-aged beef.</li>
+      </ul>
+
+      <div class="subsection-head">PSE and DFD meat — failure modes</div>
+      <p class="prose">
+        Two distinct failure modes arise from abnormal post-mortem biochemistry:
+      </p>
+      <ul class="prose" style="margin-top:4px;">
+        <li><strong>PSE (pale, soft, exudative)</strong> — most common in pigs with a genetic
+          susceptibility (RYR1 gene, ryanodine receptor mutation). Stress before slaughter
+          causes anaerobic glycolysis to begin pre-mortem; post-mortem pH drops extremely fast
+          (still at body temperature ~37°C), causing rapid protein denaturation and massive
+          water expulsion. Result: pale (denatured proteins scatter light differently),
+          soft, and wet/exudative. Poor water-holding capacity, poor eating quality.
+          Industrial solution: minimise pre-slaughter stress, rapid chilling.</li>
+        <li><strong>DFD (dark, firm, dry)</strong> — opposite cause. Prolonged stress
+          depletes glycogen reserves before slaughter; insufficient substrate remains for
+          post-mortem glycolysis. Ultimate pH stays high (~6.0–6.5). High-pH myosin
+          binds water tightly (far from its isoelectric point) → meat is dark (less light
+          scattering, more light absorption), firm, and dry to cut. Very high water-holding
+          capacity but extremely prone to bacterial spoilage (pathogens grow well above
+          pH 6.0). Poor shelf life.</li>
+      </ul>
+
+      <div class="subsection-head">Cold shortening</div>
+      <p class="prose">
+        If a carcass is chilled below ~10°C before rigor has resolved — as happens with
+        aggressive blast chilling — massive uncontrolled sarcomere shortening occurs.
+        The mechanism: cold releases calcium from the sarcoplasmic reticulum, triggering
+        contraction while ATP is still present to sustain it. The resulting sarcomere
+        shortening can be 40–50%, producing very tough meat.
+      </p>
+      <p class="prose">
+        Commercial abattoirs prevent cold shortening by
+        <strong>electrical stimulation</strong> of the carcass within minutes of slaughter —
+        the electrical current accelerates glycolysis and ATP depletion, pushing the muscle
+        through rigor rapidly before it can be chilled. Once rigor is complete, the carcass
+        can be chilled without further shortening risk.
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="whc">Water-holding capacity</div>
+
+      <p class="prose">
+        Water makes up ~75% of fresh muscle by weight. How much of that water the meat
+        retains during storage, cutting, and cooking determines perceived juiciness.
+        <strong>Water-holding capacity (WHC)</strong> is the ability of meat to retain
+        water against gravity (drip loss), applied pressure (cook loss), and heat-induced
+        structural changes.
+      </p>
+      <p class="prose">
+        Most water in muscle sits within the myofibrillar lattice — trapped between
+        and around the thick and thin filaments by capillary forces and protein-water
+        interactions. A key determinant of this lattice spacing is the net charge on
+        the myofibrillar proteins. When proteins carry a net positive or negative charge,
+        electrostatic repulsion between filaments pushes them apart, expanding the
+        lattice and trapping more water. When proteins approach their
+        <strong>isoelectric point (pI)</strong> — the pH at which net charge is zero —
+        lateral repulsion vanishes, filaments pack closer, and water is squeezed out.
+      </p>
+      <p class="prose">
+        Myosin's pI is ~5.4 — very close to the ultimate pH of well-rested meat
+        (~5.5). This is not a coincidence in the sense that meat just happens to land
+        at the worst possible point for water retention; rather, it means post-mortem
+        biochemistry naturally produces conditions that reduce WHC compared to living
+        muscle at pH 7.2. This is why freshly slaughtered meat has higher WHC than
+        aged meat, and why the very first drip from a vacuum pack is significant.
+      </p>
+
+      <div class="callout">
+        <strong>Practical consequence:</strong> Adding salt to meat before cooking
+        (dry brining) shifts the myofibrillar pH away from the isoelectric point by
+        partially solubilising surface proteins and increasing ionic strength, which
+        swells the myofibrillar lattice and increases WHC. This is the mechanism behind
+        the succulence of properly dry-brined steak — not "sealing in juices" (a myth —
+        see Pitfalls), but actually increasing the water the fibres retain during cooking.
+      </div>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="connective">Connective tissue, collagen, and toughness</div>
+
+      <p class="prose">
+        Meat toughness has two distinct and independently addressable causes:
+      </p>
+      <ul class="prose" style="margin-top:4px;">
+        <li><strong>Myofibrillar toughness</strong> — from the contractile proteins
+          (myosin, actin, titin, and their degree of denaturation and sarcomere shortening).
+          Addressed by controlled heat and aging.</li>
+        <li><strong>Connective tissue toughness</strong> — from collagen in the
+          endomysium, perimysium, and epimysium. Addressed by moist heat over extended
+          time to convert collagen to gelatin.</li>
+      </ul>
+      <p class="prose">
+        Different cuts have very different collagen content and cross-link density.
+        Hard-working muscles (chuck, brisket, shank, oxtail, short rib) support the
+        animal's weight continuously — they develop thick perimysium with extensive
+        collagen cross-linking. Rarely-used muscles (psoas major = tenderloin, longissimus
+        dorsi = ribeye/striploin) have minimal connective tissue and are naturally tender
+        without any collagen management.
+      </p>
+      <p class="prose">
+        Collagen is a triple helix of polypeptide chains (covered in Lesson 2). In mature
+        animals, pyridinoline and dehydrohydroxylysinonorleucine cross-links stabilise
+        the triple helix — these are covalent bonds that require sustained heat and water
+        to break. The conversion of collagen to gelatin proceeds as:
+      </p>
+      <ol class="prose" style="padding-left:20px;">
+        <li>Collagen triple helix unwinds at ~70°C in aqueous environment → random-coil
+            tropocollagen fragments (gelatin precursors)</li>
+        <li>Cross-link hydrolysis continues at sustained temperature (~70–82°C) over
+            time — this is the rate-limiting step for heavily cross-linked mature collagen</li>
+        <li>Fragments dissolve into the liquid → gelatin (the glossy, body-giving compound
+            in properly braised or reduced stocks)</li>
+      </ol>
+      <p class="prose">
+        The tension here: collagen conversion requires temperatures (≥70–75°C) that
+        are above the range where actin denatures and where myofibrillar moisture loss
+        accelerates dramatically. The braising solution is moist heat in a covered vessel
+        — water prevents the surface from exceeding ~100°C, and sufficient time
+        (2–4 hours for beef short ribs, 6–8 hours for pork shoulder) allows both
+        collagen conversion and the basting effect of gelatin-rich braising liquid.
+        <strong>Sous vide</strong> extends this further: 58°C for 48–72 hours is enough
+        time to significantly hydrolyse collagen cross-links even at this low temperature,
+        while keeping the muscle proteins minimally cooked. This produces the paradox of
+        "fall-apart tender" at what would normally be rare internal temperature.
+      </p>
+      <p class="prose">
+        <strong>Intramuscular fat (marbling)</strong> sits within the perimysium connective
+        tissue — it does not replace collagen but occupies the spaces between fascicles.
+        Marbling contributes to flavour (fat carries lipophilic volatiles; Maillard products
+        from heated fat surface), perceived juiciness (molten fat lubricates the cutting
+        of muscle fibres during chewing), and texture (fat is soft, reducing the perceived
+        toughness of firm fibres). Wagyu cattle are bred specifically for high intramuscular
+        fat deposition, which is a genetic and nutritional trait, not just feeding.
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="aging">Aging — wet and dry</div>
+
+      <p class="prose">
+        After rigor resolves, proteolytic enzymes that are normally active in living
+        cells begin working on the myofibrillar structure. The primary enzymes are the
+        <strong>calpains</strong> — calcium-activated cysteine proteinases that cleave
+        titin, nebulin, and desmin at the Z-disc boundary. This degrades the structural
+        scaffold that holds sarcomeres together, fragmenting myofibrils and causing
+        the characteristic "star fractures" in Z-discs visible by electron microscopy
+        in aged meat. The result is tenderisation: shorter myofibril fragments offer
+        less resistance to shear than intact fibres.
+      </p>
+      <p class="prose">
+        Calpain activity is temperature-dependent: it is faster at 4°C than at 0°C
+        (still enzymatic), and maximal activity is around 25°C — which is why aging
+        must be refrigerated (slow enough to be controlled) but not frozen
+        (enzymes essentially stop).
+      </p>
+
+      <div class="subsection-head">Wet aging</div>
+      <p class="prose">
+        The carcass or cut is vacuum-sealed (cryo-vac) and held at 0–2°C for 7–28 days.
+        Proteolysis proceeds; virtually no moisture is lost (the water expelled by
+        proteolysis is retained within the bag). The result is modest tenderisation
+        with minimal flavour development beyond what proteolysis alone produces.
+        Wet aging is the standard commercial practice — it has no trim or weight loss,
+        so it costs less. The characteristic slight metallic-acidic "wet aged" flavour
+        comes from the meat sitting in its own exudate.
+      </p>
+
+      <div class="subsection-head">Dry aging</div>
+      <p class="prose">
+        The cut is held uncovered at 0–4°C with controlled airflow (~75–85% relative
+        humidity, sufficient velocity to prevent condensation) for 21–120+ days.
+        Several things happen simultaneously:
+      </p>
+      <ul class="prose" style="margin-top:4px;">
+        <li><strong>Moisture loss:</strong> the surface dries, forming a hard pellicle
+          (crust) that is trimmed before sale. Interior moisture concentrates, intensifying
+          flavour. Weight losses of 15–25% are typical, meaning the final retail
+          weight is substantially reduced — a direct cost driver.</li>
+        <li><strong>Proteolysis:</strong> calpains and cathepsins (lysosomal proteinases,
+          increasingly active as pH drops and cell membranes degrade) cleave myofibrillar
+          proteins more extensively than wet aging allows. Longer dry aging = more
+          tender.</li>
+        <li><strong>Lipolysis and secondary chemistry:</strong> intramuscular lipases
+          release free fatty acids, which are oxidised to short-chain aldehydes, methyl
+          ketones, and lactones — contributing the nutty, buttery, slightly "blue-cheese"
+          character of heavily aged beef. Some surface moulds (Thamnidium, Penicillium
+          species) contribute additional lipases and proteases that penetrate a few
+          millimetres into the surface layer.</li>
+        <li><strong>Glutamate liberation:</strong> extensive proteolysis cleaves peptide
+          bonds releasing free amino acids, including glutamate. Dry-aged beef has
+          measurably higher free glutamate → more intense umami (connects to Lesson 6).</li>
+      </ul>
+      <p class="prose">
+        Dry aging beyond ~45 days produces diminishing tenderisation returns (proteolysis
+        slows as substrates are depleted) but continued flavour intensification.
+        Very long dry ages (90–120+ days) produce extremely strong funky-savoury
+        flavours that are polarising — some find them extraordinary, others find
+        them rancid. Both reactions are chemically justified.
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="cooking-heat">Heat, doneness, and the juiciness cliff</div>
+
+      <p class="prose">
+        When you cook meat, you are applying heat to a system where different proteins
+        denature at different temperatures and where water is expelled progressively as
+        protein structures collapse. The sequence is predictable and maps directly to
+        doneness grades.
+      </p>
+
+      <div class="widget-card">
+        <div class="widget-title">Moisture retention vs. core temperature — what happens on the way to well-done</div>
+        <div id="plotly-moisture" style="height:340px;"></div>
+        <p style="font-size:11.5px;color:#8a9aaa;margin-top:8px;line-height:1.5;">
+          Approximate moisture retention (% of raw water content). The key events:
+          myosin denaturation begins ~50°C; sarcoplasmic proteins ~65°C; actin ~75°C (the juiciness cliff).
+        </p>
+      </div>
+
+      <p class="prose">
+        The key events, in order:
+      </p>
+      <ul class="prose" style="margin-top:4px;">
+        <li><strong>~50–55°C:</strong> Myosin begins to denature (its ATPase head unfolds).
+          Texture firms; colour transitions from translucent pink to opaque. Some water
+          expelled. <em>Rare</em>.</li>
+        <li><strong>~55–60°C:</strong> Most myosin denatured. Sarcoplasmic proteins
+          (myoglobin, haemoglobin) denature → brown colour intensifies through the
+          interior. <em>Medium-rare</em>.</li>
+        <li><strong>~60–65°C:</strong> Further sarcoplasmic protein coagulation.
+          Moisture loss accelerating — noticeable in a pan as increased exudate.
+          <em>Medium</em>.</li>
+        <li><strong>~65–70°C:</strong> Significant shrinkage of both fibre diameter
+          and overall cut. Collagen shrinkage begins in connective-tissue-rich cuts.
+          Water loss substantial. <em>Medium-well</em>.</li>
+        <li><strong>~75–80°C: Actin denatures.</strong> This is the juiciness cliff.
+          Actin is extremely tightly coiled and requires significant thermal energy to
+          unfold. Once it does, the myofibrillar structure loses most of its remaining
+          capacity to hold water. Juice loss is rapid and large. <em>Well-done</em>.</li>
+        <li><strong>70–82°C, sustained time:</strong> Collagen conversion to gelatin —
+          the only beneficial event that happens above 70°C, relevant only for
+          collagen-rich cuts.</li>
+      </ul>
+
+      <div class="callout">
+        <strong>The well-done paradox:</strong> Collagen-rich cuts (brisket, short rib)
+        must reach 80°C+ and stay there for hours to become tender. Collagen-lean cuts
+        (tenderloin, ribeye) become unpleasantly dry at the same temperature because
+        there is no collagen benefit to offset the moisture loss. Choosing the
+        right cooking method = knowing which toughness problem you are solving.
+      </div>
+
+      <div class="subsection-head">Resting</div>
+      <p class="prose">
+        Resting meat after cooking (5–10 min for steaks, 20–30 min for roasts) is often
+        described as "letting juices redistribute." The mechanism is more specific:
+        during cooking, the thermal gradient between the hot exterior and cooler interior
+        creates pressure differences that drive moisture toward the cooler centre.
+        When removed from heat, temperature equilibrates and pressure differences diminish.
+        Additionally, protein gels formed at the surface during cooking partially
+        reabsorb water expelled from the interior fibres as tension in the network relaxes.
+        Cutting immediately severs this process — the freely mobile water drains as it
+        cannot be reabsorbed. Resting does not "put juice back in" — it prevents additional
+        juice from escaping when cut.
+      </p>
+
+      <div class="subsection-head">The reverse sear and sous vide</div>
+      <p class="prose">
+        Both techniques exploit the same insight: the traditional "sear then roast" method
+        creates a thick band of overcooked (grey, moisture-expelled) meat between the
+        crust and the rare interior, because the surface must exceed 150°C for Maillard
+        browning and that high temperature diffuses inward significantly before the
+        surface is ready to be removed. Reverse sear (low oven → sear) and sous vide
+        (precise low-temperature bath → sear) both bring the entire cut to final
+        temperature slowly and uniformly first, then apply a brief sear (30–90 seconds
+        per side at very high heat). The result is a minimal grey band because the
+        interior was never exposed to high temperatures — only the surface was.
+      </p>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="examples">Worked examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Chicken breast vs. thigh at the same temperature</strong></div>
+        <div class="example-problem">
+          Two pieces of chicken — a breast fillet and a bone-in thigh — are cooked sous
+          vide to exactly 65°C internal temperature. The breast is described as dry and
+          chalky; the thigh is juicy and tender. Both were cooked to the same temperature
+          for the same time. Explain the difference using fibre type and connective tissue
+          biology.
+        </div>
+        <div class="example-body">
+          <p><strong>Fibre type difference:</strong><br>
+          Chicken breast is predominantly Type IIb fast-twitch muscle — short, glycolytic,
+          low myoglobin. These fibres have thin endomysium and relatively little connective
+          tissue overall. At 65°C, myosin and most sarcoplasmic proteins have denatured,
+          expelling water from the myofibrils. Without collagen gelatin to act as a moisture
+          reservoir or to provide a lubricating matrix, the cooked fibres feel dry.
+          There is also minimal fat between fascicles in a lean breast.</p>
+
+          <p><strong>Thigh difference:</strong><br>
+          Thigh muscle is Type I slow-twitch — more myoglobin (hence darker), more
+          intramuscular fat within the perimysium, and more connective tissue overall
+          because the thigh actively supports the bird's weight. At 65°C, collagen
+          conversion is just beginning — it takes sustained time above 65°C to fully
+          convert. But the intramuscular fat has melted, lubricating the muscle fibres,
+          and the greater fascicle-level organisation means more structural resilience.
+          The higher fat and connective tissue content masks the same degree of myofibrillar
+          water loss experienced by the breast.</p>
+
+          <p><strong>The generalisation:</strong><br>
+          "Optimal temperature" is not universal across meat types — it depends on fat
+          content, fibre type, and connective tissue. 65°C is passable for thigh but
+          too high for breast (prefer ~60–62°C for breast). 65°C is too low for
+          collagen-rich cuts (they need 75–82°C for hours). The temperature target
+          must match the specific cut's biology.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Braised short rib vs. grilled tenderloin</strong></div>
+        <div class="example-problem">
+          A chef has beef short ribs (rib 6–8, well-marbled, heavy connective tissue) and
+          beef tenderloin (psoas major, minimal connective tissue, low-activity muscle).
+          They are considering applying the same cooking method — 1 hour at 200°C oven —
+          to both. Predict the outcome for each and explain what the correct method for
+          each would be and why.
+        </div>
+        <div class="example-body">
+          <p><strong>Short rib at 200°C for 1 hour — predicted outcome:</strong><br>
+          Disaster. At 200°C oven temperature, the interior of a short rib would reach
+          roughly 75–85°C after 1 hour — enough to expel enormous amounts of moisture
+          from myofibrils (above actin denaturation at ~75°C) and begin collagen
+          shrinkage, but nowhere near enough time at the required temperature for collagen
+          cross-link hydrolysis. Result: dry, tough myofibrillar tissue, still rubbery
+          connective tissue — the worst of both worlds. Short rib toughness is almost
+          entirely a collagen problem. Collagen conversion to gelatin requires sustained
+          aqueous heat — either 3–4 hours braised at ~82°C, or 48+ hours sous vide at
+          ~58–65°C.</p>
+
+          <p><strong>Tenderloin at 200°C for 1 hour — predicted outcome:</strong><br>
+          Severely overcooked. The tenderloin, with almost no connective tissue,
+          has nothing to benefit from extended cooking — the only variable is myofibrillar
+          protein denaturation, which is complete at 65–70°C. At 200°C oven for 1 hour,
+          a 500g tenderloin would reach an internal temperature of 75–80°C+ — well past
+          the actin denaturation cliff. Result: grey, dry, mealy texture.</p>
+
+          <p><strong>Correct method for each:</strong><br>
+          <em>Tenderloin:</em> High-heat, short time. Sear in a very hot pan (200°C+ surface),
+          then either pull immediately (small medallion) or finish briefly in oven to 52–55°C
+          internal (rare). Total cooking time: minutes, not an hour.<br>
+          <em>Short rib:</em> Low, moist, long. Braise in liquid at 80–85°C for 3–5 hours
+          (or sous vide at 62°C for 48 hours). Target is collagen conversion — all other
+          protein events are secondary and accepted costs of achieving tenderness.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Why does dry-aged beef taste different?</strong></div>
+        <div class="example-problem">
+          A blind tasting distinguishes a dry-aged ribeye (45 days, open-air, 2°C) from a
+          wet-aged ribeye (28 days, vacuum-packed, 2°C) of the same grade and animal.
+          The dry-aged steak is described as "more intense, nutty, with a faint blue-cheese
+          edge and deeper umami." Name the specific chemical differences that produce each
+          descriptor and explain why they occur in dry aging but not wet aging.
+        </div>
+        <div class="example-body">
+          <p><strong>"More intense" — moisture concentration:</strong><br>
+          Dry aging loses 15–20% of the original weight as evaporated moisture.
+          All non-volatile flavour compounds (amino acids, free fatty acids, nucleotides,
+          glycogen degradation products) are concentrated proportionally. Even without
+          any additional chemical reactions, the same compounds that exist in wet-aged beef
+          are present in higher concentration per gram of cooked meat. Wet aging in vacuum
+          retains all moisture — there is no concentration effect.</p>
+
+          <p><strong>"Nutty" — lipid oxidation and Maillard of FFA:</strong><br>
+          Intramuscular lipases, active throughout dry aging, hydrolyse triglycerides
+          to free fatty acids (FFA). Short- and medium-chain FFAs oxidise slowly at 2°C
+          to methyl ketones and aldehydes (2-pentanone, 2-heptanone) with nutty, buttery
+          character. Surface moulds (Thamnidium, Penicillium camemberti relatives) contribute
+          additional lipases that accelerate this on and near the pellicle layer
+          (which is trimmed). In wet aging, FFAs are present but not oxidised — sealed
+          from O₂. No lipid oxidation products accumulate.</p>
+
+          <p><strong>"Blue-cheese edge" — microbial lipolysis and proteolysis:</strong><br>
+          Penicillium species on dry-aged surfaces produce the same lipases and proteases
+          responsible for blue and Camembert cheese character — specifically short-chain
+          FFAs (butyric, caproic acid) and proteolysis-derived amino acid catabolism
+          products. These penetrate 1–3 mm into the cut. The pellicle is trimmed,
+          but trace character remains. This is entirely absent in sealed wet aging.</p>
+
+          <p><strong>"Deeper umami" — glutamate liberation:</strong><br>
+          Both methods involve proteolysis by calpains and cathepsins. But dry aging
+          continues longer (45 days vs. 28), and the lower water activity concentrates
+          free glutamate. Free glutamate in 45-day dry-aged beef is measurably higher
+          than in wet-aged equivalents — higher free amino acid content drives the
+          T1R1+T1R3 receptor response (connects to Lesson 6).</p>
+        </div>
+      </div>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="fft">Food for thought</div>
+
+      <ul class="fft-list">
+        <li class="fft-item">
+          Wagyu cattle have extremely high intramuscular fat — up to 30% by weight in
+          the highest grades, compared to ~3–5% in standard beef. Wagyu is typically
+          served at lower target temperatures (50–52°C) than standard beef. Using what you
+          know about fat behaviour and water-holding capacity, explain why both the target
+          temperature and the method of temperature application might differ from standard beef.
+          <div class="fft-answer">
+            Intramuscular fat melts progressively above ~25–35°C (depending on its
+            fatty acid composition — Wagyu fat is unusually high in oleic acid, C18:1,
+            which has a much lower melting point than the palmitic/stearic-rich fat in
+            standard beef). At 50–52°C, the fat in a Wagyu ribeye is fully liquid and
+            lubricates the muscle fibres even before myosin has fully denatured.
+            The very high fat content also means the "dry" sensation that would occur
+            at the same temperature in lean beef is masked — the fat is the continuous
+            phase between the muscle fibre bundles and carries both moisture and flavour
+            compounds. Additionally, the Wagyu fat pool acts as a heat reservoir and
+            conducts heat differently from lean muscle — the cut heats more slowly and
+            uniformly. The practical implication: a Wagyu ribeye at 52°C already has
+            extremely luxurious texture from the molten fat, and continuing to 57–60°C
+            (medium-rare in standard beef) would make it greasy and less structured.
+            Lower temperature preserves the fat in a semi-fluid state that
+            contributes richness without dominating.
+          </div>
+        </li>
+        <li class="fft-item">
+          Rigor mortis is the result of ATP depletion causing permanent myosin-actin
+          cross-bridges. Living muscle can also maintain sustained tension (tetanic
+          contraction) as long as ATP is available. After rigor resolves through proteolysis,
+          the sarcomere structure is partially degraded. Does this mean aged (post-rigor)
+          meat could theoretically be re-toughened by cooking, and if so, is the
+          mechanism of toughness the same as in pre-rigor muscle?
+          <div class="fft-answer">
+            Yes, aged meat absolutely toughens during cooking — the mechanism is different
+            from rigor but equally real. Post-rigor proteolysis degrades titin and nebulin
+            (the Z-disc scaffold proteins), loosening sarcomere structure. But the actin
+            and myosin filaments themselves are intact. When cooked, these proteins denature
+            and aggregate — cooking-induced toughness. The difference from rigor toughness
+            is structural: rigor toughness is from mechanically locked sarcomeres (reversible
+            with proteolysis); cooking toughness is from irreversibly aggregated, denatured
+            proteins. Rigor can be resolved by aging; cooking toughness cannot. This is why
+            the "stale raw meat is still tender if you age it" observation holds, but
+            "if you overcook aged meat, aging won't save it" also holds. Post-rigor
+            aging addresses only the pre-cooking structure; the cooking process creates
+            its own toughness independent of aging state.
+          </div>
+        </li>
+        <li class="fft-item">
+          Traditional braising developed across every culture long before any understanding
+          of collagen chemistry or protein denaturation — cooks empirically observed that
+          tough cuts became tender with prolonged moist heat. Which specific observable
+          signals would a pre-scientific cook have used to determine doneness in a braise,
+          and how well do those signals correlate with the actual molecular events?
+          <div class="fft-answer">
+            The key empirical signals: (1) <em>Probe test</em> — a skewer or knife inserted
+            into the meat meets no resistance when collagen has fully converted and fibres
+            have softened. This directly probes mechanical toughness and is a reasonably
+            accurate proxy for collagen conversion (gelatin production), though it cannot
+            distinguish between "still rubbery collagen" and "slightly undercooked fibre."
+            (2) <em>Meat pulling away from bone</em> — in bone-in cuts, collagen
+            attaches muscle to bone. When it has fully converted to gelatin, the meat
+            releases cleanly. This is a direct and accurate signal for bone-adjacent collagen.
+            (3) <em>Liquid consistency</em> — as collagen converts to gelatin, the braising
+            liquid becomes visibly more viscous and glossy. Pre-scientific cooks described
+            this as "the sauce is done" — a proxy for gelatin content that corresponds well
+            with molecular reality. (4) <em>Smell</em> — prolonged low Maillard (from the
+            initial sear) and caramelisation aromas give way to deep savoury notes as amino
+            acids are liberated by proteolysis. These empirical signals collectively map
+            well onto the actual chemistry — proof that observational cooking knowledge
+            systematically converges on the right mechanistic targets even without the
+            underlying theory.
+          </div>
+        </li>
+      </ul>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════ -->
+      <div class="section-head" id="pitfalls">Common pitfalls</div>
+
+      <ul class="prose">
+        <li style="margin-bottom:10px;">
+          <strong>"Searing seals in juices."</strong> Completely false, and demonstrably so
+          by weighing meat before and after searing — seared meat loses as much or more
+          moisture than unseared meat cooked to the same internal temperature. Searing
+          creates Maillard flavour compounds on the surface; it does not create a
+          moisture-impermeable barrier. Believing this myth leads to overcooked interiors
+          because cooks sear early and long to "seal," wasting the surface's heat budget.
+        </li>
+        <li style="margin-bottom:10px;">
+          <strong>Using high, fast heat for collagen-rich cuts.</strong>
+          Brisket, chuck, shank, and short rib are not tough because of myofibrillar
+          properties — they are tough because of collagen cross-links. No amount of
+          searing, resting, or "proper technique" converts collagen without sustained
+          moist heat at temperature. Applying a steak-cooking method to these cuts
+          just accelerates moisture loss without solving the actual problem.
+        </li>
+        <li style="margin-bottom:10px;">
+          <strong>Confusing brown surface with rancid meat.</strong>
+          Brown metmyoglobin on the surface of beef is a normal oxidation product —
+          chemically harmless, visually unappetising. Genuine spoilage is indicated by
+          off-smell (volatile amines, sulfides from bacterial metabolism), sliminess
+          (biofilm), or mould growth, not surface colour alone. Trimming the surface
+          of a brown-surfaced steak and smelling the interior is a better freshness
+          test than colour alone.
+        </li>
+        <li style="margin-bottom:10px;">
+          <strong>Treating "doneness" as universal across cuts.</strong>
+          "Medium rare = 57°C" is appropriate for a lean muscle like ribeye or tenderloin.
+          For chicken thigh, 65–68°C is a better target because the additional fat and
+          connective tissue mask the dryness that would be unpleasant in a breast at
+          the same temperature. For collagen-rich cuts braised low-and-slow, the target
+          is not a core temperature at all — it is a time-at-temperature profile.
+        </li>
+        <li style="margin-bottom:10px;">
+          <strong>Cutting immediately after cooking.</strong>
+          Not resting meat is not a myth — the mechanism is real. Immediately cutting
+          a steak releases the freely mobile interstitial water that was driven toward
+          the cooler interior during cooking before it can be reabsorbed. The visual
+          evidence (a puddle of juice on the board from an unrested steak) is the actual
+          water loss the rest was supposed to prevent. Rest for at least 5 minutes per
+          2 cm of thickness.
+        </li>
+      </ul>
+
+      <div class="section-head">Connects to</div>
+      <p class="prose">
+        <strong><a href="proteins.html">Proteins in the Kitchen</a></strong> — Myosin and
+        actin denaturation, collagen structure and gelatin conversion, and the general
+        mechanics of protein coagulation under heat are all covered in Lesson 2.
+        Meat science is proteins lesson content applied to a specific tissue.
+        <br>
+        <strong><a href="maillard.html">Heat &amp; Browning</a></strong> — The brown
+        crust on seared meat is Maillard chemistry, not "sealed juices." The rate
+        depends on surface water activity (dry surface browns faster) and temperature
+        (must exceed ~150°C). Crust flavour is Strecker aldehydes, pyrazines, and
+        thiols from cysteine degradation.
+        <br>
+        <strong><a href="flavor.html">Flavour Science</a></strong> — Dry-aged beef's
+        umami depth comes from free glutamate liberated by proteolysis. Post-mortem
+        ATP degradation produces IMP (inosine monophosphate) — one of the primary
+        nucleotides that synergises with glutamate at the T1R1+T1R3 receptor.
+        Meat is a primary source of both umami compounds.
+        <br>
+        <strong><a href="fish.html">Fish and Shellfish</a></strong> — Fish muscle has
+        radically different structure (shorter sarcomeres, almost no connective tissue,
+        high TMAO content) and requires very different cooking treatment. Direct
+        contrast with land animal muscle.
+      </p>
+
+      <div class="lesson-nav">
+        <a href="flavor.html" class="lesson-nav-btn">← Flavour Science</a>
+        <a href="fish.html" class="lesson-nav-btn">Fish &amp; Shellfish →</a>
+      </div>
+
+    </div><!-- /main -->
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+  // ── Moisture retention vs. core temperature ───────────────────────────────
+  var temps = [40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90];
+  var moisture = [100, 99, 97, 94, 88, 79, 68, 52, 38, 30, 26];
+
+  // Key event annotations
+  var events = [
+    { x: 52, label: 'Myosin<br>denatures', y: 94 },
+    { x: 65, label: 'Sarcoplasmic<br>proteins', y: 75 },
+    { x: 75, label: '<b>Actin denatures</b><br>juiciness cliff', y: 48 }
+  ];
+
+  var annotations = events.map(function (e) {
+    return {
+      x: e.x, y: e.y, text: e.label,
+      showarrow: true, arrowhead: 2, arrowsize: 0.8,
+      arrowcolor: '#3a6a8a', ax: 32, ay: -28,
+      font: { size: 10, family: 'IBM Plex Sans', color: '#3a6a8a' },
+      bgcolor: 'rgba(255,255,255,0.85)', borderpad: 3
+    };
+  });
+
+  // Shade the "juiciness cliff" zone
+  Plotly.newPlot('plotly-moisture', [
+    {
+      x: temps, y: moisture,
+      type: 'scatter', mode: 'lines+markers',
+      line: { color: '#3a6a8a', width: 2.5 },
+      marker: { color: '#3a6a8a', size: 6 },
+      fill: 'tozeroy',
+      fillcolor: 'rgba(58,106,138,0.08)',
+      hovertemplate: '%{x}°C → %{y}% moisture retained<extra></extra>'
+    }
+  ], {
+    shapes: [
+      { type: 'rect', x0: 73, x1: 80, y0: 0, y1: 100,
+        fillcolor: 'rgba(184,92,56,0.12)', line: { width: 0 } }
+    ],
+    annotations: annotations.concat([
+      { x: 76.5, y: 98, text: 'Juiciness<br>cliff', showarrow: false,
+        xanchor: 'center', font: { color: '#b85c38', size: 9.5, family: 'IBM Plex Sans' } }
+    ]),
+    xaxis: {
+      title: 'Core temperature (°C)',
+      range: [38, 92],
+      tickfont: { family: 'IBM Plex Sans', size: 12 },
+      titlefont: { family: 'IBM Plex Sans', size: 13 }
+    },
+    yaxis: {
+      title: '% moisture retained',
+      range: [0, 105],
+      tickfont: { family: 'IBM Plex Sans', size: 12 },
+      titlefont: { family: 'IBM Plex Sans', size: 13 }
+    },
+    margin: { l: 55, r: 20, t: 14, b: 50 },
+    paper_bgcolor: '#f9f9f7',
+    plot_bgcolor: '#f9f9f7',
+    font: { family: 'IBM Plex Sans' },
+    showlegend: false
+  }, { responsive: true, displayModeBar: false });
+
+});
+</script>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+</body>
+</html>

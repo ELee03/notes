@@ -15,6 +15,34 @@
         { "href": "fermentation.html",  "text": "5 · Fermentation" },
         { "href": "flavor.html",        "text": "6 · Flavour Science" }
       ]
+    },
+    {
+      "label": "Animal Foods",
+      "items": [
+        { "href": "meat.html",          "text": "7 · Meat Science" },
+        { "href": "fish.html",          "text": "8 · Fish & Shellfish",          "planned": true }
+      ]
+    },
+    {
+      "label": "Plants & Ingredients",
+      "items": [
+        { "href": "vegetables.html",    "text": "9 · Vegetables & Fruits",       "planned": true },
+        { "href": "spices.html",        "text": "10 · Spices & Aromatics",       "planned": true }
+      ]
+    },
+    {
+      "label": "Beverages",
+      "items": [
+        { "href": "coffee-tea.html",    "text": "11 · Coffee & Tea",             "planned": true },
+        { "href": "wine-beer.html",     "text": "12 · Wine & Beer",              "planned": true }
+      ]
+    },
+    {
+      "label": "Advanced Topics",
+      "items": [
+        { "href": "chocolate.html",     "text": "13 · Chocolate & Confectionery","planned": true },
+        { "href": "hydrocolloids.html", "text": "14 · Hydrocolloids",            "planned": true }
+      ]
     }
   ]
 }
