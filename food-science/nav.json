@@ -27,7 +27,7 @@
       "label": "Plants & Ingredients",
       "items": [
         { "href": "vegetables.html",    "text": "9 · Vegetables & Fruits" },
-        { "href": "spices.html",        "text": "10 · Spices & Aromatics",       "planned": true }
+        { "href": "spices.html",        "text": "10 · Spices & Aromatics" }
       ]
     },
     {

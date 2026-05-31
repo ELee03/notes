@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spices &amp; Aromatics — Food Science</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="food-science" data-current="spices.html"></div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb"><a href="../index.html">Field Notes</a> → <a href="index.html">Food Science</a> → Spices &amp; Aromatics</div>
+
+      <h1 class="lesson-title">Spices &amp; Aromatics</h1>
+      <div class="lesson-meta">Terpene Chemistry · Phenylpropanoids · Extraction &amp; Bloom · Capsaicinoids</div>
+
+      <p class="prose">
+        A spice is a plant-derived flavouring — typically seeds, bark, roots, or dried
+        fruits — that contributes aroma, heat, colour, or all three to food. The chemistry
+        behind them is well understood, and that understanding explains several things that
+        experienced cooks know by feel but rarely articulate: why freshly ground spice is
+        so much more powerful than the jar that's been open for a year; why blooming spices
+        in hot oil extracts more character than simmering them in water; why the heat from
+        a chilli pepper lingers for twenty minutes while the heat from black pepper fades
+        in seconds; and why some spices can tolerate long braises while others must be
+        added at the last moment.
+      </p>
+      <p class="prose">
+        This lesson covers the chemical families that make up spice aroma (terpenes and
+        phenylpropanoids), the extraction and decay of volatile compounds during cooking,
+        the distinct chemistry of pungency (capsaicin, piperine), and detailed profiles of
+        the most chemically interesting spices. Allium sulphur chemistry (garlic, onion)
+        and brassica glucosinolates (mustard, wasabi) are covered in
+        <a href="vegetables.html">Lesson 9: Vegetables &amp; Fruits</a>.
+      </p>
+
+      <div class="section-head">Chemical Families in Spice Aroma</div>
+
+      <p class="prose">
+        Almost all spice aroma comes from two chemical families: <strong>terpenes</strong>
+        (and their oxygenated derivatives, terpenoids) and <strong>phenylpropanoids</strong>.
+        Understanding their structures explains their behaviour during cooking.
+      </p>
+
+      <h3>Terpenes and Terpenoids</h3>
+      <p class="prose">
+        Terpenes are built from five-carbon isoprene units (C₅H₈) assembled in a
+        head-to-tail pattern. The number of isoprene units determines the class:
+      </p>
+      <ul class="prose" style="margin-top:0;">
+        <li><strong>Monoterpenes (C₁₀, 2 isoprene units):</strong> highly volatile,
+          low boiling points (150–180°C), the dominant class in most spice essential oils.
+          Examples: limonene (citrus, cumin), α-pinene (rosemary, bay), linalool
+          (coriander, lavender, cardamom), myrcene (hops, bay leaf), thymol (thyme),
+          carvacrol (oregano), menthol (mint), 1,8-cineole/eucalyptol (cardamom, bay).</li>
+        <li><strong>Sesquiterpenes (C₁₅, 3 isoprene units):</strong> heavier, less
+          volatile, more heat-stable. Examples: β-caryophyllene (clove, black pepper,
+          cannabis — the compound behind CB2 receptor activity in cannabis), zingiberene
+          (ginger), bisabolene.</li>
+        <li><strong>Diterpenes and above (C₂₀+):</strong> essentially non-volatile at
+          cooking temperatures — contribute colour and bitterness rather than aroma.</li>
+      </ul>
+      <p class="prose">
+        Terpenoids are terpenes with additional functional groups (alcohols, aldehydes,
+        ketones, oxides). Geraniol (rose, geranium), citral (lemon grass, citrus zest),
+        menthone (mint), and carvone (caraway, dill, spearmint) are all oxygenated
+        monoterpenes with distinct and identifiable aromas.
+      </p>
+
+      <h3>Phenylpropanoids</h3>
+      <p class="prose">
+        Phenylpropanoids are derived from the amino acid phenylalanine via the
+        phenylpropanoid pathway — the same pathway that produces lignin and tannins.
+        They have a benzene ring attached to a three-carbon chain, and many have
+        distinctive intense aromas at low concentrations:
+      </p>
+      <ul class="prose" style="margin-top:0;">
+        <li><strong>Cinnamaldehyde:</strong> cinnamon bark's dominant aroma compound
+          (60–80% of essential oil); an α,β-unsaturated aldehyde.</li>
+        <li><strong>Eugenol:</strong> clove's dominant compound (70–90% of essential oil);
+          also present in cinnamon, bay leaf, nutmeg, and basil; warm, spicy-sweet.</li>
+        <li><strong>Anethole:</strong> anise, fennel, star anise; the compound behind
+          the characteristic "licorice" character.</li>
+        <li><strong>Estragole (methyl chavicol):</strong> tarragon, sweet basil; structurally
+          related to anethole but with a distinctly different, more herbal character.</li>
+        <li><strong>Vanillin:</strong> vanilla; a methoxylated benzaldehyde.</li>
+        <li><strong>Safrole:</strong> was historically important in sassafras; now recognised
+          as a carcinogenic precursor and largely removed from food use.</li>
+      </ul>
+      <p class="prose">
+        Phenylpropanoids are generally less volatile than monoterpenes (higher boiling
+        points, ~250–300°C) and correspondingly more heat-stable. A clove stud can
+        sit in a slow braise for hours and still flavour the dish; a handful of fresh
+        basil added to the same braise would contribute almost nothing because its
+        linalool and estragole evaporate immediately.
+      </p>
+
+      <div class="section-head">Extraction: Fat vs. Water</div>
+
+      <p class="prose">
+        "Blooming" spices — briefly frying whole or ground spices in hot oil or ghee
+        before adding other ingredients — is a technique used across Indian, Middle
+        Eastern, and Southeast Asian cooking. The chemistry behind it is real and
+        quantifiable.
+      </p>
+      <p class="prose">
+        Terpenes and most phenylpropanoids are <strong>lipophilic</strong> — they dissolve
+        much more readily in fat than in water. The partition coefficient (log P, a measure
+        of lipophilicity) for key spice compounds typically ranges from 2 to 5, meaning
+        the compound is 100–100,000 times more concentrated in fat than in an equal
+        volume of water at equilibrium.
+      </p>
+      <p class="prose">
+        Practical consequences:
+      </p>
+      <ul class="prose" style="margin-top:0;">
+        <li>Blooming extracts far more of the volatile aromatics from the spice cell
+          matrix than simmering in water does. The hot fat also heats the spice rapidly,
+          driving volatilisation while immediately dissolving what's released.</li>
+        <li>Spice flavours added to an oil-based dish are perceived differently from the
+          same spice added to a water-based dish: fat carries the lipophilic aromatics
+          to the palate more efficiently, providing longer retronasal persistence.</li>
+        <li>Temperature matters for bloom: oil at 170–190°C extracts efficiently and
+          triggers some desirable thermal transformations (Maillard-adjacent reactions
+          between spice compounds and the oil). Below ~120°C, extraction is slower
+          and thermal transformations are minimal. Above ~220°C, many monoterpenes
+          simply evaporate or char.</li>
+      </ul>
+      <p class="prose">
+        The exception is water-soluble flavour compounds. Saffron's pigment (crocin)
+        and some bitter compounds are best extracted in warm liquid (water or dairy).
+        Paprika's capsanthin and capsorubin (carotenoid pigments) are fat-soluble and
+        must be bloomed in oil to release their colour and flavour effectively.
+      </p>
+      <div class="callout">
+        <strong>The fat-vs-water rule for specific spices:</strong><br>
+        Bloom in fat: cumin, coriander, mustard seeds, fenugreek, cardamom, star anise,
+        paprika, chilli — all fat-soluble terpene/phenylpropanoid dominated.<br>
+        Extract in liquid: saffron (warm water or milk), vanilla (alcohol + water extract
+        best), bay leaf (water fine — cineole is partially water-miscible).<br>
+        Both work: black pepper, cinnamon (add to fat for depth, to liquid for colour/flavour).
+      </div>
+
+      <div class="section-head">Volatile Stability During Cooking</div>
+
+      <p class="prose">
+        Not all aroma compounds survive cooking equally. The key variable is the compound's
+        vapour pressure at cooking temperature — and whether it undergoes thermal
+        degradation or transformation into something else.
+      </p>
+      <p class="prose">
+        A rough thermal stability ranking for common spice volatiles:
+      </p>
+
+      <div style="overflow-x:auto;margin:16px 0 24px;">
+        <table style="width:100%;border-collapse:collapse;font-size:0.9rem;font-family:'IBM Plex Sans',sans-serif;">
+          <thead>
+            <tr style="background:#e8f0f5;text-align:left;">
+              <th style="padding:8px 12px;border-bottom:2px solid #b0c8d8;">Compound</th>
+              <th style="padding:8px 12px;border-bottom:2px solid #b0c8d8;">Found in</th>
+              <th style="padding:8px 12px;border-bottom:2px solid #b0c8d8;">BP (approx)</th>
+              <th style="padding:8px 12px;border-bottom:2px solid #b0c8d8;">Heat stability</th>
+              <th style="padding:8px 12px;border-bottom:2px solid #b0c8d8;">When to add</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #dce4e8;">
+              <td style="padding:7px 12px;font-family:'IBM Plex Mono',monospace;font-size:0.85rem;">Myrcene</td>
+              <td style="padding:7px 12px;">Bay leaf, hops, ginger</td>
+              <td style="padding:7px 12px;">167°C</td>
+              <td style="padding:7px 12px;color:#c0392b;">Very low</td>
+              <td style="padding:7px 12px;">Last minute / raw</td>
+            </tr>
+            <tr style="border-bottom:1px solid #dce4e8;background:#fafafa;">
+              <td style="padding:7px 12px;font-family:'IBM Plex Mono',monospace;font-size:0.85rem;">Limonene</td>
+              <td style="padding:7px 12px;">Citrus, cumin, coriander</td>
+              <td style="padding:7px 12px;">176°C</td>
+              <td style="padding:7px 12px;color:#e67e22;">Low</td>
+              <td style="padding:7px 12px;">Brief cooking only</td>
+            </tr>
+            <tr style="border-bottom:1px solid #dce4e8;">
+              <td style="padding:7px 12px;font-family:'IBM Plex Mono',monospace;font-size:0.85rem;">Linalool</td>
+              <td style="padding:7px 12px;">Coriander, lavender, cardamom</td>
+              <td style="padding:7px 12px;">198°C</td>
+              <td style="padding:7px 12px;color:#f39c12;">Moderate</td>
+              <td style="padding:7px 12px;">Early–mid cooking</td>
+            </tr>
+            <tr style="border-bottom:1px solid #dce4e8;background:#fafafa;">
+              <td style="padding:7px 12px;font-family:'IBM Plex Mono',monospace;font-size:0.85rem;">Thymol / Carvacrol</td>
+              <td style="padding:7px 12px;">Thyme, oregano</td>
+              <td style="padding:7px 12px;">232°C</td>
+              <td style="padding:7px 12px;color:#27ae60;">Good</td>
+              <td style="padding:7px 12px;">Early cooking</td>
+            </tr>
+            <tr style="border-bottom:1px solid #dce4e8;">
+              <td style="padding:7px 12px;font-family:'IBM Plex Mono',monospace;font-size:0.85rem;">Cinnamaldehyde</td>
+              <td style="padding:7px 12px;">Cinnamon</td>
+              <td style="padding:7px 12px;">248°C</td>
+              <td style="padding:7px 12px;color:#27ae60;">Good</td>
+              <td style="padding:7px 12px;">Early or mid cooking</td>
+            </tr>
+            <tr style="border-bottom:1px solid #dce4e8;background:#fafafa;">
+              <td style="padding:7px 12px;font-family:'IBM Plex Mono',monospace;font-size:0.85rem;">β-Caryophyllene</td>
+              <td style="padding:7px 12px;">Clove, black pepper</td>
+              <td style="padding:7px 12px;">260°C</td>
+              <td style="padding:7px 12px;color:#27ae60;">High</td>
+              <td style="padding:7px 12px;">Any point</td>
+            </tr>
+            <tr style="border-bottom:1px solid #dce4e8;">
+              <td style="padding:7px 12px;font-family:'IBM Plex Mono',monospace;font-size:0.85rem;">Eugenol</td>
+              <td style="padding:7px 12px;">Clove, cinnamon, bay</td>
+              <td style="padding:7px 12px;">254°C</td>
+              <td style="padding:7px 12px;color:#27ae60;">High</td>
+              <td style="padding:7px 12px;">Any point</td>
+            </tr>
+            <tr style="background:#fafafa;">
+              <td style="padding:7px 12px;font-family:'IBM Plex Mono',monospace;font-size:0.85rem;">Capsaicin</td>
+              <td style="padding:7px 12px;">Chilli peppers</td>
+              <td style="padding:7px 12px;">210°C</td>
+              <td style="padding:7px 12px;color:#27ae60;">Very high</td>
+              <td style="padding:7px 12px;">Any point (heat doesn't reduce it)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="prose">
+        The key insight from this table: there is no single rule for when to add spices.
+        Fragile monoterpenes (myrcene, limonene) must be added at the end, or they
+        simply evaporate. Robust phenylpropanoids (eugenol, cinnamaldehyde) and
+        sesquiterpenes (β-caryophyllene) tolerate prolonged cooking. Mixing a spice
+        blend that is added at the start may lose its most volatile components entirely
+        while the stable ones intensify — this shifts the flavour profile away from
+        what was intended.
+      </p>
+
+      <h3>Why freshly ground spice is stronger</h3>
+      <p class="prose">
+        A whole spice has a protective outer coat — husk, seed coat, or bark — that
+        physically limits the surface area through which essential oils can escape or
+        oxidise. Grinding shatters this and creates an enormous surface area increase.
+        A 1 cm spice cube ground to 1 mm particles increases surface area by roughly
+        1000-fold.
+      </p>
+      <p class="prose">
+        Three processes then race to destroy the aroma:
+      </p>
+      <ol class="prose" style="margin-top:0;">
+        <li><strong>Volatilisation</strong> — monoterpenes evaporate at room temperature
+          once exposed. The smell of freshly ground pepper or coriander in the air is the
+          spice literally losing its flavour.</li>
+        <li><strong>Oxidation</strong> — O₂ attacks the double bonds in terpenes. Limonene
+          oxidises to peroxides that smell like turpentine and are mild irritants.
+          Other terpene peroxides are allergens. A jar of old pre-ground cumin smells
+          "off" because oxidised terpene products dominate over the fresh limonene.</li>
+        <li><strong>Moisture absorption</strong> — ground spice is hygroscopic; absorbed
+          water dilutes essential oils and accelerates hydrolysis of some ester compounds.</li>
+      </ol>
+      <p class="prose">
+        The practical recommendation: buy whole spices, toast briefly in a dry pan before
+        grinding (heat ruptures more oil cells for fuller extraction), grind immediately
+        before use. For spices used infrequently, buy small quantities and replace often
+        rather than grinding large batches.
+      </p>
+
+      <div class="section-head">Pungency: Capsaicin and Piperine</div>
+
+      <p class="prose">
+        Capsaicin and piperine are not aromas. They do not activate smell receptors or
+        taste receptors. They activate <strong>pain and temperature receptors</strong> in
+        the oral mucosa (and elsewhere), creating the sensation of heat.
+      </p>
+
+      <h3>Capsaicin and the TRPV1 receptor</h3>
+      <p class="prose">
+        Capsaicin (and its close analogue dihydrocapsaicin, which is equally potent)
+        is a vanillyl amide — it has a vanillin-derived ring structure and a long
+        lipophilic tail. It binds to and activates <strong>TRPV1</strong> (Transient
+        Receptor Potential Vanilloid 1), a non-selective cation channel that normally
+        responds to temperatures above 43°C, acidic conditions, and some lipids. When
+        capsaicin binds TRPV1, the channel opens and produces exactly the same signal
+        as actual high heat — hence the burning sensation.
+      </p>
+      <p class="prose">
+        This is fundamentally different from taste (which involves G-protein-coupled
+        receptors or ion channels in taste receptor cells) and from aroma (which involves
+        olfactory receptors). Capsaicin bypasses flavour entirely and talks directly to
+        the nervous system's pain-and-heat signalling pathway.
+      </p>
+      <div class="callout">
+        <strong>Why dairy relieves chilli heat but water does not:</strong><br>
+        Capsaicin is lipophilic (log P ≈ 3.6) — it is essentially insoluble in water
+        but dissolves readily in fat. Water cannot wash it off mucosal surfaces.
+        Dairy works through two mechanisms: (1) the fat phase dissolves and removes
+        capsaicin; (2) <strong>casein micelles</strong> (the main milk proteins) act as
+        detergent-like structures that encapsulate capsaicin molecules and carry them
+        away. Alcohol (ethanol) also dissolves capsaicin, which is why a high-alcohol
+        drink provides relief. Bread or starchy foods provide mild relief by mechanical
+        absorption at the mucosal surface.
+      </div>
+      <p class="prose">
+        <strong>Where capsaicin is in a pepper:</strong> Almost entirely in the
+        <strong>placenta</strong> — the white spongy pith to which the seeds are attached.
+        The seeds themselves contain little capsaicin; they are hot by physical proximity
+        to the placenta. Removing the placenta (and seeds attached to it) substantially
+        reduces heat level.
+      </p>
+      <p class="prose">
+        <strong>Heat stability:</strong> Capsaicin does not break down at normal cooking
+        temperatures. A dish does not get milder by cooking longer. The only ways to
+        reduce heat are dilution (adding more non-spicy ingredients) or fatty extraction
+        (absorbing capsaicin into a fat phase that is then discarded — rinsing a cut
+        pepper surface with oil, then wiping dry, removes significant capsaicin).
+      </p>
+
+      <h3>The Scoville Scale</h3>
+      <p class="prose">
+        The Scoville scale was originally a bioassay: a capsaicin extract is diluted
+        in sugar water until a panel can no longer detect heat; the Scoville Heat Unit
+        (SHU) is the dilution factor. Modern measurement uses HPLC to quantify
+        capsaicinoid content directly, then converts: 1 ppm (by weight) capsaicinoid ≈
+        15 SHU.
+      </p>
+
+      <div class="widget-card">
+        <div class="widget-title">Chilli Pepper Heat Scale (log SHU)</div>
+        <div id="scoville-chart" style="width:100%;height:460px;"></div>
+        <p style="font-size:0.85rem;color:#6a7f8a;margin:8px 16px 16px;">
+          Scoville heat units (SHU) plotted on a log₁₀ scale. Note that the scale spans
+          eight orders of magnitude from bell pepper to pure capsaicin. All units are
+          approximate means — individual peppers from the same plant can vary 2–3×
+          depending on growing conditions and stress.
+        </p>
+      </div>
+
+      <h3>Piperine and black pepper</h3>
+      <p class="prose">
+        Piperine — an amide of piperic acid and piperidine — is responsible for black
+        pepper's heat. It activates TRPV1 but also TRPA1 (Transient Receptor Potential
+        Ankyrin 1 — also the receptor for wasabi and mustard). TRPA1 activation adds
+        the sharp, "catching-in-the-throat" quality that distinguishes pepper heat from
+        chilli heat.
+      </p>
+      <p class="prose">
+        Piperine heat dissipates faster than capsaicin — partly because piperine's
+        binding to TRPV1/TRPA1 is more transient, and partly because it is less
+        lipophilic (log P ≈ 2.6) and more easily cleared from mucosal surfaces.
+      </p>
+      <p class="prose">
+        Beyond pungency, piperine interacts with taste. It enhances perceived saltiness
+        and umami — a practical reason why a dish that "needs more seasoning" sometimes
+        needs pepper rather than salt. It is also a potent inhibitor of CYP3A4 and
+        P-glycoprotein (metabolic enzymes in the gut and liver), which dramatically
+        increases the bioavailability of co-ingested compounds. This is the scientific
+        basis for combining turmeric with black pepper: curcumin (turmeric's active
+        compound) has extremely poor oral bioavailability, but piperine can increase
+        it by 2000%.
+      </p>
+      <p class="prose">
+        Black pepper's aroma comes from monoterpenes: α-pinene and β-pinene (pine),
+        limonene (citrus), myrcene (woody). These are volatile and fragile; freshly
+        ground pepper contributes aroma that pre-ground pepper cannot. The piperine
+        itself is relatively heat-stable, so black pepper's heat survives cooking, but
+        its aroma does not unless added at the end.
+      </p>
+
+      <div class="section-head">Individual Spice Profiles</div>
+
+      <h3>Cinnamon</h3>
+      <p class="prose">
+        Two quite different plants are sold as cinnamon. True cinnamon (<em>Cinnamomum
+        verum</em>, Ceylon cinnamon) has thin, layered bark and a delicate, complex
+        aroma dominated by cinnamaldehyde at lower levels (~50–60%), supported by
+        eugenol, linalool, and β-caryophyllene. Cassia (<em>C. cassia</em>, <em>C.
+        aromaticum</em> — most "cinnamon" sold in North America) is thicker, harder,
+        and dominated by cinnamaldehyde at higher levels (~75–90%) with far less
+        supporting cast. Cassia tastes stronger and more one-dimensional; Ceylon is
+        more nuanced at the same weight.
+      </p>
+      <p class="prose">
+        Cinnamaldehyde is an α,β-unsaturated aldehyde — it is reactive and can form
+        Schiff bases with amines, which may contribute to its antimicrobial properties.
+        It is relatively heat-stable but does slowly oxidise to cinnamic acid (less
+        aromatic) on prolonged storage. The whole sticks in a slow braise release
+        compound continuously over hours.
+      </p>
+
+      <h3>Clove</h3>
+      <p class="prose">
+        Clove (<em>Syzygium aromaticum</em>) contains the highest eugenol concentration
+        of any common spice — 70–90% of the essential oil. Eugenol is warm, spicy, and
+        clove-characteristic; at lower concentrations it appears in cinnamon, bay leaf,
+        and basil. β-Caryophyllene adds a woody, peppery note. Acetyleugenol is a minor
+        component that modifies character slightly between bud and leaf clove.
+      </p>
+      <p class="prose">
+        Eugenol is a mild local anaesthetic — historically used in dentistry (zinc oxide
+        eugenol cement, ZOE) and still sold as a home toothache remedy. The same compound
+        creates the numbing sensation that can develop when too much clove is used in cooking.
+      </p>
+
+      <h3>Vanilla</h3>
+      <p class="prose">
+        Real vanilla flavour is the product of a slow enzymatic and chemical curing process
+        applied to the pod of <em>Vanilla planifolia</em>. The fresh pod has little aroma:
+        vanillin exists as a glycoside (<strong>glucovanillin</strong>) which is odourless.
+        Curing (alternating sweating and drying over several weeks to months) activates
+        endogenous β-glucosidase enzymes, cleaving the glucose to release free vanillin.
+        Oxidative reactions simultaneously produce hundreds of supporting compounds:
+        4-hydroxybenzaldehyde, guaiacol, p-anisaldehyde, furaneol, and numerous others.
+      </p>
+      <p class="prose">
+        Synthetic vanillin — made from guaiacol (from petrochemicals) or from
+        lignosulfonates (a paper-making by-product) — reproduces the dominant compound
+        but not the supporting cast. This is why a dish made with "vanilla flavour" is
+        detectable as inferior to one made with real vanilla extract: the minor compounds
+        create the rounded complexity that vanillin alone cannot. Vanilla extract (ethanol
+        + water extraction of cured beans) contains both vanillin and the supporting
+        compounds and is the best practical format for cooking.
+      </p>
+
+      <h3>Saffron</h3>
+      <p class="prose">
+        Saffron (<em>Crocus sativus</em>) is the dried stigmas of the saffron crocus;
+        it is expensive because each flower has three stigmas that must be harvested
+        by hand. Three distinct chemical systems contribute to its character:
+      </p>
+      <ul class="prose" style="margin-top:0;">
+        <li><strong>Crocin</strong> (and crocetin): water-soluble carotenoid glycosides
+          responsible for the vivid yellow-orange colour. Unlike most carotenoids,
+          crocin is water-soluble (the glucose groups make it hydrophilic). Heat-stable
+          once extracted.</li>
+        <li><strong>Picrocrocin</strong>: a bitter glycoside derived from the same
+          carotenoid degradation pathway. Contributes the characteristic saffron
+          bitterness.</li>
+        <li><strong>Safranal</strong>: a monoterpenoid aldehyde that forms from
+          picrocrocin during the drying/curing process (the glycosidic bond cleaves,
+          releasing the volatile aglycone). Responsible for saffron's distinctive
+          honey-hay aroma.</li>
+      </ul>
+      <p class="prose">
+        Extraction technique matters. Crocin and picrocrocin are water-soluble; warm
+        water or dairy are optimal solvents. Safranal is volatile and partially
+        lipophilic. Brief blooming in a little warm liquid (not boiling — above ~85°C
+        safranal evaporates quickly) releases maximum aroma and colour.
+      </p>
+
+      <h3>Ginger and Turmeric</h3>
+      <p class="prose">
+        Ginger's pungent compounds transform radically with processing:
+      </p>
+      <ul class="prose" style="margin-top:0;">
+        <li><strong>Gingerols</strong> (6-, 8-, 10-gingerol): the dominant pungent
+          compounds in fresh ginger. Warm, slightly less aggressive than capsaicin.
+          Activate TRPV1.</li>
+        <li><strong>Shogaols</strong>: formed by dehydration of gingerols during drying
+          or prolonged heating. About twice as pungent as the corresponding gingerol.
+          Dominant in dried ground ginger.</li>
+        <li><strong>Zingerone</strong>: forms from gingerol by retro-aldol condensation
+          during cooking — milder, sweeter, "cooked ginger" note. The reason cooked ginger
+          is gentler than raw ginger.</li>
+      </ul>
+      <p class="prose">
+        Fresh ginger ≠ dried ginger in flavour. They are not interchangeable at any
+        conversion ratio: shogaol-dominated dried ginger is hotter and lacks fresh
+        ginger's terpene top notes (zingiberene, β-bisabolene). A recipe specifying
+        "fresh ginger" developed its character around the gingerol-terpene profile;
+        substituting dried will make a different, hotter dish.
+      </p>
+      <p class="prose">
+        Turmeric's colour compound is <strong>curcumin</strong> (a polyphenol, not a
+        terpene), which has almost no aroma but contributes vivid yellow. Curcumin is
+        famously poorly bioavailable — but piperine co-ingestion increases absorption
+        dramatically. Turmeric's aroma comes from sesquiterpene ketones (ar-turmerone,
+        α- and β-turmerone) which are responsible for its earthy, slightly bitter notes.
+      </p>
+
+      <h3>Star Anise, Fennel, and Anise</h3>
+      <p class="prose">
+        Three unrelated plant families converge on almost identical aroma through convergent
+        evolution to produce <strong>anethole</strong>: star anise (<em>Illicium verum</em>,
+        a magnoliid), fennel (<em>Foeniculum vulgare</em>, an umbellifer), and anise seed
+        (<em>Pimpinella anisum</em>, also an umbellifer). All contain 70–90% trans-anethole
+        as the dominant volatile, giving the characteristic licorice character.
+      </p>
+      <p class="prose">
+        Anethole is a phenylpropanoid and correspondingly heat-stable; these spices survive
+        long simmering. Star anise is by far the cheapest source and is used in Vietnamese
+        pho, Chinese five-spice, and many braised preparations for extended cooking. Fennel
+        fronds are more delicate and should be added fresh; fennel seeds tolerate cooking.
+      </p>
+      <p class="prose">
+        Tarragon and sweet basil contain <strong>estragole</strong> (methyl chavicol) as a
+        major compound — structurally very similar to anethole (just a methyl group
+        difference) but with a distinctly fresher, more herbal character. These are volatile
+        and heat-labile: both herbs must be added at the end or their characteristic aroma
+        is lost.
+      </p>
+
+      <div class="section-head">Worked Examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Toast-and-grind vs. pre-ground: how much difference does it make?</strong></div>
+        <div class="example-problem">
+          You are making a curry paste. You have two options: (A) use pre-ground cumin
+          and coriander from jars that have been open for six months; (B) buy whole seeds,
+          toast them in a dry pan, grind fresh. A colleague argues the difference is
+          minimal — "cumin is cumin." Explain the chemistry of why option B produces a
+          dramatically different result.
+        </div>
+        <div class="example-body">
+          <p><strong>Pre-ground, six months open (A):</strong> Cumin's dominant fresh
+          aromatics are limonene (citrus), α-pinene, p-cymene, and cumin aldehyde.
+          Limonene begins oxidising to terpene hydroperoxides and terpineol within
+          weeks of grinding. After six months in an open jar, most of the limonene
+          is gone or transformed. What remains are oxidised products — musty, turpentine-like,
+          slightly harsh notes. The characteristic fresh, lemony-spicy top notes
+          of cumin simply no longer exist.</p>
+          <p><strong>Toasted and freshly ground (B):</strong> The whole seed's coat
+          protects essential oils from O₂ and light. Toasting briefly in a dry pan
+          (120–160°C, ~2 minutes) does two things: (1) ruptures more oil cells in the
+          seed, giving better extraction when ground; (2) triggers Maillard reactions
+          on the seed surface, adding roasted depth compounds. Grinding immediately
+          before use preserves the freshly exposed volatiles. The result: full limonene
+          top notes, roasted depth, and no oxidised off-character.</p>
+          <p><strong>Quantitative context:</strong> Freshly ground cumin can contain
+          2–4% limonene by weight; pre-ground cumin stored 6 months may have &lt;0.1%.
+          Given that limonene's detection threshold is ~10 ppb in water, this difference
+          is easily perceptible. The colleague's "cumin is cumin" claim is wrong — the
+          molecular composition has fundamentally changed.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Deconstructing a slow-braise spice blend</strong></div>
+        <div class="example-problem">
+          A Moroccan lamb tagine recipe calls for: cinnamon stick, cloves, ground cumin
+          (added at start), fresh coriander (added at finish), and ground chilli. All
+          are added to the pot together at the beginning except the coriander. Explain
+          from a volatility standpoint why this recipe is structured this way, and
+          whether any of the start-of-cook spices are correctly placed.
+        </div>
+        <div class="example-body">
+          <p>The structure reflects an intuitive understanding of volatile stability,
+          and it is largely correct for all but one spice.</p>
+          <p><strong>Cinnamon stick (correct):</strong> Cinnamaldehyde (BP ~248°C) and
+          eugenol (BP ~254°C) are stable at braising temperatures (~100°C). The whole
+          stick releases continuously over the cook, maintaining character throughout.
+          This is the ideal form for long braises.</p>
+          <p><strong>Cloves (correct):</strong> Eugenol is highly heat-stable. Cloves
+          in a long braise contribute continuously. The risk is over-addition —
+          eugenol's intensity means even one extra clove can dominate everything else.</p>
+          <p><strong>Ground cumin (marginal):</strong> Cumin's aroma includes some
+          moderately stable compounds (cuminaldehyde, p-cymene) that survive extended
+          cooking. However, its most volatile limonene and α-pinene components will
+          evaporate in the first 15 minutes. Adding some cumin at start contributes
+          stable depth; ideally a small second addition of fresh-ground cumin 15–20
+          minutes before serving would restore the fresh top notes.</p>
+          <p><strong>Chilli (correct):</strong> Capsaicin is essentially heat-indestructible
+          at braising temperatures. Adding at the start ensures even distribution
+          through the fat phase; it contributes the same heat whether added at start
+          or finish.</p>
+          <p><strong>Fresh coriander at finish (correct and critical):</strong>
+          Coriander's characteristic compounds — linalool, decanal, dodecenal — have
+          BPs of ~198–200°C and are highly volatile. Added at the start, they would
+          evaporate entirely within minutes. Added as a finish, they provide the fresh
+          herbal top note that lifts the whole dish. This is the most important
+          placement decision in the recipe.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Saffron: colour vs. flavour extraction</strong></div>
+        <div class="example-problem">
+          A recipe says to bloom saffron in hot water and add the liquid to the dish.
+          A second approach says to add the saffron threads directly to the simmering
+          dish. A third approach suggests blooming in warm cream (for a risotto). Which
+          approach best extracts (a) colour, (b) aroma, and (c) full flavour complexity?
+          Justify using saffron's chemistry.
+        </div>
+        <div class="example-body">
+          <p>Saffron has three distinct compounds to extract: crocin (colour), picrocrocin
+          (bitterness), and safranal (aroma). Their solubilities and stabilities differ.</p>
+          <p><strong>Crocin (colour) — best extraction:</strong> Water. Crocin is
+          water-soluble (glycosylated carotenoid). Warm water (50–65°C) dissolves it
+          efficiently. All three methods will extract colour; direct addition to simmering
+          water/stock works, but pre-blooming in hot water ensures the threads are
+          fully hydrated and every molecule is dissolved before it reaches the dish.</p>
+          <p><strong>Safranal (aroma) — most vulnerable:</strong> Safranal is volatile
+          (BP ~205°C) and partially lipophilic. In hot water above ~80°C, it evaporates
+          rapidly from the cooking liquid into the air rather than staying in the dish.
+          Direct addition to a simmering risotto means much of the aroma is lost before
+          the dish is eaten. Optimal approach: bloom in warm (not hot) liquid at 60–70°C,
+          then add to the dish just before service.</p>
+          <p><strong>Warm cream bloom (best for risotto):</strong> The fat in cream
+          dissolves and retains safranal — lipophilic compounds are less volatile from
+          a fat phase than from water. The cream's protein (casein) can also bind some
+          aromatic compounds. Blooming saffron in warm cream at ~60°C, then adding the
+          cream at the end of risotto cooking, maximises aroma retention while extracting
+          colour from the aqueous phase simultaneously. This is the most complete
+          extraction approach.</p>
+        </div>
+      </div>
+
+      <div class="section-head">Food for Thought</div>
+      <ul class="fft-list">
+        <li class="fft-item">
+          Drinking water does not relieve chilli heat. Beer (a water + alcohol + carbonation
+          solution) relieves it somewhat. Full-fat milk relieves it well. A shot of vodka
+          provides significant relief. Rank these from least to most effective and explain
+          why, drawing on both the chemistry of capsaicin and the mechanisms of each beverage.
+          <div class="fft-answer">
+            In order of effectiveness: water (no help) &lt; beer (minimal) &lt; vodka
+            (good) &lt; full-fat milk (best). Water cannot dissolve lipophilic capsaicin
+            and simply spreads it around the oral cavity. Beer is mostly water but contains
+            ~5% ethanol — the ethanol dissolves some capsaicin, providing mild relief, but
+            the low concentration and carbonation (which activates TRPA1, briefly worsening
+            sensation) make it limited. Vodka at 40% ethanol dissolves capsaicin far more
+            effectively, and the higher alcohol concentration is directly proportional to
+            solubilisation. Full-fat milk is most effective: the fat phase physically
+            extracts capsaicin from mucosal surfaces (fat is a better solvent than 40%
+            ethanol for capsaicin's log P 3.6), and the casein micelles act as surfactant-
+            like structures to encapsulate dissolved capsaicin and prevent rebinding. The
+            combination of fat + casein outperforms pure ethanol solubilisation.
+          </div>
+        </li>
+        <li class="fft-item">
+          A recipe is described as "the same as the original but with dried herbs substituted
+          for fresh to simplify shopping." The dish tastes flat and lacks the fresh herbal
+          character of the original. Is this just a matter of quality, or is there a chemical
+          reason dried herbs cannot replicate fresh herbs in this particular use case?
+          <div class="fft-answer">
+            There is a fundamental chemical reason, not just a quality difference. Fresh
+            herbs contain intact cell structure with essential oils in oil glands or
+            trichomes. The specific monoterpene profile (e.g. linalool in fresh basil,
+            myrcene in bay leaf) is present in full. Drying inevitably loses a large
+            fraction of the most volatile compounds — myrcene, limonene, some linalool —
+            either through evaporation or oxidation. What remains in dried herb is
+            enriched in the more heat-stable sesquiterpenes and phenylpropanoids (thymol,
+            carvacrol in dried thyme and oregano), which is why dried thyme and oregano
+            can substitute more gracefully than dried basil or fresh coriander. Additionally,
+            the LOX pathway is active in fresh herbs (like in fresh vegetables) and produces
+            C6 "green" aldehydes on cell damage — crushing fresh herbs releases these
+            grassy, vivid notes that have no equivalent in dried. If the recipe was designed
+            around those fresh C6 volatiles (basil, fresh coriander, tarragon), no amount
+            of dried herb will replicate them.
+          </div>
+        </li>
+        <li class="fft-item">
+          You are designing a spice rub for a steak that will be seared at very high heat
+          (250°C surface) for 3 minutes per side, then rested. The rub contains smoked
+          paprika, ground black pepper, dried thyme, and garlic powder. Which compounds
+          from the rub will survive to the plate, which will not, and how would you modify
+          the rub composition or application method to improve flavour delivery?
+          <div class="fft-answer">
+            At 250°C surface temperature, the outer layer of the rub will exceed 150°C
+            for extended periods. Analysis by compound: Smoked paprika's carotenoid
+            pigments (capsanthin, capsorubin) are fat-soluble and relatively stable —
+            they will survive and contribute colour and mild earthy flavour; the capsaicinoids
+            will survive fully. Ground black pepper: piperine is heat-stable and survives;
+            the monoterpene aromatics (limonene, myrcene, pinene) will largely evaporate
+            in the first minute of high-heat contact. Dried thyme: thymol and carvacrol
+            (BP ~232°C) will partially survive; the more volatile fraction is lost quickly.
+            Garlic powder: the sulphur compounds formed during drying (polysulfides) are
+            moderately stable and will contribute garlic character throughout. To improve:
+            (1) Hold back some black pepper and a portion of the thyme to add post-sear/
+            during the rest — they contribute more aroma at lower temperature. (2) For the
+            garlic, freshly minced garlic added in the final 30s of searing or during basting
+            creates more complex allicin-derived compounds than garlic powder. (3) For
+            maximum aroma delivery, apply a fresh herb butter (compound butter) during the
+            rest — fat dissolves and holds aromatics that would otherwise be lost to air.
+          </div>
+        </li>
+      </ul>
+
+      <div class="section-head">Common Pitfalls</div>
+      <ol class="prose">
+        <li>
+          <strong>Equating heat stability with flavour stability.</strong> Capsaicin
+          survives hours of cooking unchanged; piperine survives too. But most terpene
+          aromatics that make a spice smell interesting do not. A spice blend added at
+          the start of a 3-hour braise delivers heat and body — but its fragrant top notes
+          are gone. Design spice addition in stages: stable compounds early, volatile
+          ones late.
+        </li>
+        <li>
+          <strong>Treating dried ginger as interchangeable with fresh.</strong> Shogaols
+          (dried ginger) are ~2× more pungent than gingerols (fresh), and the terpene
+          aroma profile is completely different. The substitution rate often cited (1 tsp
+          dried = 1 tbsp fresh) is for volume, not flavour impact — and even with correct
+          substitution, the flavour profile is different, not equivalent.
+        </li>
+        <li>
+          <strong>Storing pre-ground spice indefinitely.</strong> Monoterpenes oxidise
+          within weeks to months; the resulting terpene peroxides smell harsh and can be
+          irritants. Six-month-old pre-ground cumin or paprika at the back of the spice
+          drawer should simply be discarded. The cost of replacing it is small compared
+          to the flavour loss in a whole dish.
+        </li>
+        <li>
+          <strong>Adding water to dilute chilli heat.</strong> This does not work.
+          Capsaicin is insoluble in water and is redistributed rather than removed.
+          The correct remedies are: fat/dairy for immediate relief, more total dish
+          volume (dilution), or starch to absorb it physically.
+        </li>
+        <li>
+          <strong>Assuming Ceylon cinnamon and cassia are the same product.</strong>
+          They have different cinnamaldehyde concentrations, different flavour profiles,
+          and different levels of coumarin (a compound with potential hepatotoxic effects
+          at very high doses, present in cassia at levels ~20–50× higher than Ceylon).
+          Recipes developed with Ceylon cinnamon can taste harsh with cassia; recipes
+          using cassia may need less cinnamon if switched to Ceylon.
+        </li>
+      </ol>
+
+      <div class="section-head">Connects to</div>
+      <p class="prose">
+        <strong>Flavour Science</strong> (Lesson 6) — Capsaicin and TRPV1 (covered briefly
+        there); terpene families in aroma; detection threshold concepts.<br>
+        <strong>Vegetables &amp; Fruits</strong> (Lesson 9) — Allium sulphur chemistry;
+        brassica glucosinolates; the LOX pathway producing C6 "green" volatiles in fresh
+        herbs is the same pathway active in tomatoes and cut grass.<br>
+        <strong>Fats, Oils &amp; Emulsions</strong> (Lesson 3) — Why fat is the better
+        solvent for spice aromatics (partition coefficient, lipophilicity); bloom in fat
+        as a practical extraction technique.<br>
+        <strong>Heat &amp; Browning</strong> (Lesson 1) — Maillard reactions on spice
+        surfaces during toasting; thermal transformation of terpenes in high-heat cooking.
+      </p>
+
+      <div class="lesson-nav">
+        <a href="vegetables.html" class="lesson-nav-btn">← Lesson 9: Vegetables &amp; Fruits</a>
+        <a href="coffee-tea.html" class="lesson-nav-btn">Lesson 11: Coffee &amp; Tea →</a>
+      </div>
+
+    </div><!-- /main -->
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  renderMathInElement(document.body, {
+    delimiters: [
+      {left: '$$', right: '$$', display: true},
+      {left: '$', right: '$', display: false}
+    ]
+  });
+
+  /* Scoville scale chart */
+  var peppers = [
+    'Bell pepper',
+    'Banana pepper',
+    'Poblano',
+    'Jalapeño',
+    'Serrano',
+    'Cayenne',
+    'Thai bird chilli',
+    'Habanero / Scotch Bonnet',
+    'Ghost pepper (Bhut jolokia)',
+    'Trinidad Moruga Scorpion',
+    'Carolina Reaper',
+    'Pure capsaicin'
+  ];
+  var shu = [0, 500, 1500, 20000, 25000, 45000, 100000, 250000, 1000000, 1500000, 2200000, 16000000];
+  var logShu = shu.map(function(x) { return x > 0 ? Math.log10(x) : 0; });
+
+  // Color: mild = green, medium = orange, hot = red, extreme = dark red
+  var barColors = [
+    '#27ae60','#a8d44f','#d4b012','#e67e22','#e67e22',
+    '#e74c3c','#c0392b','#922b21','#7b241c','#6e1012','#5c0b0d','#3a0000'
+  ];
+
+  var trace = {
+    type: 'bar',
+    x: logShu,
+    y: peppers,
+    orientation: 'h',
+    marker: { color: barColors },
+    text: shu.map(function(x) {
+      if (x === 0) return '0 SHU';
+      if (x >= 1000000) return (x/1000000).toFixed(1) + 'M SHU';
+      if (x >= 1000) return Math.round(x/1000) + 'k SHU';
+      return x + ' SHU';
+    }),
+    textposition: 'outside',
+    textfont: { family: 'IBM Plex Sans', size: 11 },
+    cliponaxis: false
+  };
+
+  var layout = {
+    xaxis: {
+      title: 'log₁₀ (Scoville Heat Units)',
+      tickfont: { family: 'IBM Plex Sans', size: 12 },
+      gridcolor: '#e8ecee',
+      range: [0, 8.5],
+      tickvals: [0,1,2,3,4,5,6,7,8],
+      ticktext: ['0','10','100','1k','10k','100k','1M','10M','100M']
+    },
+    yaxis: {
+      tickfont: { family: 'IBM Plex Sans', size: 12 },
+      automargin: true
+    },
+    margin: { t: 20, r: 100, b: 50, l: 10 },
+    paper_bgcolor: '#fafaf8',
+    plot_bgcolor: '#fafaf8',
+    font: { family: 'IBM Plex Sans' },
+    showlegend: false
+  };
+
+  Plotly.newPlot('scoville-chart', [trace], layout, { responsive: true, displayModeBar: false });
+});
+</script>
+</body>
+</html>
