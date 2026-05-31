@@ -41,7 +41,7 @@
       "label": "Advanced Topics",
       "items": [
         { "href": "chocolate.html",     "text": "13 · Chocolate & Confectionery" },
-        { "href": "hydrocolloids.html", "text": "14 · Hydrocolloids",            "planned": true }
+        { "href": "hydrocolloids.html", "text": "14 · Hydrocolloids" }
       ]
     }
   ]

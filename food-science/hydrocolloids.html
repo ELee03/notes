@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hydrocolloids &amp; Food Texture — Food Science</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="food-science" data-current="hydrocolloids.html"></div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb"><a href="../index.html">Field Notes</a> → <a href="index.html">Food Science</a> → Hydrocolloids &amp; Food Texture</div>
+
+      <h1 class="lesson-title">Hydrocolloids &amp; Food Texture</h1>
+      <div class="lesson-meta">Polysaccharide Gels · Shear-Thinning Rheology · Thermogelation · Modernist Toolkit</div>
+
+      <p class="prose">
+        Texture is arguably the most underappreciated dimension of food. Flavour gets the attention,
+        but mouthfeel determines whether we enjoy eating something or merely tolerate it. A perfectly
+        flavoured liquid panna cotta is appealing; a perfectly flavoured liquid puddle is not. The
+        difference — a few grams of gelatin — is structural, not chemical. Hydrocolloids are the
+        molecules that turn liquids into solids, thin liquids into thick ones, and unstable dispersions
+        into stable suspensions. They are the hidden architecture of almost everything we eat.
+      </p>
+      <p class="prose">
+        The word <em>hydrocolloid</em> simply means a colloid system in water: large molecules (typically
+        polysaccharides or proteins) dispersed through an aqueous phase. At high enough concentration
+        or under the right conditions, these molecules entangle or cross-link into a three-dimensional
+        network — a gel — that traps water and gives the whole system solid-like behaviour. At lower
+        concentration, or when cross-linking is prevented, the same molecules act as thickeners,
+        suspending agents, or emulsion stabilisers without forming a true gel.
+      </p>
+
+      <div class="section-head">How Gels Form</div>
+
+      <p class="prose">
+        All food gels share the same basic architecture: polymer chains connected at <strong>junction zones</strong>
+        — regions where two chains associate closely enough to create a stable cross-link. How those
+        junction zones form determines every practical property of the gel: setting temperature,
+        melting temperature, brittleness, elasticity, syneresis (water weeping), and reversibility.
+      </p>
+
+      <p class="prose">
+        Three broad mechanisms create junction zones:
+      </p>
+
+      <ul class="prose-list">
+        <li><strong>Physical (hydrogen bonding + van der Waals).</strong> Polymer chains fold into helices or sheets that zip together in ordered regions. These bonds are individually weak but collectively strong. They are thermally reversible: heat disrupts the ordered structure, cooling re-forms it. Agar and carrageenan both gel this way. So does gelatin — the collagen triple helix that originally held meat together reassembles as a partial helix network when a solution cools.</li>
+        <li><strong>Ionic cross-linking.</strong> Negatively charged polymer chains are bridged by divalent cations. The classic food example is the <em>egg-box model</em> of calcium pectinate (covered in Lessons 4 and 9): Ca²⁺ nestles into the "boxes" formed by two adjacent pectin chains, locking them together. ι-carrageenan uses Ca²⁺ similarly; κ-carrageenan responds to K⁺ by a slightly different mechanism involving helix aggregation. Because the cross-link is ionic rather than purely thermal, these gels can be manipulated with ion concentration as well as temperature.</li>
+        <li><strong>Hydrophobic desolvation.</strong> Some polymers carry hydrophobic groups that are well-solvated (surrounded by ordered water) at low temperature. On heating, the entropic cost of maintaining that ordered water shell exceeds the gain — the water is released, and the exposed hydrophobic patches aggregate. This produces the counterintuitive <em>reverse thermogelation</em> of methylcellulose: it sets on heating, melts on cooling.</li>
+      </ul>
+
+      <p class="prose">
+        A key distinction in gel rheology: <strong>elastic (strong) gels</strong> recover their shape after deformation, while <strong>viscous (weak) gels</strong> flow under sustained stress. Most food gels are viscoelastic — behaving elastically over short timescales and viscously over long ones. The ratio of elastic modulus G′ to viscous modulus G″ (measured by oscillatory rheology) characterises this balance; for a true gel, G′ > G″.
+      </p>
+
+      <div class="section-head">Gelatin</div>
+
+      <p class="prose">
+        Gelatin is the oldest food hydrocolloid and still the most versatile. It is extracted from collagen —
+        the structural protein of connective tissue — by controlled hydrolysis. Prolonged heating in hot water
+        breaks the intermolecular cross-links and partially uncoils the triple helices, releasing individual
+        or partially intact alpha chains that dissolve to form a viscous solution. On cooling below ~35°C,
+        these chains partially re-associate into a partial triple-helix network: a gel. (See Lesson 2,
+        Proteins in the Kitchen, for collagen structure.)
+      </p>
+      <p class="prose">
+        The <strong>Bloom strength</strong> of a gelatin (measured in grams, typically 50–300 g Bloom) quantifies gel
+        firmness at a standardised concentration. Platinum-grade gelatin (&gt;220 g Bloom) gives a clean,
+        firm set at low concentrations; lower-Bloom gelatins require higher usage rates. Sheet gelatin is
+        standardised by grade; powdered gelatin Bloom varies by brand. Because the gel network is protein-based,
+        it melts near body temperature (~35°C) — the defining quality of panna cotta, jellied stock, and
+        moulded terrines. That same melt-in-the-mouth property is a liability in hot-climate applications.
+      </p>
+      <p class="prose">
+        <strong>Protease interference</strong> is the major practical pitfall. Several tropical fruits — pineapple (bromelain),
+        kiwi (actinidin), papaya (papain), mango, figs, and ginger — contain proteases that cleave gelatin
+        chains, preventing gel formation entirely. Cooking the fruit first denatures the enzyme. Canned
+        pineapple works; fresh pineapple does not.
+      </p>
+      <p class="prose">
+        Gelatin has no plant-based equivalent that exactly replicates its behaviour. Agar, carrageenan,
+        and konjac can each approximate some properties, but none melts at body temperature or produces
+        the same smooth, elastic texture. This is a real constraint in vegan cooking.
+      </p>
+
+      <div class="section-head">Agar</div>
+
+      <p class="prose">
+        Agar is extracted from red algae (primarily <em>Gelidium</em> and <em>Gracilaria</em>). Its active gelling
+        component is <strong>agarose</strong> — a linear polysaccharide built from alternating
+        β-D-galactose and 3,6-anhydro-α-L-galactose residues. The anhydro-bridge creates a slight kink
+        that forces the chain into a helical conformation; on cooling, double helices zip together into
+        a stiff network.
+      </p>
+      <p class="prose">
+        The defining feature of agar is its enormous thermal <strong>hysteresis</strong>: it gels at 32–40°C
+        but does not melt until 85°C or higher. This separation between setting and melting temperatures
+        is far larger than in gelatin (sets ~35°C, melts ~32°C) or most carrageenan systems. Practically:
+        an agar gel can be served at room temperature or even slightly warm without losing structure,
+        yet it can be re-melted and reset repeatedly. It is also autoclavable, making it indispensable
+        in microbiology (Petri dishes are agar gels).
+      </p>
+      <p class="prose">
+        Agar gels are characteristically <strong>brittle</strong> and opaque (at typical food concentrations of 0.5–2%).
+        They fracture cleanly rather than stretching — compare biting a firm agar jelly to stretching a
+        gelatin one. They also exhibit <strong>syneresis</strong> over time: contraction of the network expels water,
+        which pools on the gel surface. Lowering concentration and blending with other hydrocolloids (locust
+        bean gum, for instance) reduces syneresis. In modernist cuisine, agar is used for "fluid gels"
+        (the gel is sheared after setting to create a pourable but structured texture) and for hot gels
+        that hold their shape in a warm sauce.
+      </p>
+
+      <div class="section-head">Carrageenan</div>
+
+      <p class="prose">
+        Carrageenan is also extracted from red algae, but its chemistry differs from agar in one critical
+        respect: sulfate groups. The three main commercial types are distinguished entirely by their
+        degree of sulfation, which controls both gelling mechanism and ion specificity.
+      </p>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Sulfates per disaccharide</th>
+            <th>Gelling ion</th>
+            <th>Texture</th>
+            <th>Key uses</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>κ-carrageenan (kappa)</strong></td>
+            <td>1</td>
+            <td>K⁺ (strongly); Ca²⁺ (weakly)</td>
+            <td>Firm, brittle, prone to syneresis</td>
+            <td>Milk gels, chocolate milk suspension</td>
+          </tr>
+          <tr>
+            <td><strong>ι-carrageenan (iota)</strong></td>
+            <td>2</td>
+            <td>Ca²⁺</td>
+            <td>Soft, elastic, thixotropic (recovers after shear)</td>
+            <td>Processed meats, dairy desserts</td>
+          </tr>
+          <tr>
+            <td><strong>λ-carrageenan (lambda)</strong></td>
+            <td>3</td>
+            <td>None (does not gel)</td>
+            <td>Thickener only</td>
+            <td>Cold-soluble thickening, cosmetics</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p class="prose">
+        κ-carrageenan's interaction with milk deserves special attention. The sulfate groups on κ-carrageenan
+        interact with the positively charged "hairy layer" of κ-casein micelles — the same protein that
+        stabilises the casein micelle against aggregation. This κ-casein/κ-carrageenan interaction creates
+        a gel network at concentrations as low as 0.01–0.02% in milk (ten times lower than in water),
+        because the casein micelles effectively act as cross-linking nodes. This is why a very small amount
+        of carrageenan can stabilise chocolate milk or prevent whey separation in ice cream.
+      </p>
+      <p class="prose">
+        <strong>κ-carrageenan + locust bean gum synergy</strong> is one of the most useful interactions in food
+        formulation. LBG's galactomannan chains insert into the carrageenan helix network, physically
+        blocking syneresis and converting the normally brittle κ-carrageenan gel into an elastic, cohesive
+        one. The result is a gel with better texture and reduced water loss — commercially important in
+        dairy desserts, processed cheese, and meat products.
+      </p>
+
+      <div class="section-head">Xanthan Gum</div>
+
+      <p class="prose">
+        Xanthan gum is produced by fermentation: the bacterium <em>Xanthomonas campestris</em> (which
+        causes black rot in cruciferous vegetables) secretes it as a capsular polysaccharide. The backbone
+        is identical to cellulose (β-1,4-linked glucose), but every other glucose carries a trisaccharide
+        side chain terminating in pyruvate and mannose groups, both of which carry negative charges.
+        This charged, bulky side chain prevents cellulose's usual aggregation and makes xanthan
+        fully water-soluble.
+      </p>
+      <p class="prose">
+        Xanthan does not form a true gel (G″ > G′ at low concentrations). Instead, its extraordinary
+        value is as a <strong>thickener with extreme shear-thinning behaviour</strong> (pseudoplasticity). At rest,
+        the charged side chains repel each other and the molecules align into stiff, rod-like double
+        helices; the network resists deformation strongly — high apparent viscosity. Under shear, the
+        rods align with flow, reducing entanglement — viscosity drops by orders of magnitude. Remove
+        shear, and the network instantly rebuilds.
+      </p>
+      <p class="prose">
+        This has profound practical consequences. A xanthan-thickened sauce pours easily when agitated
+        but does not run off food once it lands. Salad dressings thickened with xanthan coat vegetables
+        and cling to leaves. Gluten-free baked goods use xanthan to mimic the extensibility and gas-trapping
+        of gluten — a completely different mechanism, but a useful structural substitute. Xanthan is also
+        remarkably stable across wide pH (1–13) and temperature ranges, and is not degraded by most
+        food-processing conditions. At very low concentrations (~0.1%), xanthan + locust bean gum
+        together form a weak gel-like structure (G′ slightly exceeds G″), more than either does alone.
+      </p>
+
+      <div class="widget-card">
+        <div class="widget-title">Xanthan Gum — Shear-Thinning Behaviour</div>
+        <div id="xanthan-chart" style="height:360px;"></div>
+      </div>
+
+      <div class="section-head">Galactomannans: LBG and Guar</div>
+
+      <p class="prose">
+        Locust bean gum (LBG, carob bean gum) and guar gum are both galactomannans — polysaccharides
+        with a mannose backbone and galactose side-chain branches — but with an important structural
+        difference that drives very different behaviour.
+      </p>
+      <p class="prose">
+        <strong>Locust bean gum</strong> has a mannose:galactose ratio of approximately 4:1. This means long
+        unsubstituted stretches of mannose backbone are periodically broken by galactose side chains.
+        Those bare mannose regions can "dock" into gaps in other polysaccharide helices — notably
+        κ-carrageenan and xanthan — forming the junction zones responsible for synergistic gel formation.
+        LBG alone does not gel, even at high concentrations; it requires a partner. LBG is also used
+        as an ice crystal inhibitor in ice cream: the viscosity and network structure it contributes
+        with other hydrocolloids slows ice crystal growth during storage (recrystallisation), keeping
+        texture smooth. Requires heat (85°C) for full hydration.
+      </p>
+      <p class="prose">
+        <strong>Guar gum</strong> has a mannose:galactose ratio of approximately 2:1. The denser substitution
+        means fewer uninterrupted mannose stretches, so guar does not synergise as strongly with
+        carrageenan or xanthan. What guar lacks in synergy it makes up in raw viscosity: guar
+        produces a much higher viscosity per gram than LBG, dissolves in cold water (LBG requires
+        heat), and is considerably cheaper. It is used as a straightforward high-viscosity thickener
+        in sauces, ice cream, baked goods, and noodles.
+      </p>
+
+      <div class="section-head">Methylcellulose and HPMC</div>
+
+      <p class="prose">
+        Methylcellulose (MC) and hydroxypropyl methylcellulose (HPMC) are cellulose derivatives:
+        some of the hydroxyl groups on the cellulose backbone have been chemically replaced with
+        methyl (–OCH₃) or hydroxypropyl groups. These substitutions prevent the strong hydrogen
+        bonding that makes native cellulose insoluble and instead make the polymer soluble in cold
+        water — but with a remarkable catch.
+      </p>
+      <p class="prose">
+        Methylcellulose exhibits <strong>reverse thermogelation</strong>: it is liquid when cold and gels when
+        heated (typically above 50–55°C for food-grade MC), then reverts to liquid on cooling.
+        The mechanism is hydrophobic desolvation. In cold water, ordered water molecules hydrate
+        the methyl groups; on heating, the entropy cost of maintaining this ordered hydration shell
+        becomes prohibitive, water is released, and the exposed hydrophobic methyl groups aggregate
+        — forming a gel network. The process is fully reversible: the gel melts back to solution
+        when cooled.
+      </p>
+      <p class="prose">
+        Practically, MC/HPMC is used wherever a product must hold its shape during cooking but flow
+        at serving temperature — the opposite of almost every other hydrocolloid. <strong>Vegetarian/vegan
+        burgers</strong> (Beyond Meat uses methylcellulose) exploit this: the raw patty is a loose mixture,
+        but heating causes MC to gel, creating a firm, juicy structure during cooking. <strong>Fried foods</strong>
+        benefit similarly: an MC coating gels immediately on contact with hot oil, forming a barrier
+        that reduces oil absorption and moisture loss. In gastronomy, MC gels are used for hot-set
+        mousses and foams that would be impossible with any other hydrocolloid.
+      </p>
+
+      <div class="section-head">Konjac Glucomannan</div>
+
+      <p class="prose">
+        Konjac glucomannan is extracted from the tuber of <em>Amorphophallus konjac</em>, a plant cultivated
+        primarily in Japan and China. Structurally it is a β-1,4-linked mannose backbone (like cellulose,
+        but with mannose instead of glucose) with about one glucose branch per ten residues and occasional
+        acetyl groups. These acetyl groups prevent the chains from aggregating in neutral conditions,
+        keeping the polymer soluble.
+      </p>
+      <p class="prose">
+        Konjac produces exceptionally high solution viscosity — among the highest of any food hydrocolloid
+        by molecular weight. In alkaline conditions (typically achieved with slaked lime, Ca(OH)₂, at
+        pH 10–12), the acetyl groups are hydrolysed; the deacetylated chains can then hydrogen-bond
+        and aggregate into a thermally irreversible gel. This is the traditional mechanism behind
+        konjac tofu and konnyaku blocks. <strong>Shirataki noodles</strong> are konjac gel extruded into
+        noodle form — nearly zero calories, essentially flavourless, very high dietary fibre.
+      </p>
+      <p class="prose">
+        At neutral pH and lower concentration, konjac synergises strongly with κ-carrageenan (similar
+        to LBG but more powerful), converting the brittle carrageenan gel into a tough, elastic one.
+        It also enhances xanthan gels. This synergy is used in vegan gelatin substitutes that attempt
+        to replicate gelatin's elastic texture.
+      </p>
+
+      <div class="section-head">Pectin (Cross-Reference)</div>
+
+      <p class="prose">
+        Pectin's chemistry — galacturonic acid backbone, degree of esterification, HM vs LM pectin,
+        the egg-box model of Ca²⁺ cross-linking — is covered in <a href="carbohydrates.html">Lesson 4
+        (Carbohydrates &amp; Starches)</a> and its role in plant cell wall integrity during cooking
+        in <a href="vegetables.html">Lesson 9 (Vegetables &amp; Fruits)</a>. In the hydrocolloid context,
+        LM pectin (low-methoxyl, &lt;50% esterified) behaves as an ionically cross-linked gel
+        (like ι-carrageenan), requiring Ca²⁺ and functioning at lower sugar concentrations — key for
+        low-sugar jams, fruit preps, and dairy applications. HM pectin (high-methoxyl) gels via
+        hydrophobic interactions and hydrogen bonds, requiring pH &lt;3.5 and &gt;55% soluble solids —
+        classic jam conditions.
+      </p>
+
+      <div class="section-head">Worked Examples</div>
+
+      <div class="example-box">
+        <div class="example-title">Example 1 — Why does fresh pineapple prevent gelatin from setting?</div>
+        <div class="example-body">
+          <p>Fresh pineapple contains the cysteine protease <strong>bromelain</strong>, present in highest
+          concentration in the core and juice. At the pH and temperature of a typical gelatin dessert
+          being mixed (~40–50°C), bromelain is active and cleaves gelatin's polypeptide chains at
+          specific sites (particularly between hydrophobic amino acids and lysine/arginine residues).
+          Because gel formation requires long, intact chains to reassemble into partial helices, cleaved
+          chains cannot form the junction zones needed for a cohesive network. The mixture never sets
+          regardless of how long it is chilled.</p>
+          <p><strong>Fix:</strong> Boil pineapple briefly (90 seconds at 100°C) before adding to gelatin. Bromelain
+          denatures irreversibly above ~75°C. Canned pineapple is heat-processed during canning, so
+          the enzyme is already inactivated — canned pineapple jelly works normally.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-title">Example 2 — Formulating a heat-stable gel for a warm dessert sauce</div>
+        <div class="example-body">
+          <p>You want a sauce that holds a clean set when spooned onto a warm plate (~50°C) but releases
+          flavour cleanly in the mouth. Gelatin melts at ~35°C — useless. Options:</p>
+          <ul>
+            <li><strong>Agar (0.4–0.8%)</strong>: Sets at ~37°C, melts at ~85°C. Will hold at 50°C. Texture is brittle and
+            opaque; fluid gel technique (set fully, then blend) gives a smooth, pourable but structured
+            result that flows gracefully on the plate and melts cleanly at the higher mouth temperature
+            relative to a solid agar block.</li>
+            <li><strong>κ-carrageenan (0.3–0.5%) + LBG (0.1–0.2%)</strong>: Sets at ~45–50°C, melts at ~60–70°C.
+            Elastic rather than brittle; less syneresis than κ-carrageenan alone. Borderline for 50°C service.</li>
+            <li><strong>Methylcellulose</strong>: Gels at ~55°C, melts below 40°C — the inverse. Would be set at serving
+            temperature but liquefy in the mouth. Counterintuitive but correct for this use case.</li>
+          </ul>
+          <p>Best choice depends on texture target. Agar fluid gel gives the most elegant result for a
+          classic sauce; methylcellulose works if the "hot gel, cold liquid" property is desirable.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-title">Example 3 — Why does xanthan thicken a vinaigrette without making it stiff?</div>
+        <div class="example-body">
+          <p>Vinaigrette is an emulsion that separates because oil and water are immiscible. Xanthan addresses
+          two problems simultaneously. First, at rest (on the salad), xanthan's high zero-shear viscosity
+          slows the creaming and coalescence of oil droplets, extending emulsion stability. Second, the
+          shear-thinning property means that shaking the bottle before use breaks down the network
+          instantly — the dressing pours freely — but reforms within seconds once on the salad, keeping
+          the thick texture on the leaves rather than pooling at the bottom of the bowl.</p>
+          <p>At a typical usage rate of 0.05–0.2%, xanthan does not form a true gel (G″ &gt; G′ at those
+          concentrations without LBG), so the dressing is not "stiff" — it just resists flow under
+          its own weight. This pseudoplastic behaviour is what distinguishes high-quality commercial
+          dressings from simple oil-and-vinegar mixtures.</p>
+        </div>
+      </div>
+
+      <div class="section-head">Fast-Fire Thinking</div>
+
+      <ul class="fft-list">
+        <li class="fft-item">
+          <div class="fft-question">Agar sets at ~38°C and melts at ~85°C. Gelatin sets at ~35°C and melts at ~32°C. What does the size of the hysteresis gap tell you about the nature of the junction zones in each?</div>
+          <div class="fft-answer">
+            <p>Large hysteresis (agar) indicates that forming and breaking the junction zones require different
+            amounts of energy — the ordered agarose double-helix network is stabilised by cooperative interactions
+            that take substantial thermal energy to disrupt but nucleate relatively easily on cooling. The network
+            is strongly "locked in" once formed. Small hysteresis (gelatin) reflects junction zones that are
+            marginal — gelatin's partial helix network exists near its own melting point at body temperature;
+            the cooperative driving force is weak and easily reversed by small temperature changes in either
+            direction. This is exactly why gelatin has that characteristic melt-in-the-mouth quality.</p>
+          </div>
+        </li>
+        <li class="fft-item">
+          <div class="fft-question">A recipe for a vegan "panna cotta" uses agar at 0.7%. Testers report the texture is right when cold but the dessert weeps water after 24 hours. What is happening and how would you fix it?</div>
+          <div class="fft-answer">
+            <p>Syneresis: the agar gel network slowly contracts as additional hydrogen bonds form between
+            agarose chains over time, squeezing water out of the network. Solutions: (1) Reduce agar
+            concentration slightly (0.4–0.5%) — a softer, more open network contracts less. (2) Add
+            0.1–0.2% locust bean gum — LBG chains physically disrupt agarose helix aggregation, preventing
+            further network tightening and substantially reducing syneresis. (3) Add a small amount of
+            sugar — competing for water molecules reduces the driving force for network dehydration. In
+            practice, the LBG approach is most effective for a clean dairy-free panna cotta.</p>
+          </div>
+        </li>
+        <li class="fft-item">
+          <div class="fft-question">Methylcellulose sets on heating and melts on cooling — the opposite of every other food hydrocolloid. Why doesn't this cause problems with ice cream or cold-stored products?</div>
+          <div class="fft-answer">
+            <p>Because methylcellulose is only used in applications where the reverse thermogelation is
+            specifically desired: hot-processed foods (fried coatings, baked plant-based patties) that
+            need heat-set structure. In refrigerated or frozen storage, MC is fully dissolved and liquid —
+            it contributes viscosity in solution but does not gel. Ice cream formulated with MC would
+            simply have MC in solution at freezer temperatures, offering some thickening benefit but
+            not gelation. The gel only forms at ~50–55°C, well above typical cold storage or freezer
+            temperatures, so there is no unwanted structuring during cold storage.</p>
+          </div>
+        </li>
+      </ul>
+
+      <div class="section-head">Pitfalls</div>
+
+      <ul class="pitfall-list">
+        <li><strong>Fresh tropical fruits + gelatin.</strong> Pineapple, kiwi, papaya, mango, figs, and ginger all
+        contain proteases that cleave gelatin. Always cook these fruits first. The same caveat applies to
+        a lesser extent with very acidic fruits — prolonged acid exposure slowly degrades gelatin chains too.</li>
+        <li><strong>Agar syneresis and over-concentration.</strong> More agar is not always better. Above ~1.5–2%,
+        agar gels become very brittle and syringe more severely on storage. Synergists (LBG) or lower
+        concentrations usually give a more stable product than simply adding more agar.</li>
+        <li><strong>Carrageenan + K⁺ overload.</strong> Adding κ-carrageenan to a high-potassium medium (e.g., a
+        formula with significant KCl as a salt substitute) can cause unexpectedly firm, brittle gels
+        at very low carrageenan concentrations. K⁺ concentration must be accounted for when
+        designing carrageenan applications.</li>
+        <li><strong>Xanthan "fish eyes."</strong> Xanthan hydrates rapidly on contact with water and can form
+        lumps if added directly to liquid without pre-dispersing. Best practice is to disperse in oil
+        first (for emulsified systems), pre-blend dry with sugar, or use a high-shear mixer during
+        hydration. Undissolved lumps do not shear thin properly and leave textural defects.</li>
+        <li><strong>Guar vs LBG substitution assumption.</strong> Guar and LBG are both galactomannans and are
+        sometimes assumed interchangeable. They are not: guar does not synergise as strongly with
+        carrageenan or xanthan, requires no heat to hydrate (unlike LBG), and produces a different
+        viscosity profile. Substituting one for the other without adjusting usage rate and processing
+        conditions usually gives poor results.</li>
+      </ul>
+
+      <div class="section-head">Connects To</div>
+
+      <ul class="connects-list">
+        <li><a href="proteins.html">Lesson 2 — Proteins in the Kitchen</a>: Collagen structure, denaturation, and conversion to gelatin; why long, slow cooking dissolves connective tissue.</li>
+        <li><a href="carbohydrates.html">Lesson 4 — Carbohydrates &amp; Starches</a>: Starch gelatinisation and retrogradation; pectin HM/LM chemistry and egg-box model.</li>
+        <li><a href="fats.html">Lesson 3 — Fats, Oils &amp; Emulsions</a>: Emulsion stability and how hydrocolloid thickeners (xanthan, guar) reduce creaming rate by increasing continuous-phase viscosity.</li>
+        <li><a href="vegetables.html">Lesson 9 — Vegetables &amp; Fruits</a>: Pectin in the plant cell wall; PME-assisted firming; why vegetables soften on cooking (pectin demethylation + junction zone loss).</li>
+      </ul>
+
+      <nav class="lesson-nav">
+        <a href="chocolate.html" class="lesson-nav-prev">← 13 · Chocolate &amp; Confectionery</a>
+        <a href="index.html" class="lesson-nav-next">Food Science Home →</a>
+      </nav>
+
+    </div><!-- /main -->
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+  // KaTeX render
+  if (window.renderMathInElement) {
+    renderMathInElement(document.body, {
+      delimiters: [
+        {left: '$$', right: '$$', display: true},
+        {left: '$', right: '$', display: false}
+      ]
+    });
+  }
+
+  // Xanthan shear-thinning chart (log-log, power-law approximation)
+  const shearRates = [];
+  for (let i = -2; i <= 3; i += 0.1) {
+    shearRates.push(Math.pow(10, i));
+  }
+
+  // Power law: η = K * γ̇^(n-1). For xanthan n ≈ 0.15 (strong shear-thinning)
+  // For guar n ≈ 0.35, for a Newtonian fluid n = 1
+  const xanthanVisc = shearRates.map(g => 20 * Math.pow(g, 0.15 - 1));
+  const guarVisc    = shearRates.map(g => 5  * Math.pow(g, 0.35 - 1));
+  const newtonVisc  = shearRates.map(g => 0.1); // constant viscosity
+
+  const traces = [
+    {
+      x: shearRates,
+      y: xanthanVisc,
+      mode: 'lines',
+      name: 'Xanthan gum (0.5%)',
+      line: { color: '#e8a838', width: 2.5 }
+    },
+    {
+      x: shearRates,
+      y: guarVisc,
+      mode: 'lines',
+      name: 'Guar gum (0.5%)',
+      line: { color: '#4a9eff', width: 2.5 }
+    },
+    {
+      x: shearRates,
+      y: newtonVisc,
+      mode: 'lines',
+      name: 'Newtonian fluid (water-like)',
+      line: { color: '#888', width: 1.5, dash: 'dot' }
+    }
+  ];
+
+  const layout = {
+    paper_bgcolor: 'transparent',
+    plot_bgcolor: 'transparent',
+    font: { family: 'IBM Plex Sans, sans-serif', size: 12, color: '#ccc' },
+    xaxis: {
+      title: 'Shear rate (s⁻¹)',
+      type: 'log',
+      gridcolor: '#2a2a2a',
+      color: '#888',
+      showline: true,
+      linecolor: '#444'
+    },
+    yaxis: {
+      title: 'Apparent viscosity (Pa·s)',
+      type: 'log',
+      gridcolor: '#2a2a2a',
+      color: '#888',
+      showline: true,
+      linecolor: '#444'
+    },
+    legend: { bgcolor: 'transparent', x: 0.98, xanchor: 'right', y: 0.98, yanchor: 'top' },
+    margin: { l: 60, r: 20, t: 20, b: 50 },
+    annotations: [
+      {
+        x: Math.log10(0.05), y: Math.log10(xanthanVisc[Math.round((Math.log10(0.05)+2)/0.1)]),
+        xref: 'x', yref: 'y',
+        text: 'Xanthan: n ≈ 0.15<br>(extreme shear-thinning)',
+        showarrow: true, arrowhead: 2,
+        ax: 60, ay: -40,
+        font: { size: 11, color: '#e8a838' },
+        arrowcolor: '#e8a838'
+      }
+    ]
+  };
+
+  Plotly.newPlot('xanthan-chart', traces, layout, { responsive: true, displayModeBar: false });
+});
+</script>
+
+</body>
+</html>
