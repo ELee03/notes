@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spin — Quantum Mechanics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="quantum" data-current="spin.html"></div>
+      <hr class="sidebar-rule">
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#stern-gerlach" class="nav-item">Stern-Gerlach</a>
+        <a href="#spin-half" class="nav-item">Spin-½ Formalism</a>
+        <a href="#pauli" class="nav-item">Pauli Matrices</a>
+        <a href="#magnetic" class="nav-item">Spin in a Magnetic Field</a>
+        <a href="#spin-orbit" class="nav-item">Spin-Orbit Coupling</a>
+        <a href="#addition" class="nav-item">Adding Angular Momenta</a>
+        <a href="#widget" class="nav-item">Spin Measurement Visualiser</a>
+        <a href="#examples" class="nav-item">Worked Examples</a>
+        <a href="#fft" class="nav-item">Food for Thought</a>
+        <a href="#pitfalls" class="nav-item">Common Pitfalls</a>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="breadcrumb"><a href="../index.html">Field Notes</a> / <a href="index.html">Quantum Mechanics</a> / Spin</div>
+
+      <h1 class="lesson-title">Spin</h1>
+      <div class="lesson-meta">Stern-Gerlach · Spinors · Pauli Matrices · Spin-Orbit Coupling · Angular Momentum Addition</div>
+
+      <p class="prose">
+        Every particle in nature carries an intrinsic angular momentum called spin. It's not rotation in space —
+        electrons don't spin like tops — but it obeys exactly the same algebra as orbital angular momentum and
+        contributes to magnetic moments just as orbital motion does. Spin-½ (the electron's case) is the simplest
+        non-trivial quantum system: two states, a 2×2 matrix algebra, and a rich phenomenology that includes
+        the Pauli exclusion principle, the periodic table, magnetic resonance imaging, and quantum computing.
+      </p>
+
+      <!-- ===================== STERN-GERLACH ===================== -->
+      <div class="section-head" id="stern-gerlach">The Stern-Gerlach Experiment</div>
+
+      <p class="prose">
+        In 1922, Otto Stern and Walther Gerlach sent silver atoms through a strongly inhomogeneous magnetic field.
+        Silver has one unpaired outer electron; classically, this electron's magnetic moment $\boldsymbol{\mu}$
+        should be randomly oriented, giving a continuous smear on the detector screen. Instead, they saw
+        <strong>exactly two spots</strong> — the beam split into two discrete components.
+      </p>
+
+      <p class="prose">
+        This is space quantization made visible. The magnetic moment is proportional to the angular momentum:
+        $\mu_z \propto S_z$. Since only two spots appear, $S_z$ can take only two values — the angular momentum
+        along the $z$-axis is quantised in exactly two steps. For $m_s = \pm\frac{1}{2}$, the quantum number
+        $s = \frac{1}{2}$: this is <strong>spin-half</strong>.
+      </p>
+
+      <p class="prose">
+        Crucially: if you take one of the two output beams (say, spin-up) and send it through a second
+        Stern-Gerlach apparatus tilted at 90°, you again get two spots — each with 50% probability.
+        If you then recombine them and pass through a third apparatus aligned with the original $z$-axis,
+        you get 50/50 again, not the original pure spin-up. The intermediate measurement irreversibly
+        disturbed the state. This sequence of Stern-Gerlach experiments is the clearest possible
+        demonstration of quantum measurement and non-commuting observables.
+      </p>
+
+      <!-- ===================== SPIN-HALF ===================== -->
+      <div class="section-head" id="spin-half">Spin-½ Formalism</div>
+
+      <p class="prose">
+        Spin is angular momentum: it satisfies the same algebra as $\hat{L}$:
+      </p>
+      <div class="math-block">
+        $$[\hat{S}_x,\hat{S}_y] = i\hbar\hat{S}_z, \quad [\hat{S}_y,\hat{S}_z] = i\hbar\hat{S}_x, \quad [\hat{S}_z,\hat{S}_x] = i\hbar\hat{S}_y$$
+      </div>
+      <div class="math-block">
+        $$\hat{S}^2|s,m_s\rangle = \hbar^2 s(s+1)|s,m_s\rangle, \qquad \hat{S}_z|s,m_s\rangle = \hbar m_s|s,m_s\rangle$$
+      </div>
+      <p class="prose">
+        For spin-½, $s = \frac{1}{2}$ and $m_s = \pm\frac{1}{2}$. The two basis states are
+        $|\uparrow\rangle \equiv |\frac{1}{2},+\frac{1}{2}\rangle$ (spin-up) and
+        $|\downarrow\rangle \equiv |\frac{1}{2},-\frac{1}{2}\rangle$ (spin-down).
+        A general spin-½ state is a <strong>spinor</strong>:
+      </p>
+      <div class="math-block">
+        $$|\chi\rangle = a|\uparrow\rangle + b|\downarrow\rangle = \begin{pmatrix}a\\b\end{pmatrix}, \qquad |a|^2+|b|^2=1$$
+      </div>
+      <p class="prose">
+        The complete state of an electron includes both spatial and spin parts:
+        $|\Psi\rangle = \psi(\mathbf{r})\otimes|\chi\rangle$ — a function of position times a two-component spinor.
+      </p>
+
+      <!-- ===================== PAULI MATRICES ===================== -->
+      <div class="section-head" id="pauli">The Pauli Matrices</div>
+
+      <p class="prose">
+        In the $\{|\uparrow\rangle, |\downarrow\rangle\}$ basis, the spin operators are represented as $2\times2$ matrices.
+        $\hat{S}_i = (\hbar/2)\hat{\sigma}_i$ where the <strong>Pauli matrices</strong> are:
+      </p>
+      <div class="math-block">
+        $$\sigma_x = \begin{pmatrix}0&1\\1&0\end{pmatrix}, \qquad \sigma_y = \begin{pmatrix}0&-i\\i&0\end{pmatrix}, \qquad \sigma_z = \begin{pmatrix}1&0\\0&-1\end{pmatrix}$$
+      </div>
+      <p class="prose">
+        Key properties (provable directly from matrix multiplication):
+      </p>
+      <ul class="prose" style="margin-top:0;padding-left:1.4em;">
+        <li>$\sigma_i^2 = I$ (each squares to the identity)</li>
+        <li>$\sigma_x\sigma_y = i\sigma_z$ (and cyclic) — encodes the commutation relations</li>
+        <li>$\{\sigma_i,\sigma_j\} = 2\delta_{ij}I$ (anticommutation: Pauli matrices anticommute for $i\neq j$)</li>
+        <li>$\text{Tr}(\sigma_i) = 0$, $\det(\sigma_i) = -1$</li>
+        <li>Together with $I$: $\{I, \sigma_x, \sigma_y, \sigma_z\}$ forms a basis for all $2\times2$ Hermitian matrices</li>
+      </ul>
+
+      <p class="prose">
+        The eigenstates of $\hat{S}_x$ and $\hat{S}_y$ are:
+      </p>
+      <div class="math-block">
+        $$|\uparrow_x\rangle = \frac{1}{\sqrt{2}}\begin{pmatrix}1\\1\end{pmatrix}, \quad |\downarrow_x\rangle = \frac{1}{\sqrt{2}}\begin{pmatrix}1\\-1\end{pmatrix}; \qquad |\uparrow_y\rangle = \frac{1}{\sqrt{2}}\begin{pmatrix}1\\i\end{pmatrix}, \quad |\downarrow_y\rangle = \frac{1}{\sqrt{2}}\begin{pmatrix}1\\-i\end{pmatrix}$$
+      </div>
+
+      <p class="prose">
+        A spin state along an arbitrary unit vector $\hat{n} = (\sin\theta\cos\phi,\sin\theta\sin\phi,\cos\theta)$ is:
+      </p>
+      <div class="math-block">
+        $$|\uparrow_{\hat{n}}\rangle = \cos\frac{\theta}{2}|\uparrow\rangle + e^{i\phi}\sin\frac{\theta}{2}|\downarrow\rangle$$
+      </div>
+      <p class="prose">
+        This parametrises the unit sphere — the <strong>Bloch sphere</strong>. Every pure spin-½ state corresponds
+        to a point on the Bloch sphere; the two poles are $|\uparrow\rangle$ and $|\downarrow\rangle$;
+        the equator contains the $|\uparrow_x\rangle$, $|\downarrow_x\rangle$, $|\uparrow_y\rangle$, $|\downarrow_y\rangle$ states.
+      </p>
+
+      <!-- ===================== MAGNETIC FIELD ===================== -->
+      <div class="section-head" id="magnetic">Spin in a Magnetic Field</div>
+
+      <p class="prose">
+        A spinning charged particle has a magnetic moment. For an electron:
+      </p>
+      <div class="math-block">
+        $$\boldsymbol{\mu}_s = -g_e\frac{e}{2m_e}\hat{\mathbf{S}}, \qquad g_e \approx 2.00232\ldots$$
+      </div>
+      <p class="prose">
+        The factor $g_e \approx 2$ (the $g$-factor) differs from the orbital case ($g_L = 1$). It arises from
+        quantum field theory and is one of the most precisely measured quantities in physics
+        ($g_e/2 = 1.00115965218...$, matching QED calculations to 12 decimal places).
+      </p>
+
+      <p class="prose">
+        In a uniform magnetic field $\mathbf{B} = B\hat{z}$, the Hamiltonian for the spin degree of freedom is:
+      </p>
+      <div class="math-block">
+        $$\hat{H} = -\boldsymbol{\mu}_s\cdot\mathbf{B} = g_e\frac{e}{2m_e}B\hat{S}_z = \gamma B\hat{S}_z, \qquad \gamma = g_e e/(2m_e)$$
+      </div>
+      <p class="prose">
+        The energy eigenstates are $|\uparrow\rangle$ and $|\downarrow\rangle$ with energies $E_\pm = \pm\frac{1}{2}\hbar\gamma B$.
+        This is the <strong>Zeeman splitting</strong> of spin states. The energy gap is:
+      </p>
+      <div class="math-block">
+        $$\Delta E = \hbar\gamma B = \hbar\omega_L, \qquad \omega_L = g_e\frac{eB}{2m_e}$$
+      </div>
+      <p class="prose">
+        where $\omega_L$ is the <strong>Larmor frequency</strong> — the frequency at which the spin precesses around $\mathbf{B}$.
+        For a general initial spin state $|\chi(0)\rangle = a|\uparrow\rangle + b|\downarrow\rangle$:
+      </p>
+      <div class="math-block">
+        $$|\chi(t)\rangle = ae^{-i\omega_L t/2}|\uparrow\rangle + be^{+i\omega_L t/2}|\downarrow\rangle$$
+      </div>
+      <p class="prose">
+        The expectation values $\langle\hat{S}_x\rangle$ and $\langle\hat{S}_y\rangle$ precess in the $xy$-plane
+        at frequency $\omega_L$, while $\langle\hat{S}_z\rangle$ is constant — exactly like a classical magnetic
+        dipole precessing around a field.
+        This Larmor precession is the physical basis of <strong>magnetic resonance imaging (MRI)</strong>:
+        nuclear spins (protons) precess at a frequency $\omega_L = \gamma_p B$ where $\gamma_p$ is the proton
+        gyromagnetic ratio. Applying a radiofrequency pulse at $\omega_L$ resonantly flips spins; detecting
+        the subsequent precession (the NMR signal) gives spatial information about water density in tissue.
+      </p>
+
+      <!-- ===================== SPIN-ORBIT ===================== -->
+      <div class="section-head" id="spin-orbit">Spin-Orbit Coupling and Fine Structure</div>
+
+      <p class="prose">
+        An electron in a hydrogen atom has both orbital angular momentum $\hat{\mathbf{L}}$ and spin $\hat{\mathbf{S}}$.
+        In the electron's rest frame, it sees the proton orbiting around it — a current loop that creates a magnetic
+        field $\mathbf{B}_\text{eff} \propto \mathbf{L}$. The electron's spin magnetic moment interacts with this field:
+      </p>
+      <div class="math-block">
+        $$\hat{H}'_\text{SO} = \frac{1}{2}\frac{e^2}{4\pi\epsilon_0}\frac{1}{m_e^2 c^2 r^3}\hat{\mathbf{L}}\cdot\hat{\mathbf{S}}$$
+      </div>
+      <p class="prose">
+        (The factor of $\frac{1}{2}$ is Thomas precession — a relativistic correction to the electron's rest frame.)
+        This $\hat{\mathbf{L}}\cdot\hat{\mathbf{S}}$ term couples orbital and spin angular momenta.
+      </p>
+
+      <p class="prose">
+        Since $\hat{\mathbf{L}}$ and $\hat{\mathbf{S}}$ are no longer separately conserved (they precess around the
+        fixed total angular momentum $\hat{\mathbf{J}} = \hat{\mathbf{L}} + \hat{\mathbf{S}}$), the good quantum numbers
+        become $n$, $l$, $j$, and $m_j$ (the $z$-component of $\hat{\mathbf{J}}$), where:
+      </p>
+      <div class="math-block">
+        $$j = l + \frac{1}{2} \quad\text{or}\quad j = l - \frac{1}{2} \qquad (l > 0); \qquad j = \frac{1}{2} \quad (l=0)$$
+      </div>
+      <p class="prose">
+        Evaluating $\hat{\mathbf{L}}\cdot\hat{\mathbf{S}} = \frac{1}{2}(\hat{J}^2 - \hat{L}^2 - \hat{S}^2)$
+        in the $|n,l,j,m_j\rangle$ basis:
+      </p>
+      <div class="math-block">
+        $$\langle\hat{\mathbf{L}}\cdot\hat{\mathbf{S}}\rangle = \frac{\hbar^2}{2}\left[j(j+1) - l(l+1) - \frac{3}{4}\right]$$
+      </div>
+      <p class="prose">
+        The spin-orbit correction splits each $l > 0$ level of hydrogen into a doublet
+        ($j = l+\frac{1}{2}$ and $j = l-\frac{1}{2}$). Combined with the relativistic kinetic energy correction
+        (from expanding $\sqrt{p^2c^2 + m_e^2c^4} - m_ec^2$ to order $p^4$), the total <strong>fine structure</strong>
+        energy correction is:
+      </p>
+      <div class="math-block">
+        $$E_\text{fs}^{(1)} = -\frac{E_n^2}{2m_e c^2}\left(\frac{4n}{j+\frac{1}{2}} - 3\right)$$
+      </div>
+      <p class="prose">
+        Fine structure is of order $\alpha^2 \approx (1/137)^2 \sim 5\times10^{-5}$ relative to the gross structure
+        energies — tiny but measured to extraordinary precision in atomic spectroscopy.
+      </p>
+
+      <!-- ===================== ADDITION ===================== -->
+      <div class="section-head" id="addition">Adding Angular Momenta</div>
+
+      <p class="prose">
+        Given two angular momenta $\hat{\mathbf{J}}_1$ (with $j_1$) and $\hat{\mathbf{J}}_2$ (with $j_2$),
+        the total $\hat{\mathbf{J}} = \hat{\mathbf{J}}_1 + \hat{\mathbf{J}}_2$ has quantum numbers:
+      </p>
+      <div class="math-block">
+        $$j = |j_1 - j_2|,\;\; |j_1-j_2|+1,\;\; \ldots,\;\; j_1+j_2$$
+      </div>
+      <p class="prose">
+        Each $j$ value contributes $2j+1$ states, and the total count is $(2j_1+1)(2j_2+1)$.
+        The transformation between the product basis $|j_1,m_1\rangle|j_2,m_2\rangle$ and the total
+        basis $|j,m\rangle$ uses <strong>Clebsch-Gordan coefficients</strong>:
+      </p>
+      <div class="math-block">
+        $$|j,m\rangle = \sum_{m_1+m_2=m} \langle j_1 m_1; j_2 m_2 | j m\rangle\; |j_1,m_1\rangle|j_2,m_2\rangle$$
+      </div>
+
+      <p class="prose">
+        For combining spin-½ with orbital $l$: $j = l \pm \frac{1}{2}$. The highest-weight state for
+        $j = l + \frac{1}{2}$ is simply $|m_l = l\rangle|\uparrow\rangle$ (both at maximum). Applying $\hat{J}_-$
+        generates all others. The resulting Clebsch-Gordan coefficients for spin-½ are:
+      </p>
+      <div class="math-block">
+        $$\left|l+\tfrac{1}{2},\, m\right\rangle = \sqrt{\frac{l+m+\frac{1}{2}}{2l+1}}\left|m-\tfrac{1}{2}\right\rangle|\uparrow\rangle + \sqrt{\frac{l-m+\frac{1}{2}}{2l+1}}\left|m+\tfrac{1}{2}\right\rangle|\downarrow\rangle$$
+      </div>
+
+      <!-- ===================== WIDGET ===================== -->
+      <div class="section-head" id="widget">Spin Measurement: Probability vs Orientation</div>
+
+      <div class="widget-card">
+        <div class="widget-title">$P(\uparrow_z)$ when measuring $S_z$ on a state $|\uparrow_{\hat{n}}\rangle$</div>
+        <div id="spin-plot" style="width:100%;height:360px;"></div>
+        <div style="margin-top:14px;display:flex;flex-wrap:wrap;gap:18px;align-items:center;">
+          <label style="font-size:13px;color:#3a5a78;">
+            Polar angle $\theta$ (from $+z$):
+            <input type="range" id="theta-slider" min="0" max="180" step="1" value="90"
+                   style="width:150px;vertical-align:middle;margin:0 6px;">
+            <span id="theta-val" style="font-family:'IBM Plex Mono',monospace;font-size:12px;">90°</span>
+          </label>
+        </div>
+        <div id="prob-display" style="margin-top:8px;font-size:13px;font-family:'IBM Plex Mono',monospace;color:#3a5a78;"></div>
+        <p style="font-size:12px;color:#7a8a9a;margin:10px 0 0;">
+          Initial state $|\uparrow_{\hat{n}}\rangle = \cos(\theta/2)|\uparrow\rangle + \sin(\theta/2)|\downarrow\rangle$.
+          Blue bar: $P(\uparrow_z) = \cos^2(\theta/2)$. Red bar: $P(\downarrow_z) = \sin^2(\theta/2)$.
+          At $\theta=0$: pure spin-up (P=1,0). At $\theta=180°$: pure spin-down (P=0,1). At $\theta=90°$: 50/50.
+        </p>
+      </div>
+
+      <!-- ===================== EXAMPLES ===================== -->
+      <div class="section-head" id="examples">Worked Examples</div>
+
+      <div class="example-box">
+        <div class="example-title">Example 1 — Eigenstates and eigenvalues of $\hat{S}_x$</div>
+        <div class="example-body">
+          <p>Find the eigenvalues and normalised eigenstates of $\hat{S}_x = (\hbar/2)\sigma_x$.</p>
+          <p><strong>Eigenvalues:</strong> $\det(\hat{S}_x - \lambda I) = 0$.</p>
+          <div class="math-block">$$\det\!\begin{pmatrix}-\lambda & \hbar/2\\ \hbar/2 & -\lambda\end{pmatrix} = \lambda^2 - (\hbar/2)^2 = 0 \implies \lambda = \pm\hbar/2$$</div>
+          <p><strong>Eigenvectors for $\lambda = +\hbar/2$:</strong></p>
+          <div class="math-block">$$\frac{\hbar}{2}\begin{pmatrix}0&1\\1&0\end{pmatrix}\begin{pmatrix}a\\b\end{pmatrix} = \frac{\hbar}{2}\begin{pmatrix}a\\b\end{pmatrix} \implies b = a$$</div>
+          <p>Normalising: $|\uparrow_x\rangle = \frac{1}{\sqrt{2}}\begin{pmatrix}1\\1\end{pmatrix}$.</p>
+          <p><strong>Eigenvectors for $\lambda = -\hbar/2$:</strong> $b = -a$, so $|\downarrow_x\rangle = \frac{1}{\sqrt{2}}\begin{pmatrix}1\\-1\end{pmatrix}$.</p>
+          <p><strong>Measurement probability:</strong> If the electron starts in $|\uparrow\rangle = \begin{pmatrix}1\\0\end{pmatrix}$ and we measure $S_x$:</p>
+          <div class="math-block">$$P(+\hbar/2) = |\langle\uparrow_x|\uparrow\rangle|^2 = \left|\frac{1}{\sqrt{2}}(1\cdot 1 + 1\cdot 0)\right|^2 = \frac{1}{2}$$</div>
+          <p>Equal probabilities for both outcomes — consistent with the Stern-Gerlach sequential experiment.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-title">Example 2 — Larmor precession: time evolution in a magnetic field</div>
+        <div class="example-body">
+          <p>An electron starts in $|\chi(0)\rangle = |\uparrow_x\rangle = \frac{1}{\sqrt{2}}\begin{pmatrix}1\\1\end{pmatrix}$.
+          A field $\mathbf{B} = B\hat{z}$ is applied. Find $\langle S_x\rangle(t)$.</p>
+          <p><strong>Time evolution:</strong> The Hamiltonian $\hat{H} = \gamma B\hat{S}_z$ is diagonal in the $\{|\uparrow\rangle,|\downarrow\rangle\}$ basis.</p>
+          <div class="math-block">$$|\chi(t)\rangle = \frac{1}{\sqrt{2}}\begin{pmatrix}e^{-i\omega_L t/2}\\e^{+i\omega_L t/2}\end{pmatrix}, \qquad \omega_L = \gamma B$$</div>
+          <p><strong>Expectation value of $S_x$:</strong></p>
+          <div class="math-block">$$\langle S_x\rangle = \langle\chi(t)|\hat{S}_x|\chi(t)\rangle = \frac{\hbar}{2}\cdot\frac{1}{2}\begin{pmatrix}e^{i\omega_L t/2} & e^{-i\omega_L t/2}\end{pmatrix}\begin{pmatrix}0&1\\1&0\end{pmatrix}\begin{pmatrix}e^{-i\omega_L t/2}\\e^{i\omega_L t/2}\end{pmatrix}$$</div>
+          <div class="math-block">$$= \frac{\hbar}{4}\left(e^{i\omega_L t/2}\cdot e^{i\omega_L t/2} + e^{-i\omega_L t/2}\cdot e^{-i\omega_L t/2}\right) = \frac{\hbar}{4}(e^{i\omega_L t} + e^{-i\omega_L t}) = \frac{\hbar}{2}\cos(\omega_L t)$$</div>
+          <p>Similarly $\langle S_y\rangle = -\frac{\hbar}{2}\sin(\omega_L t)$ and $\langle S_z\rangle = 0$.
+          The spin precesses in the $xy$-plane at the Larmor frequency $\omega_L = \gamma B = g_e eB/2m_e$.
+          For a proton in a 1 T MRI field: $\omega_L^p \approx 2\pi \times 42.6\,\text{MHz}$ (the $^1$H NMR frequency).</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-title">Example 3 — Spin-orbit coupling: the $2p$ fine structure of hydrogen</div>
+        <div class="example-body">
+          <p>The 2p states of hydrogen have $n=2$, $l=1$, $s=\frac{1}{2}$. Determine the $j$ values and the energy splitting from spin-orbit coupling.</p>
+          <p><strong>$j$ values:</strong> $j = l + s = \frac{3}{2}$ and $j = l - s = \frac{1}{2}$. The degeneracy count: $j=\frac{3}{2}$ has $2(3/2)+1=4$ states; $j=\frac{1}{2}$ has $2(1/2)+1=2$ states. Total: 6 = $(2l+1)(2s+1) = 3\times2$ ✓.</p>
+          <p><strong>$\hat{\mathbf{L}}\cdot\hat{\mathbf{S}}$ eigenvalues:</strong></p>
+          <div class="math-block">$$\langle\hat{\mathbf{L}}\cdot\hat{\mathbf{S}}\rangle = \frac{\hbar^2}{2}[j(j+1)-l(l+1)-s(s+1)] = \frac{\hbar^2}{2}\left[j(j+1) - 2 - \frac{3}{4}\right]$$</div>
+          <p>For $j=\frac{3}{2}$: $\frac{\hbar^2}{2}[\frac{15}{4}-\frac{11}{4}] = \frac{\hbar^2}{2}\cdot 1 = \frac{\hbar^2}{2}$.</p>
+          <p>For $j=\frac{1}{2}$: $\frac{\hbar^2}{2}[\frac{3}{4}-\frac{11}{4}] = \frac{\hbar^2}{2}(-2) = -\hbar^2$.</p>
+          <p>The $j=\frac{3}{2}$ states (4 states: $2p_{3/2}$) lie higher in energy; $j=\frac{1}{2}$ (2 states: $2p_{1/2}$) lie lower.
+          This splitting is about $4.5\times10^{-5}\,\text{eV}$ — the 2p fine structure doublet of hydrogen,
+          visible in high-resolution spectroscopy of the Balmer-α line at 656 nm.</p>
+        </div>
+      </div>
+
+      <!-- ===================== FFT ===================== -->
+      <div class="section-head" id="fft">Food for Thought</div>
+      <ul class="fft-list">
+        <li class="fft-item">
+          <div class="fft-question">In the sequential Stern-Gerlach experiment, passing $|\uparrow_z\rangle$ through an $x$-oriented magnet and then a $z$-oriented magnet gives a 50/50 mixture — as if the first spin-up preparation was erased. What would happen if you could recombine the $|\uparrow_x\rangle$ and $|\downarrow_x\rangle$ beams without measuring which path the atom took?</div>
+          <div class="fft-answer">If you recombine coherently (no which-path information), the interference terms survive and the output is back to $|\uparrow_z\rangle$ — 100% probability of spin-up when measured along $z$ again. The $x$-magnet effectively had no effect. This is the spin version of quantum erasure: the middle "measurement" doesn't collapse the state if you recombine before reading out. Modern atom interferometers do exactly this, and Stern-Gerlach devices are the prototypical qubit gate in many theoretical frameworks. The key: quantum erasure requires that no information about the intermediate measurement ever reaches the environment in an irreversible way.</div>
+        </li>
+        <li class="fft-item">
+          <div class="fft-question">Electrons have $g_e \approx 2$, not 1 as you'd expect from the orbital analogy. Where does this factor of 2 come from, and why isn't it exactly 2?</div>
+          <div class="fft-answer">The $g_e = 2$ (to lowest order) is a prediction of the Dirac equation — the relativistic wave equation for spin-½ particles. When you extend non-relativistic quantum mechanics to be Lorentz-invariant, spin emerges automatically and the magnetic moment coupling comes out with $g=2$. The deviation from exactly 2 — the anomalous magnetic moment $a_e = (g_e-2)/2 \approx 1.16\times10^{-3}$ — arises from quantum field theory (quantum electrodynamics). Virtual photon loops and virtual electron-positron pairs slightly modify the interaction. The QED prediction for $a_e$ has been calculated to 10th order in the fine structure constant $\alpha$ and matches the experimental measurement to 12 significant figures — one of the most precise agreements between theory and experiment in all of science.</div>
+        </li>
+        <li class="fft-item">
+          <div class="fft-question">Spin is not "spinning" — what is it then? Is there a physical picture of what spin-½ actually is?</div>
+          <div class="fft-answer">There is no satisfying classical picture. Spin-½ is fundamentally a quantum property with no classical analogue. Some physical facts: electrons do have magnetic moments that cause real, measurable deflections (Stern-Gerlach); spin contributes to angular momentum conservation (in a molecule that absorbs a circularly polarised photon, the photon's $\hbar$ of spin angular momentum transfers to the electron — this is verified experimentally). But trying to imagine a tiny spinning ball fails immediately: you can't fit the electron's known size, charge, and magnetic moment into a consistent classical spinning sphere model. The deepest answer is that spin is a consequence of combining quantum mechanics with special relativity (Dirac equation), and it doesn't have a non-relativistic spatial description. It's a new degree of freedom that has angular momentum algebra but no "axis of rotation."</div>
+        </li>
+      </ul>
+
+      <!-- ===================== PITFALLS ===================== -->
+      <div class="section-head" id="pitfalls">Common Pitfalls</div>
+      <ul class="pitfall-list">
+        <li><strong>Spin is not orbital angular momentum — $s=\frac{1}{2}$ is genuinely half-integer.</strong> The same algebra gives rise to spin, but orbital angular momentum must have integer $l$ (single-valuedness of the position-space wavefunction). Spin-½ states aren't single-valued under $2\pi$ rotations — they pick up a factor of $-1$ (a global phase, which doesn't affect physical predictions). The full group that leaves spin-½ invariant is $SU(2)$, not $SO(3)$.</li>
+        <li><strong>$|\uparrow\rangle$ and $|\downarrow\rangle$ are eigenstates of $\hat{S}_z$, not $\hat{S}_x$ or $\hat{S}_y$.</strong> When you measure $S_x$ on a spin-up state, you get $\pm\hbar/2$ with equal probability — the state is not an eigenstate of $S_x$. Confusion about which axis you're measuring leads to systematic errors.</li>
+        <li><strong>The Zeeman effect splits $m_j$ states, not $m_l$ states alone.</strong> In the presence of spin-orbit coupling, the good quantum number is $m_j = m_l + m_s$, not $m_l$ separately. The full Zeeman structure requires knowing both the orbital and spin contributions.</li>
+        <li><strong>A spin "measurement" in the $z$-direction doesn't tell you the $x$ or $y$ components.</strong> After measuring $S_z = +\hbar/2$, the state is projected to $|\uparrow\rangle$, which has $\langle S_x\rangle = \langle S_y\rangle = 0$ but $\sigma_{S_x} = \sigma_{S_y} = \hbar/2$ — both components are maximally uncertain.</li>
+      </ul>
+
+      <!-- ===================== CONNECTS ===================== -->
+      <div class="section-head">Connects to</div>
+      <ul class="connects-list">
+        <li><strong>Identical Particles &amp; Entanglement (Lesson 11)</strong> — Electrons are fermions (half-integer spin), obeying the Pauli exclusion principle. The requirement that the total wavefunction (spatial × spin) be antisymmetric under particle exchange is the foundation of the periodic table and chemical bonding.</li>
+        <li><strong>Perturbation Theory (Lesson 10)</strong> — Spin-orbit coupling and the Zeeman effect are treated as perturbations to the hydrogen Hamiltonian. The full fine structure of hydrogen is a perturbation theory calculation combining spin-orbit, relativistic kinetic energy, and Darwin term corrections.</li>
+        <li><strong>Bioelectricity / MRI (Engineering)</strong> — Proton NMR (the basis of MRI) is Larmor precession of nuclear spin-½ in an external field. The RF pulse frequency equals the Larmor frequency $\omega_L = \gamma_p B$; spatial localisation uses gradient fields that make $\omega_L$ position-dependent.</li>
+      </ul>
+
+      <!-- ===================== NAV ===================== -->
+      <div class="lesson-nav">
+        <a href="hydrogen.html" class="lesson-nav-btn">← 8 · The Hydrogen Atom</a>
+        <a href="perturbation.html" class="lesson-nav-btn disabled">10 · Perturbation Theory →</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+<script src="../books-render.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  renderMathInElement(document.body, {
+    delimiters: [
+      {left: '$$', right: '$$', display: true},
+      {left: '$', right: '$', display: false}
+    ],
+    throwOnError: false
+  });
+
+  // ===================== Spin measurement probability chart =====================
+  function makePlot() {
+    const theta_deg = parseFloat(document.getElementById('theta-slider').value);
+    const theta = theta_deg * Math.PI / 180;
+    const Pup   = Math.cos(theta / 2) ** 2;
+    const Pdown = Math.sin(theta / 2) ** 2;
+
+    document.getElementById('theta-val').textContent = theta_deg + '°';
+    document.getElementById('prob-display').textContent =
+      'P(↑z) = ' + Pup.toFixed(4) + '   P(↓z) = ' + Pdown.toFixed(4) +
+      '   sum = ' + (Pup + Pdown).toFixed(6);
+
+    const traces = [
+      {
+        x: ['|↑z⟩ (spin-up)', '|↓z⟩ (spin-down)'],
+        y: [Pup, Pdown],
+        type: 'bar',
+        marker: {
+          color: ['#3a6a8a', '#c0503a'],
+          line: { color: ['#2a4a6a', '#9a3020'], width: 1.5 }
+        },
+        text: [Pup.toFixed(3), Pdown.toFixed(3)],
+        textposition: 'outside',
+        textfont: { size: 14, color: '#2a3a4a' }
+      }
+    ];
+
+    const layout = {
+      xaxis: { color: '#2a3a4a' },
+      yaxis: { title: 'Probability', range: [0, 1.15], color: '#2a3a4a', gridcolor: '#dde5ec' },
+      paper_bgcolor: 'transparent', plot_bgcolor: '#f8fbfd',
+      font: { family: 'IBM Plex Sans, sans-serif', size: 13, color: '#2a3a4a' },
+      margin: { t: 20, b: 60, l: 70, r: 30 },
+      bargap: 0.5
+    };
+
+    if (document.getElementById('spin-plot').data) {
+      Plotly.react('spin-plot', traces, layout, { responsive: true });
+    } else {
+      Plotly.newPlot('spin-plot', traces, layout, { responsive: true });
+    }
+  }
+
+  makePlot();
+  document.getElementById('theta-slider').addEventListener('input', makePlot);
+});
+</script>
+</body>
+</html>
