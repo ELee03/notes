@@ -25,38 +25,8 @@
   <div class="page-body">
 
     <div class="sidebar">
-
-      <div class="nav-section">
-        <div class="nav-label">Foundations</div>
-        <a href="control-problem.html" class="nav-item">1 · The Control Problem</a>
-        <a href="transfer-functions.html" class="nav-item">2 · Dynamical Systems &amp; Transfer Functions</a>
-        <a href="bode.html" class="nav-item">3 · Second-Order Systems</a>
-      </div>
-
-      <div class="nav-section">
-        <div class="nav-label">Frequency Domain</div>
-        <a href="routh.html" class="nav-item">4 · Routh-Hurwitz Stability</a>
-        <a href="root-locus.html" class="nav-item">5 · Root Locus</a>
-        <a href="nyquist.html" class="nav-item">6 · Nyquist &amp; Stability Margins</a>
-      </div>
-
-      <div class="nav-section">
-        <div class="nav-label">Classical Design</div>
-        <a href="pid.html" class="nav-item">7 · PID Control</a>
-        <a href="lead-lag.html" class="nav-item">8 · Lead-Lag Compensators</a>
-      </div>
-
-      <div class="nav-section">
-        <div class="nav-label">State Space</div>
-        <a href="state-space.html" class="nav-item">9 · State-Space Representation</a>
-        <a href="state-response.html" class="nav-item">10 · State Response</a>
-        <a href="controllability.html" class="nav-item">11 · Controllability &amp; Observability</a>
-        <a href="state-feedback.html" class="nav-item">12 · State Feedback &amp; Pole Placement</a>
-        <a href="lqr.html" class="nav-item">13 · Linear Quadratic Regulator</a>
-        <a href="observers.html" class="nav-item">14 · Observers &amp; Separation Principle</a>
-      </div>
-
-    </div><!-- /sidebar -->
+      <div id="cluster-nav" data-cluster="control" data-current="index.html"></div>
+    </div>
 
     <div class="main">
 
@@ -90,113 +60,9 @@
 
       <table class="lesson-list">
         <thead>
-          <tr>
-            <th>#</th>
-            <th>Lesson</th>
-            <th>Key concepts</th>
-          </tr>
+          <tr><th>#</th><th>Lesson</th><th>Key concepts</th></tr>
         </thead>
-        <tbody>
-
-          <tr class="part-head">
-            <td colspan="3">
-              Part I — Foundations
-            </td>
-          </tr>
-
-          <tr class="lesson-row">
-            <td>1</td>
-            <td><a href="control-problem.html">The Control Problem</a></td>
-            <td>Open vs closed loop · feedback · block diagram algebra · plant/controller/sensor · stability vs performance · why feedback helps (and when it hurts)</td>
-          </tr>
-          <tr class="lesson-row">
-            <td>2</td>
-            <td><a href="transfer-functions.html">Dynamical Systems &amp; Transfer Functions</a></td>
-            <td>ODEs as systems · Laplace transform (brief review) · transfer function $G(s)$ · poles and zeros · DC gain · first-order step response · system type and steady-state error</td>
-          </tr>
-          <tr class="lesson-row">
-            <td>3</td>
-            <td><a href="bode.html">Second-Order Systems</a></td>
-            <td>Standard form · damping ratio $\zeta$ and natural frequency $\omega_n$ · underdamped/overdamped/critically damped · step response peaks and settling time · Bode magnitude and phase plots</td>
-          </tr>
-
-          <tr class="part-head">
-            <td colspan="3">
-              Part II — Frequency Domain
-            </td>
-          </tr>
-
-          <tr class="lesson-row">
-            <td>4</td>
-            <td><a href="routh.html">Routh-Hurwitz Stability</a></td>
-            <td>Characteristic polynomial · Routh array · necessary and sufficient conditions for stability · special cases (zero rows, imaginary-axis poles) · stability margins from the array</td>
-          </tr>
-          <tr class="lesson-row">
-            <td>5</td>
-            <td><a href="root-locus.html">Root Locus</a></td>
-            <td>Closed-loop poles as gain varies · construction rules (angles, asymptotes, breakaway) · design specifications on the s-plane · lag/lead locus · practical design via root locus</td>
-          </tr>
-          <tr class="lesson-row">
-            <td>6</td>
-            <td><a href="nyquist.html">Nyquist Criterion &amp; Stability Margins</a></td>
-            <td>Nyquist plot · encirclement theorem · gain margin · phase margin · closed-loop stability from open-loop data · relationship to Bode · robustness interpretation</td>
-          </tr>
-
-          <tr class="part-head">
-            <td colspan="3">
-              Part III — Classical Control Design
-            </td>
-          </tr>
-
-          <tr class="lesson-row">
-            <td>7</td>
-            <td><a href="pid.html">PID Control</a></td>
-            <td>Proportional · integral · derivative actions · steady-state error elimination · derivative kick · integral windup · Ziegler-Nichols tuning · anti-windup strategies · practical implementation</td>
-          </tr>
-          <tr class="lesson-row">
-            <td>8</td>
-            <td><a href="lead-lag.html">Lead-Lag Compensators</a></td>
-            <td>Phase lead for speed and bandwidth · phase lag for steady-state accuracy · combined lead-lag · frequency domain design procedure · comparison to PID</td>
-          </tr>
-
-          <tr class="part-head">
-            <td colspan="3">
-              Part IV — State Space
-            </td>
-          </tr>
-
-          <tr class="lesson-row">
-            <td>9</td>
-            <td><a href="state-space.html">State-Space Representation</a></td>
-            <td>$\dot{x} = Ax + Bu$, $y = Cx + Du$ · state variables · conversion to/from transfer function · minimal realisation · eigenvalues as poles · modal decomposition</td>
-          </tr>
-          <tr class="lesson-row">
-            <td>10</td>
-            <td><a href="state-response.html">State Response &amp; Matrix Exponential</a></td>
-            <td>Matrix exponential $e^{At}$ · homogeneous and forced response · modes · Cayley-Hamilton theorem · Jordan form connection · computing $e^{At}$ in practice</td>
-          </tr>
-          <tr class="lesson-row">
-            <td>11</td>
-            <td><a href="controllability.html">Controllability &amp; Observability</a></td>
-            <td>Controllability Gramian and matrix rank test · PBH test · physical meaning · observability duality · Kalman decomposition · uncontrollable and unobservable modes</td>
-          </tr>
-          <tr class="lesson-row">
-            <td>12</td>
-            <td><a href="state-feedback.html">State Feedback &amp; Pole Placement</a></td>
-            <td>Full-state feedback $u = -Kx$ · closed-loop eigenvalue assignment · Ackermann's formula · comparison to root locus · reference tracking and feedforward</td>
-          </tr>
-          <tr class="lesson-row">
-            <td>13</td>
-            <td><a href="lqr.html">Linear Quadratic Regulator (LQR)</a></td>
-            <td>Optimal control formulation · quadratic cost $J = \int (x^TQx + u^TRu)\,dt$ · algebraic Riccati equation · Q/R weight tuning · why LQR beats arbitrary pole placement</td>
-          </tr>
-          <tr class="lesson-row">
-            <td>14</td>
-            <td><a href="observers.html">Observers &amp; The Separation Principle</a></td>
-            <td>Luenberger observer · observer gain design · error dynamics · duality with controllability · output feedback via estimated state · separation principle · Kalman filter preview</td>
-          </tr>
-
-        </tbody>
+        <tbody id="lesson-tbody"></tbody>
       </table>
 
       <div class="section-head">References</div>
@@ -220,8 +86,13 @@
   <span>Est. MMXXVI</span>
 </footer>
 
+<script src="../notes-nav.js"></script>
+<script src="../notes-index.js"></script>
 <script src="../books-render.js"></script>
-<script>renderBooks({ containerId: 'cluster-refs', clusterId: 'control', jsonPath: '../books.json' });</script>
+<script>
+  renderLessonTable();
+  renderBooks({ containerId: 'cluster-refs', clusterId: 'control', jsonPath: '../books.json' });
+</script>
 
 </body>
 </html>

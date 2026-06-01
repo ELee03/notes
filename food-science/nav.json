@@ -3,45 +3,45 @@
     {
       "label": "Chemistry of Cooking",
       "items": [
-        { "href": "maillard.html",      "text": "1 · Heat & Browning" },
-        { "href": "proteins.html",      "text": "2 · Proteins in the Kitchen" },
-        { "href": "fats.html",          "text": "3 · Fats, Oils & Emulsions" },
-        { "href": "carbohydrates.html", "text": "4 · Carbohydrates & Starches" }
+        { "href": "maillard.html",      "text": "1 · Heat &amp; Browning",         "topics": "Maillard reaction mechanism · caramelisation · four control variables (temperature, water activity, pH, reducing sugar type)"},
+        { "href": "proteins.html",      "text": "2 · Proteins in the Kitchen",  "topics": "Protein structure · denaturation and coagulation · eggs as model system · collagen/gelatin and braising · gluten network · casein micelles"},
+        { "href": "fats.html",          "text": "3 · Fats, Oils &amp; Emulsions", "topics": "Triglyceride structure · saturation and physical state · smoke points · rancidity mechanisms · emulsification thermodynamics · lecithin/protein emulsifiers"},
+        { "href": "carbohydrates.html", "text": "4 · Carbohydrates &amp; Starches", "topics": "Monosaccharide reactivity · starch gelatinisation · retrogradation · pectin gels · sugar syrup stages · amylose vs amylopectin"}
       ]
     },
     {
       "label": "Transformation",
       "items": [
-        { "href": "fermentation.html",  "text": "5 · Fermentation" },
-        { "href": "flavor.html",        "text": "6 · Flavour Science" }
+        { "href": "fermentation.html",  "text": "5 · Fermentation",   "topics": "Yeast and lactic acid bacteria · bread and sourdough · cheese coagulation and aging · yogurt · fermented vegetables · vinegar (two-step)"},
+        { "href": "flavor.html",        "text": "6 · Flavour Science", "topics": "Five basic tastes and receptor mechanisms · orthonasal vs retronasal olfaction · volatile families (esters, aldehydes, thiols, terpenes) · umami synergy · off-flavours"}
       ]
     },
     {
       "label": "Animal Foods",
       "items": [
-        { "href": "meat.html",          "text": "7 · Meat Science" },
-        { "href": "fish.html",          "text": "8 · Fish & Shellfish" }
+        { "href": "meat.html", "text": "7 · Meat Science",     "topics": "Sarcomere structure · myoglobin and colour · post-mortem biochemistry · water-holding capacity · collagen conversion · wet vs dry aging · sous vide"},
+        { "href": "fish.html", "text": "8 · Fish &amp; Shellfish", "topics": "Myotome structure · fish protein thermal stability · TMAO chemistry · lean vs fatty fish (EPA/DHA) · crustacyanin denaturation · K-value freshness"}
       ]
     },
     {
-      "label": "Plants & Ingredients",
+      "label": "Plants &amp; Ingredients",
       "items": [
-        { "href": "vegetables.html",    "text": "9 · Vegetables & Fruits" },
-        { "href": "spices.html",        "text": "10 · Spices & Aromatics" }
+        { "href": "vegetables.html", "text": "9 · Vegetables &amp; Fruits", "topics": "Cell wall structure (cellulose/hemicellulose/pectin) · chlorophyll/pheophytin conversion · anthocyanin pH chemistry · enzymatic browning · ethylene and ripening"},
+        { "href": "spices.html",     "text": "10 · Spices &amp; Aromatics", "topics": "Terpene and phenylpropanoid families · fat vs water extraction · capsaicin/TRPV1 · vanilla glucovanillin curing · ginger transformation · turmeric curcumin"}
       ]
     },
     {
       "label": "Beverages",
       "items": [
-        { "href": "coffee-tea.html",    "text": "11 · Coffee & Tea" },
-        { "href": "wine-beer.html",     "text": "12 · Wine & Beer" }
+        { "href": "coffee-tea.html", "text": "11 · Coffee &amp; Tea", "topics": "Roasting stages (Maillard cascade, first/second crack) · extraction sequence (acids→sweetness→bitterness) · espresso physics · tea catechins/PPO oxidation · L-theanine"},
+        { "href": "wine-beer.html",  "text": "12 · Wine &amp; Beer", "topics": "Fermentation esters and fusel alcohols · thiol precursors · MLF chemistry · tannin astringency · malting/mashing enzymes · hop iso-alpha acids · ale vs lager yeast"}
       ]
     },
     {
       "label": "Advanced Topics",
       "items": [
-        { "href": "chocolate.html",     "text": "13 · Chocolate & Confectionery" },
-        { "href": "hydrocolloids.html", "text": "14 · Hydrocolloids" }
+        { "href": "chocolate.html",     "text": "13 · Chocolate &amp; Confectionery", "topics": "Cacao fermentation cascade · conching · cocoa butter polymorphism (Forms I–VI) · Form V tempering · fat bloom vs sugar bloom · lecithin paradox"},
+        { "href": "hydrocolloids.html", "text": "14 · Hydrocolloids",                 "topics": "Gel junction zones · gelatin Bloom strength and protease sensitivity · agar hysteresis · carrageenan κ/ι/λ · xanthan shear-thinning · methylcellulose reverse thermogelation"}
       ]
     }
   ]

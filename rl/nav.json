@@ -3,25 +3,25 @@
     {
       "label": "Foundations",
       "items": [
-        {"href": "rl-problem.html", "text": "1 · The RL Problem"},
-        {"href": "bandits.html",    "text": "2 · Multi-Armed Bandits"},
-        {"href": "mdp.html",        "text": "3 · Markov Decision Processes"}
+        {"href": "rl-problem.html", "text": "1 · The RL Problem",             "topics": "Agent-environment interface · reward hypothesis · return · discounting · episodic vs continuing tasks · policy"},
+        {"href": "bandits.html",    "text": "2 · Multi-Armed Bandits",        "topics": "Exploration vs exploitation · action values · ε-greedy · optimistic initialisation · UCB · gradient bandit · nonstationarity"},
+        {"href": "mdp.html",        "text": "3 · Markov Decision Processes",  "topics": "States · actions · transition dynamics · Markov property · rewards · policy · value function preview"}
       ]
     },
     {
       "label": "Core Theory",
       "items": [
-        {"href": "value-functions.html", "text": "4 · Value Functions &amp; Bellman"},
-        {"href": "dp.html",              "text": "5 · Dynamic Programming"},
-        {"href": "monte-carlo.html",     "text": "6 · Monte Carlo Methods"},
-        {"href": "td-learning.html",     "text": "7 · Temporal Difference Learning"}
+        {"href": "value-functions.html", "text": "4 · Value Functions &amp; Bellman", "topics": "V_π · Q_π · Bellman expectation equations · Bellman optimality equations · backup diagrams"},
+        {"href": "dp.html",              "text": "5 · Dynamic Programming",          "topics": "Policy evaluation · policy improvement theorem · policy iteration · value iteration · requires known model"},
+        {"href": "monte-carlo.html",     "text": "6 · Monte Carlo Methods",          "topics": "Model-free learning from episodes · first-visit vs every-visit · MC control · importance sampling · off-policy MC"},
+        {"href": "td-learning.html",     "text": "7 · Temporal Difference Learning", "topics": "TD(0) · TD error · SARSA (on-policy) · Q-learning (off-policy) · n-step TD · unifying MC and DP"}
       ]
     },
     {
       "label": "Scaling Up",
       "items": [
-        {"href": "function-approx.html",  "text": "8 · Function Approximation"},
-        {"href": "policy-gradients.html", "text": "9 · Policy Gradient Methods"}
+        {"href": "function-approx.html",  "text": "8 · Function Approximation",  "topics": "Parametric value functions · semi-gradient TD · the deadly triad · linear function approximation · DQN"},
+        {"href": "policy-gradients.html", "text": "9 · Policy Gradient Methods", "topics": "REINFORCE · baseline subtraction · actor-critic · advantage functions · policy gradient theorem"}
       ]
     }
   ]

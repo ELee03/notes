@@ -83,31 +83,11 @@
 </footer>
 
 <script src="../notes-nav.js"></script>
+<script src="../notes-index.js"></script>
 <script src="../books-render.js"></script>
 <script>
-// Render lesson table from nav.json (same source as sidebar)
-fetch('nav.json')
-  .then(function(r) { return r.json(); })
-  .then(function(data) {
-    var tbody = document.getElementById('lesson-tbody');
-    var lessonNum = 1;
-    var html = '';
-    data.sections.forEach(function(section) {
-      html += '<tr class="part-head"><td colspan="3">' + section.label + '</td></tr>';
-      section.items.forEach(function(item) {
-        var numCell = '<td>' + lessonNum + '</td>';
-        var titleCell = item.planned
-          ? '<td><span style="color:#8a9ab0;">' + item.text.replace(/^\d+ · /, '') + '</span></td>'
-          : '<td><a href="' + item.href + '">' + item.text.replace(/^\d+ · /, '') + '</a></td>';
-        var topicsCell = '<td>' + (item.topics || '') + '</td>';
-        html += '<tr class="lesson-row">' + numCell + titleCell + topicsCell + '</tr>';
-        lessonNum++;
-      });
-    });
-    tbody.innerHTML = html;
-  });
-
-renderBooks({ containerId: 'cluster-refs', clusterId: 'quantum', jsonPath: '../books.json' });
+  renderLessonTable();
+  renderBooks({ containerId: 'cluster-refs', clusterId: 'quantum', jsonPath: '../books.json' });
 </script>
 </body>
 </html>

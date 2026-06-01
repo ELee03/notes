@@ -25,40 +25,7 @@
   <div class="page-body">
 
     <div class="sidebar">
-      <div class="nav-section">
-        <div class="nav-label">Architecture &amp; Internals</div>
-        <a href="mcu-architecture.html" class="nav-item">1 · MCU Architecture</a>
-        <a href="memory-clocks.html" class="nav-item">2 · Memory &amp; Clock Systems</a>
-        <a href="interrupts-nvic.html" class="nav-item">3 · Interrupts &amp; the NVIC</a>
-        <a href="dma.html" class="nav-item">4 · DMA</a>
-      </div>
-      <div class="nav-section">
-        <div class="nav-label">Peripherals</div>
-        <a href="gpio.html" class="nav-item">5 · GPIO</a>
-        <a href="timers-pwm.html" class="nav-item">6 · Timers &amp; PWM</a>
-        <a href="adc-dac.html" class="nav-item">7 · ADC &amp; DAC</a>
-      </div>
-      <div class="nav-section">
-        <div class="nav-label">Protocols</div>
-        <a href="uart.html" class="nav-item">8 · UART</a>
-        <a href="spi.html" class="nav-item">9 · SPI</a>
-        <a href="i2c.html" class="nav-item">10 · I2C</a>
-        <a href="can.html" class="nav-item">11 · CAN Bus</a>
-        <a href="usb.html" class="nav-item">12 · USB Fundamentals</a>
-      </div>
-      <div class="nav-section">
-        <div class="nav-label">Firmware</div>
-        <a href="bare-metal.html" class="nav-item">13 · Bare-Metal Patterns</a>
-        <a href="rtos.html" class="nav-item">14 · RTOS Concepts</a>
-        <a href="debug.html" class="nav-item">15 · Debugging &amp; Test</a>
-      </div>
-      <div class="nav-section">
-        <div class="nav-label">PCB Design</div>
-        <a href="layout.html" class="nav-item">16 · Layout Fundamentals</a>
-        <a href="mixed-signal.html" class="nav-item">17 · Mixed-Signal Layout</a>
-        <a href="power-thermal.html" class="nav-item">18 · Power &amp; Thermal</a>
-        <a href="high-speed-rf.html" class="nav-item">19 · High-Speed &amp; RF</a>
-      </div>
+      <div id="cluster-nav" data-cluster="embedded" data-current="index.html"></div>
     </div>
 
     <div class="main">
@@ -90,135 +57,9 @@
 
       <table class="lesson-list">
         <thead>
-          <tr>
-            <th>#</th>
-            <th>Lesson</th>
-            <th>Key concepts</th>
-          </tr>
+          <tr><th>#</th><th>Lesson</th><th>Key concepts</th></tr>
         </thead>
-        <tbody>
-
-          <tr class="part-head">
-            <td colspan="3">Part I — Architecture &amp; Internals</td>
-          </tr>
-
-          <tr class="lesson-row">
-            <td>1</td>
-            <td><a href="mcu-architecture.html">MCU Architecture</a></td>
-            <td>ARM Cortex-M core · register file · privileged vs unprivileged modes · fixed memory map · reset sequence · EFR32 series overview</td>
-          </tr>
-          <tr class="lesson-row">
-            <td>2</td>
-            <td><a href="memory-clocks.html">Memory &amp; Clock Systems</a></td>
-            <td>Flash wait states · SRAM layout (.data/.bss/stack/heap) · clock tree · PLLs · EFR32 CMU · energy modes EM0–EM4</td>
-          </tr>
-          <tr class="lesson-row">
-            <td>3</td>
-            <td><a href="interrupts-nvic.html">Interrupts &amp; the NVIC</a></td>
-            <td>Exception model · vector table · NVIC priority levels · preemption · tail-chaining · interrupt-safe code patterns</td>
-          </tr>
-          <tr class="lesson-row">
-            <td>4</td>
-            <td><a href="dma.html">DMA</a></td>
-            <td>Why DMA exists · transfer descriptors · EFR32 LDMA · circular buffer pattern for ADC/UART streaming · DMA vs interrupt tradeoffs</td>
-          </tr>
-
-          <tr class="part-head">
-            <td colspan="3">Part II — Peripherals</td>
-          </tr>
-
-          <tr class="lesson-row">
-            <td>5</td>
-            <td><a href="gpio.html">GPIO</a></td>
-            <td>Push-pull vs open-drain · input pull-ups · Schmitt trigger · alternate function routing · GPIO interrupts · switch debouncing</td>
-          </tr>
-          <tr class="lesson-row">
-            <td>6</td>
-            <td><a href="timers-pwm.html">Timers &amp; PWM</a></td>
-            <td>Counter modes (up/up-down) · compare/capture channels · PWM generation · dead-time insertion · LETIMER for low-power periodic wakeup</td>
-          </tr>
-          <tr class="lesson-row">
-            <td>7</td>
-            <td><a href="adc-dac.html">ADC &amp; DAC</a></td>
-            <td>SAR architecture · quantisation error · reference voltage · acquisition time · antialiasing filter · DMA+TIMER+PRS pipeline · PWM-as-DAC</td>
-          </tr>
-
-          <tr class="part-head">
-            <td colspan="3">Part III — Communication Protocols</td>
-          </tr>
-
-          <tr class="lesson-row">
-            <td>8</td>
-            <td><a href="uart.html">UART</a></td>
-            <td>8N1 frame format · baud rate generation and ±2.5% tolerance · RS-232 vs TTL levels · RTS/CTS and XON/XOFF flow control · interrupt-driven receive with ring buffer</td>
-          </tr>
-          <tr class="lesson-row">
-            <td>9</td>
-            <td><a href="spi.html">SPI</a></td>
-            <td>Full-duplex shift register · CPOL/CPHA four clock modes · hardware vs software CS · independent CS vs daisy-chain · clock frequency limits · EFR32 USART sync mode</td>
-          </tr>
-          <tr class="lesson-row">
-            <td>10</td>
-            <td><a href="i2c.html">I2C</a></td>
-            <td>Open-drain topology · pull-up resistor sizing · START/STOP/Repeated START · 7-bit and 10-bit addressing · ACK/NAK · clock stretching · EFR32 I2C_TransferSeq · bus lockup recovery</td>
-          </tr>
-          <tr class="lesson-row">
-            <td>11</td>
-            <td><a href="can.html">CAN Bus</a></td>
-            <td>Differential signalling (CAN-H/CAN-L) · dominant/recessive bits · non-destructive arbitration by message ID · data frame fields · bit stuffing · error confinement state machine</td>
-          </tr>
-          <tr class="lesson-row">
-            <td>12</td>
-            <td><a href="usb.html">USB Fundamentals</a></td>
-            <td>Host-centric model · enumeration sequence · descriptor hierarchy (device/config/interface/endpoint) · four transfer types · 1 ms frame boundary · CDC-ACM virtual serial port</td>
-          </tr>
-
-          <tr class="part-head">
-            <td colspan="3">Part IV — Firmware Practices</td>
-          </tr>
-
-          <tr class="lesson-row">
-            <td>13</td>
-            <td><a href="bare-metal.html">Bare-Metal Patterns</a></td>
-            <td>C startup (.data/.bss init, init_array) · superloop vs interrupt-driven hybrid · FSM design · interrupt-safe ring buffers · driver layering (HAL/driver/app) · volatile and memory barriers (DMB/DSB/ISB)</td>
-          </tr>
-          <tr class="lesson-row">
-            <td>14</td>
-            <td><a href="rtos.html">RTOS Concepts</a></td>
-            <td>Task states and context switch (PendSV) · preemptive priority-based scheduling · binary semaphore and mutex · priority inheritance · queues · priority inversion · stack overflow detection · FreeRTOS task creation</td>
-          </tr>
-          <tr class="lesson-row">
-            <td>15</td>
-            <td><a href="debug.html">Debugging &amp; Test</a></td>
-            <td>SWD vs JTAG · CoreSight (DAP, AHB-AP, FPB, DWT, ITM) · OpenOCD+GDB workflow · HardFault analysis (CFSR/BFAR/MMFAR, stacked PC) · printf vs ITM/SWO tracing · logic analyser protocol decoding</td>
-          </tr>
-
-          <tr class="part-head">
-            <td colspan="3">Part V — PCB Design</td>
-          </tr>
-
-          <tr class="lesson-row">
-            <td>16</td>
-            <td><a href="layout.html">Layout Fundamentals</a></td>
-            <td>2-layer vs 4-layer stackup · return current path · GND plane slot = EMI · bulk vs local decoupling (100 nF X7R at each VDD pin) · via stitching · clearance/creepage/board-edge keepout</td>
-          </tr>
-          <tr class="lesson-row">
-            <td>17</td>
-            <td><a href="mixed-signal.html">Mixed-Signal Layout</a></td>
-            <td>Analog/digital floorplanning · single continuous GND plane (split plane is wrong) · AVDD/VREF bypass · ADC input trace routing · InAmp differential pair · guard rings for high-Z nodes · ferrite bead LPF</td>
-          </tr>
-          <tr class="lesson-row">
-            <td>18</td>
-            <td><a href="power-thermal.html">Power &amp; Thermal</a></td>
-            <td>Buck/boost hot loop (C_IN placement, minimise loop area) · PDN target impedance · capacitor cascade (bulk + local ceramic + plane) · thermal resistance model (T_J = T_A + P_D × θ_JA) · exposed pad + thermal via array</td>
-          </tr>
-          <tr class="lesson-row">
-            <td>19</td>
-            <td><a href="high-speed-rf.html">High-Speed &amp; RF</a></td>
-            <td>Transmission lines (λ/10 threshold, reflection coefficient) · microstrip vs stripline Z₀ · differential pairs (length match, tight coupling) · USB FS/HS layout · inverted-F PCB antenna · π/L matching network placement</td>
-          </tr>
-
-        </tbody>
+        <tbody id="lesson-tbody"></tbody>
       </table>
 
       <div class="section-head">References</div>
@@ -242,8 +83,13 @@
   <span>Est. MMXXVI</span>
 </footer>
 
+<script src="../notes-nav.js"></script>
+<script src="../notes-index.js"></script>
 <script src="../books-render.js"></script>
-<script>renderBooks({ containerId: 'cluster-refs', clusterId: 'embedded', jsonPath: '../books.json' });</script>
+<script>
+  renderLessonTable();
+  renderBooks({ containerId: 'cluster-refs', clusterId: 'embedded', jsonPath: '../books.json' });
+</script>
 
 </body>
 </html>

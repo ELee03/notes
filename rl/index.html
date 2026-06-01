@@ -25,26 +25,7 @@
   <div class="page-body">
 
     <div class="sidebar">
-      <div class="nav-section">
-        <div class="nav-label">Foundations</div>
-        <a href="rl-problem.html" class="nav-item">1 · The RL Problem</a>
-        <a href="bandits.html" class="nav-item">2 · Multi-Armed Bandits</a>
-        <a href="mdp.html" class="nav-item">3 · Markov Decision Processes</a>
-      </div>
-
-      <div class="nav-section">
-        <div class="nav-label">Core Theory</div>
-        <a href="value-functions.html" class="nav-item">4 · Value Functions &amp; Bellman</a>
-        <a href="dp.html" class="nav-item">5 · Dynamic Programming</a>
-        <a href="monte-carlo.html" class="nav-item">6 · Monte Carlo Methods</a>
-        <a href="td-learning.html" class="nav-item">7 · Temporal Difference Learning</a>
-      </div>
-
-      <div class="nav-section">
-        <div class="nav-label">Scaling Up</div>
-        <a href="function-approx.html" class="nav-item">8 · Function Approximation</a>
-        <a href="policy-gradients.html" class="nav-item">9 · Policy Gradient Methods</a>
-      </div>
+      <div id="cluster-nav" data-cluster="rl" data-current="index.html"></div>
     </div>
 
     <div class="main">
@@ -80,81 +61,9 @@
 
       <table class="lesson-list">
         <thead>
-          <tr>
-            <th style="width:3em;">#</th>
-            <th>Lesson</th>
-            <th>Key concepts</th>
-          </tr>
+          <tr><th>#</th><th>Lesson</th><th>Key concepts</th></tr>
         </thead>
-        <tbody>
-
-          <tr class="part-head">
-            <td colspan="3">
-              Part I — Foundations
-            </td>
-          </tr>
-
-          <tr class="lesson-row">
-            <td>1</td>
-            <td><a href="rl-problem.html">The RL Problem</a></td>
-            <td>Agent · environment interface · reward hypothesis · return · discounting · episodic vs continuing · policy</td>
-          </tr>
-          <tr class="lesson-row">
-            <td>2</td>
-            <td><a href="bandits.html">Multi-Armed Bandits</a></td>
-            <td>Exploration vs exploitation · action values · ε-greedy · optimistic init · UCB · gradient bandit · nonstationarity</td>
-          </tr>
-          <tr class="lesson-row">
-            <td>3</td>
-            <td><a href="mdp.html">Markov Decision Processes</a></td>
-            <td>State · action · transition dynamics · Markov property · grid world · policy · value function preview</td>
-          </tr>
-
-          <tr class="part-head">
-            <td colspan="3">
-              Part II — Core Theory
-            </td>
-          </tr>
-
-          <tr class="lesson-row">
-            <td>4</td>
-            <td><a href="value-functions.html">Value Functions &amp; Bellman Equations</a></td>
-            <td>V<sub>π</sub> · Q<sub>π</sub> · Bellman expectation · Bellman optimality · backup diagrams</td>
-          </tr>
-          <tr class="lesson-row">
-            <td>5</td>
-            <td><a href="dp.html">Dynamic Programming</a></td>
-            <td>Policy evaluation · policy improvement theorem · policy iteration · value iteration · known model</td>
-          </tr>
-          <tr class="lesson-row">
-            <td>6</td>
-            <td><a href="monte-carlo.html">Monte Carlo Methods</a></td>
-            <td>Model-free from episodes · first-visit vs every-visit · MC control · importance sampling · off-policy</td>
-          </tr>
-          <tr class="lesson-row">
-            <td>7</td>
-            <td><a href="td-learning.html">Temporal Difference Learning</a></td>
-            <td>TD(0) · TD error · SARSA · Q-learning · n-step TD · unifying MC and DP</td>
-          </tr>
-
-          <tr class="part-head">
-            <td colspan="3">
-              Part III — Scaling Up
-            </td>
-          </tr>
-
-          <tr class="lesson-row">
-            <td>8</td>
-            <td><a href="function-approx.html">Function Approximation</a></td>
-            <td>Parametric value functions · gradient TD · the deadly triad · semi-gradient methods</td>
-          </tr>
-          <tr class="lesson-row">
-            <td>9</td>
-            <td><a href="policy-gradients.html">Policy Gradient Methods</a></td>
-            <td>REINFORCE · baseline subtraction · actor-critic · advantage functions · policy gradient theorem</td>
-          </tr>
-
-        </tbody>
+        <tbody id="lesson-tbody"></tbody>
       </table>
 
       <div class="section-head">References</div>
@@ -177,8 +86,11 @@
   <span>Est. MMXXVI</span>
 </footer>
 
+<script src="../notes-nav.js"></script>
+<script src="../notes-index.js"></script>
 <script src="../books-render.js"></script>
 <script>
+  renderLessonTable();
   renderBooks({ containerId: 'cluster-refs', clusterId: 'rl', jsonPath: '../books.json' });
 </script>
 

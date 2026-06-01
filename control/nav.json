@@ -3,35 +3,35 @@
     {
       "label": "Foundations",
       "items": [
-        {"href": "control-problem.html",   "text": "1 · The Control Problem"},
-        {"href": "transfer-functions.html", "text": "2 · Dynamical Systems &amp; Transfer Functions"},
-        {"href": "bode.html",              "text": "3 · Second-Order Systems"}
+        {"href": "control-problem.html",    "text": "1 · The Control Problem",                      "topics": "Open vs closed loop · feedback · block diagram algebra · plant/controller/sensor · stability vs performance tradeoff"},
+        {"href": "transfer-functions.html", "text": "2 · Dynamical Systems &amp; Transfer Functions", "topics": "ODEs as systems · Laplace transform review · transfer function G(s) · poles and zeros · DC gain · first-order step response · steady-state error"},
+        {"href": "bode.html",               "text": "3 · Second-Order Systems",                     "topics": "Standard second-order form · damping ratio ζ · natural frequency ω_n · underdamped/overdamped/critically damped · step response peaks · Bode magnitude and phase plots"}
       ]
     },
     {
       "label": "Frequency Domain",
       "items": [
-        {"href": "routh.html",      "text": "4 · Routh-Hurwitz Stability"},
-        {"href": "root-locus.html", "text": "5 · Root Locus"},
-        {"href": "nyquist.html",    "text": "6 · Nyquist &amp; Stability Margins"}
+        {"href": "routh.html",      "text": "4 · Routh-Hurwitz Stability",       "topics": "Characteristic polynomial · Routh array construction · necessary and sufficient stability conditions · special cases (zero rows, imaginary-axis poles)"},
+        {"href": "root-locus.html", "text": "5 · Root Locus",                     "topics": "Closed-loop poles as gain varies · construction rules (angles, asymptotes, breakaway) · design specifications on the s-plane · lag/lead locus"},
+        {"href": "nyquist.html",    "text": "6 · Nyquist &amp; Stability Margins", "topics": "Nyquist plot · encirclement theorem · gain margin · phase margin · closed-loop stability from open-loop data · robustness interpretation"}
       ]
     },
     {
       "label": "Classical Design",
       "items": [
-        {"href": "pid.html",      "text": "7 · PID Control"},
-        {"href": "lead-lag.html", "text": "8 · Lead-Lag Compensators"}
+        {"href": "pid.html",      "text": "7 · PID Control",          "topics": "P/I/D actions · steady-state error elimination · derivative kick · integral windup · Ziegler-Nichols tuning · anti-windup strategies"},
+        {"href": "lead-lag.html", "text": "8 · Lead-Lag Compensators", "topics": "Phase lead for bandwidth · phase lag for steady-state accuracy · combined lead-lag · frequency domain design procedure · comparison to PID"}
       ]
     },
     {
       "label": "State Space",
       "items": [
-        {"href": "state-space.html",      "text": "9 · State-Space Representation"},
-        {"href": "state-response.html",   "text": "10 · State Response"},
-        {"href": "controllability.html",  "text": "11 · Controllability &amp; Observability"},
-        {"href": "state-feedback.html",   "text": "12 · State Feedback &amp; Pole Placement"},
-        {"href": "lqr.html",              "text": "13 · Linear Quadratic Regulator"},
-        {"href": "observers.html",        "text": "14 · Observers &amp; Separation Principle"}
+        {"href": "state-space.html",     "text": "9 · State-Space Representation",          "topics": "ẋ = Ax + Bu, y = Cx + Du · state variables · conversion to/from transfer function · minimal realisation · eigenvalues as poles"},
+        {"href": "state-response.html",  "text": "10 · State Response",                      "topics": "Matrix exponential e^{At} · homogeneous and forced response · modes · Cayley-Hamilton theorem · Jordan form connection"},
+        {"href": "controllability.html", "text": "11 · Controllability &amp; Observability",  "topics": "Controllability Gramian and rank test · PBH test · physical meaning · observability duality · Kalman decomposition"},
+        {"href": "state-feedback.html",  "text": "12 · State Feedback &amp; Pole Placement",  "topics": "Full-state feedback u = −Kx · closed-loop eigenvalue assignment · Ackermann's formula · reference tracking and feedforward"},
+        {"href": "lqr.html",             "text": "13 · Linear Quadratic Regulator",           "topics": "Optimal control formulation · quadratic cost J = ∫(x^TQx + u^TRu) dt · algebraic Riccati equation · Q/R weight tuning"},
+        {"href": "observers.html",       "text": "14 · Observers &amp; Separation Principle",  "topics": "Luenberger observer · observer gain design · error dynamics · duality with controllability · separation principle · Kalman filter preview"}
       ]
     }
   ]
