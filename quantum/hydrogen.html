@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Hydrogen Atom — Quantum Mechanics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="quantum" data-current="hydrogen.html"></div>
+      <hr class="sidebar-rule">
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#setup" class="nav-item">Setting Up the Problem</a>
+        <a href="#radial" class="nav-item">The Radial Equation</a>
+        <a href="#energies" class="nav-item">Energy Levels</a>
+        <a href="#wavefunctions" class="nav-item">The Wavefunctions</a>
+        <a href="#spectrum" class="nav-item">The Hydrogen Spectrum</a>
+        <a href="#degeneracy" class="nav-item">Degeneracy</a>
+        <a href="#widget" class="nav-item">Radial Probability Densities</a>
+        <a href="#examples" class="nav-item">Worked Examples</a>
+        <a href="#fft" class="nav-item">Food for Thought</a>
+        <a href="#pitfalls" class="nav-item">Common Pitfalls</a>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="breadcrumb"><a href="../index.html">Field Notes</a> / <a href="index.html">Quantum Mechanics</a> / The Hydrogen Atom</div>
+
+      <h1 class="lesson-title">The Hydrogen Atom</h1>
+      <div class="lesson-meta">Coulomb Potential · Bohr Energies · Laguerre Polynomials · Hydrogen Spectrum · Degeneracy</div>
+
+      <p class="prose">
+        Hydrogen is the one atom where we can solve the Schrödinger equation exactly. Everything we've built —
+        separation of variables, angular momentum, spherical harmonics, the radial equation — comes together here
+        to produce the hydrogen energy levels $E_n = -13.6/n^2\,\text{eV}$ and the wavefunctions $\psi_{nlm}$.
+        These explain the spectral lines Balmer measured empirically in 1885 and Bohr semi-classically
+        guessed in 1913. When Schrödinger derived them from first principles in 1926, it was one of the
+        most dramatic confirmations in the history of physics.
+      </p>
+
+      <!-- ===================== SETUP ===================== -->
+      <div class="section-head" id="setup">Setting Up the Problem</div>
+
+      <p class="prose">
+        A proton (mass $M \gg m_e$, treated as fixed) creates a Coulomb potential:
+      </p>
+      <div class="math-block">
+        $$V(r) = -\frac{e^2}{4\pi\epsilon_0}\frac{1}{r}$$
+      </div>
+      <p class="prose">
+        The 3D time-independent Schrödinger equation is $\hat{H}\psi = E\psi$ with
+        $\hat{H} = -\hbar^2\nabla^2/2m_e + V(r)$. In spherical coordinates:
+      </p>
+      <div class="math-block">
+        $$-\frac{\hbar^2}{2m_e}\left[\frac{1}{r^2}\frac{\partial}{\partial r}\left(r^2\frac{\partial\psi}{\partial r}\right) + \frac{1}{r^2}\left(\frac{1}{\sin\theta}\frac{\partial}{\partial\theta}\left(\sin\theta\frac{\partial\psi}{\partial\theta}\right) + \frac{1}{\sin^2\theta}\frac{\partial^2\psi}{\partial\phi^2}\right)\right] + V(r)\psi = E\psi$$
+      </div>
+      <p class="prose">
+        The expression in the angular brackets is exactly $\hat{L}^2/\hbar^2 r^2$. So the equation separates.
+        Writing $\psi(r,\theta,\phi) = R(r)\,Y_l^m(\theta,\phi)$ and using $\hat{L}^2 Y_l^m = \hbar^2 l(l+1)Y_l^m$:
+      </p>
+      <div class="math-block">
+        $$-\frac{\hbar^2}{2m_e}\frac{1}{r^2}\frac{d}{dr}\left(r^2\frac{dR}{dr}\right) + \left[V(r) + \frac{\hbar^2 l(l+1)}{2m_e r^2}\right]R = ER$$
+      </div>
+
+      <p class="prose">
+        Introduce the <strong>Bohr radius</strong> $a_0 \equiv 4\pi\epsilon_0\hbar^2/m_e e^2 = 0.529\,\text{Å}$.
+        This is the natural length scale — the size of the hydrogen ground state. In terms of $a_0$,
+        the Coulomb potential is $V = -e^2/(4\pi\epsilon_0 a_0)\cdot(a_0/r) = -E_1(2a_0/r)$ where
+        $E_1 = m_e e^4/(32\pi^2\epsilon_0^2\hbar^2) = 13.6\,\text{eV}$ is the Rydberg energy.
+      </p>
+
+      <!-- ===================== RADIAL EQUATION ===================== -->
+      <div class="section-head" id="radial">The Radial Equation</div>
+
+      <p class="prose">
+        Substituting $u(r) = r R(r)$ converts the radial equation to a cleaner 1D form:
+      </p>
+      <div class="math-block">
+        $$-\frac{\hbar^2}{2m_e}\frac{d^2u}{dr^2} + \left[-\frac{e^2}{4\pi\epsilon_0 r} + \frac{\hbar^2 l(l+1)}{2m_e r^2}\right]u = Eu$$
+      </div>
+      <p class="prose">
+        This is a 1D Schrödinger equation in an effective potential:
+        $V_\text{eff} = -e^2/(4\pi\epsilon_0 r) + \hbar^2 l(l+1)/(2m_e r^2)$.
+        The attractive Coulomb term ($-1/r$) competes with the repulsive centrifugal term ($+1/r^2$) for $l > 0$.
+      </p>
+
+      <p class="prose">
+        <strong>Boundary conditions:</strong> $u(0) = 0$ (so $R$ is finite at $r=0$); $u \to 0$ as $r \to \infty$
+        (normalisability for bound states $E &lt; 0$).
+      </p>
+
+      <p class="prose">
+        <strong>Asymptotic analysis.</strong> For large $r$: $u'' \approx -2m_e E/\hbar^2 \cdot u$. With $E &lt; 0$,
+        write $\kappa = \sqrt{-2m_e E}/\hbar$; the normalizable solution decays as $e^{-\kappa r}$. For small $r$:
+        the centrifugal term dominates and $u \sim r^{l+1}$. So try $u(r) = r^{l+1} v(r) e^{-\kappa r}$.
+        Substituting and simplifying gives a confluent hypergeometric equation for $v$.
+      </p>
+
+      <p class="prose">
+        The power-series solution for $v$ terminates (giving normalizable solutions) only when:
+      </p>
+      <div class="math-block">
+        $$\frac{m_e e^2}{4\pi\epsilon_0\hbar^2\kappa} = n, \qquad n = l+1,\; l+2,\; l+3,\;\ldots$$
+      </div>
+      <p class="prose">
+        where $n$ is a positive integer. This quantization condition determines $\kappa$ and hence $E$.
+      </p>
+
+      <!-- ===================== ENERGIES ===================== -->
+      <div class="section-head" id="energies">The Energy Levels</div>
+
+      <p class="prose">
+        From the quantization condition $\kappa = m_e e^2/(4\pi\epsilon_0\hbar^2 n) = 1/(na_0)$
+        and $E = -\hbar^2\kappa^2/2m_e$:
+      </p>
+      <div class="math-block">
+        $$\boxed{E_n = -\frac{m_e e^4}{32\pi^2\epsilon_0^2\hbar^2}\frac{1}{n^2} = -\frac{13.6\,\text{eV}}{n^2}}, \qquad n = 1,\,2,\,3,\,\ldots$$
+      </div>
+      <p class="prose">
+        This is the <strong>Bohr formula</strong> — quantum mechanics reproduces the empirical result and Bohr's
+        semi-classical answer exactly. The energy depends only on the principal quantum number $n$, not on $l$ or $m$.
+        The allowed values of $l$ for a given $n$ are $l = 0, 1, \ldots, n-1$ (from the termination condition
+        $n \geq l+1$). So:
+      </p>
+      <ul class="prose" style="margin-top:0;padding-left:1.4em;">
+        <li>$n=1$: only $l=0$ (1s)</li>
+        <li>$n=2$: $l=0$ (2s) or $l=1$ (2p, three $m$ values)</li>
+        <li>$n=3$: $l=0$ (3s), $l=1$ (3p), $l=2$ (3d)</li>
+      </ul>
+
+      <div class="callout">
+        <strong>Physical picture.</strong>
+        The ground state energy $E_1 = -13.6\,\text{eV}$ is what it costs to ionise hydrogen from the ground state.
+        The electron is "trapped" in the Coulomb well; the energy is negative because we set $V(\infty) = 0$.
+        As $n \to \infty$, $E_n \to 0^-$ — the electron becomes weakly bound and the orbital expands.
+        The Bohr radius $a_0 = 0.529\,\text{Å}$ is the "size" of the ground state — more precisely, it's where the
+        radial probability density $r^2|R_{10}|^2$ peaks.
+      </div>
+
+      <!-- ===================== WAVEFUNCTIONS ===================== -->
+      <div class="section-head" id="wavefunctions">The Wavefunctions</div>
+
+      <p class="prose">
+        The complete hydrogen wavefunctions are:
+      </p>
+      <div class="math-block">
+        $$\psi_{nlm}(r,\theta,\phi) = R_{nl}(r)\,Y_l^m(\theta,\phi)$$
+      </div>
+      <p class="prose">
+        The radial part $R_{nl}$ involves the associated Laguerre polynomials $L_{n-l-1}^{2l+1}$:
+      </p>
+      <div class="math-block">
+        $$R_{nl}(r) = -\left(\frac{2}{na_0}\right)^{3/2}\sqrt{\frac{(n-l-1)!}{2n[(n+l)!]^3}}\,e^{-r/na_0}\left(\frac{2r}{na_0}\right)^l L_{n-l-1}^{2l+1}\!\!\left(\frac{2r}{na_0}\right)$$
+      </div>
+
+      <p class="prose">The key states (Griffiths Table 4.7 notation):</p>
+      <div class="math-block">
+        $$\psi_{100} = \frac{1}{\sqrt{\pi}a_0^{3/2}}\,e^{-r/a_0}$$
+      </div>
+      <div class="math-block">
+        $$\psi_{200} = \frac{1}{4\sqrt{2\pi}a_0^{3/2}}\left(2-\frac{r}{a_0}\right)e^{-r/2a_0}, \qquad \psi_{210} = \frac{1}{4\sqrt{2\pi}a_0^{3/2}}\frac{r}{a_0}e^{-r/2a_0}\cos\theta$$
+      </div>
+      <div class="math-block">
+        $$\psi_{21\pm 1} = \mp\frac{1}{8\sqrt{\pi}a_0^{3/2}}\frac{r}{a_0}e^{-r/2a_0}\sin\theta\,e^{\pm i\phi}$$
+      </div>
+
+      <p class="prose">
+        The <strong>radial probability density</strong> — the probability of finding the electron between $r$ and $r+dr$ — is:
+      </p>
+      <div class="math-block">
+        $$P_{nl}(r) = r^2|R_{nl}(r)|^2$$
+      </div>
+      <p class="prose">
+        (integrated over all angles, which integrates out the spherical harmonic). For the ground state,
+        $P_{10}(r) \propto r^2 e^{-2r/a_0}$, which peaks at $r = a_0$ — confirming $a_0$ as the most probable radius.
+        The expectation value $\langle r\rangle_{10} = 3a_0/2 > a_0$ because the distribution is asymmetric.
+      </p>
+
+      <div class="example-box">
+        <div class="example-title">Example 1 — Most probable radius of the 2s state</div>
+        <div class="example-body">
+          <p>For $n=2, l=0$: $R_{20} \propto (2-r/a_0)e^{-r/2a_0}$, so $P_{20}(r) \propto r^2(2-r/a_0)^2e^{-r/a_0}$.</p>
+          <p>Find the maximum by setting $dP_{20}/dr = 0$:</p>
+          <div class="math-block">$$\frac{d}{dr}\left[r^2\left(2-\frac{r}{a_0}\right)^2 e^{-r/a_0}\right] = 0$$</div>
+          <p>Expanding and differentiating (let $\rho = r/a_0$):</p>
+          <div class="math-block">$$\frac{d}{d\rho}\left[\rho^2(2-\rho)^2 e^{-\rho}\right] = e^{-\rho}\left[2\rho(2-\rho)^2 + 2\rho^2(2-\rho)(-1) - \rho^2(2-\rho)^2\right] = 0$$</div>
+          <div class="math-block">$$e^{-\rho}\rho(2-\rho)\left[2(2-\rho) - 2\rho - \rho(2-\rho)\right] = 0$$</div>
+          <p>Roots: $\rho = 0$ (min), $\rho = 2$ (zero of wavefunction = radial node), and the bracket:</p>
+          <div class="math-block">$$4 - 2\rho - 2\rho - 2\rho + \rho^2 = 0 \implies \rho^2 - 6\rho + 4 = 0 \implies \rho = 3 \pm \sqrt{5}$$</div>
+          <p>The two maxima are at $r = (3\pm\sqrt{5})a_0 \approx 0.76\,a_0$ and $5.24\,a_0$.
+          (There's also a node at $r=2a_0$.) The outer peak at $\approx 5.24\,a_0$ is the larger one —
+          the 2s orbital mostly lives at $\sim 5a_0$, much farther from the nucleus than the 1s ground state.</p>
+        </div>
+      </div>
+
+      <!-- ===================== SPECTRUM ===================== -->
+      <div class="section-head" id="spectrum">The Hydrogen Spectrum</div>
+
+      <p class="prose">
+        When hydrogen transitions between states, it emits (or absorbs) a photon with energy:
+      </p>
+      <div class="math-block">
+        $$\Delta E = E_{n_i} - E_{n_f} = 13.6\,\text{eV}\left(\frac{1}{n_f^2} - \frac{1}{n_i^2}\right) = \frac{hc}{\lambda}$$
+      </div>
+      <p class="prose">
+        The wavelength follows the <strong>Rydberg formula</strong>:
+      </p>
+      <div class="math-block">
+        $$\frac{1}{\lambda} = R_\infty\left(\frac{1}{n_f^2} - \frac{1}{n_i^2}\right), \qquad R_\infty = \frac{m_e e^4}{8\epsilon_0^2 h^3 c} = 1.097\times10^7\,\text{m}^{-1}$$
+      </div>
+      <p class="prose">
+        The spectral series are named by the final state:
+      </p>
+      <ul class="prose" style="margin-top:0;padding-left:1.4em;">
+        <li><strong>Lyman series</strong> ($n_f=1$): ultraviolet, $\lambda$ from 91.2 nm ($n_i\to\infty$) to 121.6 nm ($n_i=2$, Ly-α)</li>
+        <li><strong>Balmer series</strong> ($n_f=2$): visible, H-α = 656 nm (red), H-β = 486 nm (blue-green), H-γ = 434 nm (violet)</li>
+        <li><strong>Paschen series</strong> ($n_f=3$): near-infrared</li>
+        <li><strong>Brackett, Pfund, …</strong> ($n_f=4,5,\ldots$): infrared</li>
+      </ul>
+
+      <p class="prose">
+        These discrete lines in the hydrogen emission spectrum — first systematized empirically by Balmer in 1885 —
+        were one of the great mysteries of 19th-century physics. Quantum mechanics explains them as a direct consequence
+        of quantized energy levels.
+      </p>
+
+      <!-- ===================== DEGENERACY ===================== -->
+      <div class="section-head" id="degeneracy">Degeneracy and Symmetry</div>
+
+      <p class="prose">
+        For a given $n$, the total number of states is:
+      </p>
+      <div class="math-block">
+        $$\sum_{l=0}^{n-1}(2l+1) = n^2$$
+      </div>
+      <p class="prose">
+        (Each $l$ value contributes $2l+1$ values of $m$; the sum $\sum_{l=0}^{n-1}(2l+1) = n^2$.)
+        Including electron spin (Lesson 9), each spatial state splits into two spin states ($m_s = \pm 1/2$),
+        giving $2n^2$ states per energy level $E_n$.
+      </p>
+
+      <p class="prose">
+        This high degeneracy — all $l$ values sharing the same energy — is <strong>accidental degeneracy</strong>:
+        it happens only for the $1/r$ Coulomb potential, not for a generic $V(r)$.
+        It arises from a hidden symmetry: the Coulomb problem has an SO(4) symmetry (rotations in 4D space),
+        generated by a conserved vector — the <strong>Laplace–Runge–Lenz vector</strong> $\mathbf{A} = \mathbf{p}\times\mathbf{L} - m_e e^2/(4\pi\epsilon_0)\hat{r}$
+        that points from the nucleus toward the periapsis of the classical Kepler orbit.
+        For an $l > 0$ bound state in a non-Coulomb central potential, the orbital precesses (no fixed periapsis) —
+        the Runge-Lenz vector is no longer conserved — and the degeneracy is lifted.
+      </p>
+
+      <p class="prose">
+        Real hydrogen atoms do show a slight lifting of the $l$-degeneracy from two effects (treated in Lesson 10):
+        relativistic corrections to the kinetic energy, and spin-orbit coupling. Together they produce the
+        <strong>fine structure</strong>, splitting levels with the same $n$ but different $l$
+        by $\sim 10^{-4}$ of the gross structure energies.
+      </p>
+
+      <!-- ===================== WIDGET ===================== -->
+      <div class="section-head" id="widget">Radial Probability Densities</div>
+
+      <div class="widget-card">
+        <div class="widget-title">Radial probability density $P_{nl}(r) = r^2|R_{nl}(r)|^2$</div>
+        <div id="radial-plot" style="width:100%;height:380px;"></div>
+        <p style="font-size:12px;color:#7a8a9a;margin:10px 0 0;">
+          Shows all states up to $n=3$ simultaneously. The $r$-axis is in units of $a_0$ (Bohr radius).
+          Shaded area under each curve = 1 (normalised). Note how the distribution broadens and extends to
+          larger $r$ as $n$ increases, and how states with higher $l$ are pushed away from the origin by the
+          centrifugal barrier.
+        </p>
+      </div>
+
+      <!-- ===================== EXAMPLES ===================== -->
+      <div class="section-head" id="examples">Worked Examples</div>
+
+      <div class="example-box">
+        <div class="example-title">Example 2 — Expectation value $\langle r\rangle$ and $\langle r^2\rangle$ for the ground state</div>
+        <div class="example-body">
+          <p>For the ground state $\psi_{100}$: $R_{10} = (2/a_0^{3/2})e^{-r/a_0}$.</p>
+          <p><strong>$\langle r\rangle$:</strong></p>
+          <div class="math-block">$$\langle r\rangle = \int_0^\infty r\cdot r^2|R_{10}|^2\,dr = \frac{4}{a_0^3}\int_0^\infty r^3 e^{-2r/a_0}\,dr$$</div>
+          <p>Using $\int_0^\infty r^n e^{-r/b}\,dr = n!\,b^{n+1}$:</p>
+          <div class="math-block">$$\langle r\rangle = \frac{4}{a_0^3}\cdot 3!\cdot\left(\frac{a_0}{2}\right)^4 = \frac{4}{a_0^3}\cdot 6\cdot\frac{a_0^4}{16} = \frac{3a_0}{2}$$</div>
+          <p><strong>$\langle r^2\rangle$:</strong></p>
+          <div class="math-block">$$\langle r^2\rangle = \frac{4}{a_0^3}\int_0^\infty r^4 e^{-2r/a_0}\,dr = \frac{4}{a_0^3}\cdot 4!\cdot\frac{a_0^5}{32} = 3a_0^2$$</div>
+          <p><strong>$\sigma_r$:</strong> $\sigma_r^2 = \langle r^2\rangle - \langle r\rangle^2 = 3a_0^2 - 9a_0^2/4 = 3a_0^2/4$, so $\sigma_r = \frac{\sqrt{3}}{2}a_0 \approx 0.87\,a_0$.</p>
+          <p>The position uncertainty is comparable to the mean radius — the electron's location is genuinely uncertain, not just "somewhere on a Bohr orbit."</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-title">Example 3 — Balmer H-α line wavelength</div>
+        <div class="example-body">
+          <p>Compute the wavelength of the $n_i = 3 \to n_f = 2$ transition.</p>
+          <div class="math-block">$$\Delta E = 13.6\,\text{eV}\left(\frac{1}{4} - \frac{1}{9}\right) = 13.6\,\text{eV}\cdot\frac{5}{36} = 1.889\,\text{eV}$$</div>
+          <div class="math-block">$$\lambda = \frac{hc}{\Delta E} = \frac{(4.136\times10^{-15}\,\text{eV·s})(3\times10^8\,\text{m/s})}{1.889\,\text{eV}} = 657\,\text{nm}$$</div>
+          <p>This is in the red, consistent with the observed H-α line at 656.3 nm. The tiny discrepancy
+          comes from using $m_e$ instead of the reduced mass $\mu = m_e M_p/(m_e+M_p) \approx m_e(1 - m_e/M_p)$.
+          The reduced mass correction shifts all energies by the factor $\mu/m_e \approx 1 - 5.4\times10^{-4}$,
+          giving the correct 656.3 nm.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-title">Example 4 — Probability of finding the 1s electron inside the Bohr radius</div>
+        <div class="example-body">
+          <p>Compute $P(r &lt; a_0)$ for the ground state.</p>
+          <div class="math-block">$$P(r < a_0) = \int_0^{a_0} r^2|R_{10}|^2\,dr = \frac{4}{a_0^3}\int_0^{a_0} r^2 e^{-2r/a_0}\,dr$$</div>
+          <p>Let $u = 2r/a_0$, $du = 2dr/a_0$, upper limit $u=2$:</p>
+          <div class="math-block">$$= \frac{4}{a_0^3}\cdot\frac{a_0^3}{8}\int_0^2 u^2 e^{-u}\,du = \frac{1}{2}\left[-e^{-u}(u^2+2u+2)\right]_0^2$$</div>
+          <div class="math-block">$$= \frac{1}{2}\left[2 - e^{-2}(4+4+2)\right] = 1 - 5e^{-2} \approx 1 - 5(0.1353) = 0.323$$</div>
+          <p>About 32% of the time, the electron is closer to the nucleus than the Bohr radius. This makes sense:
+          the Bohr orbit at $r = a_0$ is the <em>most probable</em> radius, not a hard boundary.
+          The wavefunction has significant probability density both inside and outside.</p>
+        </div>
+      </div>
+
+      <!-- ===================== FFT ===================== -->
+      <div class="section-head" id="fft">Food for Thought</div>
+      <ul class="fft-list">
+        <li class="fft-item">
+          <div class="fft-question">Hydrogen's energy levels depend only on $n$, not $l$ — all angular momentum states with the same $n$ are degenerate. In a multi-electron atom like helium or carbon, the $l$-degeneracy is broken even before adding any perturbation. Why? What's different about the multi-electron case?</div>
+          <div class="fft-answer">In hydrogen, the only central force is the Coulomb attraction from the single proton — pure $1/r$ potential, which has the hidden SO(4) symmetry. In a multi-electron atom, each electron feels both the nuclear attraction and the repulsion from the other electrons. The electron-electron repulsion is not a pure $1/r$ potential (it depends on the relative positions of all electrons), and it breaks the special Coulomb symmetry. More intuitively: an $s$ electron (l=0) penetrates close to the nucleus more than a $p$ electron (l=1), so it's less shielded from the nuclear charge and sits at lower energy. This is the origin of the aufbau filling order (2s fills before 2p, 3s before 3p before 3d, etc.) in the periodic table.</div>
+        </li>
+        <li class="fft-item">
+          <div class="fft-question">The hydrogen atom has infinitely many bound states (n = 1, 2, 3, ...) and also a continuum of scattering states at E > 0. What does a scattering state for hydrogen look like physically, and how does it relate to photoionisation?</div>
+          <div class="fft-answer">A scattering state has E > 0 — the electron is not bound and moves freely far from the nucleus. In the radial equation, the Coulomb term $-e²/r$ modifies the free-wave solutions even at large $r$ (the Coulomb potential is long-range, unlike a finite square well). The solutions are called Coulomb wave functions — they oscillate at large $r$ but with a phase shift from the long-range tail of the potential. Photoionisation happens when a photon is absorbed with energy $\hbar\omega > 13.6/n²\,\text{eV}$ — the atom transitions from a bound state to a continuum state. The ejected electron carries away kinetic energy $E = \hbar\omega - E_{bind}$. Photoionisation cross-sections (the probability of this event) are the central quantity in atomic astrophysics — they determine how much radiation penetrates a hydrogen gas cloud.</div>
+        </li>
+        <li class="fft-item">
+          <div class="fft-question">The Bohr model gives the right energies but for the wrong reason — it imagines the electron moving in a classical circular orbit. Where does it get lucky, and where does it fundamentally fail?</div>
+          <div class="fft-answer">Bohr gets the right energies because his quantization rule $L = n\hbar$ happens to select the correct energy levels, even though the picture of circular orbits is wrong. It fails in many places: (1) the ground state orbital angular momentum is $l=0$ (no angular momentum at all!), contradicting Bohr's $L = \hbar$; (2) the electron doesn't orbit — its position probability distribution in a stationary state is time-independent; (3) Bohr can't predict transition rates, selection rules, or the fine structure; (4) it completely fails for multi-electron atoms or anything other than hydrogen-like ions; (5) it gives no insight into why only certain $l$ values occur for a given $n$. The Schrödinger picture replaces all of this with a rigorous, predictive framework.</div>
+        </li>
+      </ul>
+
+      <!-- ===================== PITFALLS ===================== -->
+      <div class="section-head" id="pitfalls">Common Pitfalls</div>
+      <ul class="pitfall-list">
+        <li><strong>The Bohr radius $a_0$ is not a hard boundary.</strong> The electron has nonzero probability density at all $r > 0$, including both $r \ll a_0$ and $r \gg a_0$. The most probable radius for the ground state is $a_0$, but 32% of the probability is inside it and the tail extends to infinity.</li>
+        <li><strong>The quantum number $l$ runs from 0 to $n-1$, not from 0 to $n$.</strong> For $n=2$, the maximum orbital quantum number is $l=1$ (p states). $l=2$ (d) doesn't appear until $n=3$. The constraint is $l \leq n-1$.</li>
+        <li><strong>The energy formula $E_n = -13.6\,\text{eV}/n^2$ uses $m_e$, not the reduced mass.</strong> For hydrogen (proton), the reduced mass correction is tiny ($\sim 0.05\%$). But for exotic atoms (muonic hydrogen, positronium), the reduced mass matters significantly. Positronium ($e^+e^-$) has $\mu = m_e/2$, so $E_n = -6.8\,\text{eV}/n^2$.</li>
+        <li><strong>The $n^2$ degeneracy doesn't include spin.</strong> The $n^2$ count ($l=0$ gives 1 state, $l=1$ gives 3, etc.) is for spatial states only. Including spin doubles everything to $2n^2$. For $n=1$: 2 states; $n=2$: 8 states; $n=3$: 18 states — this matches the chemical shell capacities 2, 8, 18.</li>
+      </ul>
+
+      <!-- ===================== CONNECTS ===================== -->
+      <div class="section-head">Connects to</div>
+      <ul class="connects-list">
+        <li><strong>Spin (Lesson 9)</strong> — Each hydrogen orbital $\psi_{nlm}$ can hold two electrons (spin up and down), directly explaining the shell structure of the periodic table. Spin-orbit coupling splits the $l$-degenerate levels of real hydrogen into fine-structure multiplets.</li>
+        <li><strong>Perturbation Theory (Lesson 10)</strong> — The fine structure (relativistic corrections + spin-orbit), the Stark effect (electric field), and the Zeeman effect (magnetic field) are all perturbative corrections to the hydrogen solutions derived here.</li>
+        <li><strong>Physiology &amp; Biochemistry (Life Sciences)</strong> — Atomic orbital theory directly underpins chemical bonding, enzyme active sites, and drug-receptor interactions. The shapes of hydrogen-like orbitals ($s$, $p$, $d$) determine molecular geometry through orbital hybridisation.</li>
+      </ul>
+
+      <!-- ===================== NAV ===================== -->
+      <div class="lesson-nav">
+        <a href="angular-momentum.html" class="lesson-nav-btn">← 7 · Angular Momentum</a>
+        <a href="spin.html" class="lesson-nav-btn disabled">9 · Spin →</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+<script src="../books-render.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  renderMathInElement(document.body, {
+    delimiters: [
+      {left: '$$', right: '$$', display: true},
+      {left: '$', right: '$', display: false}
+    ],
+    throwOnError: false
+  });
+
+  // ===================== Radial probability density plot =====================
+  // P_nl(r) = r^2 |R_nl(r)|^2, in units of a_0
+  // Use rho = r/a_0. R_nl(rho) given without normalisation constants (we'll normalise numerically)
+
+  function rnl(n, l, rho) {
+    // Unnormalised radial wavefunctions as functions of rho = r/a0
+    if (n === 1 && l === 0) return Math.exp(-rho);
+    if (n === 2 && l === 0) return (2 - rho) * Math.exp(-rho / 2);
+    if (n === 2 && l === 1) return rho * Math.exp(-rho / 2);
+    if (n === 3 && l === 0) return (27 - 18*rho + 2*rho*rho) * Math.exp(-rho / 3);
+    if (n === 3 && l === 1) return rho * (6 - rho) * Math.exp(-rho / 3);
+    if (n === 3 && l === 2) return rho * rho * Math.exp(-rho / 3);
+    return 0;
+  }
+
+  const states = [
+    {n:1, l:0, color:'#2a5a8a', label:'1s (n=1, l=0)'},
+    {n:2, l:0, color:'#c0503a', label:'2s (n=2, l=0)'},
+    {n:2, l:1, color:'#c0503a', label:'2p (n=2, l=1)', dash:'dot'},
+    {n:3, l:0, color:'#3a8a5a', label:'3s (n=3, l=0)'},
+    {n:3, l:1, color:'#3a8a5a', label:'3p (n=3, l=1)', dash:'dot'},
+    {n:3, l:2, color:'#3a8a5a', label:'3d (n=3, l=2)', dash:'dashdot'},
+  ];
+
+  const Npts = 600;
+  const traces = states.map(s => {
+    const rhos = [], P = [];
+    // Integrate to normalise
+    let norm = 0;
+    for (let i = 0; i <= Npts; i++) {
+      const rho = 25 * i / Npts;
+      const r = rnl(s.n, s.l, rho);
+      norm += rho * rho * r * r * (25 / Npts);
+    }
+    for (let i = 0; i <= Npts; i++) {
+      const rho = 25 * i / Npts;
+      const r = rnl(s.n, s.l, rho);
+      rhos.push(rho);
+      P.push(rho * rho * r * r / norm);
+    }
+    return {
+      x: rhos, y: P,
+      name: s.label,
+      mode: 'lines',
+      line: { color: s.color, width: 2, dash: s.dash || 'solid' }
+    };
+  });
+
+  const layout = {
+    xaxis: { title: 'r / a₀', color: '#2a3a4a', gridcolor: '#dde5ec', range: [0, 25] },
+    yaxis: { title: 'P(r) · a₀', color: '#2a3a4a', gridcolor: '#dde5ec' },
+    paper_bgcolor: 'transparent', plot_bgcolor: '#f8fbfd',
+    font: { family: 'IBM Plex Sans, sans-serif', size: 12, color: '#2a3a4a' },
+    legend: { x: 0.65, y: 0.95, bgcolor: 'rgba(255,255,255,0.85)', bordercolor: '#c0dae8', borderwidth: 1 },
+    margin: { t: 20, b: 50, l: 60, r: 20 }
+  };
+
+  Plotly.newPlot('radial-plot', traces, layout, { responsive: true });
+});
+</script>
+</body>
+</html>
