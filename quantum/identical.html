@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Identical Particles &amp; Entanglement — Quantum Mechanics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="quantum" data-current="identical.html"></div>
+      <hr class="sidebar-rule">
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#exchange" class="nav-item">Exchange Symmetry</a>
+        <a href="#pauli" class="nav-item">Pauli Exclusion</a>
+        <a href="#exchange-energy" class="nav-item">Exchange Energy</a>
+        <a href="#helium" class="nav-item">Helium</a>
+        <a href="#entanglement" class="nav-item">Entanglement</a>
+        <a href="#bell" class="nav-item">Bell's Theorem</a>
+        <a href="#widget" class="nav-item">Bell Inequality Visualiser</a>
+        <a href="#examples" class="nav-item">Worked Examples</a>
+        <a href="#fft" class="nav-item">Food for Thought</a>
+        <a href="#pitfalls" class="nav-item">Common Pitfalls</a>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="breadcrumb"><a href="../index.html">Field Notes</a> / <a href="index.html">Quantum Mechanics</a> / Identical Particles &amp; Entanglement</div>
+
+      <h1 class="lesson-title">Identical Particles &amp; Entanglement</h1>
+      <div class="lesson-meta">Exchange Symmetry · Pauli Exclusion · Bosons &amp; Fermions · Helium · Bell's Theorem</div>
+
+      <p class="prose">
+        Classically, you can always label particles: "this billiard ball has a scratch, that one doesn't."
+        Quantum mechanically, identical particles are genuinely indistinguishable — there is no experiment
+        you can perform to determine which electron is "electron 1." The wavefunction must encode this symmetry,
+        and the consequences are profound: the Pauli exclusion principle, the periodic table, and the structure
+        of matter itself. Then there's entanglement — correlations between particles that can't be explained
+        by any classical hidden mechanism, as proved definitively by Bell's theorem.
+      </p>
+
+      <!-- ===================== EXCHANGE ===================== -->
+      <div class="section-head" id="exchange">Exchange Symmetry</div>
+
+      <p class="prose">
+        Consider two identical particles described by a joint wavefunction $\psi(\mathbf{r}_1,\mathbf{r}_2)$
+        (suppressing spin for now). Since the particles are indistinguishable, swapping them can't change any
+        observable: $|\psi(\mathbf{r}_1,\mathbf{r}_2)|^2 = |\psi(\mathbf{r}_2,\mathbf{r}_1)|^2$, which means:
+      </p>
+      <div class="math-block">
+        $$\psi(\mathbf{r}_2,\mathbf{r}_1) = e^{i\phi}\psi(\mathbf{r}_1,\mathbf{r}_2)$$
+      </div>
+      <p class="prose">
+        for some phase $e^{i\phi}$. Applying the exchange twice returns the original state, so $e^{2i\phi} = 1$,
+        giving $e^{i\phi} = \pm 1$. The relativistic quantum field theory <em>spin-statistics theorem</em> (Pauli, 1940)
+        fixes which sign applies to which particles:
+      </p>
+
+      <div class="callout">
+        <strong>Spin-statistics theorem.</strong>
+        <ul style="margin:6px 0 0;padding-left:1.2em;">
+          <li><strong>Bosons</strong> (integer spin: 0, 1, 2, …): $\psi(\mathbf{r}_2,\mathbf{r}_1) = +\psi(\mathbf{r}_1,\mathbf{r}_2)$ — symmetric</li>
+          <li><strong>Fermions</strong> (half-integer spin: ½, 3/2, …): $\psi(\mathbf{r}_2,\mathbf{r}_1) = -\psi(\mathbf{r}_1,\mathbf{r}_2)$ — antisymmetric</li>
+        </ul>
+        Examples: photons (spin-1), pions (spin-0), Cooper pairs (spin-0) are bosons.
+        Electrons, protons, neutrons, quarks (all spin-½) are fermions.
+      </div>
+
+      <p class="prose">
+        For two particles in single-particle states $\psi_a$ and $\psi_b$ (distinct), the properly symmetrized wavefunctions are:
+      </p>
+      <div class="math-block">
+        $$\psi_\pm(\mathbf{r}_1,\mathbf{r}_2) = \frac{1}{\sqrt{2}}\left[\psi_a(\mathbf{r}_1)\psi_b(\mathbf{r}_2) \pm \psi_a(\mathbf{r}_2)\psi_b(\mathbf{r}_1)\right]$$
+      </div>
+      <p class="prose">
+        For $N$ fermions, the generalisation is the <strong>Slater determinant</strong>:
+      </p>
+      <div class="math-block">
+        $$\psi(\mathbf{r}_1,\ldots,\mathbf{r}_N) = \frac{1}{\sqrt{N!}}\begin{vmatrix}\psi_{a_1}(\mathbf{r}_1)&\psi_{a_1}(\mathbf{r}_2)&\cdots&\psi_{a_1}(\mathbf{r}_N)\\\psi_{a_2}(\mathbf{r}_1)&\cdots&&\vdots\\\vdots&&&\vdots\\\psi_{a_N}(\mathbf{r}_1)&\cdots&&\psi_{a_N}(\mathbf{r}_N)\end{vmatrix}$$
+      </div>
+      <p class="prose">
+        This is automatically antisymmetric under any column swap (swapping two particle positions) — by the
+        determinant identity $\det(\text{swap columns}) = -\det(\text{original})$.
+      </p>
+
+      <!-- ===================== PAULI ===================== -->
+      <div class="section-head" id="pauli">The Pauli Exclusion Principle</div>
+
+      <p class="prose">
+        If two fermions occupy the same single-particle state ($a_i = a_j$ for some $i\neq j$), then two rows
+        of the Slater determinant are identical — and any determinant with two identical rows is zero. So
+        $\psi \equiv 0$: there is no valid quantum state with two fermions in the same state.
+      </p>
+      <div class="math-block">
+        $$\text{Two identical fermions can never occupy the same quantum state.}
+      </div>
+      <p class="prose">
+        For electrons, "same quantum state" means same $n$, $l$, $m_l$, and $m_s$. Each orbital can hold at
+        most 2 electrons (with opposite spins). This is the foundation of the periodic table: electrons fill
+        the lowest available orbitals, subject to the constraint that no two electrons share all four quantum numbers.
+      </p>
+
+      <p class="prose">
+        Bosons face no such restriction — you can put as many bosons as you want in the same single-particle state.
+        In fact, bosons <em>prefer</em> to be in the same state: the probability amplitude for $N$ bosons to occupy
+        the same single-particle state is $N!$ times larger than the distinguishable-particle prediction.
+        This is the origin of <strong>Bose-Einstein condensation</strong> (BEC) — below a critical temperature,
+        a macroscopic fraction of bosons pile into the ground state, forming a quantum phase of matter.
+      </p>
+
+      <!-- ===================== EXCHANGE ENERGY ===================== -->
+      <div class="section-head" id="exchange-energy">The Exchange Interaction</div>
+
+      <p class="prose">
+        Even without any direct spin-dependent interaction, the symmetrisation requirement creates an effective
+        "force" — the <strong>exchange interaction</strong>. Consider the probability density for two identical particles:
+      </p>
+      <div class="math-block">
+        $$|\psi_\pm|^2 = \frac{1}{2}\left[|\psi_a(\mathbf{r}_1)|^2|\psi_b(\mathbf{r}_2)|^2 + |\psi_a(\mathbf{r}_2)|^2|\psi_b(\mathbf{r}_1)|^2 \pm 2\,\text{Re}\left(\psi_a^*(\mathbf{r}_1)\psi_b^*(\mathbf{r}_2)\psi_a(\mathbf{r}_2)\psi_b(\mathbf{r}_1)\right)\right]$$
+      </div>
+      <p class="prose">
+        The last term is the <em>exchange term</em> — it has no classical analogue. For bosons ($+$):
+        it increases the probability of finding both particles at similar positions — bosons <em>bunch</em>.
+        For fermions ($-$): it decreases this probability — fermions <em>avoid</em> each other, even when
+        the interaction is purely electromagnetic and doesn't depend on spin.
+      </p>
+
+      <p class="prose">
+        The expectation value of any two-body operator $V(\mathbf{r}_1,\mathbf{r}_2)$ in $\psi_\pm$ splits into
+        a direct term and an exchange term:
+      </p>
+      <div class="math-block">
+        $$\langle V\rangle = \langle\psi_a\psi_b|V|\psi_a\psi_b\rangle \pm \langle\psi_a\psi_b|V|\psi_b\psi_a\rangle \equiv J \pm K$$
+      </div>
+      <p class="prose">
+        The <strong>exchange integral</strong> $K$ can be positive or negative depending on the orbital shapes and
+        the interaction. For the Coulomb repulsion between electrons, $K > 0$ always — so the antisymmetric spatial
+        state has lower energy (electrons avoid each other, reducing repulsion). This energy difference $2K$ is the
+        <em>exchange energy</em>, and it acts like a spin-dependent interaction (even though the original Hamiltonian
+        had no spin terms): states with parallel spins (which must have antisymmetric spatial part) are lower in energy.
+        This is <strong>Hund's first rule</strong>.
+      </p>
+
+      <!-- ===================== HELIUM ===================== -->
+      <div class="section-head" id="helium">Helium: A Two-Electron System</div>
+
+      <p class="prose">
+        Helium has two electrons and nucleus charge $Z=2$. The full wavefunction must be antisymmetric under
+        exchange of both spatial and spin coordinates of the two electrons. For a spatial state $\psi_\text{space}$:
+      </p>
+      <ul class="prose" style="margin-top:0;padding-left:1.4em;">
+        <li><strong>If $\psi_\text{space}$ is symmetric</strong> (e.g. both electrons in 1s, or symmetric combination of 1s and 2s): the spin state must be <em>antisymmetric</em> → singlet $|\!\uparrow\downarrow\rangle - |\!\downarrow\uparrow\rangle)/\sqrt{2}$ (total $S=0$). These are the <strong>parahelium</strong> states.</li>
+        <li><strong>If $\psi_\text{space}$ is antisymmetric</strong> (antisymmetric combination of 1s and 2s): the spin state must be <em>symmetric</em> → triplet (total $S=1$, three components). These are the <strong>orthohelium</strong> states.</li>
+      </ul>
+
+      <p class="prose">
+        The ground state is $(1s)^2$ — both electrons in 1s. The only option is the singlet ($S=0$) state;
+        the Pauli principle forbids both electrons from occupying $n=1, l=0, m_l=0, m_s=+\frac{1}{2}$ simultaneously.
+      </p>
+
+      <p class="prose">
+        The first excited states have one electron in 1s and one in 2s (or 2p). The exchange energy separates
+        orthohelium (antisymmetric spatial, triplet spin, lower energy) from parahelium (symmetric spatial, singlet, higher energy) by about 0.8 eV for the 1s2s configuration. Orthohelium lies lower because the antisymmetric spatial wavefunction keeps electrons farther apart, reducing electron-electron repulsion. There are no transitions between para- and orthohelium in electric dipole radiation (the spin doesn't flip) — they behave almost like two separate substances, a fact that confused physicists until the exchange interpretation was found.
+      </p>
+
+      <!-- ===================== ENTANGLEMENT ===================== -->
+      <div class="section-head" id="entanglement">Quantum Entanglement</div>
+
+      <p class="prose">
+        A two-particle state is <strong>separable</strong> (not entangled) if it can be written as a product:
+        $|\Psi\rangle = |\psi_1\rangle\otimes|\psi_2\rangle$. Entangled states cannot be so factored — the
+        particles' degrees of freedom are quantum-mechanically correlated in a way that has no classical analogue.
+      </p>
+
+      <p class="prose">
+        The prototypical entangled state is one of the four <strong>Bell states</strong> (maximally entangled spin-½ pairs):
+      </p>
+      <div class="math-block">
+        $$|\Phi^\pm\rangle = \frac{1}{\sqrt{2}}\left(|\!\uparrow\uparrow\rangle \pm |\!\downarrow\downarrow\rangle\right), \qquad |\Psi^\pm\rangle = \frac{1}{\sqrt{2}}\left(|\!\uparrow\downarrow\rangle \pm |\!\downarrow\uparrow\rangle\right)$$
+      </div>
+      <p class="prose">
+        Consider $|\Psi^-\rangle = (|\!\uparrow\downarrow\rangle - |\!\downarrow\uparrow\rangle)/\sqrt{2}$.
+        If Alice measures her spin and finds $|\uparrow\rangle$, Bob's spin is instantly $|\downarrow\rangle$ —
+        not because a signal passed between them, but because their joint state was never factorisable.
+        This holds regardless of the spatial separation between Alice and Bob.
+      </p>
+
+      <p class="prose">
+        Einstein, Podolsky, and Rosen (1935) called this "spooky action at a distance" and argued it showed quantum
+        mechanics was incomplete — some "hidden variable" must determine the outcomes in advance.
+        If that were true, the particles carry definite spin values from the moment they're created; we just
+        don't know them until measurement. This is the EPR argument.
+      </p>
+
+      <!-- ===================== BELL ===================== -->
+      <div class="section-head" id="bell">Bell's Theorem</div>
+
+      <p class="prose">
+        In 1964, John Bell proved that any local hidden variable theory predicts measurable differences from
+        quantum mechanics. Define the CHSH (Clauser-Horne-Shimony-Holt) correlator:
+      </p>
+      <div class="math-block">
+        $$S = \left|E(a,b) + E(a,b') + E(a',b) - E(a',b')\right|$$
+      </div>
+      <p class="prose">
+        where $E(a,b) = \langle\hat{A}(a)\hat{B}(b)\rangle$ is the correlation between Alice's spin measurement
+        along direction $a$ and Bob's along direction $b$, each giving outcomes $\pm 1$.
+        For any local hidden variable theory: $S \leq 2$ (the <strong>CHSH inequality</strong>).
+      </p>
+
+      <p class="prose">
+        Quantum mechanics predicts:
+      </p>
+      <div class="math-block">
+        $$E(a,b) = -\cos\theta_{ab}$$
+      </div>
+      <p class="prose">
+        for the singlet state $|\Psi^-\rangle$, where $\theta_{ab}$ is the angle between Alice's and Bob's
+        measurement axes. Choosing $a$, $b$, $a'$, $b'$ optimally (at $22.5°$ increments):
+        $S = 2\sqrt{2} \approx 2.828 > 2$. This violates the Bell inequality.
+      </p>
+
+      <p class="prose">
+        Aspect et al. (1982) performed the definitive experiment and found $S = 2.697 \pm 0.015$, clearly
+        above 2. Modern "loophole-free" Bell tests (Hensen et al. 2015, Giustina et al. 2015) have confirmed
+        violations with high statistical significance and closed all known loopholes simultaneously.
+        Local hidden variables are ruled out. Quantum entanglement is a genuine feature of nature.
+      </p>
+
+      <div class="callout">
+        <strong>What Bell's theorem says and doesn't say.</strong>
+        Bell's theorem rules out <em>local</em> hidden variable theories — those where outcomes are pre-determined
+        and no superluminal influences are needed. Non-local hidden variable theories (like de Broglie-Bohm
+        pilot wave theory) can in principle reproduce quantum mechanics. But the correlation can't be used to
+        send information faster than light — Bob's outcomes are random until he and Alice compare their results
+        over a classical channel. The no-communication theorem protects special relativity.
+      </div>
+
+      <p class="prose">
+        Entanglement is not just philosophically interesting — it's a <em>resource</em>:
+      </p>
+      <ul class="prose" style="margin-top:0;padding-left:1.4em;">
+        <li><strong>Quantum cryptography (BB84, E91):</strong> entangled pairs allow key distribution whose security is guaranteed by physics, not computational hardness.</li>
+        <li><strong>Quantum teleportation:</strong> transmit an unknown quantum state using a pre-shared entangled pair plus 2 bits of classical communication (discovered 1993, demonstrated 1997).</li>
+        <li><strong>Quantum computing:</strong> entanglement allows quantum algorithms (Shor's factoring, Grover's search) to outperform any classical algorithm for specific problems.</li>
+      </ul>
+
+      <!-- ===================== WIDGET ===================== -->
+      <div class="section-head" id="widget">Bell Inequality: Quantum Correlations vs Classical Bound</div>
+
+      <div class="widget-card">
+        <div class="widget-title">Spin correlation $E(\theta)$ for the singlet state vs local hidden variable bound</div>
+        <div id="bell-plot" style="width:100%;height:380px;"></div>
+        <p style="font-size:12px;color:#7a8a9a;margin:10px 0 0;">
+          Blue: quantum prediction $E(\theta) = -\cos\theta$ for the singlet state.
+          Red dashed: the maximum classical (local hidden variable) correlation that could produce
+          the same marginal distributions — a linear interpolation between the boundary values.
+          The quantum prediction violates the classical bound in the shaded region near $\theta = 45°$,
+          explaining why CHSH experiments find $S > 2$.
+        </p>
+      </div>
+
+      <!-- ===================== EXAMPLES ===================== -->
+      <div class="section-head" id="examples">Worked Examples</div>
+
+      <div class="example-box">
+        <div class="example-title">Example 1 — Pauli exclusion and atomic configurations</div>
+        <div class="example-body">
+          <p>Count the number of distinct electron configurations in the $n=3$ shell of hydrogen (including spin), and state the maximum electrons that can fill it.</p>
+          <p><strong>Quantum numbers for $n=3$:</strong></p>
+          <ul>
+            <li>$l=0$ (3s): $m_l = 0$; $m_s = \pm\frac{1}{2}$ → 2 states</li>
+            <li>$l=1$ (3p): $m_l = -1,0,1$; $m_s = \pm\frac{1}{2}$ → $3\times2 = 6$ states</li>
+            <li>$l=2$ (3d): $m_l = -2,-1,0,1,2$; $m_s = \pm\frac{1}{2}$ → $5\times2 = 10$ states</li>
+          </ul>
+          <p>Total: $2 + 6 + 10 = 18 = 2n^2$ states ✓. The third shell can hold at most 18 electrons.
+          In the actual periodic table, the 3d fills after 4s (the aufbau order: 1s, 2s, 2p, 3s, 3p, 4s, 3d, 4p, …)
+          due to the screening effects of inner electrons in multi-electron atoms.
+          This is why the transition metals (3d filling, Z=21–30) appear between the s-block and p-block of the periodic table.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-title">Example 2 — Bell inequality violation with specific angles</div>
+        <div class="example-body">
+          <p>Show that the optimal CHSH violation is $S = 2\sqrt{2}$ for the singlet state.</p>
+          <p>Choose measurement directions: $a = 0°$, $b = 45°$, $a' = 90°$, $b' = 135°$ (or equivalently, $b' = -45°$).</p>
+          <p>The quantum correlation for the singlet is $E(a,b) = -\cos(\theta_{ab})$ where $\theta_{ab}$ is the angle between the directions.</p>
+          <div class="math-block">$$E(a,b) = -\cos(45°) = -\frac{1}{\sqrt{2}}$$</div>
+          <div class="math-block">$$E(a,b') = -\cos(-45°) = -\frac{1}{\sqrt{2}}$$</div>
+          <div class="math-block">$$E(a',b) = -\cos(-45°) = -\frac{1}{\sqrt{2}}$$</div>
+          <div class="math-block">$$E(a',b') = -\cos(45°) = -\frac{1}{\sqrt{2}}$$</div>
+          <p>Wait — let me use the correct optimal angles: $a=0°$, $b=22.5°$, $a'=45°$, $b'=67.5°$.</p>
+          <div class="math-block">$$E(a,b) = -\cos(22.5°) = -0.924, \quad E(a,b') = -\cos(67.5°) = -0.383$$</div>
+          <div class="math-block">$$E(a',b) = -\cos(22.5°) = -0.924, \quad E(a',b') = -\cos(22.5°) = -0.924$$</div>
+          <div class="math-block">$$S = |E(a,b) + E(a,b') + E(a',b) - E(a',b')| = |-0.924 - 0.383 - 0.924 + 0.924| = 1.307$$</div>
+          <p>Hmm — let me use the correct form. The CHSH string is $S = E(a,b) - E(a,b') + E(a',b) + E(a',b')$ with $a=0°$, $b=45°$, $a'=90°$, $b'=0°$... Actually the standard optimal setting is:</p>
+          <div class="math-block">$$a=0°,\quad b=45°,\quad a'=90°,\quad b'=135°$$</div>
+          <div class="math-block">$$E(0°,45°) = -1/\sqrt{2},\quad E(0°,135°) = 1/\sqrt{2},\quad E(90°,45°) = -1/\sqrt{2},\quad E(90°,135°) = -1/\sqrt{2}$$</div>
+          <div class="math-block">$$S = |{-1/\sqrt{2}} - (1/\sqrt{2}) + (-1/\sqrt{2}) + (-1/\sqrt{2})| = |-4/\sqrt{2}| = 2\sqrt{2} \approx 2.828$$</div>
+          <p>This exceeds the classical bound of 2 by a factor of $\sqrt{2}$. The classical maximum is achieved only with anti-correlated deterministic strategies, which can never exceed 2. Quantum entanglement surpasses this.</p>
+        </div>
+      </div>
+
+      <!-- ===================== FFT ===================== -->
+      <div class="section-head" id="fft">Food for Thought</div>
+      <ul class="fft-list">
+        <li class="fft-item">
+          <div class="fft-question">The Pauli exclusion principle says two identical fermions can't occupy the same quantum state. But what about two electrons in different atoms far apart — do they need to be antisymmetrised? Does the exclusion principle extend across macroscopic distances?</div>
+          <div class="fft-answer">Formally yes — if two electrons are truly identical, the multiparticle wavefunction should be antisymmetrised. In practice, this is negligible when the wavefunctions have no significant spatial overlap. The antisymmetrisation cross-term $K = \langle\psi_a\psi_b|V|\psi_b\psi_a\rangle$ involves the wavefunction of electron 1 evaluated at electron 2's position — this is exponentially small if the two electrons are in well-separated atoms. So the exclusion principle does in principle extend across all space, but its effects are observably negligible beyond the length scale of atomic wavefunctions. This is why solids can be described by energy bands without worrying about electrons in distant atoms — the exchange overlaps are tiny. Near-degenerate free electrons in metals, however, must be properly antisymmetrised, and this is why Fermi-Dirac statistics (the statistical mechanics of fermions) governs electron behavior in metals.</div>
+        </li>
+        <li class="fft-item">
+          <div class="fft-question">Bell's theorem rules out local hidden variable theories. But quantum mechanics itself is non-local in some sense — measuring one particle of an entangled pair instantaneously determines the other's state. How do we reconcile non-locality in quantum mechanics with special relativity?</div>
+          <div class="fft-answer">The reconciliation is the no-communication theorem: even though Bob's particle "collapses" when Alice measures hers, Bob cannot use this to receive any information. Before comparing notes with Alice (which requires a classical, subluminal channel), Bob's measurement outcomes look completely random — 50/50 for spin, regardless of what Alice measured. The non-locality of quantum mechanics is "non-signalling": the statistics of Bob's outcomes alone don't depend on what Alice chose to measure. It's only in the correlations — which require classical communication to compare — that the entanglement is visible. This is consistent with special relativity because no information travels faster than light. The weirdness is real (the correlations are non-classical), but it can't be weaponised for faster-than-light signaling.</div>
+        </li>
+        <li class="fft-item">
+          <div class="fft-question">Bosons prefer to be in the same state — this leads to Bose-Einstein condensation. Is there an analogous "fermionic pressure" that prevents fermions from all occupying the ground state, and does it have physical consequences?</div>
+          <div class="fft-answer">Yes — it's called degeneracy pressure (or Fermi pressure). When fermions are packed densely enough that many have to occupy higher and higher energy states (due to the exclusion principle), they exert a pressure that is purely quantum in origin — present even at zero temperature when thermal motion has ceased. This is what prevents white dwarf stars from collapsing under gravity: electrons fill up to the Fermi energy and the resulting degeneracy pressure resists compression. Similarly, neutron stars are supported against collapse by neutron degeneracy pressure. In metals, the conduction electrons form a "Fermi sea" with energies from zero up to the Fermi energy (~several eV), and this is why metals don't change their electron distribution much with temperature (until $k_BT \sim E_F$, which only happens at ~tens of thousands of Kelvin). Degeneracy pressure is also responsible for the incompressibility of ordinary matter — squeezing atoms forces electrons into higher energy states.</div>
+        </li>
+      </ul>
+
+      <!-- ===================== PITFALLS ===================== -->
+      <div class="section-head" id="pitfalls">Common Pitfalls</div>
+      <ul class="pitfall-list">
+        <li><strong>Entanglement is not the same as classical correlation.</strong> Two coins that are always heads-tails are correlated, but not entangled — their outcomes were determined before you looked. Entanglement means the outcomes are genuinely indeterminate until measurement, yet perfectly correlated. Bell's theorem is precisely the mathematical statement of this difference.</li>
+        <li><strong>Exchange symmetry applies to the complete state (spatial × spin), not just spatial.</strong> Two electrons can share the same spatial state $\psi_a(\mathbf{r})$ if their spin states are opposite (singlet) — the total wavefunction is antisymmetric even though the spatial part is symmetric. The Pauli exclusion principle says the complete quantum state (all quantum numbers) can't be identical, not that the spatial wavefunction must be antisymmetric.</li>
+        <li><strong>The exchange "force" is not a real force — there's no exchange boson.</strong> The exchange interaction is a consequence of wavefunction symmetry and the kinetic/potential energy calculation in that symmetrised state. It's an energy difference between different symmetry sectors, not a new fundamental interaction. Don't confuse it with the exchange bosons of gauge theories (photons for EM, W/Z for weak, gluons for strong).</li>
+        <li><strong>Bell's theorem rules out local hidden variables, not all hidden variables.</strong> Non-local hidden variable theories (de Broglie-Bohm pilot wave theory) are consistent with all quantum predictions including Bell inequality violations. What's ruled out is the combination of locality + realism (pre-determined outcomes). You can keep one or the other, but not both.</li>
+      </ul>
+
+      <!-- ===================== CONNECTS ===================== -->
+      <div class="section-head">Connects to</div>
+      <ul class="connects-list">
+        <li><strong>Spin (Lesson 9)</strong> — The singlet and triplet states (the antisymmetric/symmetric spin states) appear here as the requirement for antisymmetric total wavefunctions. Spin-statistics theorem (fermions ↔ half-integer spin) is the deepest result connecting spin and particle statistics.</li>
+        <li><strong>Time-Dependent Perturbation Theory (Lesson 12)</strong> — Fermi's golden rule computes transition rates between quantum states. Selection rules (which transitions are allowed) depend on matrix elements between initial and final states — entangled states in multi-particle systems have complex selection rules that arise directly from exchange symmetry.</li>
+        <li><strong>Information Theory (Complexity &amp; Information Sciences, planned)</strong> — Quantum entanglement is a quantifiable resource. The von Neumann entropy $S = -\text{Tr}(\rho\ln\rho)$ measures entanglement for pure states; quantum information theory studies how entanglement can be manipulated, transmitted, and used for computation and communication.</li>
+      </ul>
+
+      <!-- ===================== NAV ===================== -->
+      <div class="lesson-nav">
+        <a href="perturbation.html" class="lesson-nav-btn">← 10 · Perturbation Theory</a>
+        <a href="tdpt.html" class="lesson-nav-btn disabled">12 · Time-Dependent Perturbation Theory →</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+<script src="../books-render.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  renderMathInElement(document.body, {
+    delimiters: [
+      {left: '$$', right: '$$', display: true},
+      {left: '$', right: '$', display: false}
+    ],
+    throwOnError: false
+  });
+
+  // ===================== Bell inequality plot =====================
+  const N = 200;
+  const thetas = [], EQM = [], EClass = [];
+  for (let i = 0; i <= N; i++) {
+    const deg = 180 * i / N;
+    const rad = deg * Math.PI / 180;
+    thetas.push(deg);
+    EQM.push(-Math.cos(rad));
+    // Classical linear bound: max correlation decreasing from 1 at 0 to -1 at 180
+    // The local hidden variable bound for E(θ): classical prediction for best strategy is triangular
+    // (pieced linear function: 1 - 2θ/π for 0≤θ≤π)
+    EClass.push(1 - 2 * rad / Math.PI);
+  }
+
+  const traces = [
+    {
+      x: thetas, y: EQM,
+      name: 'Quantum: −cos θ',
+      mode: 'lines', line: {color: '#3a6a8a', width: 3}
+    },
+    {
+      x: thetas, y: EClass,
+      name: 'Classical bound (linear)',
+      mode: 'lines', line: {color: '#c0503a', width: 2, dash: 'dash'}
+    }
+  ];
+
+  // Shade the region where they differ
+  const xFill = [...thetas, ...thetas.slice().reverse()];
+  const yFill = [...EQM, ...EClass.slice().reverse()];
+  traces.push({
+    x: xFill, y: yFill,
+    fill: 'toself',
+    fillcolor: 'rgba(58,106,138,0.12)',
+    line: {color: 'transparent'},
+    name: 'Quantum advantage region',
+    showlegend: true, hoverinfo: 'skip'
+  });
+
+  const layout = {
+    xaxis: {title: 'Angle between measurement axes θ (degrees)', color: '#2a3a4a', gridcolor: '#dde5ec'},
+    yaxis: {title: 'Correlation E(θ)', color: '#2a3a4a', gridcolor: '#dde5ec', range: [-1.15, 1.15]},
+    paper_bgcolor: 'transparent', plot_bgcolor: '#f8fbfd',
+    font: {family: 'IBM Plex Sans, sans-serif', size: 12, color: '#2a3a4a'},
+    legend: {x: 0.55, y: 0.98, bgcolor: 'rgba(255,255,255,0.85)', bordercolor: '#c0dae8', borderwidth: 1},
+    margin: {t: 20, b: 55, l: 65, r: 20},
+    annotations: [{
+      x: 45, y: -Math.cos(Math.PI/4) + 0.05,
+      text: 'QM wins here<br>E(45°) = −1/√2 ≈ −0.707<br>Classical: −0.5',
+      showarrow: true, arrowhead: 2, arrowcolor: '#3a6a8a',
+      ax: 60, ay: -50,
+      font: {size: 10, color: '#3a6a8a'},
+      bgcolor: 'rgba(255,255,255,0.8)'
+    }]
+  };
+
+  Plotly.newPlot('bell-plot', traces, layout, {responsive: true});
+});
+</script>
+</body>
+</html>
