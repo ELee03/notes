@@ -1,0 +1,157 @@
+{
+  "sections": [
+    {
+      "label": "Mathematics",
+      "children": [
+        {
+          "label": "Analysis",
+          "children": [
+            { "name": "Calculus &amp; Analysis",      "desc": "Single and multivariable calculus, then real analysis — epsilon-delta, metric spaces, measure theory — and complex analysis with contour integration and residues.", "planned": true },
+            { "name": "Differential Equations",        "desc": "ODEs and systems, PDEs (heat, wave, Laplace), dynamical systems and phase portraits, and an introduction to chaos.", "planned": true },
+            { "name": "Nonlinear Dynamics &amp; Chaos", "desc": "Phase portraits, bifurcation theory, limit cycles, strange attractors, Lyapunov exponents, and the mathematical roots of complex systems behaviour.", "planned": true }
+          ]
+        },
+        {
+          "label": "Algebra",
+          "children": [
+            { "name": "Linear Algebra",   "desc": "Vectors and matrices through the abstract theory — vector spaces, linear maps, inner products, spectral theorem, and Jordan normal form.", "planned": true },
+            { "name": "Abstract Algebra", "desc": "Groups, subgroups, homomorphisms, rings, fields, and Galois theory — the structures underlying symmetry and number theory.", "planned": true }
+          ]
+        },
+        {
+          "label": "Discrete &amp; Foundations",
+          "children": [
+            { "name": "Discrete Mathematics", "desc": "Logic, sets, combinatorics, graph theory, number theory, and the mathematical foundations of computer science.", "planned": true },
+            { "name": "Network Science",       "desc": "Random graphs, small-world and scale-free networks, degree distributions, community detection, percolation, and epidemic spreading on real-world networks.", "planned": true }
+          ]
+        },
+        {
+          "label": "Applied Mathematics",
+          "children": [
+            { "name": "Probability Theory",          "desc": "Distributions and expectation, conditional probability, Markov chains, limit theorems, stochastic processes, and the measure-theoretic foundations.", "planned": true },
+            { "name": "Statistics &amp; Inference",   "desc": "Estimation theory, hypothesis testing, confidence intervals, regression, and Bayesian inference.", "planned": true },
+            { "name": "Optimization",                "desc": "Convex optimization, gradient descent and its variants, Lagrange multipliers, KKT conditions, and the geometry of loss landscapes.", "planned": true },
+            { "name": "Game Theory &amp; Decision Theory", "desc": "Nash equilibria, dominant strategies, extensive-form games, repeated games, mechanism design, auctions, and cooperative game theory.", "planned": true }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "Physics",
+      "children": [
+        {
+          "label": "Classical Physics",
+          "children": [
+            { "name": "Classical Mechanics",                    "desc": "Newtonian mechanics, Lagrangian and Hamiltonian formalism, canonical transformations, rigid bodies, small oscillations, and an introduction to chaos.", "planned": true },
+            { "name": "Electromagnetism",                       "desc": "Electrostatics and magnetostatics through Maxwell's equations, electromagnetic waves, radiation, multipole expansion, and waveguides.", "planned": true },
+            { "name": "Waves &amp; Optics",                    "desc": "Wave equation, dispersion and group velocity, interference, diffraction, Fourier optics, and the connection to electromagnetic radiation.", "planned": true },
+            { "name": "Thermodynamics &amp; Statistical Mechanics", "desc": "Classical thermodynamics, kinetic theory, the Boltzmann distribution, ensemble theory, partition functions, phase transitions, and quantum statistics.", "planned": true }
+          ]
+        },
+        {
+          "label": "Modern Physics",
+          "children": [
+            { "name": "Quantum Mechanics", "href": "quantum/index.html", "desc": "Wave-particle duality, the Schrödinger equation, quantum states, measurement, perturbation theory, and entanglement.", "lessons": 18 },
+            { "name": "Relativity",        "desc": "Special relativity through Lorentz transformations, 4-vectors, and covariant electrodynamics; extending to the geometry of curved spacetime and general relativity.", "planned": true }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "Engineering",
+      "children": [
+        {
+          "label": "Electrical Engineering",
+          "children": [
+            { "name": "Circuit Theory",             "desc": "From KVL/KCL and phasors through transistor amplifiers, op-amps, and frequency response.", "planned": true },
+            { "name": "Signals &amp; Systems",      "desc": "Fourier analysis, convolution, modulation, sampling, and analog filter design.", "planned": true },
+            { "name": "Analog &amp; Semiconductor", "desc": "Semiconductor device physics, BJT/MOSFET modeling, and analog IC design.", "planned": true },
+            { "name": "Bioelectricity",              "desc": "Action potentials, Hodgkin-Huxley, neural interfaces, and bioelectric signal processing.", "planned": true },
+            { "name": "Embedded Systems",            "href": "embedded/index.html", "desc": "MCU architecture, communication protocols (UART, SPI, I2C, CAN), PCB layout, and firmware patterns.", "lessons": 19 }
+          ]
+        },
+        {
+          "label": "Dynamical Systems &amp; Control",
+          "children": [
+            { "name": "Control Theory",             "href": "control/index.html", "desc": "Feedback systems, frequency-domain methods, root locus, and state-space control.", "lessons": 14 },
+            { "name": "Adaptive &amp; Robust Control", "desc": "Model reference adaptive control, self-tuning regulators, Lyapunov adaptive laws, and robustness to unmodelled dynamics.", "planned": true },
+            { "name": "Nonlinear Control",          "desc": "Lyapunov stability theory, phase portraits, feedback linearisation, sliding mode control, and backstepping.", "planned": true },
+            { "name": "Robotics",                   "desc": "Kinematics, Denavit-Hartenberg convention, Jacobians, rigid body dynamics, trajectory planning, state estimation, SLAM, and path planning.", "planned": true }
+          ]
+        },
+        {
+          "label": "Mechanical &amp; Thermal Engineering",
+          "children": [
+            { "name": "Fluid Mechanics",              "desc": "Continuity and Navier-Stokes, Bernoulli, dimensional analysis, boundary layers, laminar and turbulent flow, pipe flow, and compressible flow.", "planned": true },
+            { "name": "Heat Transfer",                "desc": "Conduction, convection, and radiation from first principles — fins, transient analysis, forced and natural convection, and heat exchanger design via LMTD and ε-NTU methods.", "planned": true },
+            { "name": "Engineering Thermodynamics",   "desc": "First and second law for open and closed systems, vapour power cycles (Rankine), gas power cycles (Otto, Diesel, Brayton), refrigeration, and psychrometrics.", "planned": true }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "Computation &amp; AI",
+      "children": [
+        {
+          "label": "Machine Learning",
+          "children": [
+            { "name": "Supervised Learning",                "desc": "Linear and logistic regression, SVMs, decision trees, ensemble methods, and the foundations of neural networks.", "planned": true },
+            { "name": "Deep Learning",                      "desc": "Backpropagation, CNNs, recurrent networks, attention and transformers, and the practical craft of training large models.", "planned": true },
+            { "name": "Unsupervised &amp; Generative Models", "desc": "Clustering, dimensionality reduction, autoencoders, variational autoencoders, and generative adversarial networks.", "planned": true },
+            { "name": "Reinforcement Learning",             "href": "rl/index.html", "desc": "Markov decision processes, dynamic programming, policy gradient methods, and deep RL.", "lessons": 9 }
+          ]
+        },
+        {
+          "label": "Foundations",
+          "children": [
+            { "name": "Computing Systems", "desc": "Digital logic, computer organization, operating systems, computability, and the theoretical foundations of computing.", "planned": true },
+            { "name": "Information Theory", "desc": "Shannon entropy, mutual information, source coding, channel capacity, error-correcting codes, and connections to statistical mechanics and machine learning.", "planned": true }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "Life Sciences",
+      "children": [
+        {
+          "label": "Molecular &amp; Cell Biology",
+          "children": [
+            { "name": "Chemistry",                          "desc": "Atomic structure, bonding, thermodynamics, kinetics, equilibrium, and organic reaction mechanisms.", "planned": true },
+            { "name": "Biochemistry &amp; Molecular Biology", "desc": "Proteins, nucleic acids, metabolism, enzyme kinetics, and the molecular basis of life.", "planned": true },
+            { "name": "Cell Biology",                       "desc": "Cell structure and organelles, membrane transport, cytoskeleton, cell cycle and division, cell signalling, and apoptosis.", "planned": true },
+            { "name": "Genetics &amp; Genomics",            "desc": "Mendelian genetics, molecular genetics, gene regulation, mutations, recombinant DNA and CRISPR, population genetics, and the foundations of genomics.", "planned": true },
+            { "name": "Microbiology",                       "desc": "Bacterial and viral biology, pathogenesis, antimicrobial resistance mechanisms, and the ecology of the microbiome.", "planned": true }
+          ]
+        },
+        {
+          "label": "Systems &amp; Organismal Biology",
+          "children": [
+            { "name": "Physiology",         "desc": "Systems physiology — cardiovascular, respiratory, renal, endocrine, and digestive systems — with emphasis on feedback regulation and integration.", "planned": true },
+            { "name": "Evolutionary Biology", "desc": "Natural selection, adaptation, speciation, phylogenetics, population genetics (Hardy-Weinberg, drift, selection), and community ecology.", "planned": true }
+          ]
+        },
+        {
+          "label": "Neuroscience &amp; Cognition",
+          "children": [
+            { "name": "Neuroscience",    "desc": "Neural circuits, synaptic transmission, sensory processing, memory, and the computational brain.", "planned": true },
+            { "name": "Cognitive Science", "desc": "Consciousness, perception, memory, language, and decision-making — studied at the systems level, drawing from neuroscience, AI, linguistics, and philosophy of mind.", "planned": true }
+          ]
+        },
+        {
+          "label": "Applied",
+          "children": [
+            { "name": "Food Science", "href": "food-science/index.html", "desc": "The chemistry and physics of cooking — Maillard reactions, protein denaturation, emulsification, fermentation, and why recipes work.", "lessons": 14 }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "Other",
+      "children": [
+        { "name": "Complex Systems",          "desc": "Emergence, self-organisation, and collective behaviour — Schelling segregation, SIR epidemic models, flocking (Boids), cellular automata, and game theory on networks.", "planned": true },
+        { "name": "Linguistics",              "desc": "Phonology, morphology, syntax, semantics, pragmatics, and historical linguistics — how language is structured and how it changes.", "planned": true },
+        { "name": "Science of Human Nature",  "desc": "Evolutionary psychology, behavioural economics, cognitive biases, social dynamics, and the empirical study of why people think and act as they do.", "planned": true }
+      ]
+    }
+  ]
+}
