@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Formalism &amp; Uncertainty — Quantum Mechanics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="quantum" data-current="formalism.html"></div>
+      <hr class="sidebar-rule">
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#hilbert" class="nav-item">Hilbert Space</a>
+        <a href="#dirac" class="nav-item">Dirac Notation</a>
+        <a href="#hermitian" class="nav-item">Hermitian Operators</a>
+        <a href="#spectral" class="nav-item">The Spectral Theorem</a>
+        <a href="#commutators" class="nav-item">Commutators</a>
+        <a href="#uncertainty" class="nav-item">Generalised Uncertainty</a>
+        <a href="#energy-time" class="nav-item">Energy–Time Uncertainty</a>
+        <a href="#widget" class="nav-item">Uncertainty Visualiser</a>
+        <a href="#examples" class="nav-item">Worked Examples</a>
+        <a href="#fft" class="nav-item">Food for Thought</a>
+        <a href="#pitfalls" class="nav-item">Common Pitfalls</a>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="breadcrumb"><a href="../index.html">Field Notes</a> / <a href="index.html">Quantum Mechanics</a> / Formalism &amp; Uncertainty</div>
+
+      <h1 class="lesson-title">Formalism &amp; Uncertainty</h1>
+      <div class="lesson-meta">Hilbert Space · Dirac Notation · Hermitian Operators · Commutators · Generalised Uncertainty Principle</div>
+
+      <p class="prose">
+        The first five lessons treated quantum mechanics somewhat informally — we solved specific potentials and
+        computed specific expectation values, but always with a sense that we were applying rules without fully
+        understanding where they came from. This lesson pulls back to the mathematical framework underlying
+        everything. Why are observables represented by operators? Why do measurements give eigenvalues?
+        Why is the uncertainty principle not just a practical limitation but a fundamental theorem?
+        The answers come from the formalism: the linear algebra of Hilbert space.
+      </p>
+
+      <!-- ===================== HILBERT SPACE ===================== -->
+      <div class="section-head" id="hilbert">Hilbert Space</div>
+
+      <p class="prose">
+        Quantum states live in a <strong>Hilbert space</strong> $\mathcal{H}$ — a vector space with an inner product that is complete
+        (no "holes"). For a single particle in one dimension, $\mathcal{H}$ is the space of square-integrable functions
+        $L^2(\mathbb{R})$: all functions $f(x)$ for which $\int_{-\infty}^\infty |f(x)|^2\,dx &lt; \infty$.
+      </p>
+
+      <p class="prose">
+        The inner product of two functions is:
+      </p>
+      <div class="math-block">
+        $$\langle f,\,g \rangle \equiv \int_{-\infty}^{\infty} f(x)^*\,g(x)\,dx$$
+      </div>
+      <p class="prose">
+        This satisfies the axioms of an inner product: it's linear in the second argument, conjugate-linear in
+        the first, and $\langle f,f\rangle \geq 0$ with equality only if $f = 0$ (almost everywhere).
+        The <strong>norm</strong> of a state is $\|f\| = \sqrt{\langle f,f\rangle}$; normalisation means $\|f\|=1$.
+      </p>
+
+      <p class="prose">
+        Two functions are <strong>orthogonal</strong> if $\langle f,g\rangle = 0$. An orthonormal set satisfies
+        $\langle f_m, f_n\rangle = \delta_{mn}$ — this is exactly the condition we verified for the energy eigenstates
+        of the infinite square well. The eigenstates of any Hermitian operator form an orthonormal basis for $\mathcal{H}$.
+      </p>
+
+      <!-- ===================== DIRAC NOTATION ===================== -->
+      <div class="section-head" id="dirac">Dirac Notation</div>
+
+      <p class="prose">
+        Dirac's bra-ket notation is a cleaner way to write the same linear algebra. A state is a <strong>ket</strong>
+        $|\psi\rangle$ — think of it as an abstract vector, independent of any particular basis (just like a
+        vector in $\mathbb{R}^3$ exists independently of coordinates). The corresponding <strong>bra</strong>
+        $\langle\psi|$ is the dual vector (the row vector if you think in matrices). The inner product is written:
+      </p>
+      <div class="math-block">
+        $$\langle \phi\,|\,\psi\rangle \equiv \int \phi(x)^*\,\psi(x)\,dx$$
+      </div>
+
+      <p class="prose">
+        In the position basis, $\langle x|\psi\rangle = \psi(x)$ — the wavefunction is the component of $|\psi\rangle$
+        along the "direction" $|x\rangle$. In momentum space, $\langle p|\psi\rangle = \phi(p)/\sqrt{2\pi\hbar}$ —
+        it's the same state vector, just expressed in a different basis.
+      </p>
+
+      <div class="callout">
+        <strong>Operators as matrices.</strong> An operator $\hat{Q}$ maps kets to kets: $\hat{Q}|\psi\rangle = |\chi\rangle$.
+        In a basis $\{|e_n\rangle\}$, the matrix elements are $Q_{mn} = \langle e_m|\hat{Q}|e_n\rangle$. The
+        expectation value is:
+        $$\langle Q\rangle = \langle\psi|\hat{Q}|\psi\rangle = \int \psi^*\,\hat{Q}\psi\,dx$$
+        This is just the inner product of $\psi$ with $\hat{Q}\psi$ — exactly what we've been computing all along.
+      </div>
+
+      <!-- ===================== HERMITIAN OPERATORS ===================== -->
+      <div class="section-head" id="hermitian">Hermitian Operators</div>
+
+      <p class="prose">
+        An operator $\hat{Q}$ is <strong>Hermitian</strong> (or self-adjoint) if:
+      </p>
+      <div class="math-block">
+        $$\langle f\,|\,\hat{Q}g\rangle = \langle\hat{Q}f\,|\,g\rangle \quad \text{for all } f,g \in \mathcal{H}$$
+      </div>
+      <p class="prose">
+        In matrix terms, $\hat{Q}^\dagger = \hat{Q}$ (the conjugate transpose equals itself). All observables
+        in quantum mechanics are represented by Hermitian operators. Two crucial consequences:
+      </p>
+
+      <p class="prose">
+        <strong>Theorem 1: Eigenvalues of Hermitian operators are real.</strong><br>
+        Proof: if $\hat{Q}f = qf$, then $q\langle f,f\rangle = \langle f,\hat{Q}f\rangle = \langle\hat{Q}f,f\rangle = q^*\langle f,f\rangle$.
+        Since $\langle f,f\rangle > 0$, we have $q = q^*$, so $q\in\mathbb{R}$. ✓
+      </p>
+      <p class="prose">
+        This is the reason Hermitian operators represent observables: a measurement must return a real number.
+      </p>
+
+      <p class="prose">
+        <strong>Theorem 2: Eigenfunctions belonging to distinct eigenvalues are orthogonal.</strong><br>
+        Proof: suppose $\hat{Q}f = q_1 f$ and $\hat{Q}g = q_2 g$ with $q_1\neq q_2$. Then
+        $q_1\langle f,g\rangle = \langle\hat{Q}f,g\rangle = \langle f,\hat{Q}g\rangle = q_2\langle f,g\rangle$.
+        Since $q_1 \neq q_2$, we need $\langle f,g\rangle = 0$. ✓
+      </p>
+
+      <!-- ===================== SPECTRAL THEOREM ===================== -->
+      <div class="section-head" id="spectral">The Spectral Theorem and Measurement</div>
+
+      <p class="prose">
+        The central theorem of quantum mechanics:
+      </p>
+
+      <div class="callout">
+        <strong>Spectral theorem (informal).</strong> The (normalised) eigenfunctions of a Hermitian operator form a
+        complete orthonormal set. Any state in $\mathcal{H}$ can be expanded as:
+        $$|\psi\rangle = \sum_n c_n |f_n\rangle \quad\text{or}\quad |\psi\rangle = \int c(z)|f_z\rangle\,dz$$
+        (discrete or continuous spectrum), where $c_n = \langle f_n|\psi\rangle$.
+      </div>
+
+      <p class="prose">
+        This is completeness — the set $\{|f_n\rangle\}$ is a basis for $\mathcal{H}$.
+        It generalises the familiar notion that any vector in $\mathbb{R}^3$ is a sum of components along basis vectors.
+      </p>
+
+      <p class="prose">
+        <strong>Measurement postulate (generalised).</strong> If you measure observable $\hat{Q}$ on a state
+        $|\psi\rangle = \sum_n c_n|f_n\rangle$:
+      </p>
+      <ul class="prose" style="margin-top:0;padding-left:1.4em;">
+        <li>The only possible results are the eigenvalues $q_n$.</li>
+        <li>The probability of getting $q_n$ is $|c_n|^2 = |\langle f_n|\psi\rangle|^2$.</li>
+        <li>Immediately after measuring $q_n$, the state collapses to $|f_n\rangle$.</li>
+      </ul>
+
+      <p class="prose">
+        The normalisation condition $\sum_n|c_n|^2 = 1$ (or $\int|c(z)|^2\,dz = 1$) is automatic from
+        $\langle\psi|\psi\rangle = 1$ and the orthonormality of eigenfunctions.
+      </p>
+
+      <div class="example-box">
+        <div class="example-title">Example 1 — Expanding a state and computing measurement probabilities</div>
+        <div class="example-body">
+          <p>A particle in an infinite square well (width $a$) is in the state:</p>
+          <div class="math-block">$$\psi(x,0) = A\left[3\psi_1(x) - 4i\psi_2(x)\right]$$</div>
+          <p><strong>(a) Find $A$ from normalisation.</strong></p>
+          <p>Since the $\psi_n$ are orthonormal: $\langle\psi|\psi\rangle = |A|^2(|3|^2 + |-4i|^2) = |A|^2(9+16) = 25|A|^2 = 1$, so $A = 1/5$.</p>
+          <p><strong>(b) What are the possible energies and their probabilities?</strong></p>
+          <p>$c_1 = 3/5$, $c_2 = -4i/5$, all other $c_n = 0$. So:</p>
+          <div class="math-block">$$P(E_1) = |3/5|^2 = 9/25, \qquad P(E_2) = |-4i/5|^2 = 16/25$$</div>
+          <p>(These sum to 1.) If we measure and get $E_1$, the state collapses to $\psi_1(x)e^{-iE_1t/\hbar}$ thereafter.</p>
+          <p><strong>(c) Compute $\langle H\rangle$.</strong></p>
+          <div class="math-block">$$\langle H\rangle = \frac{9}{25}E_1 + \frac{16}{25}E_2 = \frac{9}{25}\cdot\frac{\pi^2\hbar^2}{2ma^2} + \frac{16}{25}\cdot\frac{4\pi^2\hbar^2}{2ma^2} = \frac{\pi^2\hbar^2}{2ma^2}\cdot\frac{9+64}{25} = \frac{73\pi^2\hbar^2}{50ma^2}$$</div>
+        </div>
+      </div>
+
+      <!-- ===================== COMMUTATORS ===================== -->
+      <div class="section-head" id="commutators">Commutators and Compatible Observables</div>
+
+      <p class="prose">
+        The <strong>commutator</strong> of two operators is:
+      </p>
+      <div class="math-block">
+        $$[\hat{A},\hat{B}] \equiv \hat{A}\hat{B} - \hat{B}\hat{A}$$
+      </div>
+      <p class="prose">
+        If $[\hat{A},\hat{B}] = 0$, the operators <strong>commute</strong>. The fundamental commutation relation in quantum mechanics is:
+      </p>
+      <div class="math-block">
+        $$[\hat{x},\hat{p}] = i\hbar$$
+      </div>
+
+      <p class="prose">
+        <em>Proof:</em> Apply to an arbitrary test function $f(x)$:
+        $[\hat{x},\hat{p}]f = x(-i\hbar f') - (-i\hbar)(xf)' = x(-i\hbar f') + i\hbar(f + xf') = i\hbar f$. ✓
+      </p>
+
+      <p class="prose">
+        Why does the commutator matter? Because it controls whether two observables can be simultaneously
+        definite. More precisely:
+      </p>
+
+      <div class="callout">
+        <strong>Compatible observables theorem.</strong> Two Hermitian operators $\hat{A}$ and $\hat{B}$ have a
+        complete set of simultaneous eigenfunctions — states with definite values for both — if and only if
+        $[\hat{A},\hat{B}] = 0$.
+      </div>
+
+      <p class="prose">
+        If you can simultaneously diagonalize $\hat{A}$ and $\hat{B}$, measuring one doesn't disturb the other.
+        If $[\hat{A},\hat{B}] \neq 0$, there is no state with both $\sigma_A = 0$ and $\sigma_B = 0$ simultaneously —
+        this is the deep reason for the uncertainty principle.
+      </p>
+
+      <p class="prose">
+        Some useful commutator identities (provable directly from the definition):
+      </p>
+      <div class="math-block">
+        $$[\hat{A},\hat{B}] = -[\hat{B},\hat{A}], \quad [\hat{A},\hat{B}+\hat{C}] = [\hat{A},\hat{B}]+[\hat{A},\hat{C}]$$
+        $$[\hat{A},\hat{B}\hat{C}] = [\hat{A},\hat{B}]\hat{C} + \hat{B}[\hat{A},\hat{C}]$$
+      </div>
+      <p class="prose">
+        From these you can derive, for example, $[\hat{x},\hat{p}^n] = i\hbar n\hat{p}^{n-1}$ and
+        $[\hat{x}^n,\hat{p}] = i\hbar n\hat{x}^{n-1}$, and in general $[\hat{x},f(\hat{p})] = i\hbar f'(\hat{p})$
+        and $[\hat{p}, g(\hat{x})] = -i\hbar g'(\hat{x})$.
+      </p>
+
+      <!-- ===================== UNCERTAINTY ===================== -->
+      <div class="section-head" id="uncertainty">The Generalised Uncertainty Principle</div>
+
+      <p class="prose">
+        We now prove a general bound on the product of standard deviations of any two observables.
+        Define the deviation operators $\hat{\alpha} \equiv \hat{A} - \langle A\rangle$ and
+        $\hat{\beta} \equiv \hat{B} - \langle B\rangle$. Then $\sigma_A^2 = \langle\alpha^2\rangle = \|\hat\alpha|\psi\rangle\|^2$
+        and similarly for $B$.
+      </p>
+
+      <p class="prose">
+        By the Cauchy-Schwarz inequality, $\langle\hat\alpha f|\hat\alpha f\rangle\langle\hat\beta f|\hat\beta f\rangle \geq |\langle\hat\alpha f|\hat\beta f\rangle|^2$.
+        For any complex number $z$, $|z|^2 \geq (\text{Im}\,z)^2 = \left(\frac{z - z^*}{2i}\right)^2$.
+        Writing $z = \langle\hat\alpha f|\hat\beta f\rangle$:
+      </p>
+      <div class="math-block">
+        $$\sigma_A^2\,\sigma_B^2 \geq \left(\frac{\langle[\hat{A},\hat{B}]\rangle}{2i}\right)^2$$
+      </div>
+      <p class="prose">
+        Taking the positive square root:
+      </p>
+      <div class="math-block">
+        $$\boxed{\sigma_A\,\sigma_B \geq \frac{1}{2}\left|\langle[\hat{A},\hat{B}]\rangle\right|}$$
+      </div>
+      <p class="prose">
+        This is the <strong>generalised uncertainty principle</strong>. Applying it to $\hat{A} = \hat{x}$, $\hat{B} = \hat{p}$
+        with $[\hat{x},\hat{p}] = i\hbar$:
+      </p>
+      <div class="math-block">
+        $$\sigma_x\,\sigma_p \geq \frac{\hbar}{2}$$
+      </div>
+      <p class="prose">
+        This is not a statement about measurement disturbance — it's a statement about <em>any state</em>.
+        Even if you never touch the particle, any state must have $\sigma_x\sigma_p \geq \hbar/2$. The
+        inequality is an equality (minimum uncertainty) for Gaussian states — exactly what we found for
+        the harmonic oscillator ground state and Gaussian wave packets.
+      </p>
+
+      <div class="example-box">
+        <div class="example-title">Example 2 — Uncertainty principle for position and energy</div>
+        <div class="example-body">
+          <p>Compute $[\hat{x},\hat{H}]$ for $\hat{H} = \hat{p}^2/2m + V(\hat{x})$.</p>
+          <p>Since $[\hat{x},V(\hat{x})] = 0$ (they're both functions of $\hat{x}$):</p>
+          <div class="math-block">$$[\hat{x},\hat{H}] = \left[\hat{x},\frac{\hat{p}^2}{2m}\right] = \frac{1}{2m}[\hat{x},\hat{p}^2]$$</div>
+          <p>Using the product rule: $[\hat{x},\hat{p}^2] = [\hat{x},\hat{p}]\hat{p} + \hat{p}[\hat{x},\hat{p}] = i\hbar\hat{p} + i\hbar\hat{p} = 2i\hbar\hat{p}$. So:</p>
+          <div class="math-block">$$[\hat{x},\hat{H}] = \frac{i\hbar\hat{p}}{m}$$</div>
+          <p>The generalised uncertainty principle then gives:</p>
+          <div class="math-block">$$\sigma_x\,\sigma_H \geq \frac{1}{2}\left|\frac{i\hbar\langle\hat{p}\rangle}{m}\right| = \frac{\hbar|\langle p\rangle|}{2m}$$</div>
+          <p>This has a nice interpretation: if the particle has mean velocity $|\langle p\rangle|/m \neq 0$, there's a constraint between position uncertainty and energy uncertainty. For a stationary state (which has $\langle p\rangle = 0$, since the probability current $j \propto \langle p\rangle$ must be zero for a real wavefunction), the bound is trivial — and indeed stationary states can have any $\sigma_x$.</p>
+        </div>
+      </div>
+
+      <!-- ===================== ENERGY-TIME ===================== -->
+      <div class="section-head" id="energy-time">The Energy–Time Uncertainty Principle</div>
+
+      <p class="prose">
+        There's a famous relation $\Delta E\,\Delta t \geq \hbar/2$ that looks like the position-momentum uncertainty
+        principle. But there's a crucial difference: <strong>time is not an operator in quantum mechanics</strong>. There
+        is no Hermitian operator $\hat{t}$ acting on the Hilbert space — time is a parameter, not an observable.
+      </p>
+
+      <p class="prose">
+        What does $\Delta t$ mean then? It's the <em>characteristic time for the state to change appreciably</em>.
+        Define $\Delta t$ as the time for the expectation value of some observable $\hat{Q}$ to change by one standard deviation $\sigma_Q$:
+      </p>
+      <div class="math-block">
+        $$\Delta t \equiv \frac{\sigma_Q}{|d\langle Q\rangle/dt|}$$
+      </div>
+      <p class="prose">
+        Using $d\langle Q\rangle/dt = (i/\hbar)\langle[\hat{H},\hat{Q}]\rangle$ (for time-independent $\hat{Q}$) and the
+        generalised uncertainty principle on $\hat{H}$ and $\hat{Q}$:
+      </p>
+      <div class="math-block">
+        $$\sigma_H\,\sigma_Q \geq \frac{1}{2}|\langle[\hat{H},\hat{Q}]\rangle| = \frac{\hbar}{2}\left|\frac{d\langle Q\rangle}{dt}\right|$$
+      </div>
+      <p class="prose">
+        Dividing both sides by $|d\langle Q\rangle/dt|$:
+      </p>
+      <div class="math-block">
+        $$\sigma_H\,\Delta t \geq \frac{\hbar}{2}$$
+      </div>
+      <p class="prose">
+        where $\sigma_H = \Delta E$. This is the energy-time uncertainty principle, and $\Delta t$ is the
+        "lifetime" of the state — how long it takes to change. A state that changes quickly (small $\Delta t$) must have
+        a large energy spread. A stationary state has $\Delta t = \infty$ (it never changes) and $\Delta E = 0$
+        (definite energy) — perfectly consistent.
+      </p>
+
+      <div class="callout">
+        <strong>Applications of $\Delta E\,\Delta t \geq \hbar/2$.</strong>
+        <ul style="margin:6px 0 0;padding-left:1.2em;">
+          <li><strong>Spectral linewidth.</strong> An atomic excited state with lifetime $\tau \sim 10^{-8}$ s has an energy uncertainty $\Delta E \sim \hbar/2\tau \sim 3\times10^{-8}\,\text{eV}$. This sets the natural linewidth of spectral lines — you can't resolve a transition more precisely than the intrinsic width of the levels.</li>
+          <li><strong>Virtual particles.</strong> In QFT, a particle can "borrow" energy $\Delta E$ from the vacuum for a time $\Delta t \sim \hbar/(2\Delta E)$ — this is the heuristic basis for Feynman diagram intermediate states. (The rigorous statement involves propagators, not this simple picture.)</li>
+          <li><strong>Unstable particles.</strong> A particle that decays in time $\tau$ has a rest-mass uncertainty (width) $\Gamma = \hbar/\tau$. The $Z$ boson has $\Gamma \approx 2.5\,\text{GeV}$, implying a lifetime $\tau \approx 3\times10^{-25}$ s.</li>
+        </ul>
+      </div>
+
+      <!-- ===================== WIDGET ===================== -->
+      <div class="section-head" id="widget">Uncertainty Visualiser: Position and Momentum</div>
+
+      <div class="widget-card">
+        <div class="widget-title">Gaussian wave packet: $|\psi(x)|^2$ and $|\phi(k)|^2$</div>
+        <div id="uncertainty-plot" style="width:100%;height:360px;"></div>
+        <div style="margin-top:14px;display:flex;flex-wrap:wrap;gap:18px;align-items:center;">
+          <label style="font-size:13px;color:#3a5a78;">
+            Position width $\sigma_x$:
+            <input type="range" id="sigma-slider" min="0.3" max="3.0" step="0.05" value="1.0"
+                   style="width:130px;vertical-align:middle;margin:0 6px;">
+            <span id="sigma-val" style="font-family:'IBM Plex Mono',monospace;font-size:12px;">1.00</span>
+          </label>
+        </div>
+        <div id="uncertainty-display" style="margin-top:10px;font-size:13px;color:#3a5a78;font-family:'IBM Plex Mono',monospace;"></div>
+        <p style="font-size:12px;color:#7a8a9a;margin:8px 0 0;">
+          Blue: probability density in position space $|\psi(x)|^2$. Red: probability density in
+          momentum space $|\phi(k)|^2$ (in units of $\hbar=1$). The product $\sigma_x\sigma_p$
+          always equals $\hbar/2$ for a Gaussian — the minimum uncertainty state.
+        </p>
+      </div>
+
+      <!-- ===================== DISCRETE VS CONTINUOUS ===================== -->
+      <div class="section-head">Discrete and Continuous Spectra</div>
+
+      <p class="prose">
+        So far we've mostly dealt with discrete spectra — bound states with a countable set of energy eigenvalues.
+        But operators can also have continuous spectra. The position operator $\hat{x}$ has eigenvalues $x' \in \mathbb{R}$
+        with "eigenfunctions" $\delta(x-x')$ — unnormalisable. Similarly, the free-particle momentum operator has
+        eigenfunctions $e^{ikx}/\sqrt{2\pi}$ — also unnormalisable.
+      </p>
+
+      <p class="prose">
+        For continuous spectra, the expansion becomes an integral:
+      </p>
+      <div class="math-block">
+        $$|\psi\rangle = \int c(z)|f_z\rangle\,dz, \qquad c(z) = \langle f_z|\psi\rangle, \qquad \int |c(z)|^2\,dz = 1$$
+      </div>
+      <p class="prose">
+        The probability of measuring $z$ in the interval $(z, z+dz)$ is $|c(z)|^2\,dz$.
+        The orthonormality relation for continuous eigenfunctions uses a Dirac delta:
+        $\langle f_z|f_{z'}\rangle = \delta(z-z')$ — "Dirac orthonormality".
+      </p>
+
+      <p class="prose">
+        In the position basis, $c(x') = \langle x'|\psi\rangle = \psi(x')$ — the wavefunction <em>is</em>
+        the set of expansion coefficients in the position eigenstate basis. In the momentum basis,
+        $c(k) = \langle k|\psi\rangle = \phi(k)/\sqrt{2\pi}$ — the momentum-space wavefunction is the
+        coefficients in the momentum eigenstate basis. Fourier's theorem says these two representations
+        carry identical information.
+      </p>
+
+      <!-- ===================== EXAMPLES ===================== -->
+      <div class="section-head" id="examples">Worked Examples</div>
+
+      <div class="example-box">
+        <div class="example-title">Example 3 — Commutators and the angular momentum algebra preview</div>
+        <div class="example-body">
+          <p>Compute $[\hat{x},\hat{p}^2]$ using the product rule, and use it to verify Ehrenfest's theorem.</p>
+          <p><strong>Step 1:</strong> $[\hat{x},\hat{p}^2] = [\hat{x},\hat{p}]\hat{p} + \hat{p}[\hat{x},\hat{p}] = i\hbar\hat{p} + i\hbar\hat{p} = 2i\hbar\hat{p}$.</p>
+          <p><strong>Step 2:</strong> For $\hat{H} = \hat{p}^2/2m + V(\hat{x})$:</p>
+          <div class="math-block">$$[\hat{x},\hat{H}] = \frac{1}{2m}[\hat{x},\hat{p}^2] + [\hat{x},V] = \frac{i\hbar\hat{p}}{m} + 0 = \frac{i\hbar\hat{p}}{m}$$</div>
+          <p><strong>Step 3:</strong> The Heisenberg equation of motion for $\hat{x}$ (Lesson 2 result, derived from the TDSE):</p>
+          <div class="math-block">$$\frac{d\langle\hat{x}\rangle}{dt} = \frac{i}{\hbar}\langle[\hat{H},\hat{x}]\rangle = \frac{i}{\hbar}\left\langle-\frac{i\hbar\hat{p}}{m}\right\rangle = \frac{\langle\hat{p}\rangle}{m}$$</div>
+          <p>This is Ehrenfest's theorem — the expectation value of position moves at the classical velocity $\langle p\rangle/m$. Same calculation gives $d\langle\hat{p}\rangle/dt = -\langle\partial V/\partial x\rangle$. Both results follow purely from the canonical commutation relation $[\hat{x},\hat{p}]=i\hbar$.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-title">Example 4 — Minimum uncertainty states</div>
+        <div class="example-body">
+          <p>The generalised uncertainty principle is an equality when the Cauchy-Schwarz inequality is tight <em>and</em> the imaginary part of $\langle\hat\alpha f|\hat\beta f\rangle$ dominates. The condition for equality is:</p>
+          <div class="math-block">$$\hat\beta|f\rangle = ic\,\hat\alpha|f\rangle \quad\text{for some real } c$$</div>
+          <p>For position-momentum, $\hat\alpha = \hat{x} - \langle x\rangle$ and $\hat\beta = \hat{p} - \langle p\rangle$, so the condition becomes:</p>
+          <div class="math-block">$$(\hat{p} - \langle p\rangle)\psi = ic(\hat{x} - \langle x\rangle)\psi$$</div>
+          <div class="math-block">$$-i\hbar\frac{d\psi}{dx} = (ic\,x + \langle p\rangle - ic\langle x\rangle)\psi$$</div>
+          <p>Separating and integrating: $\ln\psi = -(c/2\hbar)x^2 + (\langle p\rangle/i\hbar)x + \text{const}$.
+          Exponentiating (with $c > 0$ for normalisability):</p>
+          <div class="math-block">$$\psi(x) \propto \exp\!\left(-\frac{c}{2\hbar}x^2 + \frac{i\langle p\rangle}{\hbar}x\right)$$</div>
+          <p>This is a Gaussian centred at $\langle x\rangle = 0$ (by choice of origin) with $\sigma_x = \sqrt{\hbar/(2c)}$, carrying mean momentum $\langle p\rangle$. Every minimum-uncertainty state is a Gaussian. This confirms that the harmonic oscillator ground state (a Gaussian) and Gaussian wave packets are the only states that saturate $\sigma_x\sigma_p = \hbar/2$.</p>
+        </div>
+      </div>
+
+      <!-- ===================== FFT ===================== -->
+      <div class="section-head" id="fft">Food for Thought</div>
+      <ul class="fft-list">
+        <li class="fft-item">
+          <div class="fft-question">The position operator $\hat{x}$ has a continuous spectrum and its "eigenfunctions" are Dirac delta functions, which aren't in $L^2(\mathbb{R})$. Yet we freely use position states and eigenfunctions in calculations. How do we reconcile this with the Hilbert space framework?</div>
+          <div class="fft-answer">Rigorously, you need the theory of "rigged Hilbert spaces" (Gelfand triples): $\Phi \subset \mathcal{H} \subset \Phi'$, where $\Phi$ is a space of smooth, rapidly decreasing functions (Schwartz space) and $\Phi'$ is its dual (which includes distributions like $\delta(x-x')$). Physical states live in $\mathcal{H}$; "generalised eigenstates" like $|x\rangle$ live in $\Phi'$. Measurements are then described by projections onto this extended space. In practice, every real physical state has a finite-width probability distribution — pure position eigenstates are idealisations, just like plane waves are idealisations. The framework holds together rigorously, but you need the extra mathematical machinery.</div>
+        </li>
+        <li class="fft-item">
+          <div class="fft-question">If two operators commute, they share a complete set of simultaneous eigenstates. But $[\hat{H},\hat{p}] = 0$ for a free particle, and indeed both are diagonalised by plane waves. What breaks down for the infinite square well — why doesn't $[\hat{H},\hat{p}] = 0$ hold there even though $V = 0$ inside?</div>
+          <div class="fft-answer">For the infinite square well, the Hamiltonian is defined on the restricted domain of functions that vanish at the walls — the boundary conditions are part of the operator definition, not just the potential. The momentum operator $\hat{p} = -i\hbar\partial/\partial x$ on this domain is not Hermitian (integration by parts gives boundary terms), and it doesn't have a complete set of real eigenvalues on this domain. So $\hat{p}$ is not a valid observable for the infinite square well, and asking whether $[\hat{H},\hat{p}]=0$ doesn't quite make sense. The well's energy eigenstates are standing waves (superpositions of $e^{ikx}$ and $e^{-ikx}$), not momentum eigenstates.</div>
+        </li>
+        <li class="fft-item">
+          <div class="fft-question">The uncertainty principle $\sigma_x\sigma_p \geq \hbar/2$ is derived from the commutator $[\hat{x},\hat{p}] = i\hbar$, which is a property of the operators. But sigma here depends on the state. So the uncertainty principle is really a statement that different states can't make both uncertainties small simultaneously. Is there a single state for which both $\sigma_x = 0$ and $\sigma_p = 0$ individually (not just their product)?</div>
+          <div class="fft-answer">No — you cannot have both $\sigma_x = 0$ and $\sigma_p = 0$ for any state in the Hilbert space. $\sigma_x = 0$ would mean the wavefunction is a delta function (perfect position localisation), which requires all momenta equally (infinite momentum spread). $\sigma_p = 0$ means a plane wave (infinite position spread). Neither state is normalisable. The uncertainty principle tells us that trying to localise in position inevitably broadens the momentum distribution, and vice versa — this is not about noise or measurement error, but about what it means to be a quantum state in the first place.</div>
+        </li>
+      </ul>
+
+      <!-- ===================== PITFALLS ===================== -->
+      <div class="section-head" id="pitfalls">Common Pitfalls</div>
+      <ul class="pitfall-list">
+        <li><strong>The uncertainty principle is not about measurement disturbance.</strong> The common story — "measuring position disturbs momentum" — is Heisenberg's original (wrong) heuristic. The rigorous statement is about the statistical spread of outcomes in an ensemble of identically prepared systems. Even if you could measure without any disturbance, the uncertainty principle would still hold.</li>
+        <li><strong>$\langle[\hat{A},\hat{B}]\rangle$ is state-dependent — the bound can be zero for specific states.</strong> The generalised uncertainty principle says $\sigma_A\sigma_B \geq \frac{1}{2}|\langle[\hat{A},\hat{B}]\rangle|$. For $\hat{x}$ and $\hat{p}$, $[\hat{x},\hat{p}] = i\hbar$ is a c-number (not operator-valued), so the bound $\hbar/2$ is state-independent. But for angular momentum, $[\hat{L}_x,\hat{L}_y] = i\hbar\hat{L}_z$, and the bound $\frac{\hbar}{2}|\langle\hat{L}_z\rangle|$ depends on the state — it's zero for states with $\langle L_z\rangle = 0$.</li>
+        <li><strong>Hermitian $\neq$ self-adjoint (in infinite dimensions).</strong> In finite-dimensional Hilbert spaces these coincide. In infinite dimensions, an operator must also have the same domain as its adjoint to be truly self-adjoint. The difference matters for operators like the momentum operator on an interval. In most introductory physics, "Hermitian" is used loosely to mean "self-adjoint," and the distinction rarely matters for first-year quantum mechanics.</li>
+        <li><strong>Collapse is to a single eigenfunction only for non-degenerate eigenvalues.</strong> If $q_n$ is degenerate (multiple eigenstates with the same eigenvalue), measuring $q_n$ collapses the state to the projection onto the degenerate subspace — not to a single eigenfunction. You need a second compatible measurement to determine the state fully.</li>
+      </ul>
+
+      <!-- ===================== CONNECTS ===================== -->
+      <div class="section-head">Connects to</div>
+      <ul class="connects-list">
+        <li><strong>Angular Momentum (Lesson 7)</strong> — The angular momentum operators satisfy $[\hat{L}_x,\hat{L}_y] = i\hbar\hat{L}_z$ (and cyclic permutations). These commutation relations alone determine the eigenvalue structure $\hbar^2 l(l+1)$ and $\hbar m$ — the formalism lesson is the template.</li>
+        <li><strong>Linear Algebra (Mathematics cluster, planned)</strong> — Everything in this lesson is linear algebra over $\mathbb{C}$: eigenvectors, eigenvalues, inner products, unitary matrices, spectral theorem. Quantum mechanics is linear algebra in infinite dimensions.</li>
+        <li><strong>Information Theory (Complexity & Information Sciences, planned)</strong> — Shannon entropy and quantum von Neumann entropy $S = -\text{Tr}(\rho\ln\rho)$ are both ways of quantifying the "spread" of a probability distribution. The uncertainty principle has information-theoretic analogues (entropic uncertainty relations) that are often tighter than the variance-based bound.</li>
+      </ul>
+
+      <!-- ===================== NAV ===================== -->
+      <div class="lesson-nav">
+        <a href="free-particle.html" class="lesson-nav-btn">← 5 · Free Particle &amp; Tunneling</a>
+        <a href="angular-momentum.html" class="lesson-nav-btn disabled">7 · Angular Momentum →</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+<script src="../books-render.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  renderMathInElement(document.body, {
+    delimiters: [
+      {left: '$$', right: '$$', display: true},
+      {left: '$', right: '$', display: false}
+    ],
+    throwOnError: false
+  });
+
+  // Uncertainty visualiser
+  function makePlot() {
+    const sigX = parseFloat(document.getElementById('sigma-slider').value);
+    const sigK = 1 / (2 * sigX);  // sigma_k = 1/(2 sigma_x) for minimum uncertainty
+
+    const xs = [], psi2 = [];
+    const ks = [], phi2 = [];
+    const N = 400;
+    const xMax = 6, kMax = 4;
+
+    for (let i = 0; i <= N; i++) {
+      const x = -xMax + 2 * xMax * i / N;
+      xs.push(x);
+      psi2.push(Math.exp(-x * x / (2 * sigX * sigX)) / (Math.sqrt(2 * Math.PI) * sigX));
+    }
+    for (let i = 0; i <= N; i++) {
+      const k = -kMax + 2 * kMax * i / N;
+      ks.push(k);
+      phi2.push(Math.exp(-k * k / (2 * sigK * sigK)) / (Math.sqrt(2 * Math.PI) * sigK));
+    }
+
+    const traces = [
+      {
+        x: xs, y: psi2,
+        name: '|ψ(x)|² (position)',
+        mode: 'lines',
+        line: { color: '#3a6a8a', width: 2.5 },
+        xaxis: 'x', yaxis: 'y'
+      },
+      {
+        x: ks, y: phi2,
+        name: '|φ(k)|² (momentum)',
+        mode: 'lines',
+        line: { color: '#c0503a', width: 2.5 },
+        xaxis: 'x2', yaxis: 'y2'
+      }
+    ];
+
+    const layout = {
+      grid: { rows: 1, columns: 2, pattern: 'independent' },
+      xaxis:  { title: 'x', color: '#2a3a4a', gridcolor: '#dde5ec', zeroline: true, zerolinecolor: '#aaa' },
+      yaxis:  { title: '|ψ|²', color: '#2a3a4a', gridcolor: '#dde5ec' },
+      xaxis2: { title: 'k  (ℏ = 1)', color: '#2a3a4a', gridcolor: '#dde5ec', zeroline: true, zerolinecolor: '#aaa' },
+      yaxis2: { title: '|φ|²', color: '#2a3a4a', gridcolor: '#dde5ec' },
+      paper_bgcolor: 'transparent', plot_bgcolor: '#f8fbfd',
+      font: { family: 'IBM Plex Sans, sans-serif', size: 12, color: '#2a3a4a' },
+      showlegend: true,
+      legend: { orientation: 'h', x: 0.1, y: -0.15 },
+      margin: { t: 20, b: 60, l: 55, r: 20 }
+    };
+
+    const product = (sigX * sigK).toFixed(4);
+    document.getElementById('sigma-val').textContent = sigX.toFixed(2);
+    document.getElementById('uncertainty-display').textContent =
+      'σx = ' + sigX.toFixed(3) + '   σk = ' + sigK.toFixed(3) +
+      '   σx·σk = ' + product + '  (minimum = 0.5000)';
+
+    const el = document.getElementById('uncertainty-plot');
+    if (el.data) {
+      Plotly.react('uncertainty-plot', traces, layout, { responsive: true });
+    } else {
+      Plotly.newPlot('uncertainty-plot', traces, layout, { responsive: true });
+    }
+  }
+
+  makePlot();
+  document.getElementById('sigma-slider').addEventListener('input', makePlot);
+});
+</script>
+</body>
+</html>
