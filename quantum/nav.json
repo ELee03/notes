@@ -34,7 +34,7 @@
       "items": [
         { "href": "perturbation.html",     "text": "10 · Perturbation Theory" },
         { "href": "identical.html",        "text": "11 · Identical Particles &amp; Entanglement" },
-        { "href": "tdpt.html",             "text": "12 · Time-Dependent Perturbation Theory", "planned": true }
+        { "href": "tdpt.html",             "text": "12 · Time-Dependent Perturbation Theory" }
       ]
     }
   ]

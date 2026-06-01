@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Time-Dependent Perturbation Theory · Quantum Mechanics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="quantum" data-current="tdpt.html"></div>
+      <hr class="sidebar-rule">
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#two-level" class="nav-item">Two-Level Systems</a>
+        <a href="#first-order" class="nav-item">First-Order TDPT</a>
+        <a href="#sinusoidal" class="nav-item">Sinusoidal Perturbation</a>
+        <a href="#fermis-rule" class="nav-item">Fermi's Golden Rule</a>
+        <a href="#adiabatic-sudden" class="nav-item">Adiabatic &amp; Sudden</a>
+        <a href="#radiation" class="nav-item">Light &amp; Transitions</a>
+        <a href="#selection-rules" class="nav-item">Selection Rules</a>
+        <a href="#einstein" class="nav-item">Einstein A and B</a>
+        <a href="#lasers" class="nav-item">Lasers</a>
+        <a href="#examples" class="nav-item">Worked Examples</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="breadcrumb-sep">›</span>
+        <a href="index.html">Quantum Mechanics</a>
+        <span class="breadcrumb-sep">›</span>
+        Lesson 12
+      </div>
+
+      <h1 class="lesson-title">Time-Dependent Perturbation Theory</h1>
+      <div class="lesson-meta">Quantum Transitions · Resonance · Fermi's Golden Rule · Radiation</div>
+
+      <div class="prose">
+        <p>Everything we've built so far — stationary states, energy levels, perturbation corrections — describes systems sitting quietly in their quantum states. But quantum mechanics is most useful when things <em>happen</em>: an atom absorbs a photon and jumps to an excited state, a nucleus decays, a molecule is driven by a laser pulse. Time-dependent perturbation theory is the machinery for calculating these transition probabilities. Its most important consequence, Fermi's golden rule, gives the rate at which a quantum system transitions under a weak time-varying perturbation — and it underpins virtually all of atomic, nuclear, and condensed-matter physics. By the end of this lesson you will be able to calculate atomic transition rates, understand why some transitions are "forbidden" by selection rules, derive the relationship between spontaneous and stimulated emission, and see exactly why lasers work.</p>
+      </div>
+
+      <!-- =================== TWO-LEVEL SYSTEMS =================== -->
+      <div class="section-head" id="two-level">Two-Level Systems: Rabi Oscillations</div>
+
+      <div class="prose">
+        <p>Before developing the general perturbation expansion, let's solve one exactly-tractable case: a system with only two energy levels. This is both genuinely useful (spin-½ in a magnetic field, optical two-level atom) and provides the exact benchmark against which we'll check the perturbative approximation.</p>
+
+        <p>Let the unperturbed Hamiltonian have eigenstates $|1\rangle$ (energy $E_1$) and $|2\rangle$ (energy $E_2 > E_1$), with transition frequency $\omega_0 \equiv (E_2 - E_1)/\hbar$. Apply an oscillating perturbation (representing an electromagnetic field):</p>
+
+        <div class="math-block">$$H'(t) = V\cos(\omega t) = \frac{V}{2}\bigl(e^{i\omega t} + e^{-i\omega t}\bigr)$$</div>
+
+        <p>Write the full state $|\Psi(t)\rangle = c_1(t)e^{-iE_1 t/\hbar}|1\rangle + c_2(t)e^{-iE_2 t/\hbar}|2\rangle$. The Schrödinger equation gives exact coupled equations:</p>
+
+        <div class="math-block">$$i\hbar\dot{c}_1 = \langle 1|H'|2\rangle e^{-i\omega_0 t}\,c_2, \qquad i\hbar\dot{c}_2 = \langle 2|H'|1\rangle e^{i\omega_0 t}\,c_1$$</div>
+
+        <p>Near resonance ($\omega \approx \omega_0$), the perturbation has a slowly-varying component and a rapidly oscillating one at $2\omega$. The rapidly-oscillating term averages to zero over any reasonable timescale — this is the <strong>rotating wave approximation (RWA)</strong>. Dropping it:</p>
+
+        <div class="math-block">$$i\hbar\dot{c}_1 = \frac{V_{12}^*}{2}\,e^{-i(\omega_0 - \omega)t}\,c_2, \qquad i\hbar\dot{c}_2 = \frac{V_{12}}{2}\,e^{i(\omega_0-\omega)t}\,c_1$$</div>
+
+        <p>where $V_{12} \equiv \langle 2|V|1\rangle$. Define the detuning $\delta \equiv \omega - \omega_0$ and the Rabi frequency:</p>
+
+        <div class="math-block">$$\Omega_R \equiv \frac{|V_{12}|}{\hbar}$$</div>
+
+        <p>The exact solution (starting from $|1\rangle$ at $t = 0$) is the celebrated <strong>Rabi formula</strong>:</p>
+
+        <div class="math-block">$$P_{1\to 2}(t) = |c_2(t)|^2 = \frac{\Omega_R^2}{\Omega_R^2 + \delta^2}\,\sin^2\!\left(\frac{\sqrt{\Omega_R^2 + \delta^2}}{2}\,t\right)$$</div>
+
+        <p>At exact resonance ($\delta = 0$): $P_{1\to 2}(t) = \sin^2(\Omega_R t/2)$. The population oscillates <em>completely</em> between the two levels — from 0 to 1 and back — at the Rabi frequency. A "$\pi$-pulse" (duration $t = \pi/\Omega_R$) achieves complete population transfer: $|1\rangle \to |2\rangle$. A "$\pi/2$-pulse" creates an equal superposition.</p>
+
+        <p>Off resonance ($\delta \neq 0$): oscillations are faster but never reach unit probability. The maximum excitation is $\Omega_R^2/(\Omega_R^2 + \delta^2)$, which falls off as the system is driven further from resonance. This is the quantum analogue of a driven harmonic oscillator: maximum response at resonance, suppressed off resonance.</p>
+      </div>
+
+      <!-- WIDGET: Rabi oscillations -->
+      <div class="widget-card">
+        <div class="widget-title">Rabi Oscillations</div>
+        <div style="display:flex;gap:24px;align-items:center;flex-wrap:wrap;margin-bottom:12px;">
+          <label style="font-size:0.88rem;color:#2a3040;">
+            Detuning &nbsp; $\delta/\Omega_R$ = <span id="det-val">0.0</span>
+            <br>
+            <input type="range" id="det-slider" min="-4" max="4" step="0.2" value="0"
+                   style="width:200px;margin-top:4px;">
+          </label>
+        </div>
+        <div id="rabi-plot" style="width:100%;height:300px;"></div>
+      </div>
+
+      <!-- =================== FIRST-ORDER TDPT =================== -->
+      <div class="section-head" id="first-order">First-Order Time-Dependent Perturbation Theory</div>
+
+      <div class="prose">
+        <p>For a general system, the Rabi approach doesn't work. Instead we expand perturbatively. Write the Hamiltonian as $H = H^0 + H'(t)$ with $H'$ small. Expand the state in energy eigenstates of $H^0$:</p>
+
+        <div class="math-block">$$|\Psi(t)\rangle = \sum_n c_n(t)\,e^{-iE_n t/\hbar}|n\rangle$$</div>
+
+        <p>The Schrödinger equation becomes an exact set of coupled ODEs for the coefficients:</p>
+
+        <div class="math-block">$$i\hbar\,\dot{c}_m(t) = \sum_n \langle m|H'(t)|n\rangle\,e^{i\omega_{mn}t}\,c_n(t)$$</div>
+
+        <p>where $\omega_{mn} \equiv (E_m - E_n)/\hbar$. This is still exact — we've just rewritten the Schrödinger equation in the <em>interaction picture</em>, where the unperturbed time evolution is already absorbed into the phases $e^{i\omega_{mn}t}$.</p>
+
+        <p><strong>Perturbative expansion:</strong> Suppose the system starts in eigenstate $|i\rangle$ at $t = 0$. Write $c_n(t) = \delta_{ni} + c_n^{(1)}(t) + c_n^{(2)}(t) + \cdots$ (zeroth order is the unperturbed state). To first order, we plug $c_n \approx \delta_{ni}$ on the right-hand side:</p>
+
+        <div class="math-block">$$i\hbar\,\dot{c}_f^{(1)}(t) = \langle f|H'(t)|i\rangle\,e^{i\omega_{fi}t}$$</div>
+
+        <p>Integrating from 0 to $t$:</p>
+
+        <div class="math-block">$$\boxed{c_f^{(1)}(t) = \frac{1}{i\hbar}\int_0^t \langle f|H'(t')|i\rangle\,e^{i\omega_{fi}t'}\,dt'}$$</div>
+
+        <p>The transition probability from $|i\rangle$ to $|f\rangle$ ($f \neq i$) at time $t$ is $P_{i\to f}(t) = |c_f^{(1)}(t)|^2$.</p>
+
+        <p class="callout">⟶ <em>The integral has a beautiful physical meaning: we're asking how much the perturbation "overlaps" with the Bohr frequency $\omega_{fi}$. If $H'(t)$ oscillates at exactly that frequency, the integral grows without bound — resonance. If it oscillates at a very different frequency, the integrand sloshes back and forth and cancels — off-resonance suppression.</em></p>
+
+        <p><strong>Validity:</strong> First-order perturbation theory requires $|c_f^{(1)}(t)| \ll 1$ — the transition probability must be much less than unity. Once the system has a significant probability of being in state $|f\rangle$, back-action matters and higher orders (or the exact solution) are needed.</p>
+      </div>
+
+      <!-- =================== SINUSOIDAL =================== -->
+      <div class="section-head" id="sinusoidal">Sinusoidal Perturbation and Resonance</div>
+
+      <div class="prose">
+        <p>The most important application: a monochromatic perturbation $H'(t) = V\cos(\omega t)$, turned on at $t = 0$. Plugging into the first-order formula:</p>
+
+        <div class="math-block">$$c_f^{(1)}(t) = \frac{V_{fi}}{2i\hbar}\left[\frac{e^{i(\omega_{fi}+\omega)t}-1}{\omega_{fi}+\omega} + \frac{e^{i(\omega_{fi}-\omega)t}-1}{\omega_{fi}-\omega}\right]$$</div>
+
+        <p>where $V_{fi} \equiv \langle f|V|i\rangle$. Near resonance for <strong>absorption</strong> ($\omega \approx \omega_{fi}$, so $E_f > E_i$), the first term is rapidly oscillating and contributes negligibly. Keeping only the resonant second term:</p>
+
+        <div class="math-block">$$|c_f^{(1)}(t)|^2 \approx \frac{|V_{fi}|^2}{\hbar^2}\,\frac{\sin^2\!\bigl[(\omega_{fi}-\omega)t/2\bigr]}{(\omega_{fi}-\omega)^2}$$</div>
+
+        <p>This is a sharply-peaked function of $\omega$ centered at $\omega = \omega_{fi}$. The peak height grows as $t^2$, but the peak width narrows as $1/t$ — the area grows linearly with $t$. Plotting it vs. $\omega$ gives an increasingly narrow, tall spike: the longer we wait, the more frequency-selective the transition becomes. This is the time-energy version of the uncertainty principle.</p>
+
+        <p>Using the integral representation $\lim_{t\to\infty} \sin^2(xt/2)/(\pi x^2 t/2) = \delta(x)$, the transition <em>rate</em> for a purely monochromatic perturbation diverges at exact resonance (delta function). In practice, either the perturbation has a spread of frequencies or there is a continuum of final states — this is where Fermi's golden rule comes in.</p>
+      </div>
+
+      <!-- EXAMPLE: constant perturbation -->
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Constant Perturbation Suddenly Switched On</strong></div>
+        <div class="example-problem">
+          A perturbation $H'$ (time-independent) is suddenly turned on at $t = 0$. Find the transition probability from $|i\rangle$ to $|f\rangle$ ($f \neq i$) at time $t$.
+        </div>
+        <div class="example-body">
+          <p>Set $\langle f|H'(t)|i\rangle = \langle f|H'|i\rangle \equiv H'_{fi}$ (constant). Plug into the first-order formula:</p>
+
+          <div class="math-block">$$c_f^{(1)}(t) = \frac{H'_{fi}}{i\hbar}\int_0^t e^{i\omega_{fi}t'}\,dt' = \frac{H'_{fi}}{i\hbar}\cdot\frac{e^{i\omega_{fi}t}-1}{i\omega_{fi}}$$</div>
+
+          <div class="math-block">$$P_{i\to f}(t) = \frac{|H'_{fi}|^2}{\hbar^2}\cdot\frac{4\sin^2(\omega_{fi}t/2)}{\omega_{fi}^2}$$</div>
+
+          <p>At short times ($\omega_{fi}t \ll 1$): $P \approx |H'_{fi}|^2 t^2/\hbar^2$ — probability grows quadratically. This seems non-perturbative, but it's fine as long as $P \ll 1$.</p>
+
+          <p>For $E_f = E_i$ (degenerate or quasi-degenerate states, $\omega_{fi} \approx 0$): $P \approx |H'_{fi}|^2 t^2/\hbar^2$, consistent with the degenerate perturbation theory result.</p>
+
+          <p>The function $4\sin^2(\omega_{fi}t/2)/\omega_{fi}^2$ peaks at $\omega_{fi} = 0$ (value $t^2$), with first zeros at $\omega_{fi} = \pm 2\pi/t$. For a dense set of final states near $E_i$, this leads directly to Fermi's golden rule.</p>
+        </div>
+      </div>
+
+      <!-- =================== FERMI'S GOLDEN RULE =================== -->
+      <div class="section-head" id="fermis-rule">Fermi's Golden Rule</div>
+
+      <div class="prose">
+        <p>In many physically important situations, the final state is not a single discrete level but belongs to a <em>continuum</em> — or a quasi-continuum so dense that we treat it as such. Think of: an electron ionizing from an atom (free electron states form a continuum), a nucleus undergoing beta decay (continuous spectrum of electron + neutrino states), or an atom emitting a photon (the radiation field has a continuum of modes).</p>
+
+        <p>In these cases, we sum (integrate) the transition probability over all nearby final states, weighted by the <strong>density of states</strong> $\rho(E)$ — the number of final states per unit energy:</p>
+
+        <div class="math-block">$$\Gamma_{i\to f} = \int |c_f^{(1)}(t)|^2\,\rho(E_f)\,dE_f$$</div>
+
+        <p>Using the sinusoidal result from above and the limit $t \to \infty$:</p>
+
+        <div class="math-block">$$\int_{-\infty}^\infty \frac{\sin^2\!\bigl[(\omega_{fi}-\omega)t/2\bigr]}{(\omega_{fi}-\omega)^2/4}\,\frac{d\omega_{fi}}{2\pi} \to t$$</div>
+
+        <p>The rate $\Gamma \equiv dP/dt$ is then constant — this is what justifies describing quantum transitions as having a well-defined rate:</p>
+
+        <div class="math-block">$$\boxed{\Gamma = \frac{2\pi}{\hbar}\,|\langle f|H'|i\rangle|^2\,\rho(E_f)}$$</div>
+
+        <p>This is <strong>Fermi's golden rule</strong> (Fermi called it "the golden rule of time-dependent perturbation theory"). Despite its simplicity, it is used in virtually every branch of quantum physics to calculate decay rates, cross-sections, and transition probabilities. The key ingredients are:</p>
+
+        <ul style="margin:8px 0 12px 0;padding-left:24px;">
+          <li style="margin-bottom:6px;"><strong>Matrix element</strong> $|\langle f|H'|i\rangle|^2$ — the "overlap" of the perturbation between initial and final states. Selection rules arise from this being zero by symmetry.</li>
+          <li style="margin-bottom:6px;"><strong>Density of states</strong> $\rho(E_f)$ at the final energy — how many states are available. This is where kinematics (phase space) enters.</li>
+          <li><strong>The factor $2\pi/\hbar$</strong> — comes from the time-integral; note that Fermi's golden rule is really a statement about long-time behavior.</li>
+        </ul>
+
+        <p class="callout">⟶ <em>An important subtlety: Fermi's golden rule gives a constant rate (exponential decay law), which seems paradoxical — QM is linear, and linear equations give oscillatory not exponential solutions. The resolution is that when many final states are coupled, the outgoing probability "leaks" into a continuum and never comes back — the Wigner-Weisskopf theory shows this rigorously. Exponential decay is not built into the basic equations; it emerges from the coupling to a continuum.</em></p>
+      </div>
+
+      <!-- EXAMPLE: density of states -->
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Free-Particle Density of States in 3D</strong></div>
+        <div class="example-problem">
+          An atom in a large box of volume $L^3$ emits an electron with momentum $\mathbf{p} = \hbar\mathbf{k}$. Find the density of states $\rho(E)$ needed in Fermi's golden rule.
+        </div>
+        <div class="example-body">
+          <p>Periodic boundary conditions give allowed wavevectors $k_i = 2\pi n_i/L$. In $k$-space, each state occupies a volume $(2\pi/L)^3$. The number of states in $d^3k$ is:</p>
+
+          <div class="math-block">$$dN = \frac{L^3}{(2\pi)^3}\,4\pi k^2\,dk$$</div>
+
+          <p>For a free particle, $E = \hbar^2 k^2/2m$, so $dE = \hbar^2 k/m\,dk$, giving $dk = m/({\hbar^2 k})\,dE$. Thus:</p>
+
+          <div class="math-block">$$\rho(E) = \frac{dN}{dE} = \frac{L^3}{2\pi^2}\,\frac{m\,k}{\hbar^2} = \frac{L^3 m\sqrt{2mE}}{2\pi^2\hbar^3}$$</div>
+
+          <p>This is the standard 3D free-particle density of states. Note it grows as $\sqrt{E}$, so higher-energy transitions have more final states available — a kinematic enhancement of the rate.</p>
+        </div>
+      </div>
+
+      <!-- =================== ADIABATIC / SUDDEN =================== -->
+      <div class="section-head" id="adiabatic-sudden">Adiabatic and Sudden Approximations</div>
+
+      <div class="prose">
+        <p>TDPT is not the only handle on time-dependent quantum mechanics. Two complementary limits give exact or near-exact results without perturbation theory at all.</p>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">The Sudden Approximation</h3>
+
+        <p>If the Hamiltonian changes on a timescale $\tau$ much shorter than any relevant quantum timescale $\hbar/\Delta E$:</p>
+        <div class="math-block">$$\tau \ll \frac{\hbar}{\Delta E}$$</div>
+
+        <p>then the wavefunction <em>doesn't have time to change</em> during the switching. The state immediately after equals the state just before: $|\Psi\rangle_{\text{after}} = |\Psi\rangle_{\text{before}}$.</p>
+
+        <p>The probability of finding the system in a new eigenstate $|n_{\text{new}}\rangle$ is:</p>
+        <div class="math-block">$$P_n = |\langle n_{\text{new}} | \Psi_{\text{before}}\rangle|^2$$</div>
+
+        <p><em>Example:</em> A hydrogen atom in the ground state $|1s\rangle$ undergoes beta decay: the nucleus goes from $Z=1$ to $Z=2$ (helium) essentially instantaneously. The probability of finding the electron in the $n$-th helium eigenstate is $|\langle n_{\text{He}}|1s_H\rangle|^2$.</p>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">The Adiabatic Theorem</h3>
+
+        <p>The opposite limit: if the Hamiltonian changes <em>infinitely slowly</em> (quasi-statically), the <strong>adiabatic theorem</strong> states that a system in the $n$-th eigenstate of $H(0)$ remains in the $n$-th eigenstate of $H(t)$ for all $t$ — it tracks the instantaneous eigenstate continuously.</p>
+
+        <p>The condition for adiabaticity is that the rate of change be slow compared to the Bohr frequency between adjacent levels:</p>
+        <div class="math-block">$$\left|\frac{\langle m|\dot{H}|n\rangle}{(E_n - E_m)^2/\hbar}\right| \ll 1 \quad \text{for all } m \neq n$$</div>
+
+        <p>Physically: the system must never have "time to respond" to the changing Hamiltonian by jumping to another level. If the gap $E_n - E_m$ is very small (near degeneracy), even a slow change can cause transitions.</p>
+
+        <p><em>Classic example:</em> A spin-½ particle in a slowly rotating magnetic field. If the field rotates slowly enough, the spin follows the field adiabatically — it stays aligned even as the field direction changes by $360°$. But note: the wavefunction picks up a geometric phase (Berry phase) even under adiabatic evolution, which is measurable.</p>
+
+        <p class="callout"><em>The adiabatic and sudden approximations are exact in the limits $\tau \to \infty$ and $\tau \to 0$ respectively. For intermediate timescales, you need TDPT or an exact numerical solution.</em></p>
+      </div>
+
+      <!-- =================== RADIATION =================== -->
+      <div class="section-head" id="radiation">Emission and Absorption of Light</div>
+
+      <div class="prose">
+        <p>The most important application of TDPT is the interaction of atoms with electromagnetic radiation. Here we set up the calculation that produces selection rules and transition rates.</p>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">The Hamiltonian for an Atom in an EM Field</h3>
+
+        <p>An electron in a radiation field described by vector potential $\mathbf{A}$ gets a perturbation (in the Coulomb gauge $\nabla\cdot\mathbf{A}=0$):</p>
+        <div class="math-block">$$H' = -\frac{e}{m_e}\mathbf{A}\cdot\hat{\mathbf{p}} + \frac{e^2}{2m_e}|\mathbf{A}|^2$$</div>
+
+        <p>For weak fields the $|\mathbf{A}|^2$ term is negligible. For a monochromatic wave with frequency $\omega$ and polarization $\hat{\boldsymbol{\epsilon}}$:</p>
+        <div class="math-block">$$\mathbf{A} = A_0\hat{\boldsymbol{\epsilon}}\cos(\mathbf{k}\cdot\mathbf{r} - \omega t)$$</div>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">The Electric Dipole Approximation</h3>
+
+        <p>For optical transitions in atoms, the photon wavelength $\lambda \sim 500\ \text{nm}$ is enormous compared to the Bohr radius $a_0 \approx 0.053\ \text{nm}$. So $\mathbf{k}\cdot\mathbf{r} \sim 2\pi a_0/\lambda \approx 6.6\times10^{-4} \ll 1$, and we can expand $e^{i\mathbf{k}\cdot\mathbf{r}} \approx 1$ — the electron "sees" a spatially uniform field. This is the <strong>electric dipole (E1) approximation</strong>.</p>
+
+        <p>Using $\langle f|\hat{\mathbf{p}}|i\rangle = im_e\omega_{fi}\langle f|\hat{\mathbf{r}}|i\rangle$ (which follows from $[\hat{\mathbf{r}}, H^0] = i\hbar\hat{\mathbf{p}}/m_e$), the perturbation matrix element becomes:</p>
+
+        <div class="math-block">$$\langle f|H'|i\rangle = \frac{i e\omega_{fi} A_0}{2}\,\hat{\boldsymbol{\epsilon}}\cdot\langle f|\hat{\mathbf{r}}|i\rangle$$</div>
+
+        <p>This shows that what actually drives transitions is the <strong>electric dipole matrix element</strong> $\langle f|\hat{\mathbf{r}}|i\rangle$ (or equivalently $\langle f|\hat{\mathbf{d}}|i\rangle$ where $\hat{\mathbf{d}} = -e\hat{\mathbf{r}}$ is the dipole operator). The transition amplitude is the overlap of the position operator between initial and final states.</p>
+
+        <p>The transition rate from the ground state upward (absorption) and from an excited state downward (stimulated emission) are both proportional to $|\langle f|\hat{\mathbf{r}}|i\rangle|^2$. By the symmetry of the matrix element ($\langle f|\hat{\mathbf{r}}|i\rangle = \langle i|\hat{\mathbf{r}}|f\rangle^*$), absorption and stimulated emission have the <em>same rate</em> for a given field.</p>
+      </div>
+
+      <!-- =================== SELECTION RULES =================== -->
+      <div class="section-head" id="selection-rules">Selection Rules for Hydrogen</div>
+
+      <div class="prose">
+        <p>When does the electric dipole matrix element $\langle n'l'm'|\hat{\mathbf{r}}|nlm\rangle$ vanish? The vanishing is determined entirely by symmetry — this gives us the selection rules.</p>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">$\Delta l = \pm 1$ (Parity)</h3>
+
+        <p>Under the parity operation $\hat{\mathbf{r}} \to -\hat{\mathbf{r}}$, spherical harmonics transform as $Y_l^m \to (-1)^l Y_l^m$. The operator $\hat{\mathbf{r}}$ is odd under parity (it picks up a minus sign). For the matrix element to be nonzero, the integrand must be even:</p>
+        <div class="math-block">$$Y_{l'}^{m'*}\cdot(\text{odd})\cdot Y_l^m \text{ must be even} \implies (-1)^{l'}\cdot(-1)\cdot(-1)^l = +1$$</div>
+        <div class="math-block">$$\Longrightarrow (-1)^{l+l'+1} = +1 \implies l+l' \text{ must be odd} \implies l' - l = \pm 1, \pm 3, \ldots$$</div>
+
+        <p>The additional constraint from the integral over angular functions (explicit calculation of spherical harmonic integrals) restricts this further to only $\Delta l = \pm 1$. Physically: the photon carries one unit of angular momentum $\hbar$ (it has spin 1), so the atom's angular momentum must change by $\pm\hbar$.</p>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">$\Delta m = 0, \pm 1$ (Angular Momentum Projection)</h3>
+
+        <p>The $m$ selection rule comes from the $\phi$-integral in spherical harmonics. Writing $x \pm iy = r\sin\theta\,e^{\pm i\phi}$ and $z = r\cos\theta$:</p>
+
+        <ul style="margin:4px 0 12px 24px;">
+          <li>$z$-polarized light ($\hat{\boldsymbol{\epsilon}} = \hat{\mathbf{z}}$): the integral $\int e^{-im'\phi}e^{im\phi}d\phi \neq 0$ only if $m' = m$, so $\Delta m = 0$</li>
+          <li>Circularly polarized light ($\hat{\boldsymbol{\epsilon}} = (\hat{\mathbf{x}} \pm i\hat{\mathbf{y}})/\sqrt{2}$): requires $m' = m \pm 1$, so $\Delta m = \pm 1$</li>
+        </ul>
+
+        <p>Together, the electric dipole selection rules for hydrogen are:</p>
+
+        <div class="math-block">$$\boxed{\Delta l = \pm 1, \quad \Delta m = 0, \pm 1, \quad \Delta n = \text{anything}}$$</div>
+
+        <p>Transitions that violate these are called "forbidden" — they don't literally not happen, but they occur via higher multipoles (magnetic dipole M1, electric quadrupole E2, etc.) at rates many orders of magnitude slower. The $2s \to 1s$ transition, for example, is E1-forbidden ($\Delta l = 0$) and occurs via two-photon emission with a lifetime of $\sim 0.1$ second — ten orders of magnitude longer than the typical nanosecond E1 lifetime.</p>
+      </div>
+
+      <!-- =================== EINSTEIN A AND B =================== -->
+      <div class="section-head" id="einstein">Einstein A and B Coefficients</div>
+
+      <div class="prose">
+        <p>Einstein (1917) gave a beautiful thermodynamic derivation of the relationship between emission and absorption rates — without using quantum mechanics. Consider $N_1$ atoms in the ground state (energy $E_1$) and $N_2$ in the excited state (energy $E_2$) in thermal equilibrium with a radiation field at temperature $T$.</p>
+
+        <p>Three processes connect the two levels:</p>
+
+        <ol style="margin:8px 0 12px 24px;">
+          <li style="margin-bottom:8px;"><strong>Absorption:</strong> rate $= B_{12}\,\rho(\omega)\,N_1$, where $\rho(\omega)$ is the radiation energy density per unit angular frequency and $B_{12}$ is Einstein's B coefficient.</li>
+          <li style="margin-bottom:8px;"><strong>Stimulated emission:</strong> rate $= B_{21}\,\rho(\omega)\,N_2$. The field stimulates an excited atom to emit a photon identical (in frequency, phase, polarization, and direction) to the driving photon.</li>
+          <li><strong>Spontaneous emission:</strong> rate $= A_{21}\,N_2$. An excited atom decays even without any external field, emitting a photon in a random direction.</li>
+        </ol>
+
+        <p>At thermal equilibrium, absorption rate $=$ total emission rate:</p>
+        <div class="math-block">$$B_{12}\,\rho(\omega)\,N_1 = A_{21}\,N_2 + B_{21}\,\rho(\omega)\,N_2$$</div>
+
+        <p>The Boltzmann distribution gives $N_2/N_1 = e^{-\hbar\omega_0/k_BT}$ (with appropriate degeneracy factors). The radiation density must match the Planck formula in equilibrium. Combining these constraints forces:</p>
+
+        <div class="math-block">$$B_{12} = B_{21} \equiv B \quad \text{(absorption = stimulated emission rate)}$$</div>
+
+        <div class="math-block">$$\frac{A}{B} = \frac{\hbar\omega^3}{\pi^2 c^3}$$</div>
+
+        <p>This is the <strong>Einstein relation</strong>. It says: the ratio of spontaneous to stimulated emission rate scales as $\omega^3$. At optical frequencies this ratio is huge — spontaneous emission dominates at room temperature. At microwave frequencies ($\omega$ 10,000 times smaller, $\omega^3$ factor $10^{12}$ smaller), stimulated emission can dominate, enabling masers and microwave lasers.</p>
+
+        <p>From TDPT, we can calculate $B$ from the dipole matrix element:</p>
+        <div class="math-block">$$B = \frac{\pi e^2}{3\epsilon_0\hbar^2}\,|\langle f|\hat{\mathbf{r}}|i\rangle|^2$$</div>
+
+        <p>Combined with the Einstein relation, the spontaneous emission rate (inverse lifetime) is:</p>
+
+        <div class="math-block">$$A = \frac{e^2\omega^3}{3\pi\epsilon_0\hbar m_e^2 c^3}\,|\langle f|\hat{\mathbf{p}}|i\rangle|^2 = \frac{\omega^3 e^2|\langle f|\hat{\mathbf{r}}|i\rangle|^2}{3\pi\epsilon_0\hbar c^3}$$</div>
+
+        <p>The mean lifetime of the excited state is $\tau = 1/A$. For hydrogen $2p \to 1s$: $\tau \approx 1.6$ ns — consistent with observed atomic linewidths.</p>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">Natural Linewidth</h3>
+
+        <p>A finite lifetime $\tau = 1/A$ implies a finite energy width via the time-energy uncertainty principle: $\Delta E \cdot \tau \sim \hbar$, so the emitted line has a natural linewidth:</p>
+        <div class="math-block">$$\Delta\omega = A = \frac{1}{\tau} \implies \Delta E = \hbar A$$</div>
+
+        <p>The spectral line has a Lorentzian shape (not Gaussian), with full-width-at-half-maximum $\Gamma = \hbar/\tau$. For hydrogen $2p \to 1s$, $\Gamma/\hbar \approx 6.3\times10^8\ \text{rad/s}$, much smaller than the transition frequency $\omega_0 \approx 1.5\times10^{16}\ \text{rad/s}$ — the line is very sharp.</p>
+      </div>
+
+      <!-- EXAMPLE: hydrogen lifetime -->
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Hydrogen $2p \to 1s$ Lifetime</strong></div>
+        <div class="example-problem">
+          Estimate the lifetime of the hydrogen $2p$ excited state against electric dipole emission to $1s$.
+        </div>
+        <div class="example-body">
+          <p>The relevant matrix element (for $m=0$ transition with $z$-component) is:</p>
+          <div class="math-block">$$\langle 1s|z|2p,m=0\rangle = \int \psi_{100}^*\,r\cos\theta\,\psi_{210}\,d^3r$$</div>
+
+          <p>Plugging in the explicit wavefunctions ($\psi_{100} = R_{10}Y_0^0$, $\psi_{210} = R_{21}Y_1^0$) and separating radial and angular integrals:</p>
+
+          <div class="math-block">$$= \int_0^\infty R_{10}(r)\,r\,R_{21}(r)\,r^2\,dr \cdot \int |Y_0^0|^2 Y_1^0\cos\theta\,d\Omega$$</div>
+
+          <p>The radial integral (with $a_0 = $ Bohr radius):</p>
+          <div class="math-block">$$\int_0^\infty R_{10}\,r\,R_{21}\,r^2\,dr = -\frac{128\sqrt{2}}{243}\,a_0 \approx -0.745\,a_0$$</div>
+
+          <p>The angular integral gives a numerical factor $\sqrt{1/3}$. Combining and averaging over polarizations:</p>
+          <div class="math-block">$$|\langle \mathbf{r}\rangle_{if}|^2 = \sum_{m=-1}^{1}|\langle 1s|\mathbf{r}|2p,m\rangle|^2 = \frac{2^{15}}{3^{10}}a_0^2 \approx 0.554\,a_0^2$$</div>
+
+          <p>The transition frequency: $\omega_0 = (E_2-E_1)/\hbar = (13.6\,\text{eV})(1 - 1/4)/\hbar \approx 1.55\times10^{16}\ \text{rad/s}$.</p>
+
+          <p>Spontaneous emission rate:</p>
+          <div class="math-block">$$A = \frac{e^2\omega_0^3}{3\pi\epsilon_0\hbar c^3}|\langle\mathbf{r}\rangle|^2 \approx \frac{(1.6\times10^{-19})^2(1.55\times10^{16})^3}{3\pi(8.85\times10^{-12})(1.055\times10^{-34})(3\times10^8)^3}\times(0.554)(0.529\times10^{-10})^2$$</div>
+
+          <p>This gives $A \approx 6.3\times10^8\ \text{s}^{-1}$, hence lifetime $\tau = 1/A \approx 1.6\ \text{ns}$. The observed value is $\tau_{2p} = 1.596\ \text{ns}$ — excellent agreement.</p>
+        </div>
+      </div>
+
+      <!-- =================== LASERS =================== -->
+      <div class="section-head" id="lasers">Lasers: From Stimulated Emission to Coherent Light</div>
+
+      <div class="prose">
+        <p>The word "laser" stands for Light Amplification by Stimulated Emission of Radiation — and every word refers to physics we've just derived.</p>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">Why Stimulated Emission is Special</h3>
+
+        <p>Spontaneous emission sends a photon in a random direction with a random phase. Stimulated emission is fundamentally different: the emitted photon is an exact copy of the stimulating photon — same frequency, same phase, same polarization, same direction. This is a direct consequence of the perturbation being $H' = -e\mathbf{E}\cdot\hat{\mathbf{r}}$: the atom is driven coherently by the field and adds constructively to it.</p>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">Population Inversion</h3>
+
+        <p>In thermal equilibrium, $N_2/N_1 = e^{-\hbar\omega/k_BT} < 1$ — there are always more atoms in the lower state. Net absorption dominates over net stimulated emission (since $B_{12} = B_{21}$ but $N_1 > N_2$). The medium absorbs light rather than amplifying it.</p>
+
+        <p>For amplification, we need <strong>population inversion</strong>: $N_2 > N_1$. This is a non-equilibrium condition — it cannot be achieved by shining light alone on a two-level system (because $B_{12} = B_{21}$, equal pumping in both directions will at best equalize populations). We need at least three levels.</p>
+
+        <p><strong>Three-level laser scheme:</strong></p>
+        <ol style="margin:6px 0 12px 24px;">
+          <li>Pump atoms from ground state $|1\rangle$ to an excited state $|3\rangle$ (fast absorption).</li>
+          <li>Atoms decay rapidly from $|3\rangle$ to metastable state $|2\rangle$ (non-radiative, fast).</li>
+          <li>Lasing transition: $|2\rangle \to |1\rangle$ (slow, so population builds up in $|2\rangle$).</li>
+        </ol>
+
+        <p>If the pump rate is fast enough, $N_2 > N_1$ and the medium amplifies light at the $|2\rangle \to |1\rangle$ transition frequency. A four-level scheme is even more efficient (the lower lasing level is above ground state, so it's naturally nearly empty).</p>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">The Resonant Cavity</h3>
+
+        <p>Amplification alone isn't enough — the stimulated photons travel in all directions. A pair of mirrors (one highly reflective, one partially transmissive) forms a cavity that selects photons traveling along the axis. Photons make multiple passes through the gain medium, each time stimulating more identical photons. Once the round-trip gain exceeds the round-trip loss, the field grows exponentially — <em>lasing threshold</em>.</p>
+
+        <p>The cavity also enforces coherence: only photons matching the cavity mode (wavelengths $\lambda = 2L/n$) are amplified, giving the extreme monochromaticity of laser light. The output is the partially-transmitted beam — a highly directional, coherent, monochromatic beam.</p>
+
+        <p class="callout"><em>The laser is perhaps the most direct technological application of quantum mechanics developed in this course: spontaneous emission gives the noise floor, stimulated emission gives the gain, Fermi's golden rule determines the transition rates, and the E1 selection rules determine which transitions are suitable. The helium-neon laser (first demonstrated 1960) was a direct application of these ideas, within 15 years of Fermi's golden rule being written down.</em></p>
+      </div>
+
+      <!-- MORE EXAMPLES -->
+      <div class="section-head" id="examples">Worked Examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 4 — Rabi Formula vs First-Order TDPT</strong></div>
+        <div class="example-problem">
+          For a two-level system driven at exact resonance, compare the exact Rabi result with the first-order TDPT prediction. When does first-order PT fail?
+        </div>
+        <div class="example-body">
+          <p><strong>Exact Rabi:</strong> At resonance $\delta = 0$, $P_{1\to 2}(t) = \sin^2(\Omega_R t/2)$. This oscillates between 0 and 1 indefinitely.</p>
+
+          <p><strong>First-order TDPT:</strong> With $H' = V\cos(\omega_0 t)$, the resonant term gives:</p>
+          <div class="math-block">$$|c_2^{(1)}(t)|^2 = \frac{|V_{21}|^2}{4\hbar^2}\left|\frac{e^{i\cdot 0 \cdot t}-1}{0}\right|^2 \to \frac{|V_{21}|^2 t^2}{4\hbar^2} = \frac{\Omega_R^2 t^2}{4}$$</div>
+
+          <p>For small $\Omega_R t$: $\sin^2(\Omega_R t/2) \approx (\Omega_R t/2)^2 = \Omega_R^2 t^2/4$. So first-order PT agrees with the exact result at short times.</p>
+
+          <p>First-order PT fails when $\Omega_R t \gtrsim 1$, i.e., when the transition probability becomes appreciable. At $\Omega_R t = \pi/2$ (exact Rabi: $P = \sin^2(\pi/4) = 1/2$), first-order gives $P = \pi^2/16 \approx 0.62$. By $\Omega_R t = \pi$ ($\pi$-pulse, Rabi: $P = 1$), first-order gives $P = \pi^2/4 \approx 2.5$ — completely wrong (greater than 1!).</p>
+
+          <p>First-order TDPT is valid only when $P \ll 1$, i.e., short interaction times or weak coupling.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 5 — Sudden Approximation: Atomic Ionization</strong></div>
+        <div class="example-problem">
+          A hydrogen atom in the ground state suddenly has its nuclear charge changed from $Z=1$ to $Z=2$ (He⁺). What is the probability that the electron ends up in the $1s$ ground state of He⁺?
+        </div>
+        <div class="example-body">
+          <p>The sudden approximation says the wavefunction doesn't change: $|\Psi\rangle_{\text{after}} = |1s_H\rangle$. The new Hamiltonian has eigenstates $|1s_{\text{He}^+}\rangle$, $|2s_{\text{He}^+}\rangle$, etc., with Bohr radius $a_0/Z = a_0/2$.</p>
+
+          <p>The hydrogen ground state (Bohr radius $a_0$): $\psi_{1s}^H = (\pi a_0^3)^{-1/2}e^{-r/a_0}$.</p>
+          <p>The He⁺ ground state (Bohr radius $a_0/2$): $\psi_{1s}^{\text{He}^+} = (8/\pi a_0^3)^{1/2}e^{-2r/a_0}$.</p>
+
+          <p>The overlap:</p>
+          <div class="math-block">$$\langle 1s_{\text{He}^+} | 1s_H\rangle = \int \psi_{1s}^{\text{He}^+*}\psi_{1s}^H\,d^3r = \frac{\sqrt{8}}{\pi a_0^3}\int_0^\infty e^{-3r/a_0}4\pi r^2\,dr$$</div>
+          <div class="math-block">$$= \frac{4\sqrt{8}}{a_0^3}\cdot\frac{2a_0^3}{27} = \frac{8\sqrt{8}}{27} = \frac{16\sqrt{2}}{27}$$</div>
+
+          <p>Probability: $P = |\langle 1s_{\text{He}^+}|1s_H\rangle|^2 = \left(\frac{16\sqrt{2}}{27}\right)^2 = \frac{512}{729} \approx 0.702$.</p>
+
+          <p>So about 70% of the time, the electron ends up in the He⁺ ground state. The remaining 30% is spread across excited states (and a small fraction in the continuum).</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 6 — Why $2s \to 1s$ is Forbidden</strong></div>
+        <div class="example-problem">
+          Explain why the hydrogen $2s \to 1s$ transition is forbidden in the electric dipole approximation, and estimate how it actually decays.
+        </div>
+        <div class="example-body">
+          <p>The $2s$ state has $n=2, l=0$ and the $1s$ state has $n=1, l=0$. For E1 transition we need $\Delta l = \pm 1$. Here $\Delta l = 0 - 0 = 0$, which violates the selection rule.</p>
+
+          <p>More explicitly: the matrix element $\langle 1s|\hat{\mathbf{r}}|2s\rangle$ involves the integral of $r\cos\theta$ between states of the same angular momentum quantum number. Both $\psi_{100}$ and $\psi_{200}$ are spherically symmetric ($l=0$), so their product is spherically symmetric. But $r\cos\theta$ is odd under the substitution $\theta \to \pi - \theta$ (it changes sign). Integrating an odd integrand over the sphere gives zero. This is the parity selection rule in action.</p>
+
+          <p><strong>Actual decay mechanism:</strong> The $2s$ state decays via two-photon emission ($2\gamma$ decay) — emitting two photons simultaneously whose energies sum to $E_2 - E_1 = 10.2$ eV. This is allowed because together the two photons can carry any total angular momentum. The matrix element is second order and scales as $e^4$ rather than $e^2$, giving a rate suppressed by $\alpha^2 \approx (1/137)^2 \approx 5\times10^{-5}$ relative to allowed transitions.</p>
+
+          <p>Calculated lifetime: $\tau_{2s} \approx 0.12$ seconds, compared to $\tau_{2p} \approx 1.6$ ns. The forbidden transition is 75 million times slower than the E1-allowed $2p \to 1s$.</p>
+        </div>
+      </div>
+
+      <!-- =================== FFT =================== -->
+      <ul class="fft-list">
+        <li class="fft-item">
+          Fermi's golden rule gives a constant rate (exponential decay), yet the fundamental Schrödinger equation is unitary and time-reversible — it predicts oscillatory, not exponential behaviour. How is this consistent? Where does the irreversibility come from?
+          <div class="fft-answer">
+            <p>The paradox dissolves when you look carefully at what Fermi's golden rule actually computes: it's a rate into a <em>continuum</em> of final states. Once the system emits into the continuum (photons scattered in all directions, or an ionized electron going off to infinity), the probability essentially never returns — not because the dynamics are irreversible in principle, but because the "re-absorption" would require all the continuum modes to re-phase coherently, which has zero probability. The Wigner-Weisskopf theory formalizes this: when you include back-reaction of the continuum on the initial state, you get a complex energy, and the exponential decay emerges as an approximation valid for times much longer than $\hbar/\Delta E$ (where $\Delta E$ is the width of the continuum the system is coupled to). Reversibility is preserved — in principle, a "Poincaré recurrence" would bring the system back. But for a macroscopic number of continuum modes, that recurrence time is beyond the age of the universe.</p>
+          </div>
+        </li>
+        <li class="fft-item">
+          The adiabatic theorem says a slowly-driven system stays in its instantaneous eigenstate — no transitions occur. But Berry showed that even perfectly adiabatic evolution gives a wavefunction a non-trivial geometric phase. What is this Berry phase, and does it matter?
+          <div class="fft-answer">
+            <p>In adiabatic evolution, the state picks up both a dynamical phase $-iE_n(t)/\hbar$ (which we always include) and a geometric phase $\gamma_n = i\oint \langle n;\mathbf{R}|\nabla_\mathbf{R}|n;\mathbf{R}\rangle\cdot d\mathbf{R}$ — where $\mathbf{R}$ parameterizes the slowly-changing Hamiltonian. The Berry phase is purely geometric (depends on the path in parameter space, not the speed). It is real for non-degenerate states (so the full state picks up $e^{i\gamma_n}$), and it is observable: interfering two paths with different Berry phases gives a measurable phase shift. It matters enormously: it explains the anomalous Hall effect in condensed matter, the Aharonov-Bohm effect, non-abelian gauge fields in molecular spectra, and underlies topological quantum computation proposals. Berry's 1984 paper was one of the most cited in physics for decades after.</p>
+          </div>
+        </li>
+        <li class="fft-item">
+          Einstein derived the $A$–$B$ coefficient relation in 1917 from thermodynamics alone, without knowing anything about quantum field theory or what actually causes spontaneous emission. What physically causes spontaneous emission? Is it truly "random," or is there a trigger?
+          <div class="fft-answer">
+            <p>In the semiclassical treatment (H' = atom in classical EM field), spontaneous emission simply doesn't appear — there's no classical field to stimulate it. Full quantum electrodynamics (QED) shows that spontaneous emission is triggered by <em>quantum fluctuations of the vacuum electromagnetic field</em>. The vacuum state of the radiation field is not "nothing" — each mode has a zero-point energy $\hbar\omega/2$, and these vacuum fluctuations perturb the atom constantly. The atom in the excited state "sees" these vacuum fluctuations as a random perturbation and is stimulated to decay. In this picture, spontaneous emission and stimulated emission are the same process — it's just that stimulated emission is driven by $n$ photons in a mode while spontaneous emission is driven by the single vacuum photon equivalent in that mode ($n + 1$ vs $n$ photons total in the output). It's not "random" in the sense of being acausal; it's deterministically triggered by the quantum vacuum. Whether this makes it less random depends on your interpretation of QM.</p>
+          </div>
+        </li>
+      </ul>
+
+      <!-- =================== PITFALLS =================== -->
+      <div class="section-head">Common Pitfalls</div>
+      <ul class="pitfall-list">
+        <li><strong>Using first-order TDPT past its validity window.</strong> First-order perturbation theory requires $|c_f(t)|^2 \ll 1$ — the transition probability must be small. At long times or strong driving, $P$ can exceed 1 in first-order theory (a nonsensical result). For strong or resonant driving on a two-level system, use the exact Rabi formula.</li>
+        <li><strong>Confusing Fermi's golden rule with a short-time result.</strong> The derivation of Fermi's golden rule uses $\sin^2(xt)/x^2 \to \pi t\,\delta(x)$, which is a <em>long</em>-time limit. The golden rule gives a constant rate valid at <em>intermediate</em> times — long enough for the density-of-states limit to kick in, but short enough that $P \ll 1$. At very short times, $P \propto t^2$ (not $t$), and at long times, depletion of the initial state must be accounted for.</li>
+        <li><strong>Treating selection rules as absolute prohibitions.</strong> E1 selection rules ($\Delta l = \pm 1$, $\Delta m = 0, \pm 1$) apply only to electric dipole transitions. "Forbidden" transitions still occur via M1 (magnetic dipole), E2 (electric quadrupole), or two-photon processes — they are just much slower. The $2s \to 1s$ transition in hydrogen (M1/E2 forbidden, 2-photon allowed) has a lifetime of 0.12 s, not infinite.</li>
+        <li><strong>Thinking population inversion means more atoms in $|2\rangle$ than in all other states.</strong> Population inversion means $N_2 > N_1$ for the two lasing levels specifically — which can happen even if there are more atoms in a third "ground" level (this is the whole point of four-level laser schemes). What matters is the net gain: $N_2 - N_1 > 0$ means more stimulated emission than absorption on the lasing transition.</li>
+        <li><strong>Mixing up $A$, $B$, and the rate equations.</strong> $B$ (stimulated rate) is multiplied by the radiation density $\rho(\omega)$ — it's zero in the dark. $A$ (spontaneous rate) is independent of the field. In the rate equation for $N_2$: $\dot{N}_2 = -A N_2 - B\rho N_2 + B\rho N_1$, all three terms are needed. In strong fields $B\rho \gg A$ and stimulated processes dominate; in the dark $A$ determines the lifetime.</li>
+      </ul>
+
+      <!-- =================== CONNECTS TO =================== -->
+      <div class="section-head">Connects to</div>
+      <ul class="connects-list">
+        <li><strong>Quantum Mechanics — Perturbation Theory (Lesson 10):</strong> TDPT is the time-dependent extension of the same expansion. The good states concept and degenerate PT carry over to understanding which transitions are actually driven; the selection rules require evaluating matrix elements of the type that appear throughout PT.</li>
+        <li><strong>Statistical Mechanics:</strong> Einstein's derivation of the $A$–$B$ relation requires the Planck blackbody formula, which comes from Bose-Einstein statistics. The balance equation between absorption and emission is the same detailed-balance principle that underlies thermodynamic equilibrium in statistical mechanics.</li>
+        <li><strong>Quantum Optics and Photonics:</strong> Rabi oscillations, stimulated emission, cavity QED, and the laser are the foundations of quantum optics. Everything from semiconductor lasers (fiber communications) to laser cooling, atom traps, optical atomic clocks, and quantum computing platforms (trapped ions, nitrogen-vacancy centers) is built on the physics of this lesson.</li>
+      </ul>
+
+      <!-- =================== LESSON NAV =================== -->
+      <div class="lesson-nav">
+        <a href="identical.html" class="lesson-nav-btn">← Lesson 11 · Identical Particles</a>
+        <span class="lesson-nav-btn disabled">Lesson 13 · Coming Soon</span>
+      </div>
+
+    </div><!-- /main -->
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+<script src="../books-render.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // KaTeX
+    renderMathInElement(document.body, {
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false }
+      ],
+      throwOnError: false
+    });
+
+    // ---- Rabi oscillations widget ----
+    const detSlider = document.getElementById('det-slider');
+    const detVal    = document.getElementById('det-val');
+
+    function rabiData(delta_norm) {
+      // P(t) = (Omega_R^2 / Omega_prime^2) * sin^2(Omega_prime * t / 2)
+      // where Omega_prime = sqrt(1 + delta_norm^2), x = Omega_R * t
+      const N = 500;
+      const Omegap = Math.sqrt(1 + delta_norm * delta_norm);
+      const xs = [], ys = [];
+      for (let i = 0; i <= N; i++) {
+        const x = (i / N) * 4 * Math.PI;  // Omega_R * t from 0 to 4pi
+        xs.push(x);
+        ys.push((1 / (Omegap * Omegap)) * Math.sin(Omegap * x / 2) ** 2);
+      }
+      return { xs, ys };
+    }
+
+    function buildRabiPlot(delta_norm) {
+      const { xs, ys } = rabiData(delta_norm);
+      const traces = [
+        {
+          x: xs, y: ys,
+          type: 'scatter', mode: 'lines',
+          line: { color: '#3a6a8a', width: 2 },
+          name: 'P₁→₂'
+        },
+        {
+          x: [0, 4 * Math.PI], y: [1 / (1 + delta_norm ** 2), 1 / (1 + delta_norm ** 2)],
+          type: 'scatter', mode: 'lines',
+          line: { color: '#c17c2e', width: 1.5, dash: 'dash' },
+          name: 'Max P = Ω²/(Ω²+δ²)'
+        }
+      ];
+      const layout = {
+        xaxis: {
+          title: { text: 'Ω_R · t', font: { family: 'IBM Plex Sans', size: 13 } },
+          tickvals: [0, Math.PI, 2*Math.PI, 3*Math.PI, 4*Math.PI],
+          ticktext: ['0', 'π', '2π', '3π', '4π'],
+          gridcolor: '#e0e8ee', zerolinecolor: '#c0ccd8'
+        },
+        yaxis: {
+          title: { text: 'Transition probability P₁→₂', font: { family: 'IBM Plex Sans', size: 13 } },
+          range: [0, 1.05], gridcolor: '#e0e8ee', zerolinecolor: '#c0ccd8'
+        },
+        paper_bgcolor: '#f5f5f2', plot_bgcolor: '#f5f5f2',
+        font: { family: 'IBM Plex Sans, sans-serif', color: '#1a2840' },
+        margin: { t: 16, r: 16, b: 48, l: 64 },
+        legend: { x: 0.65, y: 0.95 },
+        showlegend: true
+      };
+      Plotly.newPlot('rabi-plot', traces, layout, { responsive: true, displayModeBar: false });
+    }
+
+    buildRabiPlot(0);
+
+    detSlider.addEventListener('input', function() {
+      const d = parseFloat(this.value);
+      detVal.textContent = d.toFixed(1);
+      buildRabiPlot(d);
+    });
+  });
+</script>
+
+</body>
+</html>
