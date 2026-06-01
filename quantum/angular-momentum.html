@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Angular Momentum — Quantum Mechanics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="quantum" data-current="angular-momentum.html"></div>
+      <hr class="sidebar-rule">
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#operators" class="nav-item">Angular Momentum Operators</a>
+        <a href="#algebra" class="nav-item">The Lie Algebra</a>
+        <a href="#eigenvalues" class="nav-item">Eigenvalues from Algebra</a>
+        <a href="#spherical-harmonics" class="nav-item">Spherical Harmonics</a>
+        <a href="#central-potential" class="nav-item">Central Potentials</a>
+        <a href="#widget" class="nav-item">Spherical Harmonic Viewer</a>
+        <a href="#examples" class="nav-item">Worked Examples</a>
+        <a href="#fft" class="nav-item">Food for Thought</a>
+        <a href="#pitfalls" class="nav-item">Common Pitfalls</a>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="breadcrumb"><a href="../index.html">Field Notes</a> / <a href="index.html">Quantum Mechanics</a> / Angular Momentum</div>
+
+      <h1 class="lesson-title">Angular Momentum</h1>
+      <div class="lesson-meta">Commutation Relations · Ladder Operators · Spherical Harmonics · Central Potentials</div>
+
+      <p class="prose">
+        Angular momentum sits at the heart of atomic structure. The shapes of atomic orbitals, the
+        periodic table's shell structure, the selection rules for optical transitions — all of it flows from
+        the quantum mechanics of angular momentum. This lesson builds the theory in two ways: first algebraically,
+        deriving everything from the commutation relations alone; then in position space, arriving at the spherical
+        harmonics. The algebra is particularly powerful because it works for spin too (Lesson 9) — a kind of
+        angular momentum with no classical analogue that the algebraic method captures automatically.
+      </p>
+
+      <!-- ===================== OPERATORS ===================== -->
+      <div class="section-head" id="operators">The Angular Momentum Operators</div>
+
+      <p class="prose">
+        Classical angular momentum is $\mathbf{L} = \mathbf{r}\times\mathbf{p}$.
+        Promote to operators by replacing $p_i \to -i\hbar\partial/\partial x_i$:
+      </p>
+      <div class="math-block">
+        $$\hat{L}_x = \hat{y}\hat{p}_z - \hat{z}\hat{p}_y, \qquad \hat{L}_y = \hat{z}\hat{p}_x - \hat{x}\hat{p}_z, \qquad \hat{L}_z = \hat{x}\hat{p}_y - \hat{y}\hat{p}_x$$
+      </div>
+      <p class="prose">
+        and the total squared magnitude:
+      </p>
+      <div class="math-block">
+        $$\hat{L}^2 = \hat{L}_x^2 + \hat{L}_y^2 + \hat{L}_z^2$$
+      </div>
+      <p class="prose">
+        Since each component involves products of different coordinates and momenta (e.g. $\hat{y}$ and $\hat{p}_z$
+        commute because they act on different variables), we can freely reorder these. The critical question is
+        whether the three components commute with each other and with $\hat{L}^2$.
+      </p>
+
+      <!-- ===================== ALGEBRA ===================== -->
+      <div class="section-head" id="algebra">The Lie Algebra of Angular Momentum</div>
+
+      <p class="prose">
+        Using $[r_i, p_j] = i\hbar\delta_{ij}$ and $[r_i, r_j] = [p_i, p_j] = 0$:
+      </p>
+      <div class="math-block">
+        $$[\hat{L}_x,\hat{L}_y] = i\hbar\hat{L}_z, \qquad [\hat{L}_y,\hat{L}_z] = i\hbar\hat{L}_x, \qquad [\hat{L}_z,\hat{L}_x] = i\hbar\hat{L}_y$$
+      </div>
+      <p class="prose">
+        These three relations (cyclic permutations of one another) are the <strong>angular momentum algebra</strong>.
+        In contrast:
+      </p>
+      <div class="math-block">
+        $$[\hat{L}^2,\hat{L}_x] = [\hat{L}^2,\hat{L}_y] = [\hat{L}^2,\hat{L}_z] = 0$$
+      </div>
+      <p class="prose">
+        $\hat{L}^2$ commutes with all three components. By the compatible observables theorem from Lesson 6,
+        $\hat{L}^2$ and any single component (conventionally $\hat{L}_z$) are simultaneously diagonalisable.
+        But $\hat{L}_x$, $\hat{L}_y$, $\hat{L}_z$ are mutually incompatible — you can't simultaneously
+        know two components of angular momentum, only its magnitude and one component.
+      </p>
+
+      <div class="callout">
+        <strong>Proof of $[\hat{L}^2, \hat{L}_z] = 0$ (sketch).</strong>
+        $[\hat{L}^2,\hat{L}_z] = [\hat{L}_x^2,\hat{L}_z] + [\hat{L}_y^2,\hat{L}_z] + [\hat{L}_z^2,\hat{L}_z]$.
+        The last term vanishes. For the first: $[\hat{L}_x^2,\hat{L}_z] = \hat{L}_x[\hat{L}_x,\hat{L}_z] + [\hat{L}_x,\hat{L}_z]\hat{L}_x = -i\hbar\hat{L}_x\hat{L}_y - i\hbar\hat{L}_y\hat{L}_x$.
+        For the second: $[\hat{L}_y^2,\hat{L}_z] = i\hbar\hat{L}_y\hat{L}_x + i\hbar\hat{L}_x\hat{L}_y$.
+        Adding: $[\hat{L}^2,\hat{L}_z] = 0$. ✓
+      </div>
+
+      <!-- ===================== EIGENVALUES ===================== -->
+      <div class="section-head" id="eigenvalues">Eigenvalues from the Algebra Alone</div>
+
+      <p class="prose">
+        Define the <strong>ladder operators</strong>:
+      </p>
+      <div class="math-block">
+        $$\hat{L}_\pm \equiv \hat{L}_x \pm i\hat{L}_y$$
+      </div>
+      <p class="prose">
+        Their key commutation relations (following directly from the algebra):
+      </p>
+      <div class="math-block">
+        $$[\hat{L}_z,\hat{L}_\pm] = \pm\hbar\hat{L}_\pm, \qquad [\hat{L}^2,\hat{L}_\pm] = 0, \qquad [\hat{L}_+,\hat{L}_-] = 2\hbar\hat{L}_z$$
+      </div>
+
+      <p class="prose">
+        Let $|l,m\rangle$ denote a simultaneous eigenstate:
+        $\hat{L}^2|l,m\rangle = \lambda\hbar^2|l,m\rangle$ and $\hat{L}_z|l,m\rangle = \mu\hbar|l,m\rangle$.
+        We want to find the allowed values of $\lambda$ and $\mu$.
+      </p>
+
+      <p class="prose">
+        <strong>$\hat{L}_\pm$ raises/lowers $m$ by 1.</strong>
+        From $[\hat{L}_z,\hat{L}_+] = \hbar\hat{L}_+$:
+        $\hat{L}_z(\hat{L}_+|l,m\rangle) = (\mu+1)\hbar(\hat{L}_+|l,m\rangle)$.
+        So $\hat{L}_+|l,m\rangle \propto |l,m+1\rangle$ — it raises the $z$-component by $\hbar$.
+        Similarly $\hat{L}_-$ lowers it by $\hbar$. The $\hat{L}^2$ eigenvalue is unchanged.
+      </p>
+
+      <p class="prose">
+        <strong>The ladder must terminate.</strong> Since $\langle\hat{L}_x^2\rangle, \langle\hat{L}_y^2\rangle \geq 0$,
+        we have $\lambda\hbar^2 = \langle\hat{L}^2\rangle \geq \langle\hat{L}_z^2\rangle = \mu^2\hbar^2$,
+        so $|\mu| \leq \sqrt{\lambda}$. There must be a maximum value $m_\text{top}$ with
+        $\hat{L}_+|l,m_\text{top}\rangle = 0$ and a minimum $m_\text{bot}$ with
+        $\hat{L}_-|l,m_\text{bot}\rangle = 0$.
+      </p>
+
+      <p class="prose">
+        Using $\hat{L}^2 = \hat{L}_-\hat{L}_+ + \hat{L}_z^2 + \hbar\hat{L}_z$:
+        $\lambda = m_\text{top}(m_\text{top}+1)$. Similarly from the bottom rung:
+        $\lambda = m_\text{bot}(m_\text{bot}-1)$. These are consistent if $m_\text{bot} = -m_\text{top}$.
+        Since each step changes $m$ by 1, the difference $m_\text{top} - m_\text{bot} = 2m_\text{top}$
+        must be a non-negative integer — so $m_\text{top} = l$ where $l = 0, \frac{1}{2}, 1, \frac{3}{2}, \ldots$
+      </p>
+
+      <div class="callout">
+        <strong>Angular momentum quantum numbers.</strong>
+        $$\hat{L}^2|l,m\rangle = \hbar^2 l(l+1)|l,m\rangle, \qquad \hat{L}_z|l,m\rangle = \hbar m|l,m\rangle$$
+        with $l = 0,\frac{1}{2},1,\frac{3}{2},2,\ldots$ and $m = -l,\,-l+1,\,\ldots,\,l-1,\,l$.
+        For orbital angular momentum (position-space eigenfunctions), only integer $l$ occurs. Half-integer values
+        correspond to spin (Lesson 9).
+      </div>
+
+      <p class="prose">
+        The ladder operator matrix elements (from the norm of $\hat{L}_\pm|l,m\rangle$):
+      </p>
+      <div class="math-block">
+        $$\hat{L}_\pm|l,m\rangle = \hbar\sqrt{l(l+1)-m(m\pm 1)}\;|l,m\pm 1\rangle$$
+      </div>
+
+      <!-- ===================== SPHERICAL HARMONICS ===================== -->
+      <div class="section-head" id="spherical-harmonics">Spherical Harmonics</div>
+
+      <p class="prose">
+        In spherical coordinates $(r,\theta,\phi)$, the angular momentum operators become differential operators
+        in $\theta$ and $\phi$ only (no $r$). In particular:
+      </p>
+      <div class="math-block">
+        $$\hat{L}_z = -i\hbar\frac{\partial}{\partial\phi}$$
+      </div>
+      <div class="math-block">
+        $$\hat{L}^2 = -\hbar^2\left[\frac{1}{\sin\theta}\frac{\partial}{\partial\theta}\left(\sin\theta\frac{\partial}{\partial\theta}\right) + \frac{1}{\sin^2\theta}\frac{\partial^2}{\partial\phi^2}\right]$$
+      </div>
+
+      <p class="prose">
+        The simultaneous eigenfunctions $Y_l^m(\theta,\phi)$ of $\hat{L}^2$ and $\hat{L}_z$ are the
+        <strong>spherical harmonics</strong>:
+      </p>
+      <div class="math-block">
+        $$Y_l^m(\theta,\phi) = \epsilon\sqrt{\frac{(2l+1)}{4\pi}\frac{(l-|m|)!}{(l+|m|)!}}\,P_l^m(\cos\theta)\,e^{im\phi}$$
+      </div>
+      <p class="prose">
+        where $P_l^m$ are the <strong>associated Legendre polynomials</strong> and $\epsilon = (-1)^m$ for $m > 0$,
+        $\epsilon = 1$ for $m \leq 0$ (Condon-Shortley convention). They are normalised and orthogonal over the
+        unit sphere:
+      </p>
+      <div class="math-block">
+        $$\int_0^{2\pi}\int_0^{\pi} Y_l^{m*}(\theta,\phi)\,Y_{l'}^{m'}(\theta,\phi)\,\sin\theta\,d\theta\,d\phi = \delta_{ll'}\delta_{mm'}$$
+      </div>
+
+      <p class="prose">The first few spherical harmonics:</p>
+      <div class="math-block">
+        $$Y_0^0 = \frac{1}{\sqrt{4\pi}}, \qquad Y_1^0 = \sqrt{\frac{3}{4\pi}}\cos\theta, \qquad Y_1^{\pm 1} = \mp\sqrt{\frac{3}{8\pi}}\sin\theta\,e^{\pm i\phi}$$
+      </div>
+      <div class="math-block">
+        $$Y_2^0 = \sqrt{\frac{5}{16\pi}}(3\cos^2\theta-1), \qquad Y_2^{\pm 1} = \mp\sqrt{\frac{15}{8\pi}}\sin\theta\cos\theta\,e^{\pm i\phi}$$
+      </div>
+      <div class="math-block">
+        $$Y_2^{\pm 2} = \sqrt{\frac{15}{32\pi}}\sin^2\theta\,e^{\pm 2i\phi}$$
+      </div>
+
+      <p class="prose">
+        The probability density $|Y_l^m|^2$ is the angular distribution of finding the particle at angle $(\theta,\phi)$.
+        For $m \neq 0$ states, $|e^{im\phi}|^2 = 1$ so the density is independent of $\phi$ — azimuthally symmetric
+        despite the complex phase. The lobes you've seen in chemistry diagrams are surfaces of constant $|Y_l^m|^2$.
+      </p>
+
+      <div class="example-box">
+        <div class="example-title">Example 1 — Verify $Y_1^0$ is an eigenfunction of $\hat{L}^2$ and $\hat{L}_z$</div>
+        <div class="example-body">
+          <p>$Y_1^0 = \sqrt{3/4\pi}\cos\theta$.</p>
+          <p><strong>$\hat{L}_z Y_1^0$:</strong> $\hat{L}_z = -i\hbar\partial/\partial\phi$. Since $Y_1^0$ has no $\phi$-dependence, $\hat{L}_z Y_1^0 = 0 = 0\cdot Y_1^0$. So $m=0$ ✓.</p>
+          <p><strong>$\hat{L}^2 Y_1^0$:</strong></p>
+          <div class="math-block">$$\hat{L}^2 Y_1^0 = -\hbar^2\frac{1}{\sin\theta}\frac{\partial}{\partial\theta}\left(\sin\theta\frac{\partial}{\partial\theta}\right)\sqrt{\frac{3}{4\pi}}\cos\theta$$</div>
+          <p>$\partial(\cos\theta)/\partial\theta = -\sin\theta$, so $\sin\theta\cdot(-\sin\theta) = -\sin^2\theta$.</p>
+          <div class="math-block">$$\frac{1}{\sin\theta}\frac{\partial(-\sin^2\theta)}{\partial\theta} = \frac{-2\sin\theta\cos\theta}{\sin\theta} = -2\cos\theta$$</div>
+          <p>Therefore: $\hat{L}^2 Y_1^0 = -\hbar^2\cdot(-2)\cdot\sqrt{3/4\pi}\cos\theta = 2\hbar^2 Y_1^0$.</p>
+          <p>This equals $\hbar^2 l(l+1) Y_1^0 = \hbar^2\cdot 1\cdot 2\cdot Y_1^0$ ✓.</p>
+        </div>
+      </div>
+
+      <!-- ===================== CENTRAL POTENTIAL ===================== -->
+      <div class="section-head" id="central-potential">Central Potentials and Separation of Variables</div>
+
+      <p class="prose">
+        For a potential $V = V(r)$ that depends only on the distance from the origin, the Hamiltonian commutes
+        with all three angular momentum components:
+      </p>
+      <div class="math-block">
+        $$[\hat{H},\hat{L}^2] = 0, \qquad [\hat{H},\hat{L}_z] = 0$$
+      </div>
+      <p class="prose">
+        This means energy eigenstates can simultaneously have definite $L^2$ and $L_z$ — they're labelled by
+        quantum numbers $(n, l, m)$. The 3D Schrödinger equation separates in spherical coordinates:
+      </p>
+      <div class="math-block">
+        $$\psi_{nlm}(r,\theta,\phi) = R_{nl}(r)\,Y_l^m(\theta,\phi)$$
+      </div>
+      <p class="prose">
+        Plugging into the TISE and separating, the radial part $R_{nl}(r)$ satisfies the <strong>radial equation</strong>:
+      </p>
+      <div class="math-block">
+        $$-\frac{\hbar^2}{2m}\frac{d^2 u}{dr^2} + \left[V(r) + \frac{\hbar^2}{2m}\frac{l(l+1)}{r^2}\right]u = Eu, \qquad u(r) \equiv rR(r)$$
+      </div>
+      <p class="prose">
+        This looks like a 1D Schrödinger equation with an effective potential:
+      </p>
+      <div class="math-block">
+        $$V_\text{eff}(r) = V(r) + \underbrace{\frac{\hbar^2 l(l+1)}{2mr^2}}_{\text{centrifugal barrier}}$$
+      </div>
+      <p class="prose">
+        The centrifugal barrier $\hbar^2 l(l+1)/2mr^2$ acts like a repulsive potential that pushes the particle
+        away from the origin when $l > 0$ — exactly the classical effect of angular momentum in a central force.
+        The radial quantum number $n$ determines how many nodes $R_{nl}$ has; the specific allowed energies depend
+        on the form of $V(r)$ (Coulomb for hydrogen, harmonic for the 3D oscillator, etc.).
+      </p>
+
+      <p class="prose">
+        <strong>Degeneracy from $l$ and $m$.</strong> For a given $l$, there are $2l+1$ values of $m$ (from $-l$ to $l$).
+        For a Hamiltonian that depends only on $n$ and $l$ (like hydrogen), all $2l+1$ states have the same energy —
+        giving a $(2l+1)$-fold degeneracy in each $l$ level. Additional degeneracy can arise when the energy doesn't
+        depend on $l$ at all (as it happens for hydrogen, due to the special $1/r$ symmetry).
+      </p>
+
+      <!-- ===================== WIDGET ===================== -->
+      <div class="section-head" id="widget">Spherical Harmonic Angular Distribution</div>
+
+      <div class="widget-card">
+        <div class="widget-title">$|Y_l^m(\theta,\phi)|^2$ — angular probability density</div>
+        <div id="ylm-plot" style="width:100%;height:460px;"></div>
+        <div style="margin-top:14px;display:flex;flex-wrap:wrap;gap:16px;align-items:center;">
+          <label style="font-size:13px;color:#3a5a78;">
+            $l$ =
+            <select id="l-select" style="margin:0 8px;padding:3px 6px;font-size:13px;border:1px solid #c0dae8;border-radius:3px;">
+              <option value="0">0</option>
+              <option value="1" selected>1</option>
+              <option value="2">2</option>
+            </select>
+          </label>
+          <label style="font-size:13px;color:#3a5a78;">
+            $m$ =
+            <select id="m-select" style="margin:0 8px;padding:3px 6px;font-size:13px;border:1px solid #c0dae8;border-radius:3px;">
+              <option value="-1">−1</option>
+              <option value="0" selected>0</option>
+              <option value="1">1</option>
+            </select>
+          </label>
+          <span id="ylm-label" style="font-size:13px;font-family:'IBM Plex Mono',monospace;color:#3a5a78;"></span>
+        </div>
+        <p style="font-size:12px;color:#7a8a9a;margin:10px 0 0;">
+          3D surface where the radius at $(\theta,\phi)$ equals $|Y_l^m|^2$ (scaled for visibility).
+          The shape shows where the particle is most likely to be found angularly.
+          $m \neq 0$ densities are azimuthally symmetric despite the complex $e^{im\phi}$ phase.
+        </p>
+      </div>
+
+      <!-- ===================== EXAMPLES ===================== -->
+      <div class="section-head" id="examples">Worked Examples</div>
+
+      <div class="example-box">
+        <div class="example-title">Example 2 — Angular momentum uncertainty relation</div>
+        <div class="example-body">
+          <p>For a particle in the state $|l=1, m=0\rangle$, compute $\sigma_{L_x}$.</p>
+          <p><strong>Step 1: $\langle L_x\rangle$.</strong> Since $[\hat{L}_x,\hat{L}_z] = -i\hbar\hat{L}_y$, the generalised uncertainty principle gives $\sigma_{L_x}\sigma_{L_z} \geq \frac{\hbar}{2}|\langle L_y\rangle|$. But first find $\langle L_x\rangle$.</p>
+          <p>Write $\hat{L}_x = (\hat{L}_+ + \hat{L}_-)/2$. In the $|1,0\rangle$ state:
+          $\hat{L}_+|1,0\rangle = \hbar\sqrt{1(2)-0(1)}|1,1\rangle = \hbar\sqrt{2}|1,1\rangle$ and $\hat{L}_-|1,0\rangle = \hbar\sqrt{2}|1,-1\rangle$.
+          Since $\langle 1,0|1,\pm 1\rangle = 0$: $\langle L_x\rangle = 0$. By symmetry $\langle L_y\rangle = 0$.</p>
+          <p><strong>Step 2: $\langle L_x^2\rangle$.</strong> $\hat{L}_x^2 = (\hat{L}_+ + \hat{L}_-)^2/4 = (\hat{L}_+^2 + \hat{L}_+\hat{L}_- + \hat{L}_-\hat{L}_+ + \hat{L}_-^2)/4$.</p>
+          <p>Since $\hat{L}_+^2|1,0\rangle \propto |1,2\rangle$ (doesn't exist for $l=1$), those terms are zero when sandwiched with $\langle 1,0|$. We need:</p>
+          <div class="math-block">$$\langle L_x^2\rangle = \frac{1}{4}\langle 1,0|(\hat{L}_+\hat{L}_- + \hat{L}_-\hat{L}_+)|1,0\rangle$$</div>
+          <p>Use $\hat{L}^2 = \hat{L}_+\hat{L}_- + \hat{L}_z^2 - \hbar\hat{L}_z$, so $\hat{L}_+\hat{L}_- = \hat{L}^2 - \hat{L}_z^2 + \hbar\hat{L}_z$.
+          Similarly $\hat{L}_-\hat{L}_+ = \hat{L}^2 - \hat{L}_z^2 - \hbar\hat{L}_z$.
+          Adding: $\hat{L}_+\hat{L}_- + \hat{L}_-\hat{L}_+ = 2(\hat{L}^2 - \hat{L}_z^2)$.</p>
+          <div class="math-block">$$\langle L_x^2\rangle = \frac{1}{4}\cdot 2(l(l+1)\hbar^2 - m^2\hbar^2) = \frac{\hbar^2}{2}(l(l+1)-m^2)$$</div>
+          <p>For $l=1, m=0$: $\langle L_x^2\rangle = \hbar^2/2\cdot 2 = \hbar^2$. So $\sigma_{L_x} = \hbar$.</p>
+          <p><strong>Verification:</strong> $\sigma_{L_x}^2 + \sigma_{L_y}^2 + \langle L_z\rangle^2 = \hbar^2 + \hbar^2 + 0 = 2\hbar^2$. But $\langle L^2\rangle = \hbar^2\cdot 1\cdot 2 = 2\hbar^2$ ✓.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-title">Example 3 — Adding angular momenta (vector model)</div>
+        <div class="example-body">
+          <p>Two particles each with $l = 1$. What are the possible total angular momentum values $L$?</p>
+          <p>When we add two angular momenta $l_1$ and $l_2$, the total $L$ ranges from $|l_1 - l_2|$ to $l_1 + l_2$ in integer steps:
+          $$L = |l_1 - l_2|,\; |l_1-l_2|+1,\; \ldots,\; l_1+l_2$$
+          For $l_1 = l_2 = 1$: $L = 0, 1, 2$.</p>
+          <p>Counting states: the original $(2l_1+1)(2l_2+1) = 3\times 3 = 9$ product states reorganise into:
+          $L=0$: 1 state; $L=1$: 3 states; $L=2$: 5 states. Total: $1+3+5=9$ ✓.</p>
+          <p>The $L=0$ state (symmetric in the magnitudes, but antisymmetric in orientation) has $M_L = 0$ and no preferred direction — a rotationally invariant "singlet." The $L=2$ states include the $M_L = \pm 2$ states, which require both angular momenta to be aligned with the $z$-axis.</p>
+          <p><strong>Physical relevance:</strong> In helium, the two electrons each have orbital $l$; this is how we get $S$, $P$, $D$ states with $L = 0,1,2$. The actual energy depends on $L$ through exchange interactions, even though $V$ is a central potential — the geometry of the two-electron wavefunction matters.</p>
+        </div>
+      </div>
+
+      <!-- ===================== FFT ===================== -->
+      <div class="section-head" id="fft">Food for Thought</div>
+      <ul class="fft-list">
+        <li class="fft-item">
+          <div class="fft-question">The classical angular momentum vector $\mathbf{L}$ has a definite direction. In quantum mechanics, $L^2$ and only one component ($L_z$) are simultaneously definite. So where is the angular momentum "pointing"? Is there a coherent picture?</div>
+          <div class="fft-answer">The vector model: think of $\mathbf{L}$ as a vector of length $\hbar\sqrt{l(l+1)}$ that is precessing around the $z$-axis at an angle $\cos^{-1}(m/\sqrt{l(l+1)})$. Since $L_x$ and $L_y$ are uncertain, the vector traces a cone — definite magnitude and $z$-component, but $x$ and $y$ components are uncertain and average to zero. This picture is semiclassical (not exact), but it's a useful intuitive image. The cone of precession is a standard diagram in atomic physics textbooks. For large $l$, it becomes classical: the vector points in a definite direction to good approximation.</div>
+        </li>
+        <li class="fft-item">
+          <div class="fft-question">The algebra of angular momentum allows half-integer values $l = 1/2, 3/2, \ldots$, but we said orbital angular momentum (from $\mathbf{L} = \mathbf{r}\times\mathbf{p}$) requires integer $l$. Why? What breaks down for half-integer $l$ in position space?</div>
+          <div class="fft-answer">The spherical harmonics $Y_l^m \propto e^{im\phi}$ must be single-valued: $Y_l^m(\theta, \phi+2\pi) = Y_l^m(\theta,\phi)$. For half-integer $m$, $e^{im\cdot 2\pi} = e^{i\pi} = -1$, so the function changes sign under a full rotation — it's double-valued, which is not allowed for a function on the sphere. Integer $l$ is required by this single-valuedness condition. Spin-1/2 avoids this because it doesn't live in position space — spin wavefunctions are two-component spinors, not functions of $(\theta,\phi)$, and single-valuedness doesn't apply to them in the same way.</div>
+        </li>
+        <li class="fft-item">
+          <div class="fft-question">For a central potential, the energy doesn't depend on $m$ — all $2l+1$ values of $m$ are degenerate. This seems to say the physics is rotationally symmetric, which makes sense. But if you add a small magnetic field (the Zeeman effect), the degeneracy is lifted and each $m$ gets a different energy. What breaks the symmetry?</div>
+          <div class="fft-answer">The magnetic field defines a preferred direction (the $z$-axis), breaking the rotational symmetry of the Hamiltonian. The term added is $\hat{H}' = -\boldsymbol{\mu}\cdot\mathbf{B} = (e/2m)\hat{L}_z B$. Since $\hat{L}_z|l,m\rangle = m\hbar|l,m\rangle$, each $m$ state shifts by an energy $\Delta E_m = m\hbar eB/2m_e = m\mu_B B$ where $\mu_B = e\hbar/2m_e$ is the Bohr magneton. The $2l+1$ degenerate states split into $2l+1$ equally spaced levels — this is the (normal) Zeeman effect. The original degeneracy was a consequence of the symmetry; break the symmetry, and the degeneracy breaks with it.</div>
+        </li>
+      </ul>
+
+      <!-- ===================== PITFALLS ===================== -->
+      <div class="section-head" id="pitfalls">Common Pitfalls</div>
+      <ul class="pitfall-list">
+        <li><strong>$\hat{L}^2$ eigenvalue is $\hbar^2 l(l+1)$, not $\hbar^2 l^2$.</strong> The magnitude of angular momentum is $|\mathbf{L}| = \hbar\sqrt{l(l+1)}$, which is always larger than $\hbar l$. In particular, even for $m = l$ (maximum $z$-component), the total angular momentum vector does not point exactly along $z$ — there's always residual $x$-$y$ uncertainty. This is a quantum effect with no classical analogue.</li>
+        <li><strong>$|Y_l^m|^2$ is azimuthally symmetric for all $m$ (not just $m=0$).</strong> The complex phase $e^{im\phi}$ has $|e^{im\phi}|^2 = 1$, so the probability density is independent of $\phi$. The "dumbbell" and "donut" shapes drawn in chemistry are always axially symmetric around $z$, regardless of $m$. The real-valued spherical harmonics ($p_x$, $p_y$, $d_{xy}$, etc.) used in chemistry are linear combinations of $Y_l^m$ and $Y_l^{-m}$ — useful for visualising bonding geometry but not eigenstates of $\hat{L}_z$.</li>
+        <li><strong>The quantum numbers $(n, l, m)$ don't uniquely specify the state in a general central potential.</strong> The radial quantum number $n$ counts nodes in $R(r)$ and depends on the specific $V(r)$. For hydrogen, by convention $n = 1, 2, 3, \ldots$ labels energy levels; but in other central potentials the counting differs. The quantum numbers $l$ and $m$ always have their angular momentum meaning.</li>
+        <li><strong>The $z$-axis is conventional, not physical.</strong> We chose to diagonalise $\hat{L}_z$ by convention. Any direction is equally valid. Physical predictions (measurement probabilities) don't depend on which axis you call $z$, but individual matrix elements do. Be careful when comparing results from different textbooks that may use different conventions.</li>
+      </ul>
+
+      <!-- ===================== CONNECTS ===================== -->
+      <div class="section-head">Connects to</div>
+      <ul class="connects-list">
+        <li><strong>The Hydrogen Atom (Lesson 8)</strong> — Hydrogen uses the full $(n,l,m)$ structure derived here. The Coulomb potential $V = -e^2/4\pi\epsilon_0 r$ goes into the radial equation; the angular part is exactly the spherical harmonics $Y_l^m$.</li>
+        <li><strong>Spin (Lesson 9)</strong> — Spin is angular momentum with $s = 1/2$ — the same algebra $[\hat{S}_x,\hat{S}_y] = i\hbar\hat{S}_z$, the same ladder operators, the same eigenvalues $\hbar^2 s(s+1)$ and $\hbar m_s$. The only difference is that spin is intrinsic (not from $\mathbf{r}\times\mathbf{p}$) and half-integer.</li>
+        <li><strong>Classical Mechanics (planned)</strong> — Angular momentum is conserved in a central potential because rotating the system is a symmetry. Noether's theorem formalises this: each continuous symmetry of the Lagrangian gives a conserved quantity. Quantum mechanics inherits this connection — $[\hat{H},\hat{L}^2]=0$ is the quantum version of rotational invariance of $V(r)$.</li>
+      </ul>
+
+      <!-- ===================== NAV ===================== -->
+      <div class="lesson-nav">
+        <a href="formalism.html" class="lesson-nav-btn">← 6 · Formalism &amp; Uncertainty</a>
+        <a href="hydrogen.html" class="lesson-nav-btn disabled">8 · The Hydrogen Atom →</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+<script src="../books-render.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  renderMathInElement(document.body, {
+    delimiters: [
+      {left: '$$', right: '$$', display: true},
+      {left: '$', right: '$', display: false}
+    ],
+    throwOnError: false
+  });
+
+  // ===================== Spherical harmonic 3D visualiser =====================
+  // |Y_l^m(theta, phi)|^2 as a surface: r = |Y|^2, then (x,y,z) = r*(sin*cos, sin*sin, cos)
+  // Hardcoded formulas for l=0,1,2
+
+  function ylm2(l, m, theta, phi) {
+    // Returns |Y_l^m(theta,phi)|^2 (no phi dependence in |.|^2)
+    const ct = Math.cos(theta), st = Math.sin(theta);
+    if (l === 0 && m === 0) return 1 / (4 * Math.PI);
+    if (l === 1 && m === 0)  return (3 / (4 * Math.PI)) * ct * ct;
+    if (l === 1 && Math.abs(m) === 1) return (3 / (8 * Math.PI)) * st * st;
+    if (l === 2 && m === 0) {
+      const v = 3*ct*ct - 1;
+      return (5 / (16 * Math.PI)) * v * v;
+    }
+    if (l === 2 && Math.abs(m) === 1) return (15 / (8 * Math.PI)) * st*st*ct*ct;
+    if (l === 2 && Math.abs(m) === 2) return (15 / (32 * Math.PI)) * st*st*st*st;
+    return 0;
+  }
+
+  const labels = {
+    '0,0': 'Y₀⁰ — spherically symmetric (s orbital)',
+    '1,-1': 'Y₁⁻¹ — torus around z-axis (p orbital)',
+    '1,0': 'Y₁⁰ — two lobes along z-axis (pz orbital)',
+    '1,1': 'Y₁¹ — torus around z-axis (p orbital)',
+    '2,-2': 'Y₂⁻² — doughnut (d orbital)',
+    '2,-1': 'Y₂⁻¹ — 4-lobe cloverleaf (d orbital)',
+    '2,0': 'Y₂⁰ — double-dumbbell (dz² orbital)',
+    '2,1': 'Y₂¹ — 4-lobe cloverleaf (d orbital)',
+    '2,2': 'Y₂² — doughnut (d orbital)',
+  };
+
+  function populateMSelect(l) {
+    const ms = document.getElementById('m-select');
+    const curm = parseInt(ms.value);
+    ms.innerHTML = '';
+    for (let m = -l; m <= l; m++) {
+      const opt = document.createElement('option');
+      opt.value = m;
+      opt.textContent = m >= 0 ? m.toString() : '−' + Math.abs(m);
+      if (m === Math.max(-l, Math.min(l, curm))) opt.selected = true;
+      ms.appendChild(opt);
+    }
+  }
+
+  function makePlot() {
+    const l = parseInt(document.getElementById('l-select').value);
+    const m = parseInt(document.getElementById('m-select').value);
+    const key = l + ',' + m;
+    document.getElementById('ylm-label').textContent = labels[key] || '';
+
+    const NT = 60, NP = 120;
+    const X = [], Y = [], Z = [], R = [];
+    for (let i = 0; i <= NT; i++) {
+      const rowX = [], rowY = [], rowZ = [], rowR = [];
+      const theta = Math.PI * i / NT;
+      for (let j = 0; j <= NP; j++) {
+        const phi = 2 * Math.PI * j / NP;
+        let r = ylm2(l, m, theta, phi);
+        // Scale so max radius ≈ 1
+        rowR.push(r);
+        rowX.push(r * Math.sin(theta) * Math.cos(phi));
+        rowY.push(r * Math.sin(theta) * Math.sin(phi));
+        rowZ.push(r * Math.cos(theta));
+      }
+      X.push(rowX); Y.push(rowY); Z.push(rowZ); R.push(rowR);
+    }
+
+    const maxR = Math.max(...R.flat());
+    // Normalise for display
+    const Xn = X.map(row => row.map(v => v/maxR));
+    const Yn = Y.map(row => row.map(v => v/maxR));
+    const Zn = Z.map(row => row.map(v => v/maxR));
+    const Rn = R.map(row => row.map(v => v/maxR));
+
+    const trace = {
+      type: 'surface',
+      x: Xn, y: Yn, z: Zn,
+      surfacecolor: Rn,
+      colorscale: [
+        [0, '#ddeef8'], [0.5, '#5a9fcc'], [1, '#1a3a5a']
+      ],
+      showscale: false,
+      opacity: 0.92,
+      contours: { x: {highlight: false}, y: {highlight: false}, z: {highlight: false} }
+    };
+
+    const layout = {
+      scene: {
+        xaxis: {showticklabels: false, title:'', showgrid: false, zeroline: false, showline: false, backgroundcolor: '#f5f5f2'},
+        yaxis: {showticklabels: false, title:'', showgrid: false, zeroline: false, showline: false, backgroundcolor: '#f5f5f2'},
+        zaxis: {showticklabels: false, title:'z', showgrid: false, zeroline: false, showline: false, backgroundcolor: '#f5f5f2'},
+        bgcolor: '#f5f5f2',
+        camera: { eye: {x: 1.4, y: 1.4, z: 1.0} },
+        aspectmode: 'cube'
+      },
+      paper_bgcolor: 'transparent',
+      margin: { t: 0, b: 0, l: 0, r: 0 }
+    };
+
+    const el = document.getElementById('ylm-plot');
+    Plotly.react('ylm-plot', [trace], layout, { responsive: true });
+  }
+
+  // Update m options when l changes
+  document.getElementById('l-select').addEventListener('change', function() {
+    populateMSelect(parseInt(this.value));
+    makePlot();
+  });
+  document.getElementById('m-select').addEventListener('change', makePlot);
+
+  makePlot();
+});
+</script>
+</body>
+</html>

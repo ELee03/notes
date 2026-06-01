@@ -24,7 +24,7 @@
     {
       "label": "Quantum Mechanics in 3D",
       "items": [
-        { "href": "angular-momentum.html", "text": "7 · Angular Momentum",                 "planned": true },
+        { "href": "angular-momentum.html", "text": "7 · Angular Momentum" },
         { "href": "hydrogen.html",         "text": "8 · The Hydrogen Atom",                "planned": true },
         { "href": "spin.html",             "text": "9 · Spin",                             "planned": true }
       ]
