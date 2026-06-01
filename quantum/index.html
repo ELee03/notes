@@ -58,7 +58,7 @@
 
       <div class="section-head">Lessons</div>
 
-      <table class="lesson-list">
+      <table class="lesson-list" id="lesson-table">
         <thead>
           <tr>
             <th>#</th>
@@ -66,93 +66,7 @@
             <th>Key concepts</th>
           </tr>
         </thead>
-        <tbody>
-
-          <tr class="part-head">
-            <td colspan="3">Part I — The Quantum Framework</td>
-          </tr>
-
-          <tr class="lesson-row">
-            <td>1</td>
-            <td><a href="quantum-world.html">The Quantum World</a></td>
-            <td>Blackbody radiation and the UV catastrophe · photoelectric effect and photons · Compton scattering · double-slit experiment · de Broglie wavelength · the wavefunction concept · Born rule</td>
-          </tr>
-          <tr class="lesson-row">
-            <td>2</td>
-            <td><a href="schrodinger.html">The Schrödinger Equation</a></td>
-            <td>Time-dependent and time-independent forms · stationary states · normalization · expectation values · momentum operator · Ehrenfest's theorem · the continuity equation</td>
-          </tr>
-
-          <tr class="part-head">
-            <td colspan="3">Part II — Exactly Solvable Systems</td>
-          </tr>
-
-          <tr class="lesson-row">
-            <td>3</td>
-            <td><a href="square-well.html">Infinite Square Well</a></td>
-            <td>Particle in a box · energy quantization · wavefunctions and nodes · orthonormality and completeness · superposition of stationary states · time evolution · expectation values in superpositions</td>
-          </tr>
-          <tr class="lesson-row">
-            <td>4</td>
-            <td><a href="harmonic.html">The Harmonic Oscillator</a></td>
-            <td>Ladder operators (raising/lowering) · algebraic solution · energy levels E_n = (n + ½)ℏω · zero-point energy · matrix elements of x̂ and p̂ · coherent states (brief)</td>
-          </tr>
-          <tr class="lesson-row">
-            <td>5</td>
-            <td><a href="free-particle.html">Free Particle &amp; Tunneling</a></td>
-            <td>Plane waves and wave packets · group vs phase velocity · delta-function potential (bound state, reflection/transmission) · finite square well · quantum tunneling · WKB tunneling preview</td>
-          </tr>
-
-          <tr class="part-head">
-            <td colspan="3">Part III — Formalism</td>
-          </tr>
-
-          <tr class="lesson-row">
-            <td>6</td>
-            <td><a href="formalism.html">Formalism &amp; Uncertainty</a></td>
-            <td>Hilbert space · Dirac notation (bras and kets) · Hermitian operators · eigenvalues and eigenvectors · generalized uncertainty principle · compatible observables and commutators · energy-time uncertainty</td>
-          </tr>
-
-          <tr class="part-head">
-            <td colspan="3">Part IV — Quantum Mechanics in 3D</td>
-          </tr>
-
-          <tr class="lesson-row">
-            <td>7</td>
-            <td><a href="angular-momentum.html">Angular Momentum</a></td>
-            <td>L² and L_z operators · commutation relations · eigenvalues (l, m quantum numbers) · spherical harmonics · ladder operators L± · physical interpretation</td>
-          </tr>
-          <tr class="lesson-row">
-            <td>8</td>
-            <td><a href="hydrogen.html">The Hydrogen Atom</a></td>
-            <td>3D Schrödinger equation in spherical coordinates · separation of variables · radial equation · energy levels E_n = −13.6 eV/n² · wavefunctions ψ_nlm · degeneracy · spectral series</td>
-          </tr>
-          <tr class="lesson-row">
-            <td>9</td>
-            <td><a href="spin.html">Spin</a></td>
-            <td>Intrinsic spin · Stern-Gerlach experiment · spin-½ and Pauli matrices · spinors · spin eigenstates · addition of angular momenta · spin-orbit coupling · total angular momentum J</td>
-          </tr>
-
-          <tr class="part-head">
-            <td colspan="3">Part V — Approximation Methods &amp; Advanced Topics</td>
-          </tr>
-
-          <tr class="lesson-row">
-            <td>10</td>
-            <td><a href="perturbation.html">Perturbation Theory</a></td>
-            <td>Non-degenerate 1st and 2nd order corrections · degenerate perturbation theory · fine structure of hydrogen (relativistic + spin-orbit) · Zeeman effect · variational principle</td>
-          </tr>
-          <tr class="lesson-row">
-            <td>11</td>
-            <td><a href="identical.html">Identical Particles &amp; Entanglement</a></td>
-            <td>Exchange symmetry · bosons and fermions · Pauli exclusion principle · multi-electron atoms · entanglement · EPR paradox · Bell inequalities · quantum information preview</td>
-          </tr>
-          <tr class="lesson-row">
-            <td>12</td>
-            <td><a href="tdpt.html">Time-Dependent Perturbation Theory</a></td>
-            <td>TDPT first-order corrections · transition probabilities · Fermi's golden rule · selection rules · stimulated and spontaneous emission · Einstein A and B coefficients</td>
-          </tr>
-
+        <tbody id="lesson-tbody">
         </tbody>
       </table>
 
@@ -170,6 +84,30 @@
 
 <script src="../notes-nav.js"></script>
 <script src="../books-render.js"></script>
-<script>renderBooks({ containerId: 'cluster-refs', clusterId: 'quantum', jsonPath: '../books.json' });</script>
+<script>
+// Render lesson table from nav.json (same source as sidebar)
+fetch('nav.json')
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    var tbody = document.getElementById('lesson-tbody');
+    var lessonNum = 1;
+    var html = '';
+    data.sections.forEach(function(section) {
+      html += '<tr class="part-head"><td colspan="3">' + section.label + '</td></tr>';
+      section.items.forEach(function(item) {
+        var numCell = '<td>' + lessonNum + '</td>';
+        var titleCell = item.planned
+          ? '<td><span style="color:#8a9ab0;">' + item.text.replace(/^\d+ · /, '') + '</span></td>'
+          : '<td><a href="' + item.href + '">' + item.text.replace(/^\d+ · /, '') + '</a></td>';
+        var topicsCell = '<td>' + (item.topics || '') + '</td>';
+        html += '<tr class="lesson-row">' + numCell + titleCell + topicsCell + '</tr>';
+        lessonNum++;
+      });
+    });
+    tbody.innerHTML = html;
+  });
+
+renderBooks({ containerId: 'cluster-refs', clusterId: 'quantum', jsonPath: '../books.json' });
+</script>
 </body>
 </html>
