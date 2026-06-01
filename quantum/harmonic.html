@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Harmonic Oscillator — Quantum Mechanics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="quantum" data-current="harmonic.html"></div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb"><a href="../index.html">Field Notes</a> → <a href="index.html">Quantum Mechanics</a> → The Harmonic Oscillator</div>
+
+      <h1 class="lesson-title">The Harmonic Oscillator</h1>
+      <div class="lesson-meta">Ladder Operators · Algebraic Solution · Energy Levels · Zero-Point Energy · Matrix Elements</div>
+
+      <p class="prose">
+        The quantum harmonic oscillator is the most important exactly-solvable system in all of
+        physics. Any potential that has a stable equilibrium can be approximated as a harmonic
+        oscillator near that minimum — so the results here apply to molecular vibrations,
+        phonons in solids, photons in a cavity, and the zero-point fluctuations of quantum fields.
+        Unlike the square well, the harmonic oscillator also has the right structure to generalise:
+        the algebraic method introduced here — with raising and lowering operators — underlies
+        angular momentum, spin, and quantum field theory.
+      </p>
+      <p class="prose">
+        The potential is $V(x) = \frac{1}{2}m\omega^2 x^2$, giving the TISE:
+      </p>
+      $$-\frac{\hbar^2}{2m}\frac{d^2\psi}{dx^2} + \frac{1}{2}m\omega^2 x^2\psi = E\psi$$
+
+      <div class="section-head">The Algebraic Method: Ladder Operators</div>
+
+      <p class="prose">
+        The Hamiltonian can be written $\hat{H} = \hat{p}^2/2m + \frac{1}{2}m\omega^2\hat{x}^2$.
+        We factor it by introducing the <strong>raising</strong> ($\hat{a}_+$) and
+        <strong>lowering</strong> ($\hat{a}_-$) operators:
+      </p>
+      $$\hat{a}_\pm \equiv \frac{1}{\sqrt{2\hbar m\omega}}\left(\mp i\hat{p} + m\omega\hat{x}\right)$$
+      <p class="prose">
+        Their product is:
+      </p>
+      $$\hat{a}_-\hat{a}_+ = \frac{1}{\hbar\omega}\hat{H} + \frac{1}{2}, \qquad \hat{a}_+\hat{a}_- = \frac{1}{\hbar\omega}\hat{H} - \frac{1}{2}$$
+      <p class="prose">
+        so the Hamiltonian is:
+      </p>
+      $$\hat{H} = \hbar\omega\!\left(\hat{a}_+\hat{a}_- + \frac{1}{2}\right) = \hbar\omega\!\left(\hat{N} + \frac{1}{2}\right)$$
+      <p class="prose">
+        where $\hat{N} \equiv \hat{a}_+\hat{a}_-$ is the <strong>number operator</strong>.
+        The key commutator is $[\hat{a}_-, \hat{a}_+] = 1$, which follows from $[\hat{x}, \hat{p}] = i\hbar$.
+      </p>
+      <p class="prose">
+        Now the crucial result: if $\psi$ is an eigenstate of $\hat{H}$ with energy $E$, then
+        $\hat{a}_+\psi$ is an eigenstate with energy $E + \hbar\omega$, and $\hat{a}_-\psi$ is
+        an eigenstate with energy $E - \hbar\omega$. The ladder operators step up and down the
+        energy ladder in increments of $\hbar\omega$.
+      </p>
+      <p class="prose">
+        <strong>Proof:</strong> $\hat{H}(\hat{a}_\pm\psi) = (E \pm \hbar\omega)(\hat{a}_\pm\psi)$.
+        This follows from $[\hat{H}, \hat{a}_\pm] = \pm\hbar\omega\,\hat{a}_\pm$, which is a
+        consequence of $[\hat{a}_-, \hat{a}_+] = 1$.
+      </p>
+
+      <div class="section-head">The Ground State and Quantised Energies</div>
+
+      <p class="prose">
+        The ladder cannot extend downward forever — energy must be positive (since $V \geq 0$
+        and $T \geq 0$). There must be a lowest rung: a ground state $\psi_0$ for which
+        $\hat{a}_-\psi_0 = 0$. Explicitly:
+      </p>
+      $$\hat{a}_-\psi_0 = \frac{1}{\sqrt{2\hbar m\omega}}\!\left(i\hat{p} + m\omega\hat{x}\right)\psi_0 = 0$$
+      $$\frac{d\psi_0}{dx} = -\frac{m\omega}{\hbar}x\,\psi_0 \qquad \Rightarrow \qquad \psi_0(x) = A_0\,e^{-m\omega x^2/2\hbar}$$
+      <p class="prose">
+        Normalising: $A_0 = (m\omega/\pi\hbar)^{1/4}$. The ground state is a Gaussian. Its energy is
+        $E_0 = \frac{1}{2}\hbar\omega$, confirmed by $\hat{H}\psi_0 = \hbar\omega(\hat{a}_+\hat{a}_- + \frac{1}{2})\psi_0 = \frac{1}{2}\hbar\omega\,\psi_0$.
+      </p>
+      <p class="prose">
+        Applying $\hat{a}_+$ repeatedly generates all higher eigenstates:
+      </p>
+      $$\psi_n(x) = \frac{1}{\sqrt{n!}}(\hat{a}_+)^n \psi_0 \qquad \Rightarrow \qquad E_n = \hbar\omega\!\left(n + \frac{1}{2}\right), \quad n = 0, 1, 2, \ldots$$
+      <p class="prose">
+        The energy spectrum is equally spaced with spacing $\hbar\omega$, and the ground state has
+        energy $E_0 = \frac{1}{2}\hbar\omega > 0$ — the <strong>zero-point energy</strong>.
+        Note the contrast with the square well: here $E_n \propto n$ (linear), vs $E_n \propto n^2$
+        there.
+      </p>
+
+      <div class="section-head">The Wavefunctions</div>
+
+      <p class="prose">
+        Applying $\hat{a}_+$ to $\psi_0$ generates wavefunctions involving Hermite polynomials $H_n$:
+      </p>
+      $$\psi_n(x) = \left(\frac{m\omega}{\pi\hbar}\right)^{1/4}\frac{1}{\sqrt{2^n n!}}\,H_n(\xi)\,e^{-\xi^2/2}, \quad \xi \equiv \sqrt{\frac{m\omega}{\hbar}}\,x$$
+      <p class="prose">
+        The first few Hermite polynomials are $H_0 = 1$, $H_1 = 2\xi$, $H_2 = 4\xi^2 - 2$,
+        $H_3 = 8\xi^3 - 12\xi$. Each $\psi_n$ is a polynomial of degree $n$ times the Gaussian
+        envelope $e^{-\xi^2/2}$. Key properties:
+      </p>
+      <ul class="prose-list">
+        <li>$\psi_n$ has exactly $n$ nodes.</li>
+        <li>For even $n$, $\psi_n$ is an even function; for odd $n$, an odd function.</li>
+        <li>The wavefunction extends into the classically forbidden region ($|x| > \sqrt{2E/m\omega^2}$) — tunneling into the potential walls.</li>
+        <li>For large $n$, $|\psi_n|^2$ is highest near the classical turning points, matching the classical probability distribution (correspondence principle).</li>
+      </ul>
+
+      <div class="widget-card">
+        <div class="widget-title">Harmonic Oscillator — Energy Levels and Wavefunctions</div>
+        <div id="harmonic-chart" style="height:420px;"></div>
+      </div>
+
+      <div class="section-head">Matrix Elements of $\hat{x}$ and $\hat{p}$</div>
+
+      <p class="prose">
+        The ladder operators give elegant expressions for $\hat{x}$ and $\hat{p}$:
+      </p>
+      $$\hat{x} = \sqrt{\frac{\hbar}{2m\omega}}(\hat{a}_+ + \hat{a}_-), \qquad \hat{p} = i\sqrt{\frac{\hbar m\omega}{2}}(\hat{a}_+ - \hat{a}_-)$$
+      <p class="prose">
+        The action of the ladder operators on energy eigenstates is:
+      </p>
+      $$\hat{a}_+\psi_n = \sqrt{n+1}\,\psi_{n+1}, \qquad \hat{a}_-\psi_n = \sqrt{n}\,\psi_{n-1}$$
+      <p class="prose">
+        This gives the non-zero matrix elements immediately. For position:
+      </p>
+      $$\langle m | \hat{x} | n \rangle = \sqrt{\frac{\hbar}{2m\omega}}\left(\sqrt{n+1}\,\delta_{m,n+1} + \sqrt{n}\,\delta_{m,n-1}\right)$$
+      <p class="prose">
+        So $\hat{x}$ only connects states that differ by exactly one quantum number. This is
+        the origin of the quantum harmonic oscillator selection rule $\Delta n = \pm 1$, which
+        governs vibrational absorption and emission in molecules. Similarly:
+      </p>
+      $$\langle n|\hat{x}|n\rangle = 0, \quad \langle n|\hat{p}|n\rangle = 0$$
+      <p class="prose">
+        For stationary states of the harmonic oscillator, the mean position and mean momentum are
+        both zero — the particle oscillates symmetrically.
+      </p>
+
+      <div class="section-head">Zero-Point Energy and the Uncertainty Principle</div>
+
+      <p class="prose">
+        The ground-state energy $E_0 = \frac{1}{2}\hbar\omega$ is a direct consequence of the
+        uncertainty principle. In the ground state:
+      </p>
+      $$\langle x \rangle = 0, \quad \langle p \rangle = 0, \quad \langle x^2 \rangle = \frac{\hbar}{2m\omega}, \quad \langle p^2 \rangle = \frac{\hbar m\omega}{2}$$
+      $$\sigma_x\sigma_p = \sqrt{\frac{\hbar}{2m\omega}}\cdot\sqrt{\frac{\hbar m\omega}{2}} = \frac{\hbar}{2}$$
+      <p class="prose">
+        The ground state of the harmonic oscillator is the <strong>minimum-uncertainty state</strong>:
+        it saturates the uncertainty principle $\sigma_x\sigma_p = \hbar/2$ exactly. No quantum state
+        can have a smaller product of position and momentum uncertainties. This is why the Gaussian
+        wavefunction appears so often in quantum mechanics — it is the most classical-like quantum state.
+      </p>
+
+      <div class="section-head">Worked Examples</div>
+
+      <div class="example-box">
+        <div class="example-title">Example 1 — Commutator $[\hat{a}_-, \hat{a}_+] = 1$</div>
+        <div class="example-body">
+          <p>Verify $[\hat{a}_-, \hat{a}_+] = 1$ using $[\hat{x}, \hat{p}] = i\hbar$.</p>
+          <p>$[\hat{a}_-, \hat{a}_+] = \hat{a}_-\hat{a}_+ - \hat{a}_+\hat{a}_- = \frac{1}{\hbar\omega}\hat{H} + \frac{1}{2} - \left(\frac{1}{\hbar\omega}\hat{H} - \frac{1}{2}\right) = 1$.</p>
+          <p>More explicitly, from the definitions:
+          $$\hat{a}_-\hat{a}_+ = \frac{1}{2\hbar m\omega}(i\hat{p} + m\omega\hat{x})(-i\hat{p} + m\omega\hat{x}) = \frac{1}{2\hbar m\omega}\!\left(\hat{p}^2 + m^2\omega^2\hat{x}^2 + im\omega[\hat{x},\hat{p}]\right)$$
+          Since $[\hat{x}, \hat{p}] = i\hbar$: $\hat{a}_-\hat{a}_+ = \hat{H}/\hbar\omega + \frac{1}{2}$. Similarly $\hat{a}_+\hat{a}_- = \hat{H}/\hbar\omega - \frac{1}{2}$.
+          Subtracting: $[\hat{a}_-, \hat{a}_+] = 1$. $\square$</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-title">Example 2 — Expectation value $\langle x^2 \rangle$ in the $n$-th state</div>
+        <div class="example-body">
+          <p>Find $\langle x^2 \rangle$ for the $n$-th energy eigenstate of the harmonic oscillator.</p>
+          <p>Using $\hat{x} = \sqrt{\hbar/2m\omega}(\hat{a}_+ + \hat{a}_-)$:
+          $$\hat{x}^2 = \frac{\hbar}{2m\omega}(\hat{a}_+ + \hat{a}_-)^2 = \frac{\hbar}{2m\omega}\!\left(\hat{a}_+^2 + \hat{a}_-^2 + \hat{a}_+\hat{a}_- + \hat{a}_-\hat{a}_+\right)$$
+          Taking the expectation value in state $|n\rangle$: the $\hat{a}_+^2$ and $\hat{a}_-^2$ terms give zero (they connect $n$ to $n \pm 2$, which are orthogonal to $n$). The remaining terms:
+          $$\langle n|\hat{a}_+\hat{a}_-|n\rangle = n, \qquad \langle n|\hat{a}_-\hat{a}_+|n\rangle = n+1$$
+          Therefore:
+          $$\langle x^2 \rangle = \frac{\hbar}{2m\omega}(n + n + 1) = \frac{\hbar}{m\omega}\!\left(n + \frac{1}{2}\right) = \frac{E_n}{m\omega^2/2} \cdot \frac{1}{2}$$
+          This makes sense: by the virial theorem, $\langle V \rangle = \langle T \rangle = E_n/2$, and $\langle V \rangle = \frac{1}{2}m\omega^2\langle x^2\rangle = E_n/2$ gives $\langle x^2\rangle = E_n/m\omega^2 \cdot 1 = \hbar(n+\frac{1}{2})/m\omega$. ✓</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-title">Example 3 — Diatomic molecule vibrational spectrum</div>
+        <div class="example-body">
+          <p>HCl has a vibrational frequency $\nu = 8.66 \times 10^{13}$ Hz (in the infrared).
+          Model the vibration as a quantum harmonic oscillator. (a) What is the ground-state
+          vibrational energy? (b) What wavelength photon is emitted in the $n=1 \to n=0$ transition?</p>
+          <p><strong>(a)</strong> $E_0 = \frac{1}{2}h\nu = \frac{1}{2}(6.626\times10^{-34})(8.66\times10^{13}) = 2.87\times10^{-20}$ J $= 0.179$ eV. Even at absolute zero, the molecule vibrates with this zero-point energy.</p>
+          <p><strong>(b)</strong> The energy of the emitted photon equals the level spacing $\Delta E = h\nu = 2E_0 = 5.74\times10^{-20}$ J. Wavelength: $\lambda = c/\nu = (3\times10^8)/(8.66\times10^{13}) = 3.46\,\mu$m — mid-infrared, matching the observed HCl absorption band.</p>
+          <p>The selection rule $\Delta n = \pm 1$ (from the matrix element structure above) means only adjacent levels are connected by electric dipole transitions, giving a single absorption/emission line — the fundamental vibration band.</p>
+        </div>
+      </div>
+
+      <div class="section-head">Fast-Fire Thinking</div>
+
+      <ul class="fft-list">
+        <li class="fft-item">
+          <div class="fft-question">The harmonic oscillator energy levels are equally spaced by $\hbar\omega$. The infinite square well has levels spaced by $E_n - E_{n-1} = (2n-1)E_1$, which grows. What physical difference causes this?</div>
+          <div class="fft-answer">
+            <p>The potential shape. In the infinite square well, the walls are vertical — confining the particle more and more effectively as it gains energy, since the particle always bounces between the same walls. The only energy scale is $\hbar^2/2ma^2$, and higher modes simply fit more half-wavelengths into the same box, so $k_n \propto n$ and $E_n \propto k_n^2 \propto n^2$. In the harmonic oscillator, the walls are soft — they get steeper as the particle climbs. A particle at higher energy has a wider classical turning range $x_\text{max} = \sqrt{2E/m\omega^2} \propto \sqrt{n}$, so the effective box width grows as $\sqrt{n}$, partially cancelling the effect of more nodes, and resulting in equal spacing. Mathematically, this reflects the equally-spaced action variable $J = E/\omega$ of the classical oscillator.</p>
+          </div>
+        </li>
+        <li class="fft-item">
+          <div class="fft-question">The raising operator $\hat{a}_+$ generates excited states from $\psi_0$. Does applying $\hat{a}_+$ an infinite number of times generate infinitely many valid states?</div>
+          <div class="fft-answer">
+            <p>Yes, and they are all normalisable. Each application generates $\psi_n = (\hat{a}_+)^n\psi_0/\sqrt{n!}$, which is normalisable because the Gaussian $e^{-m\omega x^2/2\hbar}$ decays faster than any polynomial grows. The spectrum is genuinely infinite (unbounded above) — the harmonic oscillator has infinitely many bound states. This contrasts with, say, the hydrogen atom, where there are infinitely many bound states converging to a finite ionisation energy. The harmonic oscillator has no continuum — every eigenstate is bound.</p>
+          </div>
+        </li>
+        <li class="fft-item">
+          <div class="fft-question">For the ground state, $\sigma_x \sigma_p = \hbar/2$ exactly. What does it mean for a state to "saturate" the uncertainty principle?</div>
+          <div class="fft-answer">
+            <p>The uncertainty principle $\sigma_x\sigma_p \geq \hbar/2$ is a lower bound. Most states have a much larger product — for example the square well ground state has $\sigma_x\sigma_p > \hbar/2$. Saturation occurs only for states whose wavefunction is a Gaussian (in position space, which corresponds to a Gaussian in momentum space as well). The harmonic oscillator ground state $\psi_0 \propto e^{-m\omega x^2/2\hbar}$ is a Gaussian, so it saturates the bound. These Gaussian minimum-uncertainty states are called <strong>coherent states</strong> — they are the quantum states that most closely mimic classical motion. Coherent states of the electromagnetic field describe laser light.</p>
+          </div>
+        </li>
+      </ul>
+
+      <div class="section-head">Pitfalls</div>
+
+      <ul class="pitfall-list">
+        <li><strong>The ground state is $n = 0$, not $n = 1$.</strong> Unlike the square well (where $n=0$ is excluded), the harmonic oscillator ground state is $\psi_0$ with energy $E_0 = \frac{1}{2}\hbar\omega$. The quantum numbers run $n = 0, 1, 2, \ldots$</li>
+        <li><strong>$\hat{a}_\pm$ are not Hermitian.</strong> They are each other's adjoint: $(\hat{a}_+)^\dagger = \hat{a}_-$. The number operator $\hat{N} = \hat{a}_+\hat{a}_-$ is Hermitian (it is the one that corresponds to a physical observable — the occupation number). Never use $\hat{a}_\pm$ as observables.</li>
+        <li><strong>The classical turning point is not a hard wall.</strong> The wavefunction does not vanish at $x = \pm\sqrt{2E/m\omega^2}$ — it decays exponentially beyond that point, but is nonzero. This is quantum tunneling into the classically forbidden region, and it has measurable consequences (zero-point fluctuations of crystal lattices, for example).</li>
+        <li><strong>Equal spacing is specific to the perfect harmonic oscillator.</strong> Real molecular potentials (Morse potential, etc.) are anharmonic — the energy levels are not exactly equally spaced, and higher transitions differ in frequency. Quantum chemistry corrections to the harmonic approximation are the <em>anharmonic corrections</em>.</li>
+      </ul>
+
+      <div class="section-head">Connects To</div>
+
+      <ul class="connects-list">
+        <li><a href="square-well.html">Lesson 3 — Infinite Square Well</a>: Both exactly solvable; the harmonic oscillator has a softer potential and equally-spaced levels ($E_n \propto n$) vs quadratically growing levels ($E_n \propto n^2$).</li>
+        <li><a href="formalism.html">Lesson 6 — Formalism &amp; Uncertainty</a>: The harmonic oscillator ground state saturates the uncertainty principle — the tightest possible lower bound — making it the prototype minimum-uncertainty state.</li>
+        <li><a href="spin.html">Lesson 9 — Spin</a>: The algebra of angular momentum raising/lowering operators $\hat{J}_\pm$ is the same structure as $\hat{a}_\pm$, just with a different commutation relation.</li>
+      </ul>
+
+      <nav class="lesson-nav">
+        <a href="square-well.html" class="lesson-nav-prev">← 3 · Infinite Square Well</a>
+        <a href="free-particle.html" class="lesson-nav-next">5 · Free Particle &amp; Tunneling →</a>
+      </nav>
+
+    </div><!-- /main -->
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  if (window.renderMathInElement) {
+    renderMathInElement(document.body, {
+      delimiters: [
+        {left: '$$', right: '$$', display: true},
+        {left: '$', right: '$', display: false}
+      ]
+    });
+  }
+
+  // Harmonic oscillator wavefunctions and energy levels
+  // Natural units: hbar = m = omega = 1, so E_n = n + 1/2, xi = x
+  const N = 300;
+  const xmin = -5, xmax = 5;
+  const xs = Array.from({length: N+1}, (_, i) => xmin + i * (xmax - xmin) / N);
+  const colors = ['#e8a838', '#4a9eff', '#e05050', '#50c878', '#c878c8'];
+
+  // Hermite polynomials H_n(x)
+  function hermite(n, x) {
+    if (n === 0) return 1;
+    if (n === 1) return 2 * x;
+    let Hm2 = 1, Hm1 = 2 * x;
+    for (let k = 2; k <= n; k++) {
+      const H = 2 * x * Hm1 - 2 * (k - 1) * Hm2;
+      Hm2 = Hm1; Hm1 = H;
+    }
+    return Hm1;
+  }
+
+  function factorial(n) { return n <= 1 ? 1 : n * factorial(n-1); }
+
+  const traces = [];
+  const V = xs.map(x => 0.5 * x * x); // parabolic potential
+
+  // Potential well
+  traces.push({ x: xs, y: V, mode: 'lines', name: 'V(x) = ½x²',
+    line: { color: '#555', width: 1.5, dash: 'dot' }, showlegend: true });
+
+  for (let n = 0; n <= 4; n++) {
+    const En = n + 0.5;
+    const norm = Math.pow(Math.PI, -0.25) / Math.sqrt(Math.pow(2, n) * factorial(n));
+    const psi = xs.map(x => norm * hermite(n, x) * Math.exp(-x*x/2));
+    const scale = 0.8;
+    traces.push({
+      x: xs,
+      y: psi.map(p => En + scale * p),
+      mode: 'lines',
+      name: `ψ₍${n}₎, E = ${n}+½`,
+      line: { color: colors[n], width: 2 },
+      showlegend: true
+    });
+    // Energy level line
+    traces.push({ x: [xmin, xmax], y: [En, En], mode: 'lines', showlegend: false,
+      line: { color: colors[n], width: 1, dash: 'dot' } });
+  }
+
+  const layout = {
+    paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
+    font: { family: 'IBM Plex Sans, sans-serif', size: 12, color: '#ccc' },
+    xaxis: { title: 'Position ξ = x√(mω/ℏ)', gridcolor: '#2a2a2a', color: '#888',
+      showline: true, linecolor: '#444', range: [xmin, xmax] },
+    yaxis: { title: 'Energy (ℏω) and ψₙ (offset)', gridcolor: '#2a2a2a', color: '#888',
+      showline: true, linecolor: '#444', range: [-0.2, 6.5] },
+    legend: { bgcolor: 'transparent', x: 1, xanchor: 'right', y: 0.99, yanchor: 'top' },
+    margin: { l: 70, r: 20, t: 20, b: 50 }
+  };
+
+  Plotly.newPlot('harmonic-chart', traces, layout, { responsive: true, displayModeBar: false });
+});
+</script>
+
+</body>
+</html>

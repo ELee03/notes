@@ -11,7 +11,7 @@
       "label": "Exactly Solvable Systems",
       "items": [
         { "href": "square-well.html",      "text": "3 · Infinite Square Well" },
-        { "href": "harmonic.html",         "text": "4 · The Harmonic Oscillator",          "planned": true },
+        { "href": "harmonic.html",         "text": "4 · The Harmonic Oscillator" },
         { "href": "free-particle.html",    "text": "5 · Free Particle &amp; Tunneling",    "planned": true }
       ]
     },
