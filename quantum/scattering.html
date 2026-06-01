@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scattering Theory · Quantum Mechanics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="quantum" data-current="scattering.html"></div>
+      <hr class="sidebar-rule">
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#setup" class="nav-item">Setup &amp; Cross-Section</a>
+        <a href="#born" class="nav-item">The Born Approximation</a>
+        <a href="#partial-waves" class="nav-item">Partial Wave Analysis</a>
+        <a href="#phase-shifts" class="nav-item">Phase Shifts</a>
+        <a href="#optical-theorem" class="nav-item">Optical Theorem</a>
+        <a href="#resonances" class="nav-item">Resonances</a>
+        <a href="#examples" class="nav-item">Worked Examples</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="breadcrumb-sep">›</span>
+        <a href="index.html">Quantum Mechanics</a>
+        <span class="breadcrumb-sep">›</span>
+        Lesson 15
+      </div>
+
+      <h1 class="lesson-title">Scattering Theory</h1>
+      <div class="lesson-meta">Cross-Sections · Born Approximation · Partial Waves · Phase Shifts · Optical Theorem</div>
+
+      <div class="prose">
+        <p>Before particle accelerators, before synchrotrons, before any of our direct probes of sub-atomic structure, there was scattering. Rutherford aimed alpha particles at gold foil and — from the angular distribution of the scattered particles — deduced the existence of the atomic nucleus. This is the template for all of experimental particle and nuclear physics: fire something in, measure how it scatters, infer the underlying potential. Scattering theory is the machinery for going from "potential $V(\mathbf{r})$" to "what fraction of particles scatter through angle $\theta$ into solid angle $d\Omega$?" and back. It introduces the scattering amplitude and differential cross-section (the fundamental measurables), the Born approximation (a direct connection between the scattered amplitude and the Fourier transform of the potential), partial wave analysis (decomposing the scattered wave by angular momentum), and the optical theorem (linking forward scattering to total cross-section via probability conservation).</p>
+      </div>
+
+      <!-- SETUP -->
+      <div class="section-head" id="setup">Setup: Scattering Amplitude and Cross-Section</div>
+
+      <div class="prose">
+        <p>Consider a particle of mass $m$ and energy $E = \hbar^2k^2/2m$ incident on a localized potential $V(\mathbf{r})$ that vanishes for large $r$. Far from the target (large $r$), the wavefunction has the form:</p>
+
+        <div class="math-block">$$\psi(\mathbf{r}) \xrightarrow{r\to\infty} e^{ikz} + f(\theta,\phi)\,\frac{e^{ikr}}{r}$$</div>
+
+        <p>The first term is the incident plane wave traveling in the $\hat{z}$ direction. The second term is the outgoing scattered spherical wave: $e^{ikr}/r$ is a spherical wave diverging from the origin, and $f(\theta, \phi)$ is the <strong>scattering amplitude</strong> — it tells you how much scattering there is into each direction.</p>
+
+        <p><strong>Differential cross-section:</strong> The probability flux (particles per unit area per unit time) in the incident wave is $j_{\text{inc}} = \hbar k/m$. The flux scattered into solid angle $d\Omega$ at angles $(\theta, \phi)$ is $j_{\text{sc}} = (\hbar k/m)|f|^2/r^2$. Since $d\Omega = dA/r^2$ for a detector at distance $r$, the rate of particles hitting the detector $dA$ per unit incident flux is:</p>
+
+        <div class="math-block">$$\frac{d\sigma}{d\Omega} = |f(\theta,\phi)|^2$$</div>
+
+        <p>The differential cross-section is just the modulus-squared of the scattering amplitude — with units of area per steradian. Integrating over all solid angles gives the <strong>total cross-section</strong>:</p>
+
+        <div class="math-block">$$\sigma_{\text{tot}} = \int|f(\theta,\phi)|^2\,d\Omega$$</div>
+
+        <p>These are the quantities measured in a scattering experiment. The entire challenge of scattering theory is computing $f(\theta,\phi)$ from $V(\mathbf{r})$ — or inferring $V(\mathbf{r})$ from a measured $d\sigma/d\Omega$.</p>
+
+        <p class="callout"><em>The setup assumes elastic scattering (particle energy unchanged) and a fixed target (infinite nuclear mass limit). It also assumes $V(\mathbf{r}) \to 0$ fast enough at large $r$ — the Coulomb potential needs special treatment (it doesn't fall off fast enough) which we address below.</em></p>
+      </div>
+
+      <!-- BORN APPROXIMATION -->
+      <div class="section-head" id="born">The Born Approximation</div>
+
+      <div class="prose">
+        <p>If the potential is weak, the scattered wave is small compared to the incident wave. The Born approximation treats $V$ as a perturbation on the free-particle solution.</p>
+
+        <p>Write the Schrödinger equation as $(\nabla^2 + k^2)\psi = \frac{2m}{\hbar^2}V\psi$. The formal solution uses the Green's function for the Helmholtz equation:</p>
+
+        <div class="math-block">$$\psi(\mathbf{r}) = e^{i\mathbf{k}\cdot\mathbf{r}} - \frac{m}{2\pi\hbar^2}\int\frac{e^{ik|\mathbf{r}-\mathbf{r}'|}}{|\mathbf{r}-\mathbf{r}'|}V(\mathbf{r}')\psi(\mathbf{r}')\,d^3r'$$</div>
+
+        <p>This is the <strong>Lippmann-Schwinger equation</strong> — exact but self-referential ($\psi$ appears on both sides). The Born approximation replaces $\psi(\mathbf{r}')$ on the right by the incident wave $e^{i\mathbf{k}\cdot\mathbf{r}'}$:</p>
+
+        <div class="math-block">$$\psi(\mathbf{r}) \approx e^{ikz} - \frac{m}{2\pi\hbar^2}\int\frac{e^{ik|\mathbf{r}-\mathbf{r}'|}}{|\mathbf{r}-\mathbf{r}'|}V(\mathbf{r}')e^{i\mathbf{k}\cdot\mathbf{r}'}\,d^3r'$$</div>
+
+        <p>For large $r$, $|\mathbf{r}-\mathbf{r}'| \approx r - \hat{r}\cdot\mathbf{r}'$, so $e^{ik|\mathbf{r}-\mathbf{r}'|}/|\mathbf{r}-\mathbf{r}'| \approx (e^{ikr}/r)\,e^{-i\mathbf{k}'\cdot\mathbf{r}'}$ where $\mathbf{k}' = k\hat{r}$ is the wavevector in the scattered direction. The scattering amplitude is:</p>
+
+        <div class="math-block">$$\boxed{f(\theta,\phi) = -\frac{m}{2\pi\hbar^2}\int e^{i(\mathbf{k}-\mathbf{k}')\cdot\mathbf{r}'}V(\mathbf{r}')\,d^3r' = -\frac{m}{2\pi\hbar^2}\tilde{V}(\mathbf{q})}$$</div>
+
+        <p>where $\mathbf{q} = \mathbf{k} - \mathbf{k}'$ is the <strong>momentum transfer</strong> and $\tilde{V}(\mathbf{q})$ is the <strong>Fourier transform of the potential</strong> evaluated at the transferred momentum. The magnitude $q = |\mathbf{q}| = 2k\sin(\theta/2)$ (from the scattering geometry).</p>
+
+        <p>The Born approximation result is powerful and memorable: <em>the scattering amplitude is proportional to the Fourier transform of the potential.</em> The angular distribution of scattered particles directly encodes the spatial Fourier components of the target potential. High-$q$ (large angle) scattering probes short-distance structure; small-angle scattering probes large-scale features.</p>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">Validity Condition</h3>
+
+        <p>The Born approximation requires $|\psi_{\text{scattered}}| \ll |\psi_{\text{incident}}|$ at the target — the scattered wave must be small. Estimating the scattered wave at the origin:</p>
+        <div class="math-block">$$\frac{m}{\hbar^2}\left|\int\frac{e^{ikr'}}{r'}V(\mathbf{r}')\,d^3r'\right| \ll 1$$</div>
+
+        <p>For a potential of range $a$ and depth $V_0$: the condition becomes $m V_0 a/\hbar^2 k \ll 1$ (high energy limit) or $m V_0 a^2/\hbar^2 \ll 1$ (low energy limit). The Born approximation works for weak or high-energy scattering.</p>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">Example: Yukawa Potential</h3>
+
+        <p>For $V(r) = V_0 e^{-r/a}/r$ (the Yukawa potential, which models short-range nuclear forces and is the Coulomb potential when $a \to \infty$):</p>
+        <div class="math-block">$$\tilde{V}(q) = \frac{4\pi V_0}{q^2 + (1/a)^2}$$</div>
+
+        <div class="math-block">$$\frac{d\sigma}{d\Omega} = \left(\frac{2mV_0}{\hbar^2}\right)^2\frac{1}{(q^2 + 1/a^2)^2} = \left(\frac{2mV_0 a^2}{\hbar^2}\right)^2\frac{1}{(1 + 4k^2a^2\sin^2\!\theta/2)^2}$$</div>
+
+        <p>Taking $a \to \infty$ and $V_0 \to e^2/4\pi\epsilon_0 a$ (Yukawa → Coulomb): $d\sigma/d\Omega = (Z_1 Z_2 e^2/16\pi\epsilon_0 E)^2\csc^4(\theta/2)$ — this is the <strong>Rutherford scattering formula</strong>, exact in quantum mechanics (the Born approximation gives the correct answer for Coulomb scattering, remarkably).</p>
+      </div>
+
+      <!-- PARTIAL WAVES -->
+      <div class="section-head" id="partial-waves">Partial Wave Analysis</div>
+
+      <div class="prose">
+        <p>For a spherically symmetric potential $V(r)$, the scattering amplitude depends only on $\theta$ (not $\phi$). We can decompose the wavefunction and the scattering amplitude into angular momentum channels.</p>
+
+        <p>In the absence of any potential, an incident plane wave $e^{ikz}$ can be expanded in spherical waves using the Rayleigh formula:</p>
+        <div class="math-block">$$e^{ikz} = \sum_{l=0}^\infty (2l+1)\,i^l\,j_l(kr)\,P_l(\cos\theta)$$</div>
+
+        <p>where $j_l(kr)$ are spherical Bessel functions and $P_l$ are Legendre polynomials. Each term is the $l$-th partial wave — a wave with definite orbital angular momentum $\hbar\sqrt{l(l+1)}$.</p>
+
+        <p>The potential scatters each partial wave independently (because $[H, L^2] = 0$ for spherically symmetric $V$). At large $r$, each partial wave becomes an outgoing plus incoming spherical wave. The effect of the potential is to shift the phase of the outgoing wave relative to the free-particle case — this is the <strong>phase shift</strong> $\delta_l$:</p>
+
+        <div class="math-block">$$\psi_l(r) \xrightarrow{r\to\infty} \frac{1}{kr}\sin\!\left(kr - \frac{l\pi}{2} + \delta_l\right)$$</div>
+
+        <p>The free-particle radial wavefunction has $\delta_l = 0$; the potential shifts it by $\delta_l$. The scattering amplitude and cross-sections decompose cleanly in terms of the phase shifts:</p>
+
+        <div class="math-block">$$f(\theta) = \frac{1}{k}\sum_{l=0}^\infty (2l+1)\,e^{i\delta_l}\sin\delta_l\,P_l(\cos\theta)$$</div>
+
+        <div class="math-block">$$\sigma_{\text{tot}} = \frac{4\pi}{k^2}\sum_{l=0}^\infty (2l+1)\sin^2\!\delta_l$$</div>
+
+        <p>Each angular momentum channel contributes independently to the total cross-section. The maximum contribution of channel $l$ (when $\delta_l = \pi/2$, resonance) is:</p>
+        <div class="math-block">$$\sigma_l^{\max} = \frac{4\pi(2l+1)}{k^2}$$</div>
+
+        <p>This is a purely quantum mechanical result — the maximum cross-section per partial wave is fixed entirely by the de Broglie wavelength $\lambda = 2\pi/k$, not by any properties of the target.</p>
+      </div>
+
+      <!-- PHASE SHIFTS -->
+      <div class="section-head" id="phase-shifts">Computing Phase Shifts</div>
+
+      <div class="prose">
+        <p>For a spherically symmetric potential, the radial Schrödinger equation for each partial wave is:</p>
+        <div class="math-block">$$-\frac{\hbar^2}{2m}\frac{d^2 u_l}{dr^2} + \left[V(r) + \frac{\hbar^2 l(l+1)}{2mr^2}\right]u_l = E\,u_l$$</div>
+
+        <p>where $u_l = r R_l(r)$. Inside the range of the potential ($r < a$), solve numerically or analytically. Outside ($r > a$), the general solution is:</p>
+        <div class="math-block">$$u_l(r) = A\left[j_l(kr)\cos\delta_l - n_l(kr)\sin\delta_l\right]$$</div>
+
+        <p>where $n_l$ are spherical Neumann functions (the irregular solutions). The phase shift $\delta_l$ is found by matching the logarithmic derivative $u_l'/u_l$ at $r = a$ between the interior and exterior solutions.</p>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">Hard Sphere Scattering</h3>
+
+        <p>For a hard sphere of radius $a$ ($V = \infty$ for $r < a$, $V = 0$ outside): $u_l(a) = 0$, so $j_l(ka)\cos\delta_l = n_l(ka)\sin\delta_l$, giving $\tan\delta_l = j_l(ka)/n_l(ka)$.</p>
+
+        <p>At low energy ($ka \ll 1$): only $l = 0$ (s-wave) contributes significantly. Using $j_0(x) = \sin x/x \to 1$ and $n_0(x) = -\cos x/x \to -1/x$ for small $x$:</p>
+        <div class="math-block">$$\tan\delta_0 \approx \frac{ka}{-1} = -ka \implies \delta_0 \approx -ka$$</div>
+
+        <p>The s-wave total cross-section:</p>
+        <div class="math-block">$$\sigma \approx \frac{4\pi}{k^2}\sin^2\!\delta_0 \approx \frac{4\pi}{k^2}(ka)^2 = 4\pi a^2$$</div>
+
+        <p>The quantum cross-section at low energy is $4\pi a^2$ — <em>four times</em> the classical cross-sectional area $\pi a^2$! The extra factor of 4 comes from diffraction around the sphere: the wave bends around the hard sphere, and the "shadow" region behind the sphere is filled by diffraction, contributing to the forward scattering amplitude. (At high energy $ka \gg 1$, $\sigma \to 2\pi a^2$ — twice the classical result, for the same reason.)</p>
+      </div>
+
+      <!-- OPTICAL THEOREM -->
+      <div class="section-head" id="optical-theorem">The Optical Theorem</div>
+
+      <div class="prose">
+        <p>There is a deep and elegant relationship between the total cross-section and the forward scattering amplitude $f(\theta = 0)$. This is the <strong>optical theorem</strong>:</p>
+
+        <div class="math-block">$$\boxed{\sigma_{\text{tot}} = \frac{4\pi}{k}\,\text{Im}\,f(0)}$$</div>
+
+        <p><strong>Proof.</strong> Consider the probability current flowing through a large sphere of radius $R$. The total current is zero (probability is conserved), so the current from the scattered wave must exactly cancel the reduction in the incident wave current. The incident wave is attenuated in the forward direction by destructive interference with the scattered wave — this "shadow" in the forward direction is quantitatively equal to the total scattering out into all other directions. Writing out both integrals and using the partial wave expansion, the cross-terms between the incident and scattered waves give $\text{Im}\,f(0)$, and the scattered-wave-squared integral gives $\sigma_{\text{tot}}$. The equality of these two gives the optical theorem.</p>
+
+        <p>The optical theorem is not specific to quantum mechanics — it holds in classical wave scattering (electromagnetics, acoustics) for the same reason: energy conservation. In optics, it gives the relationship between the extinction coefficient of a material and its forward-scattering amplitude. In particle physics, it connects the total proton-proton cross-section to the imaginary part of the forward elastic amplitude measured at colliders.</p>
+
+        <p>Using the partial wave expansion: $\text{Im}\,f(0) = \frac{1}{k}\sum_l(2l+1)\sin^2\!\delta_l$, so $\sigma_{\text{tot}} = \frac{4\pi}{k^2}\sum_l(2l+1)\sin^2\!\delta_l$ — consistent with the earlier formula.</p>
+      </div>
+
+      <!-- WIDGET: partial waves -->
+      <div class="widget-card">
+        <div class="widget-title">Hard Sphere Differential Cross-Section — Partial Wave Contributions</div>
+        <div style="display:flex;gap:28px;flex-wrap:wrap;align-items:center;margin-bottom:12px;">
+          <label style="font-size:0.88rem;color:#2a3040;">
+            $ka$ = <span id="ka-val">2.0</span>
+            <br><input type="range" id="ka-slider" min="0.1" max="10" step="0.1" value="2"
+                       style="width:200px;margin-top:4px;">
+          </label>
+          <label style="font-size:0.88rem;color:#2a3040;">
+            $l_\text{max}$ = <span id="lmax-val">5</span>
+            <br><input type="range" id="lmax-slider" min="1" max="15" step="1" value="5"
+                       style="width:180px;margin-top:4px;">
+          </label>
+        </div>
+        <div id="scatter-plot" style="width:100%;height:340px;"></div>
+        <div style="font-size:0.84rem;color:#6a7a8a;margin-top:6px;">
+          Hard-sphere $d\sigma/d\Omega$ (normalized to $a^2$) for varying $ka$ and number of partial waves included. At low $ka$, $s$-wave dominates and scattering is isotropic; at high $ka$, many partial waves contribute, producing a forward diffraction peak.
+        </div>
+      </div>
+
+      <!-- RESONANCES -->
+      <div class="section-head" id="resonances">Resonances</div>
+
+      <div class="prose">
+        <p>When the scattering potential supports a quasi-bound state (a state that would be bound if the potential were slightly deeper, or a metastable state trapped behind a barrier), the phase shift $\delta_l$ passes rapidly through $\pi/2$ as a function of energy. At $\delta_l = \pi/2$, the partial wave cross-section reaches its maximum value $4\pi(2l+1)/k^2$ — a <strong>resonance</strong>.</p>
+
+        <p>Near a resonance at energy $E_r$, the phase shift has the Breit-Wigner form:</p>
+        <div class="math-block">$$e^{2i\delta_l}\sin\delta_l = \frac{-\Gamma/2}{E - E_r + i\Gamma/2}$$</div>
+
+        <p>where $\Gamma$ is the resonance width. The contribution to the cross-section from channel $l$:</p>
+        <div class="math-block">$$\sigma_l(E) = \frac{4\pi(2l+1)}{k^2}\cdot\frac{(\Gamma/2)^2}{(E-E_r)^2 + (\Gamma/2)^2}$$</div>
+
+        <p>This is a Lorentzian in energy, centered at $E_r$ with width $\Gamma$. By the energy-time uncertainty principle, $\Gamma \sim \hbar/\tau$ where $\tau$ is the lifetime of the quasi-bound state.</p>
+
+        <p>Physical examples of resonances:</p>
+        <ul style="margin:8px 0 12px 24px;">
+          <li style="margin-bottom:6px;"><strong>Nuclear resonances:</strong> When the beam energy matches a nuclear energy level, the compound nucleus has an extended lifetime — a sharp resonance in the cross-section. Breit-Wigner resonances appear throughout nuclear physics.</li>
+          <li style="margin-bottom:6px;"><strong>Ramsauer-Townsend effect</strong> (revisited from Lesson 5): At certain energies, the electron-noble gas scattering cross-section drops nearly to zero. This is a <em>anti-resonance</em>: $\delta_0 = \pi$, so $\sin^2\delta_0 = 0$. The electron emerges from the potential as if it weren't there.</li>
+          <li><strong>Zero-energy resonance (unitarity limit):</strong> When a potential is just barely able to support a bound state ($E_r \to 0$), the scattering length $a_s \equiv -\lim_{k\to 0}\delta_0/k$ diverges. At unitarity, $\sigma = 4\pi/k^2$ — the cross-section saturates the quantum limit, with every incoming particle scattered regardless of energy. Cold atom experiments routinely reach the unitarity limit using Feshbach resonances.</li>
+        </ul>
+      </div>
+
+      <!-- EXAMPLES -->
+      <div class="section-head" id="examples">Worked Examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Born Approximation for a Gaussian Potential</strong></div>
+        <div class="example-problem">
+          Find the differential cross-section for $V(r) = V_0\,e^{-r^2/a^2}$ in the Born approximation.
+        </div>
+        <div class="example-body">
+          <p>The Born approximation gives $f(\theta) = -(m/2\pi\hbar^2)\tilde{V}(\mathbf{q})$ where $q = 2k\sin(\theta/2)$.</p>
+
+          <p>The 3D Fourier transform of a Gaussian is a Gaussian:</p>
+          <div class="math-block">$$\tilde{V}(q) = \int e^{-i\mathbf{q}\cdot\mathbf{r}}V_0 e^{-r^2/a^2}\,d^3r = V_0(\sqrt{\pi}a)^3\,e^{-q^2a^2/4}$$</div>
+
+          <p>(Using $\int e^{-r^2/a^2}e^{-iq_z z}d^3r$ = product of three Gaussian integrals in the principal-axis frame.)</p>
+
+          <p>The differential cross-section:</p>
+          <div class="math-block">$$\frac{d\sigma}{d\Omega} = \left(\frac{mV_0 a^3}{2\sqrt{\pi}\hbar^2}\right)^2 e^{-q^2 a^2/2} = \left(\frac{mV_0 a^3}{2\sqrt{\pi}\hbar^2}\right)^2 e^{-2k^2a^2\sin^2(\theta/2)}$$</div>
+
+          <p>At low energy ($ka \ll 1$): $q^2 a^2 = 4k^2a^2\sin^2(\theta/2) \ll 1$ for all $\theta$, so $e^{-q^2a^2/2} \approx 1$ — scattering is isotropic (the target looks like a point). At high energy ($ka \gg 1$): scattering is strongly forward-peaked as the exponential rapidly suppresses large-angle contributions. The angular width of the forward peak is $\theta_{1/2} \sim 1/ka$ — diffraction peak of angular width $\sim \lambda/a$.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Rutherford Scattering from the Born Approximation</strong></div>
+        <div class="example-problem">
+          Derive the Rutherford scattering formula $d\sigma/d\Omega \propto \csc^4(\theta/2)$ from the Born approximation applied to the Coulomb potential.
+        </div>
+        <div class="example-body">
+          <p>The Coulomb potential $V(r) = Z_1Z_2e^2/4\pi\epsilon_0 r$ doesn't satisfy the Born approximation validity condition (it's not short-ranged), but we proceed formally and find the correct answer.</p>
+
+          <p>Regulate the Coulomb potential with a screening length $\mu$: take the Yukawa $V_\mu(r) = (Z_1Z_2e^2/4\pi\epsilon_0 r)e^{-\mu r}$, compute the Born amplitude, then send $\mu \to 0$.</p>
+
+          <p>The Fourier transform of the Yukawa potential (from the text above): $\tilde{V}(q) = Z_1Z_2e^2/\epsilon_0(q^2 + \mu^2)$.</p>
+
+          <p>As $\mu \to 0$: $\tilde{V}(q) \to Z_1Z_2e^2/\epsilon_0 q^2$.</p>
+
+          <div class="math-block">$$f(\theta) = -\frac{m}{2\pi\hbar^2}\cdot\frac{Z_1Z_2e^2}{\epsilon_0 q^2} = -\frac{mZ_1Z_2e^2}{2\pi\epsilon_0\hbar^2\cdot 4k^2\sin^2(\theta/2)}$$</div>
+
+          <div class="math-block">$$\frac{d\sigma}{d\Omega} = \left(\frac{Z_1Z_2e^2}{4\pi\epsilon_0}\right)^2\frac{m^2}{4\hbar^4k^4\sin^4(\theta/2)} = \left(\frac{Z_1Z_2e^2}{16\pi\epsilon_0 E}\right)^2\csc^4\!\frac{\theta}{2}$$</div>
+
+          <p>using $E = \hbar^2k^2/2m$. This is the exact Rutherford formula. The fact that Born gives the exact Coulomb result is a lucky coincidence: classically the Rutherford formula is also exact, and the quantum and classical results agree for Coulomb scattering (they differ by quantum corrections that exactly cancel for the $1/r$ potential at all energies).</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — S-Wave Scattering from a Finite Square Well</strong></div>
+        <div class="example-problem">
+          Find the s-wave ($l = 0$) phase shift for a spherical square well: $V = -V_0$ for $r < a$, $V = 0$ for $r > a$.
+        </div>
+        <div class="example-body">
+          <p>Inside ($r < a$): The equation for $u_0 = rR_0$ is $u_0'' + \kappa_{\text{in}}^2 u_0 = 0$ where $\kappa_{\text{in}} = \sqrt{2m(E+V_0)}/\hbar$. Regular solution: $u_0 = A\sin(\kappa_{\text{in}} r)$.</p>
+
+          <p>Outside ($r > a$): $u_0'' + k^2 u_0 = 0$ where $k = \sqrt{2mE}/\hbar$. General solution must match the WKB-style form: $u_0 = B\sin(kr + \delta_0)$.</p>
+
+          <p>Matching logarithmic derivative $u_0'/u_0$ at $r = a$:</p>
+          <div class="math-block">$$\kappa_{\text{in}}\cot(\kappa_{\text{in}} a) = k\cot(ka + \delta_0)$$</div>
+
+          <div class="math-block">$$\tan\delta_0 = \frac{k\tan(\kappa_{\text{in}}a) - \kappa_{\text{in}}\tan(ka)}{\kappa_{\text{in}} + k\tan(\kappa_{\text{in}}a)\tan(ka)}$$</div>
+
+          <p>At low energy ($ka \ll 1$, $\kappa_{\text{in}} a \approx \sqrt{2mV_0}a/\hbar \equiv \alpha$):</p>
+          <div class="math-block">$$\delta_0 \approx ka\left[\frac{\tan\alpha}{\alpha} - 1\right]$$</div>
+
+          <p>The s-wave cross-section $\sigma \approx 4\pi a^2(\tan\alpha/\alpha - 1)^2$.  When $\alpha = n\pi/2$ (odd $n$), $\tan\alpha \to \infty$ and $\sigma \to \infty$ — a bound state appears at exactly zero energy (zero-energy resonance). When $\alpha = n\pi$ (even $n$), $\sigma \to 0$ — the Ramsauer-Townsend zeros. This is the 3D analogue of the 1D resonance transmission from Lesson 5.</p>
+        </div>
+      </div>
+
+      <!-- FFT -->
+      <ul class="fft-list">
+        <li class="fft-item">
+          The Born approximation says the scattering amplitude is (proportional to) the Fourier transform of the potential. This is strikingly similar to how a microscope works — where the image quality depends on which spatial Fourier components of the object are captured. Is this analogy exact? What is the "resolution limit" of a scattering experiment?
+          <div class="fft-answer">
+            <p>The analogy is essentially exact and is the foundation of crystallography and electron microscopy. In a scattering experiment at momentum $k$, the maximum momentum transfer is $q_{\max} = 2k$ (backscattering, $\theta = \pi$). The Fourier transform of the potential is only sampled for $|\mathbf{q}| \leq 2k$. By the Nyquist/sampling theorem, features in $V(\mathbf{r})$ on scales smaller than $\Delta r \sim 2\pi/q_{\max} = \pi/k = \lambda/2$ are invisible — this is exactly the Abbe diffraction limit of optical microscopy. To resolve finer features you need shorter wavelengths (higher energy). X-ray crystallography probes atomic structure because X-ray $\lambda \sim 1\ \text{Å} \sim$ atomic spacing. The LHC probes $\sim 10^{-18}$ m because $E \sim \text{TeV}$ gives $\lambda \sim \hbar c/E \sim 2\times10^{-19}$ m. Scattering is literally diffraction microscopy applied to matter.</p>
+          </div>
+        </li>
+        <li class="fft-item">
+          The hard sphere cross-section at low energy is $4\pi a^2$ — four times the geometrical cross-section $\pi a^2$. Why does quantum mechanics give four times the classical result, and what happens at very high energy?
+          <div class="fft-answer">
+            <p>There are two contributions: "shadow scattering" (diffraction into the geometric shadow) and "reflection scattering" (bouncing off the sphere). Classical mechanics gives only reflection, with cross-section $\pi a^2$. Quantum mechanics gives both. The forward diffraction peak has the same integrated cross-section as the geometric shadow ($\pi a^2$) — it's produced by the wavefronts bending around the sphere to fill in the classical shadow region. Adding reflection ($\pi a^2$) and diffraction ($\pi a^2$) gives $2\pi a^2$... wait, but we said $4\pi a^2$. At low energy ($ka \ll 1$), s-wave dominates and the cross-section is $4\pi a^2$ because the wave "sees" the sphere from all sides simultaneously (the wavelength exceeds the sphere). At high energy ($ka \gg 1$), the total cross-section is $2\pi a^2$ (geometric + shadow each contribute $\pi a^2$). The factor of 4 at low energy is special to the $ka \ll 1$ limit, where the entire sphere is "in range" of one quantum of angular momentum — the $l=0$ partial wave saturates at $4\pi/k^2$, which equals $4\pi a^2$ when $ka = 1$.</p>
+          </div>
+        </li>
+        <li class="fft-item">
+          The optical theorem connects the forward scattering amplitude to the total cross-section via unitarity. Is there an analogous statement for inelastic scattering, where some particles lose energy (get absorbed or excite the target)? What happens to the optical theorem then?
+          <div class="fft-answer">
+            <p>Yes — the optical theorem is a consequence of probability conservation, so it holds even in the presence of inelastic scattering, but with a modification. If the target can absorb particles (or excite internal degrees of freedom), the elastic scattering amplitude has an imaginary part from both elastic and inelastic channels. Define the total cross-section $\sigma_{\text{tot}} = \sigma_{\text{el}} + \sigma_{\text{inel}}$ (sum of all final states). The optical theorem still holds: $\sigma_{\text{tot}} = (4\pi/k)\,\text{Im}\,f_{\text{el}}(0)$, where $f_{\text{el}}(0)$ is the forward elastic amplitude. The inelastic cross-section is encoded in the forward elastic amplitude through the requirement of unitarity of the full S-matrix. In practice, this is used in particle physics where $\sigma_{\text{tot}}$(p-p) is measured by observing the forward elastic amplitude via Coulomb-nuclear interference — you don't need to detect every inelastic event separately. The unitarity bound also places an upper limit on partial wave amplitudes in the presence of absorption.</p>
+          </div>
+        </li>
+      </ul>
+
+      <!-- PITFALLS -->
+      <div class="section-head">Common Pitfalls</div>
+      <ul class="pitfall-list">
+        <li><strong>Confusing the scattering amplitude with the cross-section.</strong> $f(\theta)$ has units of length (it's an amplitude). $d\sigma/d\Omega = |f|^2$ has units of area/steradian. $\sigma_{\text{tot}} = \int|f|^2\,d\Omega$ has units of area. These are three different things; mixing them up is the most common source of factor errors.</li>
+        <li><strong>Applying the Born approximation at low energy for strong potentials.</strong> The Born approximation requires $mV_0 a^2/\hbar^2 \ll 1$ at low energy. For nuclear potentials ($V_0 \sim 50\ \text{MeV}$, $a \sim 1\ \text{fm}$), the Born approximation fails completely at low energies. Partial wave analysis is the right tool there.</li>
+        <li><strong>Stopping the partial wave sum too early at high energy.</strong> The number of partial waves that contribute significantly is $l_{\max} \approx ka$ — a particle with angular momentum $L = \hbar l$ can only interact if its impact parameter $b = l/k \lesssim a$. At high energy, $ka \gg 1$ and many partial waves are needed. Truncating the sum prematurely gives wrong angular distributions at intermediate and large angles.</li>
+        <li><strong>Treating the optical theorem as exact when absorption is present.</strong> The optical theorem is exact for any unitary S-matrix (elastic or with absorption). But if you only compute the elastic amplitude in Born approximation, you may find $\text{Im}\,f(0) = 0$ to leading order (Born is purely real for a real potential), and the optical theorem gives $\sigma_{\text{tot}} = 0$ — obviously wrong. The issue is that $\text{Im}\,f(0)$ comes from the second-Born term; it's a next-order effect. This is the "optical theorem at Born order" failure.</li>
+      </ul>
+
+      <!-- CONNECTS TO -->
+      <div class="section-head">Connects to</div>
+      <ul class="connects-list">
+        <li><strong>Quantum Mechanics — Free Particle &amp; Tunneling (Lesson 5) &amp; Formalism (Lesson 6):</strong> The scattering setup is the continuum limit of the potential problems in Lesson 5 — rectangular barriers become smooth ones. The partial wave decomposition uses the same angular momentum algebra from Lesson 7 (spherical harmonics, $l$ quantum number). The optical theorem is a statement about unitarity of the S-matrix — the same S-matrix whose properties follow from the Hermitian formalism of Lesson 6.</li>
+        <li><strong>Nuclear and Particle Physics:</strong> Every collider experiment — from Rutherford's 1911 gold foil to the LHC — is a scattering experiment analyzed with the framework of this lesson. Partial wave analysis, Breit-Wigner resonances, and the optical theorem are standard tools in nuclear reaction theory and particle physics phenomenology. The discovery of quarks at SLAC (1968) was by deep inelastic electron scattering, analyzed using a generalized form of the Born approximation.</li>
+        <li><strong>Condensed Matter &amp; Optics:</strong> The optical theorem has direct analogues in optical extinction (scattering + absorption), acoustic scattering from inclusions, and neutron scattering from phonons. The Born approximation applied to electron scattering from a periodic lattice gives Bragg's law directly — X-ray and neutron diffraction are applications of the Born approximation in 3D. Low-energy neutron scattering off nuclei (s-wave dominated) defines the nuclear scattering length, which appears throughout neutron diffraction structure determination.</li>
+      </ul>
+
+      <!-- LESSON NAV -->
+      <div class="lesson-nav">
+        <a href="wkb.html" class="lesson-nav-btn">← Lesson 14 · WKB Approximation</a>
+        <span class="lesson-nav-btn disabled">Cluster Complete</span>
+      </div>
+
+    </div><!-- /main -->
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+<script src="../books-render.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  renderMathInElement(document.body, {
+    delimiters: [
+      { left: '$$', right: '$$', display: true },
+      { left: '$', right: '$', display: false }
+    ],
+    throwOnError: false
+  });
+
+  // Hard sphere partial wave differential cross section
+  // Compute delta_l for hard sphere: tan(delta_l) = j_l(ka)/n_l(ka)
+
+  function sphericalJ(l, x) {
+    if (Math.abs(x) < 1e-10) return l === 0 ? 1 : 0;
+    if (l === 0) return Math.sin(x) / x;
+    if (l === 1) return Math.sin(x) / (x * x) - Math.cos(x) / x;
+    if (l === 2) return (3 / (x * x * x) - 1 / x) * Math.sin(x) - (3 / (x * x)) * Math.cos(x);
+    // Higher: use recursion j_{l+1} = (2l+1)/x * j_l - j_{l-1}
+    let jPrev = Math.sin(x) / x;
+    let jCurr = Math.sin(x) / (x * x) - Math.cos(x) / x;
+    for (let ll = 1; ll < l; ll++) {
+      const jNext = ((2 * ll + 1) / x) * jCurr - jPrev;
+      jPrev = jCurr;
+      jCurr = jNext;
+    }
+    return jCurr;
+  }
+
+  function sphericalN(l, x) {
+    if (Math.abs(x) < 1e-10) return -Infinity;
+    if (l === 0) return -Math.cos(x) / x;
+    if (l === 1) return -Math.cos(x) / (x * x) - Math.sin(x) / x;
+    if (l === 2) return (-3 / (x * x * x) + 1 / x) * Math.cos(x) - (3 / (x * x)) * Math.sin(x);
+    let nPrev = -Math.cos(x) / x;
+    let nCurr = -Math.cos(x) / (x * x) - Math.sin(x) / x;
+    for (let ll = 1; ll < l; ll++) {
+      const nNext = ((2 * ll + 1) / x) * nCurr - nPrev;
+      nPrev = nCurr;
+      nCurr = nNext;
+    }
+    return nCurr;
+  }
+
+  function legendreP(l, x) {
+    if (l === 0) return 1;
+    if (l === 1) return x;
+    let p0 = 1, p1 = x;
+    for (let ll = 1; ll < l; ll++) {
+      const p2 = ((2 * ll + 1) * x * p1 - ll * p0) / (ll + 1);
+      p0 = p1; p1 = p2;
+    }
+    return p1;
+  }
+
+  function buildScatterPlot() {
+    const ka = parseFloat(document.getElementById('ka-slider').value);
+    const lmax = parseInt(document.getElementById('lmax-slider').value);
+
+    // Compute phase shifts for hard sphere
+    const deltas = [];
+    for (let l = 0; l <= lmax; l++) {
+      const jl = sphericalJ(l, ka);
+      const nl = sphericalN(l, ka);
+      deltas.push(Math.atan2(jl, -nl));  // tan(delta_l) = j_l / (-n_l) for hard sphere
+    }
+
+    // Compute d(sigma)/d(Omega) at many angles
+    const thetas = [], dsig = [];
+    const Ntheta = 200;
+    for (let i = 0; i <= Ntheta; i++) {
+      const th = (i / Ntheta) * Math.PI;
+      const costh = Math.cos(th);
+      let f_re = 0, f_im = 0;
+      for (let l = 0; l <= lmax; l++) {
+        const d = deltas[l];
+        const coef = (2 * l + 1) * Math.sin(d) / ka;
+        const Pl = legendreP(l, costh);
+        f_re += coef * Math.cos(d) * Pl;
+        f_im += coef * Math.sin(d) * Pl;
+      }
+      thetas.push(th * 180 / Math.PI);
+      dsig.push((f_re * f_re + f_im * f_im)); // in units of a^2 if we divide by a^2
+    }
+
+    // Normalize to a^2
+    const maxVal = Math.max(...dsig.filter(v => isFinite(v)));
+
+    Plotly.newPlot('scatter-plot', [
+      {
+        x: thetas, y: dsig,
+        type: 'scatter', mode: 'lines',
+        line: { color: '#3a6a8a', width: 2.5 },
+        name: 'dσ/dΩ (units: a²/sr)'
+      }
+    ], {
+      xaxis: {
+        title: { text: 'Scattering angle θ (degrees)', font: { family: 'IBM Plex Sans', size: 13 } },
+        range: [0, 180], gridcolor: '#e0e8ee',
+        tickvals: [0, 30, 60, 90, 120, 150, 180]
+      },
+      yaxis: {
+        title: { text: 'dσ/dΩ (a²/sr)', font: { family: 'IBM Plex Sans', size: 13 } },
+        gridcolor: '#e0e8ee', rangemode: 'tozero'
+      },
+      paper_bgcolor: '#f5f5f2', plot_bgcolor: '#f5f5f2',
+      font: { family: 'IBM Plex Sans, sans-serif', color: '#1a2840' },
+      margin: { t: 16, r: 16, b: 48, l: 72 },
+      annotations: [{
+        x: 160, y: maxVal * 0.9,
+        xref: 'x', yref: 'y',
+        text: `ka = ${ka.toFixed(1)}, l<sub>max</sub> = ${lmax}`,
+        showarrow: false,
+        font: { size: 12, color: '#3a6a8a' }
+      }]
+    }, { responsive: true, displayModeBar: false });
+  }
+
+  buildScatterPlot();
+
+  document.getElementById('ka-slider').addEventListener('input', function() {
+    document.getElementById('ka-val').textContent = parseFloat(this.value).toFixed(1);
+    buildScatterPlot();
+  });
+  document.getElementById('lmax-slider').addEventListener('input', function() {
+    document.getElementById('lmax-val').textContent = this.value;
+    buildScatterPlot();
+  });
+});
+</script>
+
+</body>
+</html>

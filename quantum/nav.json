@@ -34,7 +34,10 @@
       "items": [
         { "href": "perturbation.html",     "text": "10 · Perturbation Theory" },
         { "href": "identical.html",        "text": "11 · Identical Particles &amp; Entanglement" },
-        { "href": "tdpt.html",             "text": "12 · Time-Dependent Perturbation Theory" }
+        { "href": "tdpt.html",             "text": "12 · Time-Dependent Perturbation Theory" },
+        { "href": "variational.html",      "text": "13 · The Variational Principle" },
+        { "href": "wkb.html",              "text": "14 · The WKB Approximation" },
+        { "href": "scattering.html",       "text": "15 · Scattering Theory" }
       ]
     }
   ]

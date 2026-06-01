@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Variational Principle · Quantum Mechanics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="quantum" data-current="variational.html"></div>
+      <hr class="sidebar-rule">
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#theorem" class="nav-item">The Variational Theorem</a>
+        <a href="#method" class="nav-item">The Variational Method</a>
+        <a href="#helium" class="nav-item">Helium Atom</a>
+        <a href="#hydrogen-molecule" class="nav-item">Hydrogen Molecule Ion</a>
+        <a href="#excited-states" class="nav-item">Excited States</a>
+        <a href="#examples" class="nav-item">Worked Examples</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="breadcrumb-sep">›</span>
+        <a href="index.html">Quantum Mechanics</a>
+        <span class="breadcrumb-sep">›</span>
+        Lesson 13
+      </div>
+
+      <h1 class="lesson-title">The Variational Principle</h1>
+      <div class="lesson-meta">Upper Bound on Ground-State Energy · Trial Wavefunctions · Helium · Chemical Bonding</div>
+
+      <div class="prose">
+        <p>Most quantum systems cannot be solved exactly. Perturbation theory helps when a small perturbation is added to a solvable Hamiltonian, but what do you do when there's no small parameter? The variational principle offers a different strategy: <em>guess a wavefunction, evaluate its energy expectation value, and optimize the guess</em>. The remarkable guarantee — proved from first principles — is that any normalized wavefunction you write down will give an energy <em>at least as large as</em> the true ground-state energy. Bad guesses give high energies; good guesses give low ones. By minimizing over a family of trial states you get the best upper bound your trial family can deliver. This method is how chemists and condensed matter physicists calculate the ground-state energies of real multi-electron atoms, molecules, and solids — the entire field of density functional theory (DFT) is built on it.</p>
+      </div>
+
+      <!-- THE THEOREM -->
+      <div class="section-head" id="theorem">The Variational Theorem</div>
+
+      <div class="prose">
+        <p>Let $H$ be any time-independent Hamiltonian with (unknown) ground-state energy $E_{gs}$ and ground state $|0\rangle$. The variational theorem states:</p>
+
+        <div class="math-block">$$\boxed{\langle \psi | H | \psi \rangle \geq E_{gs} \quad \text{for any normalised } |\psi\rangle}$$</div>
+
+        <p><strong>Proof.</strong> Expand $|\psi\rangle$ in the (unknown) complete orthonormal eigenbasis of $H$:</p>
+        <div class="math-block">$$|\psi\rangle = \sum_n c_n |n\rangle, \qquad \sum_n |c_n|^2 = 1$$</div>
+        <div class="math-block">$$\langle \psi|H|\psi\rangle = \sum_n |c_n|^2 E_n \geq \sum_n |c_n|^2 E_{gs} = E_{gs}$$</div>
+
+        <p>The inequality follows because $E_n \geq E_{gs}$ for all $n$ by definition of the ground state. Equality holds if and only if $|\psi\rangle = |0\rangle$ exactly — any contamination from excited states strictly raises the energy. $\square$</p>
+
+        <p class="callout"><em>The proof uses only two facts: the completeness of energy eigenstates, and that the ground state has the lowest energy. You don't need to know what the eigenstates are. This is why the variational method is so powerful — it gives a rigorous bound without knowing the solution.</em></p>
+
+        <p><strong>Practical consequence:</strong> define the variational energy as a function of whatever parameters appear in your trial state:</p>
+        <div class="math-block">$$E(\alpha, \beta, \ldots) \equiv \frac{\langle \psi(\alpha,\beta,\ldots)|H|\psi(\alpha,\beta,\ldots)\rangle}{\langle \psi(\alpha,\beta,\ldots)|\psi(\alpha,\beta,\ldots)\rangle}$$</div>
+        <p>(The denominator handles unnormalized trial states.) Minimize $E$ over the parameters. The minimum value is the best upper bound that trial family can give for $E_{gs}$.</p>
+      </div>
+
+      <!-- THE METHOD -->
+      <div class="section-head" id="method">The Variational Method in Practice</div>
+
+      <div class="prose">
+        <p>The practical steps:</p>
+        <ol style="margin:8px 0 16px 24px;">
+          <li style="margin-bottom:8px;"><strong>Choose a trial family.</strong> Pick $|\psi(\alpha)\rangle$ with one or more free parameters. The family should: (a) be physically motivated (right symmetry, right behaviour at boundaries and at infinity), (b) be simple enough that you can evaluate $\langle H\rangle$ analytically or numerically, (c) be flexible enough to approximate the true ground state.</li>
+          <li style="margin-bottom:8px;"><strong>Compute $\langle H\rangle(\alpha)$.</strong> This requires evaluating the kinetic energy $\langle T\rangle = -(\hbar^2/2m)\langle\nabla^2\rangle$ and potential energy $\langle V\rangle$ integrals. Often you split $\langle T\rangle + \langle V\rangle$ separately.</li>
+          <li style="margin-bottom:8px;"><strong>Minimize.</strong> Set $\partial E/\partial\alpha = 0$ and solve for the optimal $\alpha^*$. If there are multiple parameters, solve the system simultaneously.</li>
+          <li><strong>Quote the result.</strong> $E(\alpha^*) \geq E_{gs}$ is a rigorous upper bound. The true ground state energy is somewhere below it.</li>
+        </ol>
+
+        <p><strong>Quality of the bound:</strong> The error in the energy is second-order in how far your trial state is from the true ground state. If $|\psi\rangle = |0\rangle + \epsilon|\chi\rangle$ (a small admixture of something wrong), then $\langle H\rangle = E_{gs} + O(\epsilon^2)$. This is a crucial feature — even a mediocre trial wavefunction can give a surprisingly good energy, because the energy functional is stationary at the true ground state. Chemists call this "the variational principle is a second-order method for the energy but first-order for the wavefunction."</p>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Gaussian Trial State for the Harmonic Oscillator</strong></div>
+        <div class="example-problem">
+          Use the variational method with trial state $\psi(x) = A e^{-bx^2}$ to estimate the ground-state energy of the harmonic oscillator $V = \frac{1}{2}m\omega^2 x^2$.
+        </div>
+        <div class="example-body">
+          <p>Normalize: $A^2 \int e^{-2bx^2}dx = A^2\sqrt{\pi/2b} = 1$, so $A = (2b/\pi)^{1/4}$.</p>
+
+          <p>Kinetic energy: $\langle T\rangle = \frac{\hbar^2}{2m}\int |\psi'|^2 dx = \frac{\hbar^2}{2m}\cdot 2b\int (2bx)^2 e^{-2bx^2}dx$. Using $\int x^2 e^{-\alpha x^2}dx = \frac{1}{2}\sqrt{\pi/\alpha^3}$:</p>
+          <div class="math-block">$$\langle T\rangle = \frac{\hbar^2}{2m}\cdot 2b\cdot 4b^2\cdot\frac{1}{2}\sqrt{\frac{\pi}{(2b)^3}} = \frac{\hbar^2 b}{2m}$$</div>
+
+          <p>Potential energy: $\langle V\rangle = \frac{1}{2}m\omega^2\int x^2|\psi|^2 dx = \frac{1}{2}m\omega^2 A^2\int x^2 e^{-2bx^2}dx = \frac{m\omega^2}{8b}$.</p>
+
+          <p>Total: $E(b) = \frac{\hbar^2 b}{2m} + \frac{m\omega^2}{8b}$. Minimise: $\frac{dE}{db} = \frac{\hbar^2}{2m} - \frac{m\omega^2}{8b^2} = 0 \implies b^* = \frac{m\omega}{2\hbar}$.</p>
+
+          <p>$E(b^*) = \frac{\hbar^2}{2m}\cdot\frac{m\omega}{2\hbar} + \frac{m\omega^2}{8}\cdot\frac{2\hbar}{m\omega} = \frac{\hbar\omega}{4} + \frac{\hbar\omega}{4} = \frac{\hbar\omega}{2}$.</p>
+
+          <p>The variational method gives the <em>exact</em> ground-state energy $E_0 = \hbar\omega/2$. This happens because the harmonic oscillator's true ground state is itself a Gaussian — the trial family contained the exact answer. The optimal parameter $b^* = m\omega/2\hbar$ reproduces $\psi_0(x) \propto e^{-m\omega x^2/2\hbar}$ exactly.</p>
+        </div>
+      </div>
+
+      <!-- HELIUM -->
+      <div class="section-head" id="helium">The Helium Atom</div>
+
+      <div class="prose">
+        <p>Helium is the simplest atom the Schrödinger equation cannot solve exactly. Two electrons mean an electron-electron repulsion term $e^2/4\pi\epsilon_0 r_{12}$ that couples the two-electron wavefunction and prevents separation of variables.</p>
+
+        <p>The Hamiltonian for helium (nuclear charge $Z=2$):</p>
+        <div class="math-block">$$H = -\frac{\hbar^2}{2m_e}(\nabla_1^2 + \nabla_2^2) - \frac{e^2}{4\pi\epsilon_0}\left(\frac{2}{r_1} + \frac{2}{r_2} - \frac{1}{r_{12}}\right)$$</div>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">Zeroth-Order: Ignore Repulsion</h3>
+
+        <p>If we drop the $1/r_{12}$ term, the Hamiltonian separates into two hydrogenic problems with $Z=2$. The ground state is:</p>
+        <div class="math-block">$$\psi^{(0)}(\mathbf{r}_1, \mathbf{r}_2) = \psi_{100}^{Z=2}(\mathbf{r}_1)\,\psi_{100}^{Z=2}(\mathbf{r}_2) = \frac{8}{\pi a_0^3}\,e^{-2(r_1+r_2)/a_0}$$</div>
+        <div class="math-block">$$E^{(0)} = 2E_1^{Z=2} = 2\times(-54.4\,\text{eV}) = -108.8\,\text{eV}$$</div>
+
+        <p>The experimental value is $-79.0\ \text{eV}$. The error is large because electron repulsion is not small — it's a 40% effect.</p>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">First-Order Perturbation Theory</h3>
+
+        <p>Treating $H' = e^2/4\pi\epsilon_0 r_{12}$ as a perturbation, the first-order correction is $\langle \psi^{(0)}|H'|\psi^{(0)}\rangle$. This integral (evaluated in Griffiths Example 7.2) gives:</p>
+        <div class="math-block">$$E^{(1)} = \frac{5}{4}\cdot\frac{e^2}{4\pi\epsilon_0 a_0}\cdot\frac{Z}{2} = \frac{5}{8}\cdot\frac{e^2}{4\pi\epsilon_0 a_0} = +34.0\,\text{eV}$$</div>
+        <div class="math-block">$$E \approx -108.8 + 34.0 = -74.8\,\text{eV}$$</div>
+        <p>Better — within about 5% of experiment — but perturbation theory with a 40% "small" parameter shouldn't be trusted too far.</p>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">Variational Calculation: Screened Nuclear Charge</h3>
+
+        <p>Physical insight: each electron partially screens the nucleus from the other. If electron 1 is between the nucleus and electron 2, electron 2 effectively sees a charge less than $Z = 2$. Model this by treating the effective nuclear charge $Z_{\text{eff}}$ as a variational parameter, using as the trial state:</p>
+        <div class="math-block">$$\psi(\mathbf{r}_1,\mathbf{r}_2) = \frac{Z_{\text{eff}}^3}{\pi a_0^3}\,e^{-Z_{\text{eff}}(r_1+r_2)/a_0}$$</div>
+
+        <p>This is just the product of two hydrogenic 1s orbitals with screened charge $Z_{\text{eff}}$. Evaluating $\langle T\rangle$, $\langle V_{ne}\rangle$ (nucleus-electron), and $\langle V_{ee}\rangle$ (electron-electron) integrals:</p>
+
+        <div class="math-block">$$E(Z_{\text{eff}}) = \left[Z_{\text{eff}}^2 - 2Z\,Z_{\text{eff}} + \frac{5}{8}Z_{\text{eff}}\right]\frac{e^2}{4\pi\epsilon_0 a_0}$$</div>
+
+        <p>Minimising: $\frac{dE}{dZ_{\text{eff}}} = 0 \implies Z_{\text{eff}} = Z - \frac{5}{16} = 2 - 0.3125 = 1.6875$.</p>
+
+        <p>The optimal effective charge is $Z_{\text{eff}} = 27/16 \approx 1.69$ — each electron screens 5/16 of the nuclear charge from the other. The variational ground-state energy:</p>
+        <div class="math-block">$$E_{\min} = -\left(Z - \frac{5}{16}\right)^2 \times 27.2\,\text{eV} = -(1.6875)^2 \times 27.2\,\text{eV} = -77.5\,\text{eV}$$</div>
+
+        <p>Compared to experiment ($-79.0\ \text{eV}$): error of only 1.9%. A single variational parameter beats perturbation theory handily. More elaborate trial functions (multi-parameter Hylleraas wavefunctions with explicit $r_{12}$ dependence) push this to within $10^{-5}$ eV of experiment.</p>
+      </div>
+
+      <!-- INTERACTIVE: screened Z -->
+      <div class="widget-card">
+        <div class="widget-title">Helium Variational Energy vs Screened Nuclear Charge</div>
+        <div id="helium-plot" style="width:100%;height:300px;"></div>
+        <div style="font-size:0.84rem;color:#6a7a8a;margin-top:6px;">
+          The variational energy as a function of $Z_\text{eff}$. The minimum at $Z_\text{eff} = 27/16 \approx 1.69$ gives $-77.5\ \text{eV}$ — compare with the experimental value of $-79.0\ \text{eV}$.
+        </div>
+      </div>
+
+      <!-- HYDROGEN MOLECULE ION -->
+      <div class="section-head" id="hydrogen-molecule">The Hydrogen Molecule Ion H₂⁺</div>
+
+      <div class="prose">
+        <p>The simplest molecule — one electron shared between two protons — is the prototype for understanding the covalent bond. Why do two hydrogen nuclei bound by a single electron form a stable molecule at all? The variational method gives a clean answer.</p>
+
+        <p>With protons at positions $\pm R/2$ along the $z$-axis, the Hamiltonian for the single electron is:</p>
+        <div class="math-block">$$H = -\frac{\hbar^2}{2m_e}\nabla^2 - \frac{e^2}{4\pi\epsilon_0}\left(\frac{1}{r_+} + \frac{1}{r_-}\right) + \frac{e^2}{4\pi\epsilon_0 R}$$</div>
+
+        <p>where $r_\pm$ are distances from each proton and the last term is the proton-proton repulsion.</p>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">LCAO Trial States</h3>
+
+        <p>The electron in H₂⁺ must be attracted to both protons. A natural trial basis: take the 1s orbitals centred on each proton, $\phi_+(\mathbf{r}) = \phi_{1s}(r_+)$ and $\phi_-(\mathbf{r}) = \phi_{1s}(r_-)$, and form linear combinations. This is the <strong>LCAO</strong> (Linear Combination of Atomic Orbitals) approach:</p>
+
+        <div class="math-block">$$\psi_{\pm} = A(\phi_+ \pm \phi_-)$$</div>
+
+        <p>$\psi_+$ is the <em>bonding orbital</em> (symmetric, electron density concentrated between the nuclei), $\psi_-$ is the <em>antibonding orbital</em> (antisymmetric, node between the nuclei, electron density pushed away from the midpoint).</p>
+
+        <p>Defining the overlap integral $S(R) \equiv \langle\phi_+|\phi_-\rangle = e^{-R/a_0}(1 + R/a_0 + R^2/3a_0^2)$, the normalisation gives $A = 1/\sqrt{2(1\pm S)}$.</p>
+
+        <p>The variational energies (as functions of the internuclear separation $R$) are:</p>
+        <div class="math-block">$$E_\pm(R) = \frac{E_1 + J \pm K}{1 \pm S}$$</div>
+
+        <p>where $E_1 = -13.6\ \text{eV}$ is the hydrogen ground state energy, and $J$, $K$ are integrals:</p>
+        <ul style="margin:6px 0 12px 24px;">
+          <li style="margin-bottom:6px;"><strong>Direct integral $J$</strong>: $\langle\phi_+|V_-|\phi_+\rangle$ — Coulomb interaction of the electron (localised on proton +) with proton −. This is purely classical electrostatics.</li>
+          <li><strong>Exchange integral $K$</strong>: $\langle\phi_+|V_-|\phi_-\rangle$ — quantum mechanical in origin; has no classical analogue. Arises from the quantum amplitude for the electron to "be on both protons simultaneously."</li>
+        </ul>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">The Covalent Bond</h3>
+
+        <p>Adding the proton-proton repulsion $e^2/4\pi\epsilon_0 R$ and plotting $E_+(R)$: the bonding state shows a minimum at $R \approx 1.3\ \text{Å}$ (experimental $R_0 = 1.06\ \text{Å}$) with a binding energy of $\approx 1.8\ \text{eV}$ (experimental $2.65\ \text{eV}$). The antibonding state $E_-(R)$ has no minimum — it's purely repulsive for all $R$.</p>
+
+        <p>The bond forms because $K < 0$: the exchange integral lowers the energy of the symmetric state below what classical electrostatics alone would give. The physical picture: the electron spends time <em>between</em> the protons, attracted to both simultaneously — this is quantum mechanical delocalisation, and it's the quantum origin of the covalent bond. Classical mechanics would predict no stable molecule because a classical particle can only be attracted to one proton at a time.</p>
+
+        <p class="callout"><em>This is why chemistry is quantum mechanical. The covalent bond doesn't exist in classical physics. The exchange integral $K$ has no classical analogue — it arises from the quantum amplitude for the electron to tunnel between the two well-separated proton potential wells and be attracted to both simultaneously.</em></p>
+      </div>
+
+      <!-- EXCITED STATES -->
+      <div class="section-head" id="excited-states">Excited States and the Variational Method</div>
+
+      <div class="prose">
+        <p>The variational theorem as stated only guarantees an upper bound on the ground-state energy. What about excited states?</p>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">Using Symmetry</h3>
+
+        <p>If the Hamiltonian has a symmetry (say, parity), then states of different symmetry are orthogonal. If your trial state has <em>odd</em> parity and the ground state has <em>even</em> parity, then $c_0 = \langle 0|\psi\rangle = 0$ automatically — the expansion of $|\psi\rangle$ in eigenstates has no ground-state component. The variational theorem then applies with the lowest odd-parity state taking the role of $|0\rangle$:</p>
+        <div class="math-block">$$\langle\psi|H|\psi\rangle \geq E_1 \quad \text{if } \langle 0|\psi\rangle = 0 \text{ by symmetry}$$</div>
+
+        <p>This is the standard trick for getting variational bounds on excited states when symmetry sectors are available.</p>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">Orthogonality Constraint</h3>
+
+        <p>More generally, if you happen to know the ground state $|0\rangle$ exactly (or have a very good approximation), you can impose $\langle 0|\psi\rangle = 0$ as a constraint when minimising. The constrained minimum then bounds the first excited state. This is more cumbersome but applicable even without symmetry.</p>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">The Ritz Method</h3>
+
+        <p>The most systematic generalization: choose a large basis $\{|\phi_i\rangle\}$ and write $|\psi\rangle = \sum_i c_i |\phi_i\rangle$. Minimising $\langle H\rangle$ over the coefficients $c_i$ (with the normalisation constraint) leads to a <em>matrix eigenvalue problem</em>:</p>
+        <div class="math-block">$$\mathbf{H}\mathbf{c} = E\,\mathbf{S}\mathbf{c}, \qquad H_{ij} = \langle\phi_i|H|\phi_j\rangle,\quad S_{ij} = \langle\phi_i|\phi_j\rangle$$</div>
+
+        <p>This is a generalised eigenvalue problem. Its lowest eigenvalue is an upper bound on $E_{gs}$, its next eigenvalue bounds $E_1$, and so on. This is the foundation of quantum chemistry: Hartree-Fock, configuration interaction (CI), and DFT all reduce to solving increasingly sophisticated versions of this matrix problem over increasingly large basis sets.</p>
+      </div>
+
+      <!-- MORE EXAMPLES -->
+      <div class="section-head" id="examples">Worked Examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Delta Function Potential</strong></div>
+        <div class="example-problem">
+          Use the variational method with $\psi(x) = A e^{-b|x|}$ to bound the ground-state energy of $V(x) = -\alpha\,\delta(x)$.
+        </div>
+        <div class="example-body">
+          <p>Normalise: $A^2 \cdot 2\int_0^\infty e^{-2bx}dx = A^2/b = 1$, so $A = \sqrt{b}$.</p>
+
+          <p>Kinetic energy: The trial state has a kink at $x = 0$, so $\psi'' = b^2 e^{-b|x|} - 2b\,\delta(x)\cdot e^{-b|x|}|_{x=0}$.</p>
+          <div class="math-block">$$\langle T\rangle = \frac{\hbar^2}{2m}\int|\psi'|^2 dx = \frac{\hbar^2}{2m}\cdot b^2\cdot\frac{1}{b} = \frac{\hbar^2 b}{2m}$$</div>
+
+          <p>Potential energy: $\langle V\rangle = -\alpha|\psi(0)|^2 = -\alpha b$.</p>
+
+          <p>$E(b) = \frac{\hbar^2 b}{2m} - \alpha b$. Minimise: $\frac{dE}{db} = \frac{\hbar^2}{2m} - \alpha = 0 \implies b^* = \frac{m\alpha}{\hbar^2}$.</p>
+
+          <div class="math-block">$$E_{\min} = \frac{\hbar^2}{2m}\cdot\frac{m\alpha}{\hbar^2} - \alpha\cdot\frac{m\alpha}{\hbar^2} = -\frac{m\alpha^2}{2\hbar^2}$$</div>
+
+          <p>The exact answer (from the delta function bound state, Lesson 5) is $E = -m\alpha^2/2\hbar^2$. The variational method is exact again, because the trial family $e^{-b|x|}$ contains the exact ground state. This also confirms the true ground state is a "cusp" exponential.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Power-Law Potential</strong></div>
+        <div class="example-problem">
+          Estimate the ground-state energy of $V(x) = \lambda x^4$ using $\psi(x) = A e^{-bx^2}$.
+        </div>
+        <div class="example-body">
+          <p>This Hamiltonian has no known closed-form solution — the variational method is one of the few analytic tools available.</p>
+
+          <p>With the Gaussian trial state:
+          <br>$\langle T\rangle = \frac{\hbar^2 b}{2m}$ (same as in Example 1)
+          <br>$\langle V\rangle = \lambda A^2\int x^4 e^{-2bx^2}dx = \lambda\cdot\frac{3}{8b^2}\cdot\sqrt{\frac{1}{2b}}\cdot\sqrt{2b} = \frac{3\lambda}{8b^2}$</p>
+
+          <p>(Using $\int x^4 e^{-2bx^2}dx = \frac{3}{8}\sqrt{\pi/(2b)^5}$ and normalisation $A^2 = \sqrt{2b/\pi}$.)</p>
+
+          <p>$E(b) = \frac{\hbar^2 b}{2m} + \frac{3\lambda}{8b^2}$. Minimise: $\frac{dE}{db} = \frac{\hbar^2}{2m} - \frac{3\lambda}{4b^3} = 0 \implies b^* = \left(\frac{3m\lambda}{2\hbar^2}\right)^{1/3}$.</p>
+
+          <div class="math-block">$$E_{\min} = \frac{3}{4}\left(\frac{3\lambda\hbar^4}{4m^2}\right)^{1/3}$$</div>
+
+          <p>Numerically, for $m = \hbar = 1$ and $\lambda = 1$: $E_{\min} = \frac{3}{4}(3/4)^{1/3} \approx 0.686$. The exact numerical ground-state energy is $\approx 0.530$, so the variational bound overestimates by about 29%. Not bad for a one-parameter Gaussian, but the quartic potential has fatter tails than a Gaussian, so the trial state isn't a great fit.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 4 — Why Helium Has the Right Order of Magnitude</strong></div>
+        <div class="example-problem">
+          Without doing any integrals, use dimensional analysis and the virial theorem to estimate why the helium ground-state energy is roughly $-80\ \text{eV}$.
+        </div>
+        <div class="example-body">
+          <p>For a Coulomb system, the virial theorem gives $\langle T\rangle = -\frac{1}{2}\langle V\rangle$, so $E = \langle T\rangle + \langle V\rangle = \frac{1}{2}\langle V\rangle$.</p>
+
+          <p>Very crudely, two electrons in a $Z=2$ nuclear potential contribute $\approx 2 \times (-27.2 \times 4) = -218\ \text{eV}$ from the nuclear attraction (each electron in a $Z=2$ hydrogen-like atom has $E = -13.6 \times Z^2 = -54.4\ \text{eV}$). The electron-electron repulsion is positive and of order $e^2/4\pi\epsilon_0 \langle r_{12}^{-1}\rangle \approx 27.2 \times 5/4 \approx +34\ \text{eV}$ (using the result from first-order PT). Total: $\approx -218 + 2\times 34 = -150\ \text{eV}$... wait, that gives too much.</p>
+
+          <p>The resolution: the electron-electron repulsion expands the electron cloud (raises the effective Bohr radius), reducing the nuclear attraction. The variational calculation captures this through $Z_\text{eff} = 1.69 < 2$. With the screened charge: $2 \times (-13.6)(1.69)^2 = -77.7\ \text{eV}$, close to experiment. The point: the variational parameter $Z_\text{eff}$ encodes the competition between nuclear attraction (wants $Z_\text{eff}$ large) and electron-electron repulsion (wants $Z_\text{eff}$ small). The optimal value balances them.</p>
+        </div>
+      </div>
+
+      <!-- FFT -->
+      <ul class="fft-list">
+        <li class="fft-item">
+          The variational theorem guarantees an upper bound on $E_{gs}$. Is there a corresponding lower bound — some way to say "the true ground state is at least this low"? If not, why not?
+          <div class="fft-answer">
+            <p>No analogous lower bound exists from simple variational arguments — and this asymmetry is fundamental. The variational theorem uses the fact that $E_n \geq E_{gs}$ for all $n$; this is specifically about the ground state. For an upper bound: you can get arbitrarily close to $E_{gs}$ from above by using better trial states. Lower bounds are harder; they require extra information about the structure of the Hamiltonian (like Temple's inequality or the method of intermediate problems). In practice, quantum chemists combine the variational method (upper bound) with perturbation theory convergence arguments to bracket the true energy, but it's much harder to certify a lower bound. This is one reason "exact" quantum chemistry is computationally hard — you can always improve an upper bound, but certifying how close you are from below requires more work.</p>
+          </div>
+        </li>
+        <li class="fft-item">
+          The screened nuclear charge model gives helium's ground-state energy to within 2% with a single parameter. What physics does it miss that accounts for the remaining 2% error?
+          <div class="fft-answer">
+            <p>The screened-charge trial state treats both electrons as moving in the same effective potential $Z_\text{eff}/r$ — it ignores <em>correlations</em> between the electrons. In reality, when electron 1 is far from the nucleus, electron 2 is less effectively screened (1 is not between 2 and the nucleus), and vice versa. The electrons avoid each other dynamically in ways the product wavefunction can't capture. Hylleraas (1929) added a term proportional to $r_{12}$ (the inter-electron distance) to the trial state: $\psi = e^{-Z_\text{eff}(r_1+r_2)/a_0}(1 + c\,r_{12})$. This captures the correlation "cusp" — the wavefunction must have a specific slope as $r_{12} \to 0$ to satisfy the Kato cusp condition. With a few more Hylleraas parameters, the energy converges to within $10^{-5}$ eV of the exact answer. Modern QMC (quantum Monte Carlo) and CCSD(T) methods for larger atoms are essentially sophisticated ways of capturing this electron correlation that the single-determinant (Hartree-Fock) trial state misses.</p>
+          </div>
+        </li>
+        <li class="fft-item">
+          The covalent bond in H₂⁺ arises from the exchange integral $K$ being negative. What is the physical content of $K$? Why does quantum mechanics allow the electron to lower its energy by being "on both protons at once," and can you give an analogy from elsewhere in physics?
+          <div class="fft-answer">
+            <p>The exchange integral $K = \langle\phi_+|V_-|\phi_-\rangle$ is a matrix element between the electron on proton + and the electron on proton −, connected by the Coulomb attraction of the other proton. It's nonzero precisely because quantum mechanics allows superposition: the electron isn't "on one proton or the other" — it's in a superposition of both, and the kinetic energy of this delocalized state is lower than either localized state alone. The analogy: two coupled classical oscillators have normal modes with frequencies split around the uncoupled frequency. The symmetric (in-phase) mode has a lower frequency (softer spring effectively). The quantum particle in a double well is exactly the same: the symmetric combination has a lower zero-point energy than either well alone. Chemists call this "resonance stabilization" — the electron resonates between the two protons, and the quantum interference of the two amplitudes lowers the energy. The same physics explains aromaticity in benzene (6 delocalized electrons lower in energy than 3 localized double bonds), metallic bonding in solids, and Cooper pairs in superconductors.</p>
+          </div>
+        </li>
+      </ul>
+
+      <!-- PITFALLS -->
+      <div class="section-head">Common Pitfalls</div>
+      <ul class="pitfall-list">
+        <li><strong>Forgetting that the bound is an upper bound.</strong> The variational energy is always $\geq E_{gs}$. If you compute a variational energy and it's lower than the exact answer, you've made an error (usually a sign mistake in an integral). A lower-than-exact variational result is mathematically impossible.</li>
+        <li><strong>Using a trial state that doesn't satisfy boundary conditions.</strong> The trial state must be in the domain of $H$ — it must vanish where the wavefunction must vanish (at infinite potential walls) and must be normalizable. A trial state that violates boundary conditions can give spuriously low energies that appear to beat the true ground state, but the variational theorem doesn't apply to such states.</li>
+        <li><strong>Confusing the variational bound improving with the trial family expanding.</strong> Adding more parameters always improves (lowers) the variational bound. But a lower variational energy doesn't mean the wavefunction is more accurate — the energy is a second-order functional of the state, so a mediocre state can have a good energy. The wavefunction itself might be quite wrong even when the energy is close.</li>
+        <li><strong>Missing the second-order character of the bound.</strong> If $|\psi\rangle = |0\rangle + \epsilon|\chi\rangle$, then $E(\psi) = E_{gs} + O(\epsilon^2)$. This is good news (energy converges faster than the state) but also means you can't extract the quality of your trial wavefunction from the energy error alone — a 1% energy error might correspond to a 10% error in the wavefunction.</li>
+      </ul>
+
+      <!-- CONNECTS TO -->
+      <div class="section-head">Connects to</div>
+      <ul class="connects-list">
+        <li><strong>Quantum Mechanics — Perturbation Theory (Lesson 10) &amp; Identical Particles (Lesson 11):</strong> The helium calculation connects all three: the unperturbed state (Lesson 10) is what we use as the zeroth-order trial state; the exchange interaction (Lesson 11) is physically related to the exchange integral $K$ in the LCAO calculation; and the variational method gives the best single-parameter bound. These three approaches to the helium problem are the three faces of approximate quantum mechanics.</li>
+        <li><strong>Quantum Chemistry / DFT:</strong> Hartree-Fock theory writes the many-electron wavefunction as a single Slater determinant and variationally minimises the energy over orbital choices — yielding the Hartree-Fock equations. Density functional theory (Hohenberg-Kohn theorem) proves that the ground-state energy is a functional of the electron density alone, and the Kohn-Sham scheme turns this into a self-consistent variational problem. Both are direct descendants of the variational principle in this lesson.</li>
+        <li><strong>Condensed Matter Physics:</strong> The tight-binding model (band theory of solids) is the LCAO method scaled up to $\sim 10^{23}$ atoms. The bandwidth, effective mass, and band gap all emerge from the competition between on-site energy ($J$-like terms) and hopping integrals ($K$-like terms). The exchange integral becoming negative is what allows metallic conduction.</li>
+      </ul>
+
+      <!-- LESSON NAV -->
+      <div class="lesson-nav">
+        <a href="tdpt.html" class="lesson-nav-btn">← Lesson 12 · TDPT</a>
+        <a href="wkb.html" class="lesson-nav-btn">Lesson 14 · WKB Approximation →</a>
+      </div>
+
+    </div><!-- /main -->
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+<script src="../books-render.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  renderMathInElement(document.body, {
+    delimiters: [
+      { left: '$$', right: '$$', display: true },
+      { left: '$', right: '$', display: false }
+    ],
+    throwOnError: false
+  });
+
+  // Helium variational energy plot
+  const E1_ev = -27.2; // e^2/(4*pi*eps0*a0) in eV
+  const Z = 2;
+  const zArr = [], eArr = [];
+  for (let i = 0; i <= 200; i++) {
+    const z = 0.5 + i * (3.5 - 0.5) / 200;
+    // E = [z^2 - 2*Z*z + (5/8)*z] * E_hartree  where E_hartree = 27.2 eV
+    const e = (z * z - 2 * Z * z + (5 / 8) * z) * E1_ev;
+    zArr.push(z);
+    eArr.push(e);
+  }
+
+  const zOpt = Z - 5 / 16; // = 1.6875
+  const eOpt = (zOpt * zOpt - 2 * Z * zOpt + (5 / 8) * zOpt) * E1_ev;
+
+  Plotly.newPlot('helium-plot', [
+    {
+      x: zArr, y: eArr,
+      type: 'scatter', mode: 'lines',
+      line: { color: '#3a6a8a', width: 2.5 },
+      name: 'E(Z<sub>eff</sub>)'
+    },
+    {
+      x: [zOpt], y: [eOpt],
+      type: 'scatter', mode: 'markers',
+      marker: { color: '#c17c2e', size: 10, symbol: 'circle' },
+      name: 'Minimum: Z<sub>eff</sub> = 27/16'
+    },
+    {
+      x: [0.5, 3.5], y: [-79.0, -79.0],
+      type: 'scatter', mode: 'lines',
+      line: { color: '#b04040', width: 1.5, dash: 'dot' },
+      name: 'Experiment: −79.0 eV'
+    }
+  ], {
+    xaxis: {
+      title: { text: 'Z<sub>eff</sub>', font: { family: 'IBM Plex Sans', size: 13 } },
+      gridcolor: '#e0e8ee', zerolinecolor: '#c0ccd8'
+    },
+    yaxis: {
+      title: { text: 'Variational energy (eV)', font: { family: 'IBM Plex Sans', size: 13 } },
+      gridcolor: '#e0e8ee', zerolinecolor: '#c0ccd8'
+    },
+    paper_bgcolor: '#f5f5f2', plot_bgcolor: '#f5f5f2',
+    font: { family: 'IBM Plex Sans, sans-serif', color: '#1a2840' },
+    margin: { t: 16, r: 16, b: 48, l: 72 },
+    legend: { x: 0.5, y: 0.95 }
+  }, { responsive: true, displayModeBar: false });
+});
+</script>
+
+</body>
+</html>
