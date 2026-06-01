@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perturbation Theory — Quantum Mechanics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="quantum" data-current="perturbation.html"></div>
+      <hr class="sidebar-rule">
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#nondegenerate" class="nav-item">Non-degenerate Theory</a>
+        <a href="#degenerate" class="nav-item">Degenerate Theory</a>
+        <a href="#fine-structure" class="nav-item">Fine Structure</a>
+        <a href="#zeeman" class="nav-item">Zeeman Effect</a>
+        <a href="#stark" class="nav-item">Stark Effect</a>
+        <a href="#hyperfine" class="nav-item">Hyperfine Structure</a>
+        <a href="#widget" class="nav-item">Energy Level Diagram</a>
+        <a href="#examples" class="nav-item">Worked Examples</a>
+        <a href="#fft" class="nav-item">Food for Thought</a>
+        <a href="#pitfalls" class="nav-item">Common Pitfalls</a>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="breadcrumb"><a href="../index.html">Field Notes</a> / <a href="index.html">Quantum Mechanics</a> / Perturbation Theory</div>
+
+      <h1 class="lesson-title">Perturbation Theory</h1>
+      <div class="lesson-meta">First &amp; Second Order · Degenerate Case · Fine Structure · Zeeman &amp; Stark Effects · Hyperfine</div>
+
+      <p class="prose">
+        Only a handful of potentials admit exact solutions. For everything else — and "everything else" includes
+        all of real atomic and molecular physics — perturbation theory is the central computational tool.
+        The idea is elegant: start with a problem you can solve exactly, add a small correction to the Hamiltonian,
+        and ask how the energy levels and eigenstates shift. The answers, expanded in powers of the perturbation
+        strength, are systematic and computable. This lesson develops the non-degenerate and degenerate
+        frameworks, then applies them to hydrogen's fine structure, the Zeeman effect, the Stark effect,
+        and hyperfine splitting — four canonical examples that tie the formalism directly to measured spectra.
+      </p>
+
+      <!-- ===================== NON-DEGENERATE ===================== -->
+      <div class="section-head" id="nondegenerate">Non-degenerate Perturbation Theory</div>
+
+      <p class="prose">
+        Suppose the Hamiltonian is $\hat{H} = \hat{H}^0 + \lambda\hat{H}'$, where $\hat{H}^0$ is exactly solvable
+        with eigenvalues $E_n^0$ and orthonormal eigenfunctions $|\psi_n^0\rangle$, and $\lambda\ll 1$
+        controls the strength of the perturbation $\hat{H}'$. Assume the unperturbed eigenvalues are
+        non-degenerate (all distinct).
+      </p>
+
+      <p class="prose">
+        Expand the exact eigenvalues and eigenstates in powers of $\lambda$:
+      </p>
+      <div class="math-block">
+        $$E_n = E_n^0 + \lambda E_n^{(1)} + \lambda^2 E_n^{(2)} + \cdots, \qquad |\psi_n\rangle = |\psi_n^0\rangle + \lambda|\psi_n^{(1)}\rangle + \lambda^2|\psi_n^{(2)}\rangle + \cdots$$
+      </div>
+      <p class="prose">
+        Substituting into $\hat{H}|\psi_n\rangle = E_n|\psi_n\rangle$ and collecting terms at each order of $\lambda$:
+      </p>
+
+      <p class="prose"><strong>Order $\lambda^0$:</strong> $\hat{H}^0|\psi_n^0\rangle = E_n^0|\psi_n^0\rangle$. (Trivially satisfied.)</p>
+      <p class="prose"><strong>Order $\lambda^1$:</strong> $\hat{H}^0|\psi_n^{(1)}\rangle + \hat{H}'|\psi_n^0\rangle = E_n^0|\psi_n^{(1)}\rangle + E_n^{(1)}|\psi_n^0\rangle$.</p>
+      <p class="prose">
+        Taking the inner product with $\langle\psi_n^0|$ (the $\hat{H}^0$ terms cancel by the left eigenvector condition):
+      </p>
+      <div class="math-block">
+        $$\boxed{E_n^{(1)} = \langle\psi_n^0|\hat{H}'|\psi_n^0\rangle}$$
+      </div>
+      <p class="prose">
+        The first-order energy correction is just the expectation value of the perturbation in the unperturbed state.
+        Taking the inner product with $\langle\psi_m^0|$ ($m\neq n$):
+      </p>
+      <div class="math-block">
+        $$|\psi_n^{(1)}\rangle = \sum_{m\neq n}\frac{\langle\psi_m^0|\hat{H}'|\psi_n^0\rangle}{E_n^0 - E_m^0}|\psi_m^0\rangle$$
+      </div>
+      <p class="prose">
+        The perturbation mixes nearby levels. The first-order correction to the state is large when two levels
+        are nearly degenerate ($E_n^0 \approx E_m^0$) and the matrix element $\langle m|H'|n\rangle$ is nonzero.
+        If any $E_n^0 = E_m^0$, the denominator vanishes — this signals the breakdown of non-degenerate theory.
+      </p>
+
+      <p class="prose"><strong>Order $\lambda^2$ (for the energy):</strong></p>
+      <div class="math-block">
+        $$\boxed{E_n^{(2)} = \sum_{m\neq n}\frac{|\langle\psi_m^0|\hat{H}'|\psi_n^0\rangle|^2}{E_n^0 - E_m^0}}$$
+      </div>
+      <p class="prose">
+        The second-order correction is always negative for the ground state
+        (all $E_0^0 - E_m^0 &lt; 0$ for $m > 0$), pushing the ground state energy lower.
+        This is one form of the variational principle — adding any perturbation mixes in excited states,
+        and the ground state always benefits from mixing.
+      </p>
+
+      <div class="callout">
+        <strong>Validity criterion.</strong> The perturbation expansion is controlled as long as:
+        $$\left|\frac{\langle\psi_m^0|\hat{H}'|\psi_n^0\rangle}{E_n^0 - E_m^0}\right| \ll 1 \quad \text{for all } m \neq n$$
+        When this fails — either because $H'$ is large or because two levels are nearly degenerate — the non-degenerate
+        theory breaks down and must be replaced by the degenerate version or a non-perturbative approach.
+      </div>
+
+      <!-- ===================== DEGENERATE ===================== -->
+      <div class="section-head" id="degenerate">Degenerate Perturbation Theory</div>
+
+      <p class="prose">
+        When $\hat{H}^0$ has an $N$-fold degenerate eigenvalue $E_n^0$ (a subspace spanned by $\{|\psi_n^{0,i}\rangle\}_{i=1}^N$),
+        the first-order shift in any state within the subspace diverges in the non-degenerate formula.
+        The resolution: find the right linear combinations — the "good states" — that diagonalise $\hat{H}'$
+        within the degenerate subspace. These states don't mix with each other under the perturbation.
+      </p>
+
+      <p class="prose">
+        <strong>Procedure:</strong> Construct the $N\times N$ matrix $W_{ij} = \langle\psi_n^{0,i}|\hat{H}'|\psi_n^{0,j}\rangle$.
+        Diagonalise $W$ to find its eigenvalues $e_i^{(1)}$ — these are the first-order energy corrections.
+        The corresponding eigenvectors give the good zeroth-order states. Then proceed as in the non-degenerate case.
+      </p>
+
+      <p class="prose">
+        A key practical simplification: if $\hat{H}'$ commutes with some other observable $\hat{Q}$ that fully
+        distinguishes the degenerate states (i.e. $W$ is already diagonal in the $\hat{Q}$ eigenbasis), then
+        the $\hat{Q}$ eigenstates are automatically the good states. This is the standard strategy for atomic physics.
+      </p>
+
+      <!-- ===================== FINE STRUCTURE ===================== -->
+      <div class="section-head" id="fine-structure">Fine Structure of Hydrogen</div>
+
+      <p class="prose">
+        The hydrogen Hamiltonian from Lesson 8 neglects relativistic effects. The two leading relativistic corrections
+        are both of order $\alpha^2 \approx (1/137)^2 \sim 5\times10^{-5}$ relative to $E_n$:
+      </p>
+
+      <p class="prose">
+        <strong>1. Relativistic kinetic energy.</strong> Expanding $T = \sqrt{p^2c^2 + m_e^2c^4} - m_ec^2$ to second order:
+        $T \approx p^2/2m_e - p^4/8m_e^3c^2$. The perturbation is $\hat{H}'_r = -\hat{p}^4/8m_e^3c^2$.
+        Using $\hat{p}^2 = 2m_e(\hat{H}^0 - V)$ and the known expectation values for hydrogen:
+      </p>
+      <div class="math-block">
+        $$E_r^{(1)} = -\frac{(E_n)^2}{2m_ec^2}\left(\frac{4n}{l+\tfrac{1}{2}} - 3\right)$$
+      </div>
+
+      <p class="prose">
+        <strong>2. Spin-orbit coupling.</strong> From Lesson 9, $\hat{H}'_\text{SO} \propto \hat{\mathbf{L}}\cdot\hat{\mathbf{S}}$.
+        Using $\hat{\mathbf{L}}\cdot\hat{\mathbf{S}} = \frac{1}{2}(\hat{J}^2 - \hat{L}^2 - \hat{S}^2)$ and
+        $\langle 1/r^3\rangle = 1/(l(l+\frac{1}{2})(l+1)n^3 a_0^3)$:
+      </p>
+      <div class="math-block">
+        $$E_\text{SO}^{(1)} = -\frac{(E_n)^2}{m_ec^2}\cdot\frac{n[j(j+1)-l(l+1)-\frac{3}{4}]}{l(l+\frac{1}{2})(l+1)}$$
+      </div>
+      <p class="prose">
+        (The $l=0$ case is handled by the Darwin term — see below.)
+      </p>
+
+      <p class="prose">
+        <strong>3. Darwin term.</strong> The Dirac equation gives a contact interaction at the origin for $l=0$ states:
+        $\hat{H}'_D = (\pi e^2\hbar^2/2m_e^2c^2\epsilon_0)\delta^3(\mathbf{r})$, which only affects $l=0$ states
+        (since $|\psi_{nl0}(0)|^2 = 0$ for $l > 0$).
+      </p>
+
+      <p class="prose">
+        Adding all three corrections and using $j = l \pm \frac{1}{2}$, the <strong>fine structure formula</strong> is:
+      </p>
+      <div class="math-block">
+        $$E_{nj} = E_n\left[1 + \frac{\alpha^2}{n^2}\left(\frac{n}{j+\frac{1}{2}} - \frac{3}{4}\right)\right]$$
+      </div>
+      <p class="prose">
+        Remarkably, this depends only on $n$ and $j$ — not separately on $l$. So $2s_{1/2}$ and $2p_{1/2}$ are
+        still degenerate at this order. Their splitting (the <strong>Lamb shift</strong>, ~$1058\,\text{MHz}$ or
+        $4.4\times10^{-6}\,\text{eV}$) requires quantum electrodynamics — it's a QED effect first measured by
+        Lamb and Retherford in 1947.
+      </p>
+
+      <!-- ===================== ZEEMAN ===================== -->
+      <div class="section-head" id="zeeman">The Zeeman Effect</div>
+
+      <p class="prose">
+        An external magnetic field $\mathbf{B} = B\hat{z}$ adds:
+      </p>
+      <div class="math-block">
+        $$\hat{H}' = -\boldsymbol{\mu}\cdot\mathbf{B} = \frac{e}{2m_e}(\hat{L}_z + g_e\hat{S}_z)B \approx \frac{e B}{2m_e}(\hat{L}_z + 2\hat{S}_z)$$
+      </div>
+
+      <p class="prose">
+        <strong>Weak field (Zeeman).</strong> If $B$ is small enough that the Zeeman perturbation is smaller than
+        the fine structure splitting, the good quantum numbers are $n,l,j,m_j$. The first-order energy correction is:
+      </p>
+      <div class="math-block">
+        $$E_Z^{(1)} = \frac{eB\hbar}{2m_e}\langle L_z + 2S_z\rangle/\hbar = \mu_B B\,g_J\,m_j$$
+      </div>
+      <p class="prose">
+        where the <strong>Landé g-factor</strong> is:
+      </p>
+      <div class="math-block">
+        $$g_J = 1 + \frac{j(j+1) - l(l+1) + \frac{3}{4}}{2j(j+1)}$$
+      </div>
+      <p class="prose">
+        This splits each fine structure level into $2j+1$ equally spaced components (separated by $g_J\mu_B B$).
+        The $m_j$-dependence lifts the remaining degeneracy.
+      </p>
+
+      <p class="prose">
+        <strong>Strong field (Paschen-Back).</strong> When the Zeeman splitting exceeds the fine structure,
+        the good quantum numbers switch to $n,l,m_l,m_s$:
+        $E^{(1)} = \mu_B B(m_l + 2m_s)$. The fine structure is then treated as a perturbation on top of the Zeeman.
+      </p>
+
+      <!-- ===================== STARK ===================== -->
+      <div class="section-head" id="stark">The Stark Effect</div>
+
+      <p class="prose">
+        An electric field $\mathbf{E}_\text{ext} = \mathcal{E}\hat{z}$ shifts energies through $\hat{H}' = e\mathcal{E}z = e\mathcal{E}r\cos\theta$.
+      </p>
+
+      <p class="prose">
+        <strong>Ground state (non-degenerate).</strong> First-order: $E^{(1)} = e\mathcal{E}\langle 1s|z|1s\rangle = 0$
+        — the expectation value of $z$ vanishes by the spherical symmetry of $|\psi_{100}|^2$ (parity argument:
+        $z$ is odd, $|\psi_{100}|^2$ is even, integral is zero). Second-order gives the leading correction:
+      </p>
+      <div class="math-block">
+        $$E^{(2)} = -\frac{9}{2}\frac{e^2 a_0^3}{\epsilon_0 (e^2/4\pi\epsilon_0)}\mathcal{E}^2 = -\frac{9}{4}\epsilon_0 a_0^3 \mathcal{E}^2$$
+      </div>
+      <p class="prose">
+        (The exact coefficient requires summing over all intermediate states; the result above is exact for hydrogen.)
+        This quadratic Stark effect corresponds to an electric polarisability $\alpha_\text{pol} = 9\epsilon_0 a_0^3/(2)$.
+      </p>
+
+      <p class="prose">
+        <strong>$n=2$ states (degenerate).</strong> The four states $2s$ and $2p$ ($m=0,\pm1$) are degenerate
+        at $E_2 = -3.4\,\text{eV}$. We form the $4\times4$ matrix of $\hat{H}'$ in this subspace.
+        By parity, $\langle nlm|z|nlm\rangle = 0$. The only nonzero off-diagonal element is:
+        $\langle 2s|z|2p,m=0\rangle = -3a_0$ (a direct integral of the radial and angular wavefunctions).
+        Diagonalising the $2\times2$ sub-block of the $2s$ and $2p_0$ states gives eigenvalues
+        $\pm 3e\mathcal{E}a_0$ — a <strong>linear Stark effect</strong> for the degenerate $n=2$ levels.
+        (The $2p_{\pm1}$ states are not mixed by $z$ and remain unshifted at first order.)
+      </p>
+
+      <!-- ===================== HYPERFINE ===================== -->
+      <div class="section-head" id="hyperfine">Hyperfine Structure and the 21 cm Line</div>
+
+      <p class="prose">
+        The proton itself has spin $I = \frac{1}{2}$. Its magnetic moment $\boldsymbol{\mu}_p = g_p(e/2m_p)\hat{\mathbf{I}}$
+        ($g_p \approx 5.59$, the large value due to the proton's quark substructure) interacts with the
+        electron's magnetic moment. The resulting <strong>hyperfine</strong> interaction is:
+      </p>
+      <div class="math-block">
+        $$\hat{H}'_\text{hf} = -\frac{\mu_0 g_p e^2}{3\pi m_e m_p}|\psi_{n00}(0)|^2\,\hat{\mathbf{S}}_e\cdot\hat{\mathbf{I}}_p$$
+      </div>
+      <p class="prose">
+        (This contact interaction only affects $l=0$ states at leading order.)
+        The total spin $\hat{\mathbf{F}} = \hat{\mathbf{S}}_e + \hat{\mathbf{I}}_p$ can take values $F = 0$ (singlet) or $F = 1$ (triplet).
+        Using $\hat{\mathbf{S}}_e\cdot\hat{\mathbf{I}}_p = \frac{1}{2}(\hat{F}^2 - \hat{S}_e^2 - \hat{I}_p^2)$:
+      </p>
+      <div class="math-block">
+        $$E_\text{hf}^{(1)} = -\frac{\mu_0 g_p e^2}{3\pi m_e m_p}|\psi_{100}(0)|^2\cdot\frac{\hbar^2}{2}\left[F(F+1) - \frac{3}{2}\right]$$
+      </div>
+      <p class="prose">
+        For the ground state $|\psi_{100}(0)|^2 = 1/(\pi a_0^3)$. The triplet ($F=1$) lies higher than the singlet ($F=0$) by:
+      </p>
+      <div class="math-block">
+        $$\Delta E_\text{hf} = \frac{4g_p\mu_B^2}{3a_0^3 m_p c^2}\cdot m_e c^2 \approx 5.88\times10^{-6}\,\text{eV}$$
+      </div>
+      <p class="prose">
+        This corresponds to a photon wavelength of $\lambda = hc/\Delta E_\text{hf} \approx 21.1\,\text{cm}$ —
+        the famous <strong>21-centimetre line</strong> of hydrogen.
+        Neutral hydrogen in interstellar space emits this radio-frequency photon when the electron spin
+        flips from triplet to singlet. Because cold interstellar hydrogen is opaque to UV but transparent to
+        21 cm radio waves, this line is the primary probe of neutral hydrogen in the Milky Way and other galaxies.
+        Mapping 21 cm emission gave us the first clear picture of the spiral structure of our galaxy.
+      </p>
+
+      <!-- ===================== WIDGET ===================== -->
+      <div class="section-head" id="widget">Hydrogen Energy Levels: Gross and Fine Structure</div>
+
+      <div class="widget-card">
+        <div class="widget-title">Energy levels of hydrogen, $n = 1$ to $3$ with fine structure</div>
+        <div id="levels-plot" style="width:100%;height:480px;"></div>
+        <p style="font-size:12px;color:#7a8a9a;margin:10px 0 0;">
+          Left column: gross structure energies $E_n = -13.6/n^2\,\text{eV}$ (levels degenerate in $l,m_l,m_s$).
+          Right column: fine structure levels labelled by spectroscopic notation $nl_j$, split by $\sim\alpha^2 E_n$.
+          Splitting is exaggerated $\times 5000$ for visibility — actual fine structure is $\sim 10^{-4}$ of gross energies.
+        </p>
+      </div>
+
+      <!-- ===================== EXAMPLES ===================== -->
+      <div class="section-head" id="examples">Worked Examples</div>
+
+      <div class="example-box">
+        <div class="example-title">Example 1 — First-order Stark shift for the harmonic oscillator ground state</div>
+        <div class="example-body">
+          <p>An electron in a 1D harmonic oscillator ($\hat{H}^0 = \hat{p}^2/2m + m\omega^2\hat{x}^2/2$) is perturbed by a uniform electric field: $\hat{H}' = -qE\hat{x}$.</p>
+          <p><strong>First-order energy correction:</strong> $E_0^{(1)} = \langle 0|\hat{H}'|0\rangle = -qE\langle 0|\hat{x}|0\rangle = 0$.
+          The expectation value of $\hat{x}$ in the ground state is zero by symmetry ($\psi_0$ is even, $x$ is odd).</p>
+          <p><strong>Second-order energy correction:</strong></p>
+          <div class="math-block">$$E_0^{(2)} = \sum_{n=1}^{\infty}\frac{|\langle n|\hat{H}'|0\rangle|^2}{E_0^0 - E_n^0} = \sum_{n=1}^{\infty}\frac{q^2E^2|\langle n|\hat{x}|0\rangle|^2}{-n\hbar\omega}$$</div>
+          <p>Using the ladder operator: $\hat{x} = \sqrt{\hbar/2m\omega}(\hat{a}_+ + \hat{a}_-)$, so $\langle n|\hat{x}|0\rangle = \sqrt{\hbar/2m\omega}\langle n|\hat{a}_+|0\rangle = \sqrt{\hbar/2m\omega}\delta_{n,1}$.</p>
+          <p>Only the $n=1$ term survives:</p>
+          <div class="math-block">$$E_0^{(2)} = \frac{q^2E^2\cdot\hbar/2m\omega}{-\hbar\omega} = -\frac{q^2E^2}{2m\omega^2}$$</div>
+          <p>Exact result: the shifted oscillator $\hat{H} = p^2/2m + m\omega^2(x - qE/m\omega^2)^2/2 - q^2E^2/2m\omega^2$ gives energy $E_n = (n+\frac{1}{2})\hbar\omega - q^2E^2/2m\omega^2$. The second-order perturbation theory result is exact in this case!</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-title">Example 2 — Fine structure: the $2p$ hydrogen levels</div>
+        <div class="example-body">
+          <p>Compute the fine structure splitting between the $2p_{3/2}$ and $2p_{1/2}$ states of hydrogen.</p>
+          <p>Use the fine structure formula:</p>
+          <div class="math-block">$$E_{nj}^{FS} = -\frac{(E_n)^2}{2m_ec^2}\left(\frac{4n}{j+\tfrac{1}{2}} - 3\right)$$</div>
+          <p>For $n=2$, $E_2 = -13.6/4 = -3.4\,\text{eV}$, $m_ec^2 = 511\,\text{keV} = 5.11\times10^5\,\text{eV}$:</p>
+          <p><strong>$j=3/2$ ($2p_{3/2}$):</strong></p>
+          <div class="math-block">$$E^{FS}_{j=3/2} = -\frac{(3.4)^2}{2(5.11\times10^5)}\left(\frac{8}{2}-3\right) = -\frac{11.56}{1.022\times10^6}\cdot 1 = -1.131\times10^{-5}\,\text{eV}$$</div>
+          <p><strong>$j=1/2$ ($2p_{1/2}$ and $2s_{1/2}$):</strong></p>
+          <div class="math-block">$$E^{FS}_{j=1/2} = -\frac{11.56}{1.022\times10^6}\left(\frac{8}{1}-3\right) = -\frac{11.56\cdot 5}{1.022\times10^6} = -5.657\times10^{-5}\,\text{eV}$$</div>
+          <p><strong>Splitting:</strong> $\Delta E = 5.657\times10^{-5} - 1.131\times10^{-5} = 4.53\times10^{-5}\,\text{eV} \approx 10.9\,\text{GHz}$.</p>
+          <p>This is the doublet splitting visible as the two closely-spaced lines in the Balmer-α emission.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-title">Example 3 — Validity: when does perturbation theory break down?</div>
+        <div class="example-body">
+          <p>For hydrogen in an electric field $\mathcal{E}$, the perturbation is $H' = e\mathcal{E}r\cos\theta$.
+          Estimate the critical field at which perturbation theory breaks down for the ground state.</p>
+          <p>The matrix element connecting $1s$ to $2p$ is of order $e\mathcal{E}a_0$ (the interaction energy over
+          the scale of the atom). The energy denominator is $|E_1 - E_2| = 13.6(1-1/4) = 10.2\,\text{eV}$.</p>
+          <p>Breakdown occurs when $e\mathcal{E}a_0 \sim 10.2\,\text{eV}$:</p>
+          <div class="math-block">$$\mathcal{E}_\text{crit} \sim \frac{10.2\,\text{eV}}{ea_0} = \frac{10.2}{0.529\times10^{-10}\,\text{m}} = \frac{10.2\times1.6\times10^{-19}}{1.6\times10^{-19}\times0.529\times10^{-10}} \approx 1.9\times10^{11}\,\text{V/m}$$</div>
+          <p>This is the atomic unit of electric field strength. Real applied fields in typical lab experiments
+          ($\sim 10^6\,\text{V/m}$) are $10^5$ times smaller — perturbation theory is amply valid there.
+          But near metal surfaces at nanometre distances, or in tip-field ionisation microscopy, fields can approach
+          the atomic unit and perturbation theory fails.</p>
+        </div>
+      </div>
+
+      <!-- ===================== FFT ===================== -->
+      <div class="section-head" id="fft">Food for Thought</div>
+      <ul class="fft-list">
+        <li class="fft-item">
+          <div class="fft-question">The second-order energy correction $E_n^{(2)} = \sum_{m\neq n} |\langle m|H'|n\rangle|^2/(E_n^0-E_m^0)$ is always negative for the ground state. Does this mean any perturbation lowers the ground state energy? Can a perturbation raise it?</div>
+          <div class="fft-answer">Yes, any perturbation lowers the exact ground state energy below its second-order perturbative estimate (the variational principle guarantees this — any trial state gives an upper bound on the true ground state energy). But this doesn't mean the perturbation lowers the ground state below the unperturbed ground state energy: the first-order correction $E^{(1)} = \langle H'\rangle$ can be positive (raising the energy), and may dominate. The second-order term is always a negative correction relative to the first-order result, but the net effect $E^{(1)} + E^{(2)}$ can go either way. Example: a positive potential step raises all energies at first order; the second-order term slightly reduces each level but doesn't bring it below the original.</div>
+        </li>
+        <li class="fft-item">
+          <div class="fft-question">The Stark effect gives zero first-order shift for hydrogen's ground state by parity. But parity is only a symmetry if the full Hamiltonian (including the electric field) has it. Once you apply the field, parity is broken — so why doesn't the ground state shift at first order?</div>
+          <div class="fft-answer">The key is that the unperturbed ground state $\psi_{100}$ has definite parity (even). The perturbation $H' = e\mathcal{E}z$ is odd under parity. The first-order correction $\langle 1s|H'|1s\rangle = e\mathcal{E}\langle 1s|z|1s\rangle$ involves the integral of (even)(odd)(even) over all space — which is zero because the integrand is odd. This is a consequence of parity alone, not of the field's value. It applies to any state with definite parity (even or odd): $\langle f_n|H'|f_n\rangle = 0$ for $H'$ that is odd under parity. The $n=2$ levels avoid this argument only because the degenerate subspace mixes even (2s) and odd (2p) states — a mixed-parity basis — which is why they get a linear Stark shift.</div>
+        </li>
+        <li class="fft-item">
+          <div class="fft-question">Perturbation theory is an expansion in powers of $\lambda$. But the series may not converge — in quantum field theory, most perturbative expansions are asymptotic (divergent) series that still give incredibly accurate predictions. How can a divergent series be useful?</div>
+          <div class="fft-answer">An asymptotic series is one where the first few partial sums approach the true answer even though the series eventually diverges. The partial sums get closer to the exact answer for the first $N_\text{opt}$ terms, then start to diverge. For the QED series in powers of $\alpha \approx 1/137$, the series diverges at order $N_\text{opt} \sim 1/\alpha \approx 137$ terms — far beyond any practical calculation. For the first dozen terms (which have been computed), each successive term is exponentially smaller than the previous, and the partial sum converges toward the exact answer with extraordinary precision. Borel summation and related techniques can sometimes "resum" a divergent series to extract the exact answer; in QED this connects to non-perturbative effects like instantons. The pragmatic point: a divergent series is useful when the error in the optimal truncation is smaller than your experimental precision.</div>
+        </li>
+      </ul>
+
+      <!-- ===================== PITFALLS ===================== -->
+      <div class="section-head" id="pitfalls">Common Pitfalls</div>
+      <ul class="pitfall-list">
+        <li><strong>The first-order energy correction uses the unperturbed eigenstate, not the perturbed one.</strong> $E_n^{(1)} = \langle\psi_n^0|H'|\psi_n^0\rangle$ — you evaluate $H'$ in the <em>unperturbed</em> state. The perturbed state $|\psi_n\rangle = |\psi_n^0\rangle + \lambda|\psi_n^{(1)}\rangle + \ldots$ doesn't appear until you compute second-order corrections or first-order state corrections.</li>
+        <li><strong>Degenerate perturbation theory requires finding "good states" first.</strong> If you blindly apply the non-degenerate formula to a degenerate level, you get divergences (zero denominators). The fix is to diagonalise $H'$ within the degenerate subspace. If $H'$ is already diagonal in the given basis, you're done — but this must be verified, not assumed.</li>
+        <li><strong>The Landé $g$-factor $g_J$ is not 2 for all states.</strong> $g_J = 2$ only for a pure spin state (no orbital angular momentum, $l=0$). For $l\neq 0$ states, $g_J = 1 + [j(j+1) + s(s+1) - l(l+1)]/(2j(j+1))$, which lies between 1 (pure orbital) and 2 (pure spin). This is the fundamental difference between the weak-field Zeeman effect and a simple $m$-dependent splitting.</li>
+        <li><strong>Perturbation theory gives corrections to energies, not to the exact energies.</strong> $E_n^{(1)} + E_n^{(2)}$ is the first- plus second-order approximation to the exact $E_n$, not the exact energy. For hydrogen fine structure, the formulas given are exact to this order in $\alpha$ — but they're still perturbative and miss yet smaller corrections (Lamb shift, QED radiative corrections) that require more sophisticated tools.</li>
+      </ul>
+
+      <!-- ===================== CONNECTS ===================== -->
+      <div class="section-head">Connects to</div>
+      <ul class="connects-list">
+        <li><strong>Time-Dependent Perturbation Theory (Lesson 12)</strong> — The time-independent version developed here assumes the perturbation is switched on adiabatically (slowly). Lesson 12 handles the case where $H'$ varies in time, leading to transition rates, Fermi's golden rule, and the theory of spectroscopic transitions.</li>
+        <li><strong>Quantum Mechanics in 3D (Lessons 7–9)</strong> — All the applications here (fine structure, Zeeman, Stark) required the angular momentum formalism, spherical harmonics, hydrogen wavefunctions, and spin. Perturbation theory is the calculation engine; the previous lessons supplied the machinery.</li>
+        <li><strong>Chemistry &amp; Molecular Physics</strong> — Molecular orbital theory, crystal field splitting, and NMR chemical shifts are all perturbation theory calculations. The perturbation is the electron-electron interaction, ligand fields, or neighboring nuclear spins — different physical contexts, same mathematical framework.</li>
+      </ul>
+
+      <!-- ===================== NAV ===================== -->
+      <div class="lesson-nav">
+        <a href="spin.html" class="lesson-nav-btn">← 9 · Spin</a>
+        <a href="identical.html" class="lesson-nav-btn disabled">11 · Identical Particles &amp; Entanglement →</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+<script src="../books-render.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  renderMathInElement(document.body, {
+    delimiters: [
+      {left: '$$', right: '$$', display: true},
+      {left: '$', right: '$', display: false}
+    ],
+    throwOnError: false
+  });
+
+  // ===================== Hydrogen fine structure energy level diagram =====================
+  // Using eV units. Gross energies: E_n = -13.6/n^2
+  // Fine structure correction (exaggerated x5000 for visibility):
+  // E_nj^FS = -(E_n)^2/(2*m_e*c^2) * (4n/(j+0.5) - 3)
+  // m_e*c^2 = 511000 eV
+
+  const me_c2 = 511000; // eV
+  const scale = 5000; // exaggerate fine structure
+
+  function E_gross(n) { return -13.6 / (n * n); }
+  function E_fs(n, j) {
+    const En = E_gross(n);
+    return -(En * En / (2 * me_c2)) * (4 * n / (j + 0.5) - 3);
+  }
+
+  // Levels: {n, l, j, label, x}
+  // Gross structure at x=0.1..0.9 (one per n), fine structure at x=1.5..2.5
+  const grossLevels = [
+    {n:1, label:'n=1', x:0.5},
+    {n:2, label:'n=2', x:0.5},
+    {n:3, label:'n=3', x:0.5},
+  ];
+
+  const fineLevels = [
+    // n=1
+    {n:1, l:0, j:0.5, label:'1s₁/₂', x:1.5},
+    // n=2
+    {n:2, l:0, j:0.5, label:'2s₁/₂', x:1.4},
+    {n:2, l:1, j:0.5, label:'2p₁/₂', x:1.6},
+    {n:2, l:1, j:1.5, label:'2p₃/₂', x:1.9},
+    // n=3
+    {n:3, l:0, j:0.5, label:'3s₁/₂', x:1.3},
+    {n:3, l:1, j:0.5, label:'3p₁/₂', x:1.45},
+    {n:3, l:1, j:1.5, label:'3p₃/₂', x:1.6},
+    {n:3, l:2, j:1.5, label:'3d₃/₂', x:1.75},
+    {n:3, l:2, j:2.5, label:'3d₅/₂', x:1.9},
+  ];
+
+  const traces = [];
+
+  // Gross structure lines
+  grossLevels.forEach(lv => {
+    const E = E_gross(lv.n);
+    traces.push({
+      x: [0.2, 0.8], y: [E, E],
+      mode: 'lines', line: {color: '#3a6a8a', width: 2.5},
+      hovertemplate: lv.label + ': E=' + E.toFixed(3) + ' eV<extra></extra>',
+      showlegend: false
+    });
+    traces.push({
+      x: [0.5], y: [E + 0.15], mode: 'text',
+      text: [lv.label], textfont: {size: 11, color: '#2a3a4a'},
+      showlegend: false, hoverinfo: 'skip'
+    });
+  });
+
+  // Fine structure lines (energy = gross + exaggerated FS correction)
+  const fsColors = {'0.5':'#c0503a', '1.5':'#5a9a3a', '2.5':'#8a5ab0'};
+  fineLevels.forEach(lv => {
+    const E = E_gross(lv.n) + scale * E_fs(lv.n, lv.j);
+    const col = fsColors[lv.j.toString()] || '#c07030';
+    traces.push({
+      x: [lv.x - 0.1, lv.x + 0.1], y: [E, E],
+      mode: 'lines', line: {color: col, width: 2},
+      hovertemplate: lv.label + ': ΔE_FS=' + (E_fs(lv.n,lv.j)*1000).toFixed(4) + ' meV<extra></extra>',
+      showlegend: false
+    });
+    traces.push({
+      x: [lv.x + 0.12], y: [E], mode: 'text',
+      text: [lv.label], textfont: {size: 9.5, color: '#333'},
+      textposition: 'middle right',
+      showlegend: false, hoverinfo: 'skip'
+    });
+  });
+
+  // Divider
+  traces.push({
+    x: [1.1, 1.1], y: [-13.8, -0.8],
+    mode: 'lines', line: {color: '#bbb', width: 1, dash: 'dash'},
+    showlegend: false, hoverinfo: 'skip'
+  });
+
+  const layout = {
+    xaxis: {
+      range: [0.0, 2.6], showticklabels: false, showgrid: false, zeroline: false,
+      title: 'Gross Structure          |          Fine Structure (×5000 scale)',
+      titlefont: {size: 11}
+    },
+    yaxis: {title: 'Energy (eV)', color: '#2a3a4a', gridcolor: '#dde5ec', range: [-14.2, -0.5]},
+    paper_bgcolor: 'transparent', plot_bgcolor: '#f8fbfd',
+    font: {family: 'IBM Plex Sans, sans-serif', size: 12, color: '#2a3a4a'},
+    margin: {t: 20, b: 60, l: 65, r: 100},
+    showlegend: false
+  };
+
+  Plotly.newPlot('levels-plot', traces, layout, {responsive: true});
+});
+</script>
+</body>
+</html>
