@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Schrödinger Equation — Quantum Mechanics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="quantum" data-current="schrodinger.html"></div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb"><a href="../index.html">Field Notes</a> → <a href="index.html">Quantum Mechanics</a> → The Schrödinger Equation</div>
+
+      <h1 class="lesson-title">The Schrödinger Equation</h1>
+      <div class="lesson-meta">TDSE · Stationary States · Born Rule · Expectation Values · Operators · Ehrenfest's Theorem</div>
+
+      <p class="prose">
+        In classical mechanics, Newton's second law $\mathbf{F} = m\mathbf{a}$ is the equation
+        of motion: given initial position and velocity, it tells you where the particle will be
+        at every future time. In quantum mechanics, the wavefunction $\Psi(x,t)$ replaces position
+        and velocity as the complete description of a particle's state, and the equation that
+        governs its evolution is the <strong>Schrödinger equation</strong>, written down by Erwin
+        Schrödinger in 1926.
+      </p>
+      <p class="prose">
+        The Schrödinger equation cannot be derived from more fundamental principles — it is
+        a postulate, justified by the fact that its predictions match experiment exactly. What
+        we can do is motivate it and understand its structure.
+      </p>
+
+      <div class="section-head">The Time-Dependent Schrödinger Equation</div>
+
+      <p class="prose">
+        For a particle of mass $m$ moving in a potential $V(x,t)$, the Schrödinger equation is:
+      </p>
+      $$i\hbar \frac{\partial \Psi}{\partial t} = -\frac{\hbar^2}{2m}\frac{\partial^2 \Psi}{\partial x^2} + V\Psi \equiv \hat{H}\Psi$$
+      <p class="prose">
+        The right-hand side is the <strong>Hamiltonian operator</strong> $\hat{H}$ acting on $\Psi$.
+        This is the quantum version of the classical Hamiltonian $H = p^2/2m + V$ — kinetic plus
+        potential energy — but with momentum replaced by the operator $\hat{p} = -i\hbar\, \partial/\partial x$.
+      </p>
+      <p class="prose">
+        Several features are immediately notable:
+      </p>
+      <ul class="prose-list">
+        <li><strong>First-order in time.</strong> Unlike the wave equation (second order in $t$),
+        the Schrödinger equation is first order in time. Given $\Psi(x,0)$, the future is
+        completely determined — the evolution is deterministic. Randomness only enters at
+        measurement.</li>
+        <li><strong>Complex.</strong> The factor $i$ on the left forces $\Psi$ to be complex-valued.
+        This is not a trick or an approximation. The imaginary unit is fundamental to quantum
+        mechanics.</li>
+        <li><strong>Linear.</strong> If $\Psi_1$ and $\Psi_2$ are solutions, so is any linear
+        combination $c_1\Psi_1 + c_2\Psi_2$. This is the superposition principle.</li>
+      </ul>
+
+      <div class="section-head">Separation of Variables: Stationary States</div>
+
+      <p class="prose">
+        For time-independent potentials $V = V(x)$, we can factor the wavefunction:
+        $\Psi(x, t) = \psi(x)\,\varphi(t)$. Substituting into the Schrödinger equation and
+        dividing both sides by $\psi\varphi$:
+      </p>
+      $$i\hbar \frac{1}{\varphi}\frac{d\varphi}{dt} = \frac{1}{\psi}\left[-\frac{\hbar^2}{2m}\frac{d^2\psi}{dx^2} + V\psi\right]$$
+      <p class="prose">
+        The left side depends only on $t$, the right only on $x$. Both must equal the same constant,
+        which we call $E$ (for reasons that will become clear). This splits into two equations:
+      </p>
+      $$\frac{d\varphi}{dt} = -\frac{iE}{\hbar}\varphi \qquad \Rightarrow \qquad \varphi(t) = e^{-iEt/\hbar}$$
+      $$-\frac{\hbar^2}{2m}\frac{d^2\psi}{dx^2} + V\psi = E\psi \qquad \text{(time-independent Schrödinger equation, TISE)}$$
+      <p class="prose">
+        The full solution is:
+      </p>
+      $$\Psi(x,t) = \psi(x)\,e^{-iEt/\hbar}$$
+      <p class="prose">
+        These are called <strong>stationary states</strong>. The probability density is:
+      </p>
+      $$|\Psi(x,t)|^2 = |\psi(x)|^2 \left|e^{-iEt/\hbar}\right|^2 = |\psi(x)|^2$$
+      <p class="prose">
+        which is time-independent — the probability distribution does not change in time, hence
+        "stationary." The time dependence is entirely in the phase factor $e^{-iEt/\hbar}$, which
+        cancels when you take the absolute square. This justifies calling $E$ energy: $E$ is the
+        definite energy of the state, and the TISE $\hat{H}\psi = E\psi$ is an eigenvalue equation
+        for the Hamiltonian.
+      </p>
+
+      <div class="section-head">Normalisation and Probability</div>
+
+      <p class="prose">
+        Because $|\Psi(x,t)|^2 dx$ is a probability, the wavefunction must be normalised:
+      </p>
+      $$\int_{-\infty}^{\infty} |\Psi(x,t)|^2\, dx = 1$$
+      <p class="prose">
+        For a stationary state this becomes $\int_{-\infty}^{\infty} |\psi(x)|^2\, dx = 1$.
+        If a solution $\psi$ satisfies the TISE but is not normalised, we multiply by a constant
+        $A$ such that $|A|^2 \int |\psi|^2 dx = 1$. Not all solutions of the TISE are normalisable
+        (free-particle plane waves, for example, extend over all space). Only normalisable solutions
+        correspond to physically realisable quantum states.
+      </p>
+      <p class="prose">
+        A key result: <strong>if $\Psi$ is normalised at $t = 0$, it stays normalised for all time</strong>.
+        This follows from the Schrödinger equation itself — we can show $d/dt \int |\Psi|^2 dx = 0$.
+        This consistency is not trivial: it is what makes the probabilistic interpretation self-consistent.
+      </p>
+
+      <div class="section-head">Expectation Values and Operators</div>
+
+      <p class="prose">
+        Since measurement outcomes are probabilistic, we characterise quantum states by
+        <strong>expectation values</strong> — the average value of a measurement over many
+        identically prepared systems:
+      </p>
+      $$\langle x \rangle = \int_{-\infty}^{\infty} x\, |\Psi(x,t)|^2\, dx$$
+      <p class="prose">
+        For momentum, the story is more subtle. A particle with definite momentum $p$ has
+        wavefunction $e^{ipx/\hbar}$ (a plane wave). To extract momentum information from a
+        general $\Psi$, we use the <strong>momentum operator</strong>:
+      </p>
+      $$\hat{p} = -i\hbar\frac{\partial}{\partial x}$$
+      <p class="prose">
+        Expectation values are computed by sandwiching the operator between $\Psi^*$ and $\Psi$:
+      </p>
+      $$\langle p \rangle = \int_{-\infty}^{\infty} \Psi^*\left(-i\hbar\frac{\partial}{\partial x}\right)\Psi\, dx$$
+      <p class="prose">
+        This generalises. Any observable $Q(x, p)$ is represented by a quantum operator
+        $\hat{Q}(x, \hat{p}) = \hat{Q}(x, -i\hbar\,\partial/\partial x)$, and its expectation value is:
+      </p>
+      $$\langle Q \rangle = \int \Psi^*\,\hat{Q}\,\Psi\, dx$$
+      <p class="prose">
+        The kinetic energy operator is $\hat{T} = \hat{p}^2/2m = -(\hbar^2/2m)\,\partial^2/\partial x^2$,
+        and the total energy (Hamiltonian) is $\hat{H} = \hat{T} + V$. For a stationary state
+        $\psi(x)e^{-iEt/\hbar}$, the expectation value of $\hat{H}$ is just $E$ — the definite
+        energy of that state.
+      </p>
+
+      <div class="section-head">Ehrenfest's Theorem</div>
+
+      <p class="prose">
+        Quantum mechanics must reduce to classical mechanics in the appropriate limit. Ehrenfest's
+        theorem makes this precise. Starting from the Schrödinger equation and computing
+        $d\langle x\rangle/dt$ and $d\langle p \rangle/dt$:
+      </p>
+      $$\frac{d\langle x \rangle}{dt} = \frac{\langle p \rangle}{m}$$
+      $$\frac{d\langle p \rangle}{dt} = -\left\langle \frac{\partial V}{\partial x} \right\rangle$$
+      <p class="prose">
+        These are the quantum analogues of Hamilton's equations. If the wavefunction is a narrow
+        wave packet — well-localised in space — then $\langle \partial V/\partial x \rangle \approx
+        \partial V/\partial x \big|_{\langle x \rangle}$, and we recover Newton's second law
+        exactly: $m\,d^2\langle x\rangle/dt^2 = F(\langle x\rangle)$. Classical mechanics
+        governs the motion of expectation values in the limit of narrow wave packets. This is
+        why macroscopic objects follow classical trajectories despite being quantum mechanical.
+      </p>
+
+      <div class="section-head">The Continuity Equation</div>
+
+      <p class="prose">
+        Since $|\Psi|^2$ is a probability density, it must satisfy a conservation law: probability
+        cannot appear or disappear, only flow. Define the <strong>probability current</strong>:
+      </p>
+      $$J(x,t) = \frac{\hbar}{2mi}\left(\Psi^*\frac{\partial\Psi}{\partial x} - \Psi\frac{\partial\Psi^*}{\partial x}\right)$$
+      <p class="prose">
+        Then the Schrödinger equation implies the <strong>continuity equation</strong>:
+      </p>
+      $$\frac{\partial}{\partial t}|\Psi|^2 + \frac{\partial J}{\partial x} = 0$$
+      <p class="prose">
+        This says that any local decrease in probability density is accompanied by a net outward
+        flow of probability current — exactly like conservation of electric charge or fluid mass.
+        The probability current $J$ is real-valued and tells us the net flow of probability per
+        unit time across a given point. This will be essential when we analyse quantum scattering
+        and tunneling in Lesson 5.
+      </p>
+
+      <div class="section-head">Superposition and the General Solution</div>
+
+      <p class="prose">
+        The TISE is an eigenvalue equation, and for a given potential it typically has a
+        discrete or continuous set of solutions $\{\psi_n\}$ with corresponding energies $\{E_n\}$.
+        The <strong>general solution</strong> of the full (time-dependent) Schrödinger equation is
+        a superposition of stationary states:
+      </p>
+      $$\Psi(x,t) = \sum_n c_n\,\psi_n(x)\,e^{-iE_n t/\hbar}$$
+      <p class="prose">
+        The coefficients $c_n$ are determined by the initial condition $\Psi(x,0) = \sum_n c_n \psi_n(x)$.
+        They encode the probability: the probability of measuring energy $E_n$ is $|c_n|^2$.
+        Normalisation requires $\sum_n |c_n|^2 = 1$.
+      </p>
+      <p class="prose">
+        When the potential has a continuous spectrum (as for the free particle), the sum becomes
+        an integral. In either case, the strategy is the same: find the stationary states,
+        expand the initial condition in terms of them, and attach the appropriate phase factors
+        $e^{-iE_n t/\hbar}$ to each component.
+      </p>
+      <p class="prose">
+        <strong>Important:</strong> a superposition state does <em>not</em> have a definite energy.
+        A measurement of energy on the state $\Psi = c_1\psi_1 + c_2\psi_2$ will return $E_1$ with
+        probability $|c_1|^2$ or $E_2$ with probability $|c_2|^2$. After measurement, the wavefunction
+        "collapses" to whichever eigenstate was observed. This is wavefunction collapse — the most
+        conceptually contentious part of quantum mechanics.
+      </p>
+
+      <div class="widget-card">
+        <div class="widget-title">Superposition: Two Stationary States in an Infinite Well</div>
+        <div id="superposition-chart" style="height:380px;"></div>
+      </div>
+
+      <div class="section-head">Worked Examples</div>
+
+      <div class="example-box">
+        <div class="example-title">Example 1 — Showing normalisation is preserved</div>
+        <div class="example-body">
+          <p>Show that if $\int|\Psi(x,0)|^2 dx = 1$, then $\int|\Psi(x,t)|^2 dx = 1$ for all $t$.</p>
+          <p>Differentiate with respect to time:
+          $$\frac{d}{dt}\int_{-\infty}^\infty |\Psi|^2\,dx = \int \frac{\partial}{\partial t}|\Psi|^2\,dx = -\int \frac{\partial J}{\partial x}\,dx = -[J]_{-\infty}^{\infty}$$
+          Since normalisable wavefunctions vanish at $\pm\infty$, $J \to 0$ at both limits, so
+          $d/dt \int |\Psi|^2 dx = 0$. The integral is constant in time. $\square$</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-title">Example 2 — Expectation value of energy</div>
+        <div class="example-body">
+          <p>A particle is in the state $\Psi = \frac{1}{\sqrt{2}}(\psi_1 + \psi_2)e^{0}$
+          at $t = 0$, where $\psi_1$, $\psi_2$ are energy eigenstates with energies $E_1$, $E_2$.
+          What is $\langle H \rangle$?</p>
+          <p>The state at time $t$ is $\Psi = \frac{1}{\sqrt{2}}(\psi_1 e^{-iE_1 t/\hbar} + \psi_2 e^{-iE_2 t/\hbar})$.
+          Using $\langle H \rangle = \int \Psi^* \hat{H} \Psi\, dx$ and the fact that $\hat{H}\psi_n = E_n\psi_n$
+          with $\int \psi_n^* \psi_m dx = \delta_{nm}$:
+          $$\langle H \rangle = \frac{1}{2}(E_1 + E_2)$$
+          This is time-independent (energy conservation). Each individual measurement gives $E_1$ or $E_2$ with equal probability $\frac{1}{2}$; the average is $(E_1+E_2)/2$. Note that $\langle H \rangle \neq E_1$ or $E_2$ — the particle is in a superposition and has no definite energy.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-title">Example 3 — Momentum operator on a plane wave</div>
+        <div class="example-body">
+          <p>Show that $\psi(x) = Ae^{ikx}$ is an eigenstate of $\hat{p}$ and find the eigenvalue.</p>
+          <p>Apply the momentum operator:
+          $$\hat{p}\,\psi = -i\hbar\frac{d}{dx}(Ae^{ikx}) = -i\hbar(ik)(Ae^{ikx}) = \hbar k \cdot Ae^{ikx} = \hbar k\,\psi$$
+          So $e^{ikx}$ is a momentum eigenstate with eigenvalue $p = \hbar k$.
+          This matches the de Broglie relation: $p = h/\lambda = h/(2\pi/k) = \hbar k$.
+          The plane wave has a perfectly definite momentum but is not normalisable — it extends over
+          all space, consistent with $\Delta x = \infty$ demanded by $\Delta x \Delta p \geq \hbar/2$
+          when $\Delta p = 0$.</p>
+        </div>
+      </div>
+
+      <div class="section-head">Fast-Fire Thinking</div>
+
+      <ul class="fft-list">
+        <li class="fft-item">
+          <div class="fft-question">A stationary state has $|\Psi|^2$ that is independent of time. Does this mean nothing is happening?</div>
+          <div class="fft-answer">
+            <p>No. The wavefunction itself is still oscillating — the phase factor $e^{-iEt/\hbar}$ rotates in the complex plane at frequency $\omega = E/\hbar$. What is time-independent is $|\Psi|^2$ — the probability density — because the phase factor cancels when you take the modulus squared. All expectation values of time-independent operators ($\hat{x}$, $\hat{p}$, $\hat{H}$) are constant. But the particle is not "sitting still" — it still has kinetic energy, and the probability current $J$ may be nonzero in complex systems. "Stationary" means stationary in the statistical sense, not in the mechanical sense.</p>
+          </div>
+        </li>
+        <li class="fft-item">
+          <div class="fft-question">Why must quantum observables be represented by Hermitian operators?</div>
+          <div class="fft-answer">
+            <p>A Hermitian operator $\hat{Q}$ satisfies $\langle f|\hat{Q}|g\rangle = \langle\hat{Q}f|g\rangle$ for all $f,g$. Two key consequences: (1) The eigenvalues of a Hermitian operator are real. Since eigenvalues correspond to measurement outcomes — energies, momenta, positions — they must be real numbers. (2) Eigenfunctions with different eigenvalues are orthogonal, which is required for the measurement probabilities $|c_n|^2$ to be well-defined and sum to 1. Any non-Hermitian operator would give complex measurement outcomes or probabilities that don't add up to 1 — both physically meaningless.</p>
+          </div>
+        </li>
+        <li class="fft-item">
+          <div class="fft-question">Ehrenfest's theorem says $d\langle p\rangle/dt = -\langle \partial V/\partial x\rangle$. Is this the same as Newton's second law?</div>
+          <div class="fft-answer">
+            <p>Almost, but not exactly. Newton's law (in the classical limit) is $dp/dt = -\partial V/\partial x\big|_x$, evaluated at the particle's position. Ehrenfest gives $d\langle p\rangle/dt = -\langle \partial V/\partial x\rangle$, where the average is over the wavefunction. These are the same only if $\partial V/\partial x$ is constant (uniform force) or if the wavefunction is so sharply peaked that $\langle f(x) \rangle \approx f(\langle x\rangle)$. For a spread-out wavefunction in a non-linear potential, the two differ — this is quantum spreading and has no classical analogue. A quantum wave packet in an anharmonic potential will spread out and eventually not follow the classical trajectory at all.</p>
+          </div>
+        </li>
+      </ul>
+
+      <div class="section-head">Pitfalls</div>
+
+      <ul class="pitfall-list">
+        <li><strong>The Schrödinger equation is not relativistic.</strong> The TDSE as written applies to non-relativistic particles (speeds much less than $c$). The relativistic generalisations are the Klein-Gordon equation (spin-0 particles) and the Dirac equation (spin-½ particles). For electrons in atoms, non-relativistic QM is an excellent approximation — relativistic corrections are the "fine structure" of order $(v/c)^2 \sim \alpha^2 \approx (1/137)^2$.</li>
+        <li><strong>Don't confuse $\Psi$ with $|\Psi|^2$.</strong> The wavefunction $\Psi$ is complex — it has phase information that matters for interference. $|\Psi|^2$ is real and is the probability density. You cannot recover $\Psi$ from $|\Psi|^2$ alone — the phase is lost. This matters when combining wavefunctions (superpositions): you add $\Psi$'s, not $|\Psi|^2$'s.</li>
+        <li><strong>Stationary states are not the only allowed states.</strong> Any normalisable function can be a quantum state — it just won't have a definite energy. Stationary states are special because they have definite energy and simple time evolution, making them useful as basis states. The general solution is always a superposition of them.</li>
+        <li><strong>The separation constant $E$ is real.</strong> This follows from the requirement that $\Psi$ remain normalisable for all time. If $E$ had a positive imaginary part, the time factor $e^{-iEt/\hbar}$ would grow exponentially, violating normalisation. Hermiticity of $\hat{H}$ guarantees real eigenvalues.</li>
+      </ul>
+
+      <div class="section-head">Connects To</div>
+
+      <ul class="connects-list">
+        <li><a href="quantum-world.html">Lesson 1 — The Quantum World</a>: The wavefunction concept and Born rule introduced there; the Schrödinger equation is the dynamic law governing wavefunction evolution.</li>
+        <li><a href="square-well.html">Lesson 3 — Infinite Square Well</a>: The first concrete solution of the TISE — quantised energies emerge directly from the boundary conditions.</li>
+        <li><a href="formalism.html">Lesson 6 — Formalism &amp; Uncertainty</a>: The operator formalism, Hermiticity, and the generalised uncertainty principle all build on the operator language introduced here.</li>
+      </ul>
+
+      <nav class="lesson-nav">
+        <a href="quantum-world.html" class="lesson-nav-prev">← 1 · The Quantum World</a>
+        <a href="square-well.html" class="lesson-nav-next">3 · Infinite Square Well →</a>
+      </nav>
+
+    </div><!-- /main -->
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  if (window.renderMathInElement) {
+    renderMathInElement(document.body, {
+      delimiters: [
+        {left: '$$', right: '$$', display: true},
+        {left: '$', right: '$', display: false}
+      ]
+    });
+  }
+
+  // Show |Ψ(x,t)|² for a superposition of n=1 and n=2 in an infinite square well
+  // at several times. L=1, ħ=1, m=1 (natural units), E_n = n²π²/2
+  const L = 1, N = 200;
+  const xs = Array.from({length: N+1}, (_, i) => i * L / N);
+  const E1 = Math.PI**2 / 2, E2 = 4 * Math.PI**2 / 2;
+  const times = [0, 0.25, 0.5, 0.75]; // fractions of the revival period T = 2π/(E2-E1)
+  const T = 2 * Math.PI / (E2 - E1);
+  const colors = ['#e8a838', '#4a9eff', '#e05050', '#50c878'];
+  const labels = ['t = 0', 't = T/4', 't = T/2', 't = 3T/4'];
+
+  const traces = times.map((tf, idx) => {
+    const t = tf * T;
+    const prob = xs.map(x => {
+      const psi1 = Math.sqrt(2/L) * Math.sin(Math.PI * x / L);
+      const psi2 = Math.sqrt(2/L) * Math.sin(2 * Math.PI * x / L);
+      // Ψ = (1/√2)(ψ₁ e^{-iE₁t} + ψ₂ e^{-iE₂t})
+      // |Ψ|² = ½(ψ₁² + ψ₂²) + ψ₁ψ₂ cos((E₂-E₁)t)
+      return 0.5 * (psi1**2 + psi2**2) + psi1 * psi2 * Math.cos((E2 - E1) * t);
+    });
+    return {
+      x: xs, y: prob,
+      mode: 'lines', name: labels[idx],
+      line: { color: colors[idx], width: idx === 0 ? 2.5 : 1.8, dash: idx === 0 ? 'solid' : 'solid' }
+    };
+  });
+
+  const layout = {
+    paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
+    font: { family: 'IBM Plex Sans, sans-serif', size: 12, color: '#ccc' },
+    xaxis: { title: 'Position x/L', gridcolor: '#2a2a2a', color: '#888', showline: true, linecolor: '#444', range: [0, 1] },
+    yaxis: { title: '|Ψ(x,t)|²', gridcolor: '#2a2a2a', color: '#888', showline: true, linecolor: '#444' },
+    legend: { bgcolor: 'transparent', x: 0.98, xanchor: 'right', y: 0.98, yanchor: 'top' },
+    margin: { l: 60, r: 20, t: 20, b: 50 },
+    annotations: [{
+      x: 0.5, y: -0.12, xref: 'paper', yref: 'paper',
+      text: 'Equal superposition ψ = (ψ₁ + ψ₂)/√2. Probability sloshes back and forth at frequency (E₂−E₁)/ℏ.',
+      showarrow: false, font: { size: 11, color: '#888' }
+    }]
+  };
+
+  Plotly.newPlot('superposition-chart', traces, layout, { responsive: true, displayModeBar: false });
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Infinite Square Well — Quantum Mechanics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="quantum" data-current="square-well.html"></div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb"><a href="../index.html">Field Notes</a> → <a href="index.html">Quantum Mechanics</a> → Infinite Square Well</div>
+
+      <h1 class="lesson-title">Infinite Square Well</h1>
+      <div class="lesson-meta">Particle in a Box · Energy Quantisation · Wavefunctions · Orthonormality · Superposition · Time Evolution</div>
+
+      <p class="prose">
+        The infinite square well — a particle confined between impenetrable walls — is the simplest
+        non-trivial quantum system. It has an exact solution, exhibits all the key features of
+        quantum mechanics (energy quantisation, zero-point energy, discrete spectra, superposition),
+        and serves as the prototype for understanding more complex systems. It is to quantum mechanics
+        what the simple harmonic oscillator is to classical mechanics — simple enough to solve
+        completely, rich enough to reveal deep principles.
+      </p>
+
+      <div class="section-head">The Potential and Boundary Conditions</div>
+
+      <p class="prose">
+        The infinite square well potential places a particle in a box of width $a$:
+      </p>
+      $$V(x) = \begin{cases} 0 & 0 \leq x \leq a \\ \infty & \text{otherwise} \end{cases}$$
+      <p class="prose">
+        Outside the box, the potential is infinite, so the wavefunction must vanish:
+        $\psi(x) = 0$ for $x \leq 0$ and $x \geq a$. Inside the box, $V = 0$, so the TISE becomes:
+      </p>
+      $$-\frac{\hbar^2}{2m}\frac{d^2\psi}{dx^2} = E\psi \qquad \Rightarrow \qquad \frac{d^2\psi}{dx^2} = -k^2\psi, \quad k \equiv \frac{\sqrt{2mE}}{\hbar}$$
+      <p class="prose">
+        For $E > 0$ this has the general solution $\psi(x) = A\sin(kx) + B\cos(kx)$. Applying
+        the boundary conditions:
+      </p>
+      <ul class="prose-list">
+        <li>$\psi(0) = 0$: forces $B = 0$, so $\psi(x) = A\sin(kx)$.</li>
+        <li>$\psi(a) = 0$: forces $\sin(ka) = 0$, which means $ka = n\pi$ for $n = 1, 2, 3, \ldots$</li>
+      </ul>
+      <p class="prose">
+        The condition $n = 0$ is excluded because it gives $\psi = 0$ everywhere (non-normalisable).
+        Negative integers just repeat the same physical states with opposite sign.
+      </p>
+
+      <div class="section-head">Quantised Energies</div>
+
+      <p class="prose">
+        The boundary condition $ka = n\pi$ fixes the allowed values of $k$:
+        $k_n = n\pi/a$, which gives the quantised energies:
+      </p>
+      $$\boxed{E_n = \frac{\hbar^2 k_n^2}{2m} = \frac{n^2 \pi^2 \hbar^2}{2ma^2}, \quad n = 1, 2, 3, \ldots}$$
+      <p class="prose">
+        This is the central result. The allowed energies are discrete — not a continuum. The
+        quantum number $n$ labels the states. Several features:
+      </p>
+      <ul class="prose-list">
+        <li><strong>$E_n \propto n^2$.</strong> Energies grow quadratically with $n$. The gap between
+        adjacent levels grows: $E_2 - E_1 = 3E_1$, $E_3 - E_2 = 5E_1$, etc.</li>
+        <li><strong>Zero-point energy.</strong> The lowest possible energy is $E_1 = \pi^2\hbar^2/2ma^2 > 0$.
+        The particle can never be at rest — a direct consequence of the uncertainty principle.
+        Confining the particle to width $a$ means $\Delta x \lesssim a$, so $\Delta p \gtrsim \hbar/a$,
+        giving kinetic energy $\sim \hbar^2/2ma^2$. This matches $E_1$ up to a numerical factor.</li>
+        <li><strong>Smaller box, higher energies.</strong> $E_n \propto 1/a^2$. Squeezing the box
+        raises all energy levels — the quantum pressure that gives atomic electrons their finite
+        ground-state energy and prevents atomic collapse.</li>
+      </ul>
+
+      <div class="section-head">Normalised Wavefunctions</div>
+
+      <p class="prose">
+        The normalised stationary-state wavefunctions are:
+      </p>
+      $$\psi_n(x) = \sqrt{\frac{2}{a}}\sin\!\left(\frac{n\pi x}{a}\right), \quad 0 \leq x \leq a$$
+      <p class="prose">
+        To verify: $\int_0^a |\psi_n|^2\,dx = \frac{2}{a}\int_0^a \sin^2(n\pi x/a)\,dx = \frac{2}{a}\cdot\frac{a}{2} = 1$. ✓
+      </p>
+      <p class="prose">
+        Key features of $\psi_n$:
+      </p>
+      <ul class="prose-list">
+        <li>$\psi_n$ has $n-1$ <strong>nodes</strong> (zeros) in the interior of the box.
+        More nodes means more oscillation, hence higher curvature, hence higher kinetic energy.</li>
+        <li>$\psi_1$ (the ground state) is always positive inside the box. Each successive state
+        alternates sign one more time.</li>
+        <li>$\psi_n$ for odd $n$ is symmetric about the centre of the box; for even $n$, antisymmetric.
+        This is a consequence of the potential's symmetry about $x = a/2$.</li>
+      </ul>
+
+      <div class="widget-card">
+        <div class="widget-title">Infinite Square Well — Wavefunctions and Energy Levels</div>
+        <div id="well-chart" style="height:400px;"></div>
+      </div>
+
+      <div class="section-head">Orthonormality and Completeness</div>
+
+      <p class="prose">
+        The energy eigenfunctions satisfy:
+      </p>
+      $$\int_0^a \psi_m^*(x)\,\psi_n(x)\,dx = \delta_{mn}$$
+      <p class="prose">
+        This is <strong>orthonormality</strong>: $\delta_{mn} = 1$ if $m = n$, zero otherwise.
+        Orthogonality is not accidental — it follows from the Hermiticity of $\hat{H}$ (eigenfunctions
+        of a Hermitian operator with distinct eigenvalues are orthogonal). It also follows directly
+        from the integral: $\int_0^a \sin(m\pi x/a)\sin(n\pi x/a)\,dx = (a/2)\delta_{mn}$.
+      </p>
+      <p class="prose">
+        The eigenfunctions are also <strong>complete</strong>: any normalisable function on $[0, a]$
+        can be expanded as:
+      </p>
+      $$f(x) = \sum_{n=1}^\infty c_n\,\psi_n(x), \qquad c_n = \int_0^a \psi_n^*(x)\,f(x)\,dx$$
+      <p class="prose">
+        This is nothing but a Fourier sine series on $[0,a]$. The coefficients $c_n$ give the
+        probability $|c_n|^2$ of measuring energy $E_n$ if the particle is in state $f(x)$.
+      </p>
+
+      <div class="section-head">Time Evolution of a Superposition</div>
+
+      <p class="prose">
+        The general state at time $t$ is:
+      </p>
+      $$\Psi(x,t) = \sum_{n=1}^\infty c_n\,\psi_n(x)\,e^{-iE_n t/\hbar}$$
+      <p class="prose">
+        When $\Psi$ is a superposition of two or more eigenstates, $|\Psi(x,t)|^2$ oscillates
+        in time at the <strong>beat frequencies</strong> $(E_m - E_n)/\hbar$. The probability
+        density "sloshes" back and forth inside the well, exactly as shown in the chart in
+        Lesson 2. This is the quantum analogue of a classical particle bouncing back and forth
+        — but the motion is in the probability density, not in a definite position.
+      </p>
+      <p class="prose">
+        For the equal superposition $\Psi = (1/\sqrt{2})(\psi_1 + \psi_2)e^{0}$ at $t=0$:
+      </p>
+      $$|\Psi(x,t)|^2 = \frac{1}{2}|\psi_1|^2 + \frac{1}{2}|\psi_2|^2 + \psi_1\psi_2\cos\!\left(\frac{(E_2-E_1)t}{\hbar}\right)$$
+      <p class="prose">
+        The cross term oscillates at angular frequency $\omega_{21} = (E_2-E_1)/\hbar$. After a
+        full period $T = 2\pi\hbar/(E_2-E_1)$, the probability density returns to its initial
+        form. This is the <strong>quantum revival</strong> — a purely quantum-mechanical phenomenon
+        with no classical analogue.
+      </p>
+
+      <div class="section-head">Worked Examples</div>
+
+      <div class="example-box">
+        <div class="example-title">Example 1 — Finding the coefficients $c_n$</div>
+        <div class="example-body">
+          <p>A particle in an infinite square well of width $a$ is prepared in the state
+          $\Psi(x,0) = Ax(a-x)$ for $0 \leq x \leq a$. Find the normalisation constant $A$
+          and the expansion coefficients $c_n$.</p>
+          <p><strong>Normalisation:</strong>
+          $\int_0^a |A|^2 x^2(a-x)^2\,dx = |A|^2\left[\frac{a^5}{3} - \frac{2a^5}{4} + \frac{a^5}{5}\right] = |A|^2\frac{a^5}{30} = 1$,
+          giving $A = \sqrt{30/a^5}$.</p>
+          <p><strong>Coefficients:</strong>
+          $c_n = \int_0^a \psi_n^* \Psi(x,0)\,dx = \sqrt{\frac{2}{a}}\sqrt{\frac{30}{a^5}}\int_0^a x(a-x)\sin\!\left(\frac{n\pi x}{a}\right)\!dx$.
+          The integral evaluates using integration by parts twice:
+          $$c_n = \frac{4\sqrt{15}}{(n\pi)^3}\left[1 - (-1)^n\right]$$
+          So $c_n = 0$ for even $n$, and $c_n = 8\sqrt{15}/(n\pi)^3$ for odd $n$. The state has
+          no even-$n$ components because $x(a-x)$ is symmetric about $x=a/2$ — it only overlaps
+          with the odd (symmetric) eigenfunctions.</p>
+          <p>The probability of measuring $E_1$ is $|c_1|^2 = (8\sqrt{15}/\pi^3)^2 \approx 0.9986$.
+          Nearly all the weight is in the ground state — the parabola $x(a-x)$ closely resembles $\psi_1$.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-title">Example 2 — Expectation values in a stationary state</div>
+        <div class="example-body">
+          <p>Find $\langle x \rangle$, $\langle x^2 \rangle$, $\langle p \rangle$, $\langle p^2 \rangle$
+          for the $n$-th stationary state of the infinite square well, and verify the uncertainty
+          principle.</p>
+          <p>$\langle x \rangle = \frac{2}{a}\int_0^a x\sin^2(n\pi x/a)\,dx = \frac{a}{2}$ (centre of well, by symmetry for all $n$)</p>
+          <p>$\langle x^2 \rangle = \frac{a^2}{3} - \frac{a^2}{2n^2\pi^2}$</p>
+          <p>$\langle p \rangle = -i\hbar\frac{2}{a}\int_0^a \sin(n\pi x/a)\frac{d}{dx}\sin(n\pi x/a)\,dx = 0$ (by symmetry: $\psi_n$ is real, real functions have zero mean momentum)</p>
+          <p>$\langle p^2 \rangle = \frac{2}{a}\int_0^a \sin(n\pi x/a)\left(-\hbar^2\frac{d^2}{dx^2}\right)\sin(n\pi x/a)\,dx = \frac{n^2\pi^2\hbar^2}{a^2}$</p>
+          <p>Note: $\langle p^2\rangle/2m = n^2\pi^2\hbar^2/2ma^2 = E_n$ ✓ — all energy is kinetic inside the well.</p>
+          <p>$\sigma_x = \sqrt{\langle x^2\rangle - \langle x\rangle^2} = a\sqrt{1/12 - 1/2n^2\pi^2}$, $\quad\sigma_p = n\pi\hbar/a$</p>
+          <p>$\sigma_x\sigma_p = n\pi\hbar\sqrt{1/12 - 1/2n^2\pi^2} \geq \hbar/2$ ✓ (the minimum is $\hbar/2$ for the harmonic oscillator ground state; the square well has a larger product).</p>
+        </div>
+      </div>
+
+      <div class="section-head">Fast-Fire Thinking</div>
+
+      <ul class="fft-list">
+        <li class="fft-item">
+          <div class="fft-question">The ground state of the infinite square well has $E_1 > 0$. But $V = 0$ inside the well. Where does this energy come from?</div>
+          <div class="fft-answer">
+            <p>It is purely kinetic energy, arising from the uncertainty principle. Confining the particle to a region of width $a$ requires $\Delta x \lesssim a$, which implies $\Delta p \gtrsim \hbar/a$, and hence kinetic energy $\langle p^2\rangle/2m \gtrsim \hbar^2/2ma^2$. This is the zero-point energy. It does not "come from" anywhere in the sense of energy being transferred — it is the minimum kinetic energy consistent with the spatial constraint. You cannot make the ground-state energy zero by removing the potential, because without confinement there is no potential well, hence no bound state. The energy is an intrinsic consequence of quantum confinement.</p>
+          </div>
+        </li>
+        <li class="fft-item">
+          <div class="fft-question">For large quantum number $n$, the probability density $|\psi_n|^2$ oscillates rapidly. Is this consistent with the classical limit?</div>
+          <div class="fft-answer">
+            <p>Yes — this is the <strong>correspondence principle</strong> in action. A classical particle bouncing inside a box spends equal time at all positions (uniform probability density). For $|\psi_n|^2 = (2/a)\sin^2(n\pi x/a)$, as $n \to \infty$ the function oscillates so rapidly that no detector with finite resolution can resolve the individual peaks. The average value of $\sin^2$ is $1/2$, so coarse-grained $|\psi_n|^2 \to 1/a$ — the uniform classical distribution. Quantum mechanics reproduces classical results when the de Broglie wavelength $\lambda = 2a/n$ is much smaller than the box size. This is the general principle: quantum discreteness becomes irrelevant when $\lambda \ll$ (size of system).</p>
+          </div>
+        </li>
+        <li class="fft-item">
+          <div class="fft-question">Why is $E_n \propto 1/a^2$ rather than $1/a$ or $1/a^3$?</div>
+          <div class="fft-answer">
+            <p>Dimensionally: the only length in the problem is $a$, and the only energy scale from $\hbar$ and $m$ is $\hbar^2/ma^2$. So $E_n \propto \hbar^2/ma^2$ on dimensional grounds alone. The $1/a^2$ dependence is forced by the combination of $\hbar$ (units of energy·time = kg·m²/s), $m$ (kg), and $a$ (m): the unique combination with units of energy is $[\hbar^2/ma^2]$ = kg·m²·s⁻² = J. Physically: the momentum scale in the box is $p \sim \hbar/a$ (de Broglie), so kinetic energy $\sim p^2/2m \sim \hbar^2/ma^2$.</p>
+          </div>
+        </li>
+      </ul>
+
+      <div class="section-head">Pitfalls</div>
+
+      <ul class="pitfall-list">
+        <li><strong>Do not include $n = 0$.</strong> $\psi_0 = 0$ everywhere — not a physical state. The quantum numbers run $n = 1, 2, 3, \ldots$ The ground state is $n = 1$.</li>
+        <li><strong>The derivative of $\psi$ is discontinuous at the walls.</strong> Normally we require $d\psi/dx$ to be continuous. The exception is an infinite potential jump: the derivative can be discontinuous at $x=0$ and $x=a$ because $V = \infty$ there. Finite potentials always give continuous derivatives; only the idealized infinite wall is the exception.</li>
+        <li><strong>Orthogonality means $\int\psi_m^*\psi_n = \delta_{mn}$, not that $\psi_m\psi_n = 0$ pointwise.</strong> Two wavefunctions can be nonzero at the same location and still be orthogonal — orthogonality is a statement about the inner product (integral), not pointwise vanishing.</li>
+        <li><strong>The expansion coefficients depend on the initial state, not the box.</strong> $c_n = \int \psi_n^* \Psi(x,0)\,dx$ changes with $\Psi(x,0)$. The energy eigenstates $\psi_n$ are properties of the Hamiltonian (the box); how much of each eigenstate is present is a property of the particular quantum state you prepared.</li>
+      </ul>
+
+      <div class="section-head">Connects To</div>
+
+      <ul class="connects-list">
+        <li><a href="schrodinger.html">Lesson 2 — The Schrödinger Equation</a>: The infinite square well is the first complete solution of the TISE, realising all the abstract machinery of Lesson 2 concretely.</li>
+        <li><a href="harmonic.html">Lesson 4 — The Harmonic Oscillator</a>: The same structure (discrete energies, ladder of states, zero-point energy) appears but with a different spacing law — $E_n \propto n$ vs $E_n \propto n^2$.</li>
+        <li><a href="formalism.html">Lesson 6 — Formalism &amp; Uncertainty</a>: Orthonormality and completeness of eigenfunctions, first seen here concretely, are systematised in the abstract formalism of Hilbert spaces and Dirac notation.</li>
+      </ul>
+
+      <nav class="lesson-nav">
+        <a href="schrodinger.html" class="lesson-nav-prev">← 2 · The Schrödinger Equation</a>
+        <a href="harmonic.html" class="lesson-nav-next">4 · The Harmonic Oscillator →</a>
+      </nav>
+
+    </div><!-- /main -->
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  if (window.renderMathInElement) {
+    renderMathInElement(document.body, {
+      delimiters: [
+        {left: '$$', right: '$$', display: true},
+        {left: '$', right: '$', display: false}
+      ]
+    });
+  }
+
+  // Plot first 4 wavefunctions and their energy levels
+  const a = 1, N = 300;
+  const xs = Array.from({length: N+1}, (_, i) => i * a / N);
+  const hbar2over2ma2 = 1; // natural units: ℏ²/2ma² = 1
+  const colors = ['#e8a838', '#4a9eff', '#e05050', '#50c878'];
+
+  const traces = [];
+
+  for (let n = 1; n <= 4; n++) {
+    const En = n * n * Math.PI**2 * hbar2over2ma2;
+    const psi = xs.map(x => Math.sqrt(2/a) * Math.sin(n * Math.PI * x / a));
+    const scale = 1.5; // visual scale factor
+    // Plot wavefunction offset by energy level
+    traces.push({
+      x: xs,
+      y: psi.map(p => En + scale * p),
+      mode: 'lines',
+      name: `ψ₍${n}₎, E = ${n}²E₁`,
+      line: { color: colors[n-1], width: 2 },
+      showlegend: true
+    });
+    // Horizontal line at energy En
+    traces.push({
+      x: [0, a], y: [En, En],
+      mode: 'lines', showlegend: false,
+      line: { color: colors[n-1], width: 1, dash: 'dot' }
+    });
+  }
+
+  // Box walls
+  const E4 = 16 * Math.PI**2;
+  traces.push({ x: [0,0], y: [0, E4+6], mode: 'lines', showlegend: false, line: { color: '#555', width: 2 } });
+  traces.push({ x: [a,a], y: [0, E4+6], mode: 'lines', showlegend: false, line: { color: '#555', width: 2 } });
+
+  const layout = {
+    paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
+    font: { family: 'IBM Plex Sans, sans-serif', size: 12, color: '#ccc' },
+    xaxis: { title: 'Position x/a', gridcolor: '#2a2a2a', color: '#888', showline: true, linecolor: '#444', range: [-0.05, 1.05] },
+    yaxis: { title: 'Energy (E/E₁) and ψₙ (offset)', gridcolor: '#2a2a2a', color: '#888', showline: true, linecolor: '#444' },
+    legend: { bgcolor: 'transparent', x: 1, xanchor: 'right', y: 0.99, yanchor: 'top' },
+    margin: { l: 70, r: 20, t: 20, b: 50 },
+    annotations: [
+      { x: 1.03, y: Math.PI**2, xref: 'x', yref: 'y', text: 'E₁', showarrow: false, font: { size: 11, color: colors[0] } },
+      { x: 1.03, y: 4*Math.PI**2, xref: 'x', yref: 'y', text: 'E₂', showarrow: false, font: { size: 11, color: colors[1] } },
+      { x: 1.03, y: 9*Math.PI**2, xref: 'x', yref: 'y', text: 'E₃', showarrow: false, font: { size: 11, color: colors[2] } },
+      { x: 1.03, y: 16*Math.PI**2, xref: 'x', yref: 'y', text: 'E₄', showarrow: false, font: { size: 11, color: colors[3] } }
+    ]
+  };
+
+  Plotly.newPlot('well-chart', traces, layout, { responsive: true, displayModeBar: false });
+});
+</script>
+
+</body>
+</html>

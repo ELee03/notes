@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Quantum World — Quantum Mechanics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="quantum" data-current="quantum-world.html"></div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb"><a href="../index.html">Field Notes</a> → <a href="index.html">Quantum Mechanics</a> → The Quantum World</div>
+
+      <h1 class="lesson-title">The Quantum World</h1>
+      <div class="lesson-meta">Wave-Particle Duality · Blackbody Radiation · Photoelectric Effect · de Broglie · Born Rule</div>
+
+      <p class="prose">
+        Classical mechanics works. For billiard balls, planets, and bridges, Newton's laws give
+        answers that are precise to any accuracy you could ever measure. So why was it wrong?
+        The answer is scale. Classical mechanics works perfectly in the regime where classical
+        mechanics was tested — human-sized objects at human-sized energies. The trouble began
+        when physicists, in the late 19th and early 20th centuries, started asking questions
+        about atoms and light. The answers that came back were not just quantitatively different
+        from classical predictions — they were structurally incompatible. A completely new
+        framework was needed.
+      </p>
+      <p class="prose">
+        This lesson traces the experimental failures that forced the issue, builds up the
+        conceptual scaffolding of the new theory, and ends with the central object of quantum
+        mechanics: the <em>wavefunction</em>.
+      </p>
+
+      <div class="section-head">The Ultraviolet Catastrophe</div>
+
+      <p class="prose">
+        A <strong>blackbody</strong> is an idealised object that absorbs all incident radiation and
+        re-emits it in a spectrum determined purely by its temperature. A cavity with a small hole
+        approximates this well. The question — what is the spectrum of radiation emitted by a
+        blackbody at temperature $T$? — seems straightforward. Classical physics gives a definite
+        answer: the Rayleigh-Jeans law,
+      </p>
+      $$u(\nu, T) = \frac{8\pi \nu^2}{c^3} k_B T$$
+      <p class="prose">
+        where $u(\nu, T)$ is the energy density per unit frequency. This formula is correct at low
+        frequencies — it matches experiment there — but at high frequencies it predicts that $u$
+        grows without bound as $\nu^2$. Integrating over all frequencies gives an infinite total
+        energy. This was called the <strong>ultraviolet catastrophe</strong>, and it was not a
+        quibble. Classical statistical mechanics was giving a provably infinite answer to a finite
+        physical question.
+      </p>
+      <p class="prose">
+        In 1900, Max Planck found the fix — though he initially regarded it as a mathematical trick
+        rather than a physical statement. He assumed that the oscillators in the cavity walls could
+        only exchange energy with the radiation field in discrete units:
+      </p>
+      $$E = h\nu = \hbar\omega$$
+      <p class="prose">
+        where $h$ is <strong>Planck's constant</strong> ($h \approx 6.626 \times 10^{-34}$ J·s),
+        $\hbar = h/2\pi$ is the <em>reduced</em> Planck constant, $\nu$ is frequency, and
+        $\omega = 2\pi\nu$ is angular frequency. With this quantisation condition, Planck derived
+        the correct blackbody spectrum:
+      </p>
+      $$u(\nu, T) = \frac{8\pi h\nu^3}{c^3} \cdot \frac{1}{e^{h\nu/k_B T} - 1}$$
+      <p class="prose">
+        At low $\nu$, this reduces to the Rayleigh-Jeans result (correct). At high $\nu$, the
+        exponential in the denominator suppresses the spectrum — the catastrophe is avoided.
+        The total energy is finite. This was the first quantisation of energy in physics, though
+        its full implications took two more decades to absorb.
+      </p>
+
+      <div class="widget-card">
+        <div class="widget-title">Blackbody Radiation — Planck vs Rayleigh-Jeans</div>
+        <div id="blackbody-chart" style="height:360px;"></div>
+      </div>
+
+      <div class="section-head">The Photoelectric Effect</div>
+
+      <p class="prose">
+        When light shines on a metal surface, electrons are ejected — the photoelectric effect,
+        discovered by Hertz in 1887. Classically, this is unremarkable: the electromagnetic wave
+        deposits energy in the metal, eventually giving electrons enough to escape. But the
+        experimental details were wrong in three ways:
+      </p>
+      <ol class="prose-list">
+        <li><strong>No time delay.</strong> Even with very dim light, electrons are ejected immediately
+        — within nanoseconds. Classical waves should take seconds to minutes to build up enough energy
+        in an electron.</li>
+        <li><strong>Threshold frequency.</strong> Below a critical frequency $\nu_0$ (which depends on
+        the metal), <em>no electrons are ejected at all</em>, regardless of intensity. Classically,
+        any frequency of light should eventually eject electrons if the light is bright enough.</li>
+        <li><strong>Kinetic energy depends on frequency, not intensity.</strong> Brighter light ejects
+        more electrons but does not increase their maximum kinetic energy. Higher-frequency light
+        increases kinetic energy.</li>
+      </ol>
+      <p class="prose">
+        In 1905, Einstein gave the explanation that won him the Nobel Prize: light is not a
+        continuous wave but a stream of discrete energy packets — <strong>photons</strong> — each
+        carrying energy $E = h\nu$. One photon is absorbed by one electron. The electron escapes
+        if the photon energy exceeds the <em>work function</em> $\phi$ of the metal:
+      </p>
+      $$K_{\max} = h\nu - \phi = h(\nu - \nu_0)$$
+      <p class="prose">
+        where $\nu_0 = \phi/h$ is the threshold frequency. The maximum kinetic energy grows
+        linearly with frequency, with slope $h$ — the same Planck's constant. This was the first
+        clear evidence that electromagnetic radiation is quantised.
+      </p>
+
+      <div class="section-head">Compton Scattering</div>
+
+      <p class="prose">
+        If photons carry energy $E = h\nu$, do they also carry momentum? Special relativity says
+        that a massless particle with energy $E$ has momentum $p = E/c$, so:
+      </p>
+      $$p = \frac{h\nu}{c} = \frac{h}{\lambda} = \hbar k$$
+      <p class="prose">
+        where $\lambda$ is wavelength and $k = 2\pi/\lambda$ is the wavenumber. Arthur Compton
+        confirmed this in 1923 by scattering X-rays off electrons and observing that the scattered
+        photon has a <em>longer</em> wavelength than the incident one — it has lost momentum to the
+        recoiling electron, exactly as if the photon were a classical billiard ball. The wavelength
+        shift is:
+      </p>
+      $$\Delta\lambda = \frac{h}{m_e c}(1 - \cos\theta)$$
+      <p class="prose">
+        where $\theta$ is the scattering angle and $h/m_e c \approx 2.43 \times 10^{-12}$ m is
+        the <strong>Compton wavelength</strong> of the electron. This was unambiguous: light carries
+        momentum and undergoes particle-like collisions.
+      </p>
+
+      <div class="section-head">de Broglie and Matter Waves</div>
+
+      <p class="prose">
+        By 1924 it was clear that light — previously understood as a wave — has particle-like
+        properties. In his doctoral thesis, Louis de Broglie inverted the question: if waves can
+        behave like particles, can particles behave like waves? He proposed that any particle with
+        momentum $p$ has an associated wavelength:
+      </p>
+      $$\lambda = \frac{h}{p} \qquad \text{(de Broglie relation)}$$
+      <p class="prose">
+        For a macroscopic object — say a baseball at 30 m/s — this gives $\lambda \sim 10^{-34}$ m,
+        far below any observable scale. For an electron with kinetic energy 100 eV, $\lambda \approx
+        1.2$ Å, which is comparable to atomic spacings. This is why electron diffraction experiments
+        (Davisson-Germer, 1927) showed clear interference patterns: the electrons have a wavelength
+        that matches the crystal lattice spacing.
+      </p>
+
+      <div class="section-head">The Double-Slit Experiment</div>
+
+      <p class="prose">
+        The double-slit experiment is the core paradox of quantum mechanics. In the classical wave
+        version, two slits produce an interference pattern on a distant screen — alternating bright
+        and dark fringes. In the classical particle version, two slits produce two overlapping
+        bright patches — no interference.
+      </p>
+      <p class="prose">
+        Quantum particles — electrons, photons, even whole atoms — produce an <em>interference
+        pattern</em>, just like waves. This is expected from de Broglie's hypothesis. The disturbing
+        part is what happens when you send the particles through one at a time: each particle lands
+        at a definite point on the screen (particle-like), but after many particles have accumulated,
+        the interference pattern emerges (wave-like). The pattern is built up from individual,
+        random-seeming events.
+      </p>
+      <p class="prose">
+        More disturbing: if you place a detector at the slits to determine which slit each particle
+        went through, the interference pattern <em>disappears</em>. The mere act of gaining
+        which-path information — regardless of how gently it is obtained — destroys the
+        interference. This is not a failure of experimental technique. It is fundamental.
+      </p>
+      <p class="prose">
+        The only consistent interpretation is that each particle passes through <em>both</em> slits
+        simultaneously, as a wave, and the wave interferes with itself. The particle does not have
+        a definite trajectory between emission and detection. The question "which slit did it go
+        through?" has no answer until we look — and looking changes everything.
+      </p>
+
+      <div class="section-head">The Wavefunction and the Born Rule</div>
+
+      <p class="prose">
+        The mathematical object that encodes the quantum state of a particle is the
+        <strong>wavefunction</strong> $\Psi(x, t)$: a complex-valued function of position and time.
+        The wavefunction is not directly observable. What is observable is the probability of
+        finding the particle at a given location, which Max Born proposed is:
+      </p>
+      $$P(a \leq x \leq b, t) = \int_a^b |\Psi(x, t)|^2 \, dx$$
+      <p class="prose">
+        The quantity $|\Psi(x,t)|^2$ is the <strong>probability density</strong>: the probability
+        per unit length of finding the particle near $x$ at time $t$. Because the particle must
+        be somewhere, the wavefunction must be <strong>normalised</strong>:
+      </p>
+      $$\int_{-\infty}^{\infty} |\Psi(x, t)|^2 \, dx = 1$$
+      <p class="prose">
+        This is the <strong>Born rule</strong>. It is the interpretive heart of quantum mechanics
+        and one of its most non-classical features. The wavefunction evolves deterministically
+        according to the Schrödinger equation — but measurement gives a <em>random</em> outcome,
+        with probabilities set by $|\Psi|^2$. Nature is fundamentally probabilistic at the quantum
+        scale.
+      </p>
+      <p class="prose">
+        The wavefunction must satisfy:
+      </p>
+      <ul class="prose-list">
+        <li>$\Psi(x, t)$ is continuous and single-valued</li>
+        <li>$\partial\Psi/\partial x$ is continuous (except at infinite potential walls)</li>
+        <li>$\Psi \to 0$ as $x \to \pm\infty$ fast enough that it is normalisable</li>
+      </ul>
+      <p class="prose">
+        The equation that governs the wavefunction's time evolution is the Schrödinger equation —
+        the subject of the next lesson.
+      </p>
+
+      <div class="section-head">The Uncertainty Principle</div>
+
+      <p class="prose">
+        Before closing, a preview. Heisenberg's uncertainty principle states:
+      </p>
+      $$\Delta x \, \Delta p \geq \frac{\hbar}{2}$$
+      <p class="prose">
+        where $\Delta x$ is the standard deviation in position measurements and $\Delta p$ is the
+        standard deviation in momentum measurements, both taken on identically prepared quantum
+        states. This is not a statement about experimental imprecision — it is not that our
+        instruments disturb the particle. It is a statement about nature: a quantum particle
+        <em>does not simultaneously possess</em> a definite position and a definite momentum.
+        The more precisely one is defined, the less precisely the other can be.
+      </p>
+      <p class="prose">
+        This follows mathematically from the wave nature of the wavefunction — a localised wave
+        packet requires a superposition of many wavelengths (momenta), and a single wavelength
+        (definite momentum) extends over all space (no defined position). We will derive it
+        rigorously in Lesson 6.
+      </p>
+
+      <div class="section-head">Worked Examples</div>
+
+      <div class="example-box">
+        <div class="example-title">Example 1 — Photon energy and the photoelectric threshold</div>
+        <div class="example-body">
+          <p>The work function of sodium is $\phi = 2.28$ eV. (a) What is the threshold wavelength
+          for the photoelectric effect? (b) If light of wavelength 200 nm strikes the surface,
+          what is the maximum kinetic energy of ejected electrons?</p>
+          <p><strong>(a)</strong> The threshold frequency satisfies $h\nu_0 = \phi$, so
+          $\nu_0 = \phi/h = (2.28 \times 1.602\times10^{-19}) / (6.626\times10^{-34}) = 5.52\times10^{14}$ Hz.
+          The threshold wavelength is $\lambda_0 = c/\nu_0 = (3\times10^8)/(5.52\times10^{14}) \approx 544$ nm —
+          green light. Sodium glows yellow-orange because photons below this energy (longer wavelength, lower frequency)
+          cannot eject electrons.</p>
+          <p><strong>(b)</strong> For $\lambda = 200$ nm: $E_\gamma = hc/\lambda = (6.626\times10^{-34})(3\times10^8)/(200\times10^{-9}) = 9.94\times10^{-19}$ J $= 6.21$ eV.
+          Maximum kinetic energy: $K = E_\gamma - \phi = 6.21 - 2.28 = 3.93$ eV.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-title">Example 2 — de Broglie wavelength of an electron</div>
+        <div class="example-body">
+          <p>An electron is accelerated through a potential difference of 54 V (the Davisson-Germer
+          experiment). What is its de Broglie wavelength?</p>
+          <p>The kinetic energy gained is $K = eV = (1.602\times10^{-19})(54) = 8.65\times10^{-18}$ J.
+          The momentum is $p = \sqrt{2m_e K} = \sqrt{2(9.109\times10^{-31})(8.65\times10^{-18})} = 3.97\times10^{-24}$ kg·m/s.
+          The de Broglie wavelength is:</p>
+          $$\lambda = \frac{h}{p} = \frac{6.626\times10^{-34}}{3.97\times10^{-24}} \approx 1.67 \text{ Å}$$
+          <p>This matches the spacing of nickel crystal planes (1.65 Å at the relevant angle), which
+          is why Davisson and Germer observed a diffraction peak at 50° — confirming de Broglie's
+          hypothesis directly.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-title">Example 3 — Why macroscopic objects don't show quantum behaviour</div>
+        <div class="example-body">
+          <p>A 0.1 kg baseball moves at 40 m/s. What is its de Broglie wavelength, and why can't
+          we observe its wave nature?</p>
+          <p>$p = mv = (0.1)(40) = 4$ kg·m/s. So $\lambda = h/p = 6.626\times10^{-34}/4 \approx 1.7\times10^{-34}$ m.
+          This is $10^{19}$ times smaller than a proton diameter ($\sim 10^{-15}$ m). There is
+          no material that could act as a diffraction grating at this scale, and no experiment
+          that could resolve such a wavelength. The quantum wave nature of macroscopic objects
+          is real but utterly irrelevant — the wavelength is so small compared to any physical
+          structure that interference effects average to zero. This is why everyday experience
+          is perfectly described by classical mechanics.</p>
+        </div>
+      </div>
+
+      <div class="section-head">Fast-Fire Thinking</div>
+
+      <ul class="fft-list">
+        <li class="fft-item">
+          <div class="fft-question">In the photoelectric effect, doubling the intensity of the light at a fixed frequency doubles the number of ejected electrons but does not change their kinetic energies. Why?</div>
+          <div class="fft-answer">
+            <p>In the photon picture, intensity is proportional to the number of photons per unit time hitting the surface. Each photon has energy $h\nu$ — fixed by frequency, not intensity. Each ejected electron absorbs exactly one photon and gains kinetic energy $K = h\nu - \phi$. Doubling intensity doubles the photon flux, so twice as many electrons are ejected per second, but since each individual photon still carries the same energy $h\nu$, each electron still gets the same $K_{\max}$. This is completely inconsistent with the classical wave picture, where energy is continuously distributed over the wavefront and increasing amplitude (intensity) would give more energy to each electron.</p>
+          </div>
+        </li>
+        <li class="fft-item">
+          <div class="fft-question">A quantum particle passes through a double slit. If you cover one slit, the interference pattern disappears and you get a single-slit diffraction pattern. Why does covering one slit change what happens at the other?</div>
+          <div class="fft-answer">
+            <p>This is a common misconception. Covering one slit does not "change what happens at the other" — the particle still passes through the open slit exactly as before. What changes is the situation as a whole. The interference pattern requires the particle's wavefunction to pass through both slits and interfere with itself. With one slit covered, the wavefunction only passes through one opening and no interference is possible. The key point is that the wavefunction is a global object: it is determined by all available paths, not just the one the particle "actually takes." You cannot describe it as a localized entity travelling a single definite route.</p>
+          </div>
+        </li>
+        <li class="fft-item">
+          <div class="fft-question">The uncertainty principle says $\Delta x \, \Delta p \geq \hbar/2$. Does this mean a particle confined to a small box must have high momentum?</div>
+          <div class="fft-answer">
+            <p>Yes — and this has real physical consequences. A particle confined to a region of size $\Delta x$ has a momentum uncertainty of at least $\Delta p \geq \hbar/(2\Delta x)$. This implies a minimum <em>kinetic energy</em> of order $\langle p^2 \rangle / 2m \geq (\Delta p)^2/2m \sim \hbar^2/(8m(\Delta x)^2)$. This is the <strong>zero-point energy</strong> — particles in small confining potentials cannot be at rest, even at absolute zero. This is why atomic nuclei don't collapse, why atoms have finite size, why electrons in metals have high Fermi energies, and why the quantum harmonic oscillator has ground-state energy $\frac{1}{2}\hbar\omega$ rather than zero.</p>
+          </div>
+        </li>
+      </ul>
+
+      <div class="section-head">Pitfalls</div>
+
+      <ul class="pitfall-list">
+        <li><strong>Photons do not have mass.</strong> The relation $E = h\nu$ gives the energy of a photon. Photons have zero rest mass but nonzero momentum $p = h/\lambda$. Do not confuse this with $E = mc^2$ — that applies to rest energy of massive particles, not to photons.</li>
+        <li><strong>The wavefunction is not a physical wave in space.</strong> A water wave or sound wave is a disturbance of a physical medium. The wavefunction is a mathematical object encoding probability amplitudes. For a single particle in 1D, it is a function of one coordinate — but for $N$ particles, it lives in $3N$-dimensional configuration space. It is not "waving" in physical 3D space.</li>
+        <li><strong>The uncertainty principle is not about measurement disturbance.</strong> Heisenberg originally described it in terms of photons disturbing electrons during measurement. This is a useful illustration but is not the correct explanation. The uncertainty principle follows from the mathematics of waves and holds even for idealized measurements that disturb the particle as little as possible. Position and momentum are genuinely not simultaneously defined.</li>
+        <li><strong>Wave-particle duality is not a contradiction.</strong> Particles don't sometimes act like waves and sometimes like particles — they are quantum objects, which in some experimental contexts exhibit wave-like statistics (double slit) and in others exhibit particle-like detection events (photoelectric effect). The apparent contradiction arises from forcing quantum objects into classical categories.</li>
+        <li><strong>The Born rule gives probabilities, not certainties.</strong> Even a well-defined wavefunction only tells you the probability distribution for measurement outcomes. Quantum mechanics is irreducibly probabilistic — not because we lack information about hidden variables (Bell's theorem rules this out), but because nature itself is probabilistic at the quantum scale.</li>
+      </ul>
+
+      <div class="section-head">Connects To</div>
+
+      <ul class="connects-list">
+        <li><a href="schrodinger.html">Lesson 2 — The Schrödinger Equation</a>: The equation that governs how the wavefunction evolves in time. All the qualitative ideas here become quantitative there.</li>
+        <li><a href="formalism.html">Lesson 6 — Formalism &amp; Uncertainty</a>: Rigorous derivation of the uncertainty principle from operator commutation relations.</li>
+        <li><a href="identical.html">Lesson 11 — Identical Particles &amp; Entanglement</a>: Bell's theorem and why the probabilistic nature of quantum mechanics cannot be explained by hidden variables.</li>
+      </ul>
+
+      <nav class="lesson-nav">
+        <a href="index.html" class="lesson-nav-prev">← Quantum Mechanics Home</a>
+        <a href="schrodinger.html" class="lesson-nav-next">2 · The Schrödinger Equation →</a>
+      </nav>
+
+    </div><!-- /main -->
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  if (window.renderMathInElement) {
+    renderMathInElement(document.body, {
+      delimiters: [
+        {left: '$$', right: '$$', display: true},
+        {left: '$', right: '$', display: false}
+      ]
+    });
+  }
+
+  // Blackbody radiation: Planck vs Rayleigh-Jeans at T = 5000 K
+  const T = 5000;
+  const h = 6.626e-34, c = 3e8, kB = 1.381e-23;
+  const freqs = [];
+  for (let i = 0; i <= 200; i++) freqs.push(1e12 + i * 4e13); // 1 THz to 8 THz
+
+  const planck = freqs.map(nu => {
+    const x = h * nu / (kB * T);
+    return (8 * Math.PI * h * nu**3 / c**3) / (Math.exp(x) - 1);
+  });
+  const rj = freqs.map(nu => 8 * Math.PI * nu**2 / c**3 * kB * T);
+
+  // Normalise both to Planck peak
+  const planckMax = Math.max(...planck);
+  const planckNorm = planck.map(v => v / planckMax);
+  const rjNorm = rj.map(v => v / planckMax);
+  const freqsTHz = freqs.map(f => f / 1e12);
+
+  const traces = [
+    {
+      x: freqsTHz, y: planckNorm,
+      mode: 'lines', name: "Planck (correct)",
+      line: { color: '#e8a838', width: 2.5 }
+    },
+    {
+      x: freqsTHz, y: rjNorm.map(v => Math.min(v, 4)),
+      mode: 'lines', name: "Rayleigh-Jeans (classical)",
+      line: { color: '#e05050', width: 2, dash: 'dash' }
+    }
+  ];
+
+  const layout = {
+    paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
+    font: { family: 'IBM Plex Sans, sans-serif', size: 12, color: '#ccc' },
+    xaxis: { title: 'Frequency (THz)', gridcolor: '#2a2a2a', color: '#888', showline: true, linecolor: '#444' },
+    yaxis: { title: 'Spectral energy density (normalised)', gridcolor: '#2a2a2a', color: '#888', range: [0, 1.3], showline: true, linecolor: '#444' },
+    legend: { bgcolor: 'transparent', x: 0.98, xanchor: 'right', y: 0.98, yanchor: 'top' },
+    margin: { l: 60, r: 20, t: 20, b: 50 },
+    annotations: [
+      { x: 160, y: 3.5, xref: 'x', yref: 'y', text: 'UV catastrophe:<br>classical → ∞', showarrow: true,
+        arrowhead: 2, ax: -50, ay: 30, font: { size: 11, color: '#e05050' }, arrowcolor: '#e05050' }
+    ]
+  };
+
+  Plotly.newPlot('blackbody-chart', traces, layout, { responsive: true, displayModeBar: false });
+});
+</script>
+
+</body>
+</html>

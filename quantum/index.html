@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quantum Mechanics — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="quantum" data-current="index.html"></div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb"><a href="../index.html">Field Notes</a> → Quantum Mechanics</div>
+
+      <h1 class="lesson-title">Quantum Mechanics</h1>
+      <div class="lesson-meta">Wave Functions · Operators · Exactly Solvable Systems · Angular Momentum · Perturbation Theory</div>
+
+      <p class="prose">
+        Quantum mechanics is the framework that describes nature at atomic and subatomic scales.
+        It replaces the deterministic trajectories of classical mechanics with probability amplitudes,
+        replaces physical quantities with operators, and replaces certainty with the irreducible
+        randomness of measurement. Every device based on semiconductor physics, every laser, every
+        MRI machine — all of it depends on quantum mechanics being exactly right.
+      </p>
+      <p class="prose">
+        The theory is mathematically precise and experimentally perfect. It has never been wrong.
+        What makes it hard is not the mathematics — much of it is undergraduate linear algebra and
+        differential equations — but the concepts. Particles that are waves. Measurement that disturbs
+        what is measured. Cats that are alive and dead. The goal of this cluster is to make those
+        concepts genuinely clear, not merely familiar, before turning them into calculations.
+      </p>
+      <p class="prose">
+        <strong>Prerequisites:</strong> Single-variable calculus, basic differential equations,
+        complex numbers, and a little linear algebra (vectors, matrices, eigenvalues). Physics
+        intuition from classical mechanics helps but is not assumed — we will explicitly point out
+        where classical intuition fails and why.
+      </p>
+
+      <div class="section-head">Lessons</div>
+
+      <table class="lesson-list">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Lesson</th>
+            <th>Key concepts</th>
+          </tr>
+        </thead>
+        <tbody>
+
+          <tr class="part-head">
+            <td colspan="3">Part I — The Quantum Framework</td>
+          </tr>
+
+          <tr class="lesson-row">
+            <td>1</td>
+            <td><a href="quantum-world.html">The Quantum World</a></td>
+            <td>Blackbody radiation and the UV catastrophe · photoelectric effect and photons · Compton scattering · double-slit experiment · de Broglie wavelength · the wavefunction concept · Born rule</td>
+          </tr>
+          <tr class="lesson-row">
+            <td>2</td>
+            <td><a href="schrodinger.html">The Schrödinger Equation</a></td>
+            <td>Time-dependent and time-independent forms · stationary states · normalization · expectation values · momentum operator · Ehrenfest's theorem · the continuity equation</td>
+          </tr>
+
+          <tr class="part-head">
+            <td colspan="3">Part II — Exactly Solvable Systems</td>
+          </tr>
+
+          <tr class="lesson-row">
+            <td>3</td>
+            <td><a href="square-well.html">Infinite Square Well</a></td>
+            <td>Particle in a box · energy quantization · wavefunctions and nodes · orthonormality and completeness · superposition of stationary states · time evolution · expectation values in superpositions</td>
+          </tr>
+          <tr class="lesson-row">
+            <td>4</td>
+            <td><a href="harmonic.html">The Harmonic Oscillator</a></td>
+            <td>Ladder operators (raising/lowering) · algebraic solution · energy levels E_n = (n + ½)ℏω · zero-point energy · matrix elements of x̂ and p̂ · coherent states (brief)</td>
+          </tr>
+          <tr class="lesson-row">
+            <td>5</td>
+            <td><a href="free-particle.html">Free Particle &amp; Tunneling</a></td>
+            <td>Plane waves and wave packets · group vs phase velocity · delta-function potential (bound state, reflection/transmission) · finite square well · quantum tunneling · WKB tunneling preview</td>
+          </tr>
+
+          <tr class="part-head">
+            <td colspan="3">Part III — Formalism</td>
+          </tr>
+
+          <tr class="lesson-row">
+            <td>6</td>
+            <td><a href="formalism.html">Formalism &amp; Uncertainty</a></td>
+            <td>Hilbert space · Dirac notation (bras and kets) · Hermitian operators · eigenvalues and eigenvectors · generalized uncertainty principle · compatible observables and commutators · energy-time uncertainty</td>
+          </tr>
+
+          <tr class="part-head">
+            <td colspan="3">Part IV — Quantum Mechanics in 3D</td>
+          </tr>
+
+          <tr class="lesson-row">
+            <td>7</td>
+            <td><a href="angular-momentum.html">Angular Momentum</a></td>
+            <td>L² and L_z operators · commutation relations · eigenvalues (l, m quantum numbers) · spherical harmonics · ladder operators L± · physical interpretation</td>
+          </tr>
+          <tr class="lesson-row">
+            <td>8</td>
+            <td><a href="hydrogen.html">The Hydrogen Atom</a></td>
+            <td>3D Schrödinger equation in spherical coordinates · separation of variables · radial equation · energy levels E_n = −13.6 eV/n² · wavefunctions ψ_nlm · degeneracy · spectral series</td>
+          </tr>
+          <tr class="lesson-row">
+            <td>9</td>
+            <td><a href="spin.html">Spin</a></td>
+            <td>Intrinsic spin · Stern-Gerlach experiment · spin-½ and Pauli matrices · spinors · spin eigenstates · addition of angular momenta · spin-orbit coupling · total angular momentum J</td>
+          </tr>
+
+          <tr class="part-head">
+            <td colspan="3">Part V — Approximation Methods &amp; Advanced Topics</td>
+          </tr>
+
+          <tr class="lesson-row">
+            <td>10</td>
+            <td><a href="perturbation.html">Perturbation Theory</a></td>
+            <td>Non-degenerate 1st and 2nd order corrections · degenerate perturbation theory · fine structure of hydrogen (relativistic + spin-orbit) · Zeeman effect · variational principle</td>
+          </tr>
+          <tr class="lesson-row">
+            <td>11</td>
+            <td><a href="identical.html">Identical Particles &amp; Entanglement</a></td>
+            <td>Exchange symmetry · bosons and fermions · Pauli exclusion principle · multi-electron atoms · entanglement · EPR paradox · Bell inequalities · quantum information preview</td>
+          </tr>
+          <tr class="lesson-row">
+            <td>12</td>
+            <td><a href="tdpt.html">Time-Dependent Perturbation Theory</a></td>
+            <td>TDPT first-order corrections · transition probabilities · Fermi's golden rule · selection rules · stimulated and spontaneous emission · Einstein A and B coefficients</td>
+          </tr>
+
+        </tbody>
+      </table>
+
+      <div class="section-head">References</div>
+      <ul class="book-list" id="cluster-refs"></ul>
+
+    </div><!-- /main -->
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+<script src="../notes-nav.js"></script>
+<script src="../books-render.js"></script>
+<script>renderBooks({ containerId: 'cluster-refs', clusterId: 'quantum', jsonPath: '../books.json' });</script>
+</body>
+</html>

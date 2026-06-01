@@ -1,0 +1,41 @@
+{
+  "sections": [
+    {
+      "label": "The Quantum Framework",
+      "items": [
+        { "href": "quantum-world.html",    "text": "1 · The Quantum World" },
+        { "href": "schrodinger.html",      "text": "2 · The Schrödinger Equation" }
+      ]
+    },
+    {
+      "label": "Exactly Solvable Systems",
+      "items": [
+        { "href": "square-well.html",      "text": "3 · Infinite Square Well" },
+        { "href": "harmonic.html",         "text": "4 · The Harmonic Oscillator",          "planned": true },
+        { "href": "free-particle.html",    "text": "5 · Free Particle &amp; Tunneling",    "planned": true }
+      ]
+    },
+    {
+      "label": "Formalism",
+      "items": [
+        { "href": "formalism.html",        "text": "6 · Formalism &amp; Uncertainty",      "planned": true }
+      ]
+    },
+    {
+      "label": "Quantum Mechanics in 3D",
+      "items": [
+        { "href": "angular-momentum.html", "text": "7 · Angular Momentum",                 "planned": true },
+        { "href": "hydrogen.html",         "text": "8 · The Hydrogen Atom",                "planned": true },
+        { "href": "spin.html",             "text": "9 · Spin",                             "planned": true }
+      ]
+    },
+    {
+      "label": "Approximation Methods",
+      "items": [
+        { "href": "perturbation.html",     "text": "10 · Perturbation Theory",             "planned": true },
+        { "href": "identical.html",        "text": "11 · Identical Particles &amp; Entanglement", "planned": true },
+        { "href": "tdpt.html",             "text": "12 · Time-Dependent Perturbation Theory", "planned": true }
+      ]
+    }
+  ]
+}
