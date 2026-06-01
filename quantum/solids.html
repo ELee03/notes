@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solids &amp; Band Theory · Quantum Mechanics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="quantum" data-current="solids.html"></div>
+      <hr class="sidebar-rule">
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#free-electron" class="nav-item">Free Electron Gas</a>
+        <a href="#fermi-energy" class="nav-item">Fermi Energy &amp; Density of States</a>
+        <a href="#bloch" class="nav-item">Bloch's Theorem</a>
+        <a href="#dirac-comb" class="nav-item">The Dirac Comb</a>
+        <a href="#band-gaps" class="nav-item">Band Gaps &amp; Classification</a>
+        <a href="#examples" class="nav-item">Worked Examples</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="breadcrumb-sep">›</span>
+        <a href="index.html">Quantum Mechanics</a>
+        <span class="breadcrumb-sep">›</span>
+        Lesson 16
+      </div>
+
+      <h1 class="lesson-title">Solids &amp; Band Theory</h1>
+      <div class="lesson-meta">Free Electron Gas · Fermi Energy · Bloch's Theorem · Band Gaps · Metals &amp; Semiconductors</div>
+
+      <div class="prose">
+        <p>Condensed matter physics — the quantum mechanics of $\sim 10^{23}$ interacting particles — sounds impossibly complicated. Yet the quantum mechanics of a single electron in a periodic potential already explains the most fundamental property of materials: why some conduct electricity and others don't. This lesson covers two foundational models. The <strong>free electron gas</strong> treats conduction electrons as non-interacting particles in a box, instantly explaining the Fermi energy, electronic heat capacity, and the stability of white dwarf stars. <strong>Band theory</strong> adds the periodic ionic potential of the crystal lattice, producing energy bands separated by gaps — the direct quantum mechanical explanation for conductors, insulators, and semiconductors. The technology of the last 70 years (transistors, solar cells, LEDs, computer chips) is built on this physics.</p>
+      </div>
+
+      <!-- FREE ELECTRON GAS -->
+      <div class="section-head" id="free-electron">The Free Electron Gas</div>
+
+      <div class="prose">
+        <p>A metal contains $N$ electrons essentially free to move throughout the volume $V = L^3$ (the ionic lattice provides charge neutrality but is ignored as a potential for now). Treat these electrons as <em>non-interacting</em> particles in a cubic box with periodic boundary conditions.</p>
+
+        <p>The single-particle energy eigenstates are plane waves:</p>
+        <div class="math-block">$$\psi_{\mathbf{n}}(\mathbf{r}) = \frac{1}{L^{3/2}}e^{i\mathbf{k}\cdot\mathbf{r}}, \qquad \mathbf{k} = \frac{2\pi}{L}(n_x, n_y, n_z), \quad n_i \in \mathbb{Z}$$</div>
+        <div class="math-block">$$E_{\mathbf{k}} = \frac{\hbar^2 k^2}{2m}$$</div>
+
+        <p>Each allowed $\mathbf{k}$ occupies a volume $(2\pi/L)^3$ in $k$-space. By Pauli exclusion (electrons are fermions), each state holds at most 2 electrons (spin up and down). At absolute zero, we fill up the lowest $N$ states — filling a sphere in $k$-space up to the <strong>Fermi wavevector</strong> $k_F$.</p>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">Counting states</h3>
+
+        <p>The number of $\mathbf{k}$-states within the Fermi sphere (including both spins):</p>
+        <div class="math-block">$$N = 2\cdot\frac{(4/3)\pi k_F^3}{(2\pi/L)^3} = \frac{V k_F^3}{3\pi^2}$$</div>
+
+        <p>Solving for the Fermi wavevector:</p>
+        <div class="math-block">$$k_F = (3\pi^2 n)^{1/3}, \qquad n \equiv N/V \text{ (electron number density)}$$</div>
+
+        <p>The <strong>Fermi energy</strong> — the energy of the highest occupied state at $T = 0$ — is:</p>
+        <div class="math-block">$$\boxed{E_F = \frac{\hbar^2 k_F^2}{2m} = \frac{\hbar^2}{2m}(3\pi^2 n)^{2/3}}$$</div>
+
+        <p>For copper ($n = 8.5\times10^{28}\ \text{m}^{-3}$): $E_F \approx 7.0\ \text{eV}$, corresponding to a Fermi temperature $T_F = E_F/k_B \approx 81{,}000\ \text{K}$. At room temperature ($T \approx 300\ \text{K}$), we have $T \ll T_F$ — the electron gas is <em>completely degenerate</em>, meaning thermal fluctuations barely disturb the sharp Fermi surface. Classical statistical mechanics (which would give $\langle E\rangle = \frac{3}{2}k_BT$ per particle) is wildly wrong for electrons in metals.</p>
+      </div>
+
+      <!-- FERMI ENERGY AND DOS -->
+      <div class="section-head" id="fermi-energy">Density of States and Consequences</div>
+
+      <div class="prose">
+        <p>The <strong>density of states</strong> $g(E)$ — the number of electron states per unit energy per unit volume — is found by converting the $k$-space count to energy space. In 3D, the number of states up to energy $E$ is $N(E)/V = k^3/3\pi^2 = (2mE)^{3/2}/(3\pi^2\hbar^3)$, so:</p>
+        <div class="math-block">$$g(E) = \frac{1}{V}\frac{dN}{dE} = \frac{(2m)^{3/2}}{2\pi^2\hbar^3}\sqrt{E} = \frac{3n}{2E_F}\sqrt{\frac{E}{E_F}}$$</div>
+
+        <p>The density of states grows as $\sqrt{E}$ — there are more states at higher energy because the volume of the Fermi sphere grows faster than the spacing between states.</p>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">Total energy and pressure</h3>
+
+        <p>The total energy at $T = 0$:</p>
+        <div class="math-block">$$U_0 = \int_0^{E_F} E\,g(E)\,V\,dE = \frac{3}{5}N E_F$$</div>
+
+        <p>The average energy per electron is $\frac{3}{5}E_F$ — much larger than the classical $\frac{3}{2}k_BT$ at room temperature. This "zero-point" kinetic energy is purely quantum mechanical, arising from Pauli exclusion forcing electrons into high-energy states.</p>
+
+        <p>From the energy, there is a <strong>degeneracy pressure</strong> $P = -\partial U/\partial V|_N = \frac{2}{3}U_0/V \propto n^{5/3}$. This pressure exists even at $T = 0$, has nothing to do with thermal motion, and is entirely a consequence of Pauli exclusion. It is what supports <strong>white dwarf stars</strong> against gravitational collapse — a white dwarf is held up not by thermal pressure but by electron degeneracy pressure. When the star is massive enough that electrons become relativistic, the pressure scaling changes and the Chandrasekhar limit ($\approx 1.4\ M_\odot$) is exceeded — the star collapses further to a neutron star.</p>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">Electronic heat capacity</h3>
+
+        <p>Classical statistical mechanics predicts that each electron contributes $\frac{3}{2}k_B$ to the heat capacity. Experiments on metals show the electronic contribution is about 100 times smaller than this. The resolution: only electrons near the Fermi surface (within $\sim k_BT$ of $E_F$) can be thermally excited — roughly a fraction $T/T_F \ll 1$ of all electrons. The electronic heat capacity is:</p>
+        <div class="math-block">$$C_{\text{el}} = \frac{\pi^2}{2}\frac{k_B T}{E_F}\cdot Nk_B = \frac{\pi^2}{2}\frac{T}{T_F}\cdot Nk_B \propto T$$</div>
+
+        <p>This linear-in-$T$ behavior (from the sharp Fermi surface) is a direct quantum signature, and it's observed in all metals. At low temperatures it competes with the phonon contribution $C_{\text{phonon}} \propto T^3$ (from Debye theory, see Lesson 17), and separating them allows direct measurement of $E_F$.</p>
+      </div>
+
+      <!-- BLOCH'S THEOREM -->
+      <div class="section-head" id="bloch">Bloch's Theorem and the Periodic Potential</div>
+
+      <div class="prose">
+        <p>Real crystals have a periodic ionic lattice with spacing $a$. The potential seen by an electron is periodic: $V(x + a) = V(x)$. What do the energy eigenstates look like in a periodic potential?</p>
+
+        <p>The answer comes from Bloch's theorem, which is a direct consequence of the discrete translational symmetry of the crystal (see also Lesson 18 on Symmetries). Define the translation operator $\hat{T}_a: \psi(x) \mapsto \psi(x+a)$. Since $[H, \hat{T}_a] = 0$ (the Hamiltonian is periodic), $H$ and $\hat{T}_a$ share eigenstates.</p>
+
+        <p>$\hat{T}_a$ has eigenvalues of modulus 1 (it must preserve normalization): $\hat{T}_a\psi = e^{iKa}\psi$ for some real $K$. Therefore:</p>
+
+        <div class="math-block">$$\boxed{\psi_{K}(x+a) = e^{iKa}\,\psi_K(x)} \qquad \text{(Bloch's theorem)}$$</div>
+
+        <p>Equivalently, $\psi_K(x) = e^{iKx}u_K(x)$ where $u_K(x+a) = u_K(x)$ is a periodic function. The eigenstate is a plane wave $e^{iKx}$ modulated by a periodic envelope — a <strong>Bloch wave</strong>. The quantity $K$ is the <strong>crystal momentum</strong> (or quasi-momentum), and it lives in the <strong>first Brillouin zone</strong>: $K \in [-\pi/a,\, \pi/a]$.</p>
+
+        <p>The crystal momentum is almost like ordinary momentum, but only modulo $2\pi/a$ (a reciprocal lattice vector). Scattering from the lattice can change $K$ by $2\pi n/a$ without changing the physical state — this is Bragg reflection.</p>
+      </div>
+
+      <!-- DIRAC COMB -->
+      <div class="section-head" id="dirac-comb">The Dirac Comb: Band Gaps from First Principles</div>
+
+      <div class="prose">
+        <p>To find the actual energy spectrum in a periodic potential, we need a solvable model. The <strong>Dirac comb</strong> (Kronig-Penney model) uses a periodic array of delta-function spikes:</p>
+        <div class="math-block">$$V(x) = \alpha\sum_{j=-\infty}^{\infty}\delta(x - ja)$$</div>
+
+        <p>Between the spikes ($0 < x < a$), the solution is a free wave $\psi = Ae^{ikx} + Be^{-ikx}$ with $k = \sqrt{2mE}/\hbar$. Applying the delta-function boundary conditions (continuity of $\psi$, discontinuity of $\psi'$ equal to $2m\alpha/\hbar^2$) and enforcing Bloch's theorem ($\psi(a) = e^{iKa}\psi(0)$, $\psi'(a) = e^{iKa}\psi'(0)$), we get the condition:</p>
+
+        <div class="math-block">$$\cos(Ka) = \cos(ka) + \frac{m\alpha}{\hbar^2 k}\sin(ka) \equiv f(k)$$</div>
+
+        <p>The left side is bounded: $|\cos(Ka)| \leq 1$. The right side $f(k)$ oscillates and has excursions beyond $\pm 1$ near $k = n\pi/a$. This is the key: <strong>when $|f(k)| > 1$, no real $K$ exists</strong> — there are no Bloch states at that energy. Those energies form the <strong>band gaps</strong>.</p>
+
+        <p>When $|f(k)| \leq 1$, $K$ is real and a band of allowed energies exists. As $k$ sweeps from 0 to $\infty$, the allowed bands alternate with forbidden gaps. The gaps open at zone boundaries $Ka = n\pi$ (i.e., $k \approx n\pi/a$), exactly where the classical Bragg condition is met — the electron wavelength fits an integer multiple of twice the lattice spacing, producing strong standing-wave interference.</p>
+
+        <p class="callout"><em>Physically, the band gap arises from two standing waves at the zone boundary: $\psi_+ \propto \cos(\pi x/a)$ (piles up charge between the ions, low potential energy) and $\psi_- \propto \sin(\pi x/a)$ (piles up charge on the ions, high potential energy). The energy difference between $\psi_+$ and $\psi_-$ is the band gap. This is entirely a quantum wave-interference effect.</em></p>
+      </div>
+
+      <!-- BAND GAP WIDGET -->
+      <div class="widget-card">
+        <div class="widget-title">Dirac Comb: Allowed and Forbidden Energy Bands</div>
+        <div style="display:flex;gap:28px;flex-wrap:wrap;align-items:center;margin-bottom:12px;">
+          <label style="font-size:0.88rem;color:#2a3040;">
+            Barrier strength $z = m\alpha a/\hbar^2$ = <span id="z-val">10</span>
+            <br><input type="range" id="z-slider" min="0" max="30" step="1" value="10"
+                       style="width:200px;margin-top:4px;">
+          </label>
+        </div>
+        <div id="band-plot" style="width:100%;height:300px;"></div>
+        <div style="font-size:0.84rem;color:#6a7a8a;margin-top:6px;">
+          Blue regions: allowed bands ($|f(ka)| \leq 1$). White regions: band gaps. Stronger barriers ($z$ larger) produce wider gaps and narrower bands. At $z=0$ (free electron), every energy is allowed.
+        </div>
+      </div>
+
+      <!-- BAND CLASSIFICATION -->
+      <div class="section-head" id="band-gaps">Band Structure and Material Classification</div>
+
+      <div class="prose">
+        <p>The energy spectrum of a crystal electron has the structure of <em>bands</em> separated by <em>gaps</em>. Filling these bands with the available electrons — subject to Pauli exclusion, 2 electrons per state — determines whether the material conducts:</p>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">Conductors (Metals)</h3>
+        <p>The highest occupied band is <em>partially filled</em>. There are empty states just above the Fermi level in the same band. Electrons can be accelerated by an electric field into those empty states — current flows. This happens either when the number of electrons doesn't fill a complete band (e.g., monovalent metals like Na, Cu, Au — one electron per primitive cell, half-filled band) or when two bands overlap at the Fermi level (divalent metals like Mg — the valence band would be full but the conduction band overlaps it).</p>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">Insulators</h3>
+        <p>All bands are either completely filled or completely empty. The highest occupied band (valence band) is full; the next band (conduction band) is empty; the gap between them is large ($E_g > 3\ \text{eV}$ typically). An electric field cannot accelerate electrons because there are no nearby empty states — current cannot flow. Example: diamond ($E_g = 5.5\ \text{eV}$), NaCl ($E_g = 8.5\ \text{eV}$).</p>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">Semiconductors</h3>
+        <p>Same band structure as insulators, but the gap is small ($E_g \sim 0.1$–$2\ \text{eV}$). At room temperature, thermal fluctuations promote a small fraction of electrons across the gap into the conduction band, leaving behind "holes" (missing electrons that act as positive charge carriers) in the valence band. Both electrons and holes conduct. Examples: Si ($E_g = 1.1\ \text{eV}$), Ge ($E_g = 0.67\ \text{eV}$), GaAs ($E_g = 1.4\ \text{eV}$). Doping with donor or acceptor atoms shifts the Fermi level and controls the carrier density — this is the basis of the transistor.</p>
+
+        <p>The table below summarizes:</p>
+
+        <table style="width:100%;border-collapse:collapse;margin:16px 0;font-size:0.9rem;">
+          <thead>
+            <tr style="background:#e8f0f5;color:#1a2840;">
+              <th style="text-align:left;padding:8px 12px;border-bottom:2px solid #7ab8d4;">Material</th>
+              <th style="text-align:left;padding:8px 12px;border-bottom:2px solid #7ab8d4;">Band filling</th>
+              <th style="text-align:left;padding:8px 12px;border-bottom:2px solid #7ab8d4;">Gap $E_g$</th>
+              <th style="text-align:left;padding:8px 12px;border-bottom:2px solid #7ab8d4;">Conductivity</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="padding:7px 12px;border-bottom:1px solid #dde6ec;">Metal</td>
+              <td style="padding:7px 12px;border-bottom:1px solid #dde6ec;">Partially filled band</td>
+              <td style="padding:7px 12px;border-bottom:1px solid #dde6ec;">None</td>
+              <td style="padding:7px 12px;border-bottom:1px solid #dde6ec;">High ($\sim 10^7\ \Omega^{-1}\text{m}^{-1}$)</td>
+            </tr>
+            <tr style="background:#f7f7f4;">
+              <td style="padding:7px 12px;border-bottom:1px solid #dde6ec;">Semiconductor</td>
+              <td style="padding:7px 12px;border-bottom:1px solid #dde6ec;">Full valence band</td>
+              <td style="padding:7px 12px;border-bottom:1px solid #dde6ec;">Small ($0.1$–$2\ \text{eV}$)</td>
+              <td style="padding:7px 12px;border-bottom:1px solid #dde6ec;">Medium, temperature-dependent</td>
+            </tr>
+            <tr>
+              <td style="padding:7px 12px;">Insulator</td>
+              <td style="padding:7px 12px;">Full valence band</td>
+              <td style="padding:7px 12px;">Large ($>3\ \text{eV}$)</td>
+              <td style="padding:7px 12px;">Very low ($\sim 10^{-12}\ \Omega^{-1}\text{m}^{-1}$)</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">Effective Mass</h3>
+
+        <p>Near a band minimum at $k = k_0$, the energy is approximately parabolic: $E(k) \approx E_0 + \hbar^2(k-k_0)^2/2m^*$. The <strong>effective mass</strong> $m^* \equiv \hbar^2/(\partial^2 E/\partial k^2)$ captures how the band curvature modifies the dynamics. In narrow bands (strong periodic potential), $m^*$ is large — the electron moves sluggishly. Near a band maximum, $\partial^2 E/\partial k^2 < 0$, giving $m^* < 0$ — "holes" (the absence of an electron) have positive effective mass and respond like positive charges. This is why p-type semiconductors carry current as if by positive charge carriers.</p>
+      </div>
+
+      <!-- WORKED EXAMPLES -->
+      <div class="section-head" id="examples">Worked Examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Fermi Energy of Copper</strong></div>
+        <div class="example-problem">
+          Copper has density $8960\ \text{kg/m}^3$, molar mass $63.5\ \text{g/mol}$, and one free electron per atom. Find the Fermi energy and Fermi temperature.
+        </div>
+        <div class="example-body">
+          <p>Electron number density: $n = \frac{\rho N_A}{M} = \frac{8960\times6.022\times10^{23}}{0.0635} = 8.49\times10^{28}\ \text{m}^{-3}$.</p>
+
+          <div class="math-block">$$E_F = \frac{\hbar^2}{2m_e}(3\pi^2 n)^{2/3} = \frac{(1.055\times10^{-34})^2}{2(9.109\times10^{-31})}(3\pi^2 \times 8.49\times10^{28})^{2/3}$$</div>
+
+          <p>$(3\pi^2 n)^{1/3} = (3\pi^2 \times 8.49\times10^{28})^{1/3} = (2.53\times10^{30})^{1/3} = 1.36\times10^{10}\ \text{m}^{-1}$</p>
+
+          <p>$E_F = \frac{(1.055\times10^{-34})^2}{2\times9.109\times10^{-31}}\times(1.36\times10^{10})^2 = 6.07\times10^{-19}\ \text{J} = 7.0\ \text{eV}$</p>
+
+          <p>Fermi temperature: $T_F = E_F/k_B = 7.0\times1.6\times10^{-19}/(1.38\times10^{-23}) = 81{,}200\ \text{K}$.</p>
+
+          <p>Since $T_{\text{room}}/T_F \approx 0.37\%$, the Fermi sea is barely disturbed at room temperature — the free electron model with sharp Fermi surface is an excellent approximation.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Electrons vs Holes in a Semiconductor</strong></div>
+        <div class="example-problem">
+          Silicon has a band gap $E_g = 1.12\ \text{eV}$. At room temperature ($T = 300\ \text{K}$), estimate the fraction of electrons that are thermally excited into the conduction band.
+        </div>
+        <div class="example-body">
+          <p>For an intrinsic (undoped) semiconductor, electrons are thermally promoted across the gap. The Fermi level sits near mid-gap. The probability of an electron occupying a state at the conduction band minimum (energy $E_g/2$ above $E_F$) is given by the Fermi-Dirac distribution (Lesson 17):</p>
+
+          <div class="math-block">$$n_c \propto e^{-E_g/2k_BT}$$</div>
+
+          <p>$E_g/2k_BT = 1.12/(2\times0.02585) = 21.7$, so $e^{-21.7} \approx 3.5\times10^{-10}$.</p>
+
+          <p>The intrinsic carrier density for Si: $n_i \approx 1.5\times10^{10}\ \text{cm}^{-3}$, compared to the total valence electron density $\approx 5\times10^{22}\ \text{cm}^{-3}$. Fraction $\sim 3\times10^{-13}$.</p>
+
+          <p>One electron in $3\times10^{12}$ is excited at room temperature — yet silicon conducts well enough to be the basis of all modern electronics. The power of semiconductor devices lies not in intrinsic conductivity but in controlled doping: adding $\sim 10^{16}\ \text{cm}^{-3}$ donor atoms (one per $5\times10^6$ Si atoms) raises the carrier density by six orders of magnitude relative to intrinsic Si.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Degeneracy Pressure and White Dwarfs</strong></div>
+        <div class="example-problem">
+          Show that the electron degeneracy pressure scales as $P \propto n^{5/3}$ and estimate whether it can support a solar-mass white dwarf ($M \approx 2\times10^{30}\ \text{kg}$, $R \approx 7000\ \text{km}$).
+        </div>
+        <div class="example-body">
+          <p>From the total energy $U_0 = \frac{3}{5}NE_F$ and $E_F \propto n^{2/3}$: $U_0 \propto N n^{2/3} = N(N/V)^{2/3}$. Pressure $P = -\partial U/\partial V|_N$:</p>
+
+          <div class="math-block">$$P = \frac{2U_0}{3V} = \frac{2}{5}nE_F = \frac{\hbar^2}{5m_e}(3\pi^2)^{2/3}n^{5/3}$$</div>
+
+          <p>For a white dwarf: $V = \frac{4}{3}\pi R^3 \approx 1.4\times10^{24}\ \text{m}^3$. With one electron per hydrogen mass ($m_p = 1.67\times10^{-27}\ \text{kg}$), $N \approx M/m_p \approx 1.2\times10^{57}$ electrons, $n \approx 8.6\times10^{32}\ \text{m}^{-3}$.</p>
+
+          <p>$E_F = \frac{\hbar^2}{2m_e}(3\pi^2 n)^{2/3} \approx 0.3\ \text{MeV}$ — electrons are mildly relativistic.</p>
+
+          <p>Non-relativistic degeneracy pressure: $P \approx \frac{\hbar^2}{5m_e}(3\pi^2)^{2/3}(8.6\times10^{32})^{5/3} \approx 10^{22}\ \text{Pa}$.</p>
+
+          <p>Gravitational pressure at the center: $P_g \approx \frac{3GM^2}{8\pi R^4} \approx 10^{22}\ \text{Pa}$.</p>
+
+          <p>They match — the white dwarf is in equilibrium, supported by electron degeneracy pressure. This is not a coincidence; it's Chandrasekhar's result that for $M < 1.4M_\odot$ (the Chandrasekhar limit), non-relativistic degeneracy pressure provides support. Above this mass, relativistic electrons have a softer pressure $P \propto n^{4/3}$ rather than $n^{5/3}$, insufficient to halt collapse.</p>
+        </div>
+      </div>
+
+      <!-- FFT -->
+      <ul class="fft-list">
+        <li class="fft-item">
+          The free electron model completely ignores electron-electron Coulomb repulsion, yet it works remarkably well for metals. Why? The Coulomb energy per electron is of order $e^2n^{1/3}/4\pi\epsilon_0$, which for copper is several eV — comparable to $E_F$. Shouldn't this destroy the model?
+          <div class="fft-answer">
+            <p>This is one of the most puzzling successes in physics, and it took Landau's Fermi liquid theory (1956) to explain it properly. The key insights: (1) Pauli exclusion strongly suppresses electron-electron scattering, because both the initial and final states must be unoccupied — and near the Fermi surface, nearly all states are filled. The scattering rate goes as $(T/T_F)^2$, which is tiny at room temperature. (2) The Coulomb interaction is screened by the other electrons: at distances larger than the Thomas-Fermi screening length ($\sim 0.05$ nm in metals), the potential is exponentially suppressed. (3) Landau's insight was that the low-energy excitations of the interacting electron gas — "quasiparticles" — still behave like nearly free fermions, just with a renormalized effective mass. The interacting system maps adiabatically onto the non-interacting one. The free electron model isn't literally correct, but the quasiparticle picture it implicitly assumes is.</p>
+          </div>
+        </li>
+        <li class="fft-item">
+          A semiconductor's conductivity increases with temperature (more carriers thermally excited) while a metal's conductivity decreases with temperature (more phonon scattering). Is there a material that transitions from insulating to metallic behavior as a function of temperature, pressure, or composition?
+          <div class="fft-answer">
+            <p>Yes — this is the Mott metal-insulator transition. In strongly correlated electron systems (transition metal oxides like VO₂, NiO, certain cuprates), electron-electron Coulomb repulsion can localize electrons even when band theory predicts a metal (the Hubbard model captures this). Vanadium dioxide (VO₂) is the classic example: below 68°C it's an insulator (resistivity $\sim 10^5\ \Omega\cdot\text{cm}$), above it's a metal (resistivity $\sim 10^{-3}\ \Omega\cdot\text{cm}$) — an 8-order-of-magnitude change at a single temperature. The transition involves both electronic and structural (crystallographic) changes and is controlled by the competition between bandwidth (delocalizing) and Hubbard $U$ (localizing). This physics underlies high-temperature superconductors, colossal magnetoresistance materials, and topological insulators — all active research areas where simple band theory breaks down.</p>
+          </div>
+        </li>
+        <li class="fft-item">
+          Bloch's theorem guarantees that electrons in a perfect crystal have definite crystal momentum $K$ and therefore propagate without scattering. What then causes electrical resistance in real metals?
+          <div class="fft-answer">
+            <p>Bloch's theorem holds for a perfect, infinite, static crystal — and in such a crystal, electrical resistance would indeed be zero. Real metals have resistance for three reasons: (1) <strong>Phonons</strong>: lattice vibrations break the perfect periodicity dynamically, scattering electrons and giving $R \propto T$ at high temperature (Bloch-Grüneisen). (2) <strong>Impurities and defects</strong>: vacancies, interstitials, and impurity atoms break the translational symmetry, scattering electrons at a rate independent of temperature — this gives the residual resistivity at $T \to 0$ (Matthiessen's rule: $\rho = \rho_{\text{impurity}} + \rho_{\text{phonon}}$). (3) <strong>Electron-electron scattering</strong>: gives $\rho \propto T^2$ at very low temperatures (Fermi liquid prediction, observed in many correlated metals). In a truly perfect crystal at absolute zero, Bloch's theorem is exact and resistance vanishes — which is why the resistance of very pure metals drops dramatically at low temperature, and why superconductors (where a gap opens at $E_F$, qualitatively different physics) have literally zero DC resistance.</p>
+          </div>
+        </li>
+      </ul>
+
+      <!-- PITFALLS -->
+      <div class="section-head">Common Pitfalls</div>
+      <ul class="pitfall-list">
+        <li><strong>Using classical statistical mechanics for electrons in metals.</strong> Electrons are degenerate fermions with $T \ll T_F$. The classical equipartition theorem ($\frac{3}{2}k_BT$ per particle) does not apply. The electronic heat capacity is $\frac{\pi^2}{2}\frac{T}{T_F}Nk_B$, not $\frac{3}{2}Nk_B$.</li>
+        <li><strong>Confusing crystal momentum with ordinary momentum.</strong> The crystal momentum $\hbar K$ is conserved only modulo a reciprocal lattice vector $\hbar\cdot 2\pi/a$. It is not the same as the physical momentum (Bloch states are not momentum eigenstates). Crystal momentum is a quantum number associated with discrete translational symmetry, not continuous translational symmetry.</li>
+        <li><strong>Thinking "insulator" means no electrons.</strong> Insulators have the same number of conduction electrons as semiconductors — typically 2–4 per primitive cell, filling bands exactly. What makes them insulating is the filled band with a large gap, not an absence of electrons.</li>
+        <li><strong>Treating band gaps as a perturbative effect.</strong> Band gaps are non-perturbative — you cannot get them by expanding in small periodic potential corrections to a free-electron result. Near the zone boundary ($k \approx n\pi/a$), the coupling between $+k$ and $-k$ states is resonant and must be treated exactly (degenerate perturbation theory). The gap is $\sim 2|V_{n}|$ where $V_n$ is the Fourier component of the potential at the zone boundary wavevector.</li>
+      </ul>
+
+      <!-- CONNECTS TO -->
+      <div class="section-head">Connects to</div>
+      <ul class="connects-list">
+        <li><strong>Quantum Mechanics — Identical Particles (Lesson 11):</strong> The free electron gas is the direct application of the Pauli exclusion principle to $N$ fermions in a box. The Fermi energy, Fermi surface, and degeneracy pressure all follow from antisymmetry of the many-electron wavefunction.</li>
+        <li><strong>Quantum Mechanics — Symmetries (Lesson 18):</strong> Bloch's theorem is a direct consequence of discrete translational symmetry — it's the quantum Noether theorem applied to a crystal lattice. The connection between symmetry and conserved quantum numbers (crystal momentum here) is worked out fully in Lesson 18.</li>
+        <li><strong>Bioelectricity / Circuits / Analog &amp; Semiconductor:</strong> Every transistor, LED, solar cell, and semiconductor device exploits the band structure derived in this lesson. The $p$–$n$ junction, MOSFET operation, and photovoltaic effect are direct consequences of band gaps, doping, and the Fermi level concept.</li>
+      </ul>
+
+      <!-- LESSON NAV -->
+      <div class="lesson-nav">
+        <a href="scattering.html" class="lesson-nav-btn">← Lesson 15 · Scattering Theory</a>
+        <a href="qsm.html" class="lesson-nav-btn">Lesson 17 · Quantum Statistical Mechanics →</a>
+      </div>
+
+    </div><!-- /main -->
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+<script src="../books-render.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  renderMathInElement(document.body, {
+    delimiters: [
+      { left: '$$', right: '$$', display: true },
+      { left: '$', right: '$', display: false }
+    ],
+    throwOnError: false
+  });
+
+  // Dirac comb band structure: f(ka) = cos(ka) + z*sin(ka)/(ka)
+  // Allowed where |f| <= 1
+  function buildBandPlot(z) {
+    const N = 2000;
+    const kaArr = [], fArr = [], allowedX = [], allowedY = [];
+    const forbidX = [], forbidY = [];
+
+    for (let i = 1; i <= N; i++) {
+      const ka = (i / N) * 4 * Math.PI;
+      const f = Math.cos(ka) + z * Math.sin(ka) / ka;
+      kaArr.push(ka);
+      fArr.push(f);
+    }
+
+    // For shading allowed vs forbidden, create a y-fill between E-axis
+    // We'll plot f(ka) and shade where |f|<=1
+    const kaAllowed = [], eAllowed = [];
+    const kaForbidden = [], eForbidden = [];
+
+    // Convert ka to E in units of E_1 = ℏ²π²/2ma²
+    for (let i = 1; i <= N; i++) {
+      const ka = (i / N) * 4 * Math.PI;
+      const E_norm = (ka / Math.PI) ** 2; // E in units of E_1
+      const f = Math.cos(ka) + z * Math.sin(ka) / ka;
+      if (Math.abs(f) <= 1) {
+        kaAllowed.push(E_norm);
+        eAllowed.push(1);
+      } else {
+        kaForbidden.push(E_norm);
+        eForbidden.push(1);
+      }
+    }
+
+    // Plot f(ka) vs E/E1
+    const eArr = kaArr.map((ka) => (ka / Math.PI) ** 2);
+
+    Plotly.newPlot('band-plot', [
+      {
+        // Shading for allowed regions
+        x: kaAllowed, y: eAllowed,
+        type: 'bar',
+        marker: { color: 'rgba(58,106,138,0.25)', line: { width: 0 } },
+        width: Array(kaAllowed.length).fill((4 * Math.PI / Math.PI / N) ** 2 * 0.5),
+        name: 'Allowed band',
+        showlegend: true
+      },
+      {
+        x: eArr, y: fArr,
+        type: 'scatter', mode: 'lines',
+        line: { color: '#1a2840', width: 1.5 },
+        name: 'f(ka)',
+        yaxis: 'y2'
+      },
+      {
+        x: [0, 16], y: [1, 1],
+        type: 'scatter', mode: 'lines',
+        line: { color: '#c17c2e', width: 1, dash: 'dash' },
+        yaxis: 'y2', showlegend: false
+      },
+      {
+        x: [0, 16], y: [-1, -1],
+        type: 'scatter', mode: 'lines',
+        line: { color: '#c17c2e', width: 1, dash: 'dash' },
+        yaxis: 'y2', showlegend: false
+      }
+    ], {
+      xaxis: {
+        title: { text: 'Energy E (units of ℏ²π²/2ma²)', font: { family: 'IBM Plex Sans', size: 12 } },
+        range: [0, 16], gridcolor: '#e0e8ee'
+      },
+      yaxis: { visible: false, range: [0, 2] },
+      yaxis2: {
+        title: { text: 'f(ka)', font: { family: 'IBM Plex Sans', size: 12 } },
+        overlaying: 'y', side: 'right',
+        range: [-3.5, 3.5], gridcolor: '#e0e8ee', zeroline: true
+      },
+      paper_bgcolor: '#f5f5f2', plot_bgcolor: '#f5f5f2',
+      font: { family: 'IBM Plex Sans, sans-serif', color: '#1a2840' },
+      margin: { t: 16, r: 60, b: 48, l: 16 },
+      legend: { x: 0.02, y: 0.95 },
+      barmode: 'overlay'
+    }, { responsive: true, displayModeBar: false });
+  }
+
+  buildBandPlot(10);
+
+  document.getElementById('z-slider').addEventListener('input', function() {
+    const z = parseInt(this.value);
+    document.getElementById('z-val').textContent = z;
+    buildBandPlot(z);
+  });
+});
+</script>
+
+</body>
+</html>

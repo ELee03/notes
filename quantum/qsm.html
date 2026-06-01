@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quantum Statistical Mechanics · Quantum Mechanics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="quantum" data-current="qsm.html"></div>
+      <hr class="sidebar-rule">
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#counting" class="nav-item">Microstates &amp; the Grand Canonical Ensemble</a>
+        <a href="#distributions" class="nav-item">The Three Distributions</a>
+        <a href="#blackbody" class="nav-item">Blackbody Radiation</a>
+        <a href="#debye" class="nav-item">The Debye Solid</a>
+        <a href="#examples" class="nav-item">Worked Examples</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="breadcrumb-sep">›</span>
+        <a href="index.html">Quantum Mechanics</a>
+        <span class="breadcrumb-sep">›</span>
+        Lesson 17
+      </div>
+
+      <h1 class="lesson-title">Quantum Statistical Mechanics</h1>
+      <div class="lesson-meta">Grand Canonical Ensemble · Fermi–Dirac &amp; Bose–Einstein Distributions · Blackbody Radiation · The Debye Solid</div>
+
+      <div class="prose">
+        <p>Classical statistical mechanics — equipartition, Maxwell-Boltzmann — breaks down spectacularly for quantum systems. It predicts that a cavity should radiate infinite energy at short wavelengths (the "ultraviolet catastrophe"), that all solids should have the same heat capacity at all temperatures, and that the heat capacity of metals should be far larger than observed. Quantum mechanics fixes all three failures. This lesson develops <strong>quantum statistical mechanics</strong> from first principles: how to count microstates for indistinguishable particles, how the statistics differ for bosons (integer spin) and fermions (half-integer spin), and how these two distributions — Bose-Einstein and Fermi-Dirac — explain some of the most important phenomena in physics, from the blackbody spectrum to the $T^3$ heat capacity of solids.</p>
+      </div>
+
+      <!-- COUNTING MICROSTATES -->
+      <div class="section-head" id="counting">Microstates and the Grand Canonical Ensemble</div>
+
+      <div class="prose">
+        <p>In classical statistical mechanics, particles are distinguishable — you can label them. In quantum mechanics, identical particles are fundamentally indistinguishable (Lesson 11). This changes how we count microstates, and the different counting rules for bosons vs. fermions produce qualitatively different physics.</p>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">The setup</h3>
+
+        <p>Consider a quantum system with single-particle energy levels $\varepsilon_1, \varepsilon_2, \varepsilon_3, \ldots$ Each level $i$ has an occupation number $n_i$ (the number of particles in that level). The total energy and total particle number are constrained:</p>
+        <div class="math-block">$$E = \sum_i n_i \varepsilon_i, \qquad N = \sum_i n_i$$</div>
+
+        <p>In the <strong>grand canonical ensemble</strong>, we allow both energy and particle number to fluctuate, with the system in contact with a heat bath (temperature $T$) and a particle reservoir (chemical potential $\mu$). The grand partition function is:</p>
+        <div class="math-block">$$\mathcal{Z} = \sum_{\{n_i\}} \exp\!\left(-\frac{E - \mu N}{k_B T}\right) = \prod_i \mathcal{Z}_i$$</div>
+
+        <p>where the product factorizes because the single-particle levels are independent. The constraint on $n_i$ depends on the particle species:</p>
+
+        <ul style="margin:8px 0 8px 20px;line-height:1.7;">
+          <li><strong>Fermions</strong> (half-integer spin, antisymmetric wavefunction): Pauli exclusion restricts $n_i \in \{0, 1\}$.</li>
+          <li><strong>Bosons</strong> (integer spin, symmetric wavefunction): any number of particles can occupy a level, $n_i \in \{0, 1, 2, \ldots\}$.</li>
+        </ul>
+
+        <p>The average occupation of level $i$ follows from $\langle n_i \rangle = k_BT\,\partial\ln\mathcal{Z}_i/\partial\mu$. Computing this for each case gives the two fundamental distributions.</p>
+      </div>
+
+      <!-- THREE DISTRIBUTIONS -->
+      <div class="section-head" id="distributions">The Three Distributions</div>
+
+      <div class="prose">
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">Fermi–Dirac Distribution (Fermions)</h3>
+
+        <p>For fermions, $n_i \in \{0,1\}$, so $\mathcal{Z}_i = 1 + e^{-(\varepsilon_i - \mu)/k_BT}$. The average occupation is:</p>
+        <div class="math-block">$$\boxed{\bar{n}_{\text{FD}}(\varepsilon) = \frac{1}{e^{(\varepsilon-\mu)/k_BT} + 1}}$$</div>
+
+        <p>At $T = 0$, this is a step function: all states below $\mu = E_F$ are fully occupied ($\bar{n} = 1$), all states above are empty ($\bar{n} = 0$). At finite temperature, the step is smeared over a width $\sim k_BT$ near $E_F$. The chemical potential $\mu(T)$ is pinned near $E_F$ at low temperatures: $\mu \approx E_F[1 - \frac{\pi^2}{12}(T/T_F)^2]$.</p>
+
+        <p>The free electron model in Lesson 16 was built on this: the Fermi energy, Fermi surface, and electronic heat capacity $C_{\text{el}} \propto T$ all follow directly from the Fermi-Dirac distribution and the density of states $g(E) \propto \sqrt{E}$.</p>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">Bose–Einstein Distribution (Bosons)</h3>
+
+        <p>For bosons, $n_i \in \{0, 1, 2, \ldots\}$, so $\mathcal{Z}_i = \sum_{n=0}^\infty e^{-n(\varepsilon_i-\mu)/k_BT} = (1 - e^{-(\varepsilon_i-\mu)/k_BT})^{-1}$, valid when $\varepsilon_i > \mu$. The average occupation is:</p>
+        <div class="math-block">$$\boxed{\bar{n}_{\text{BE}}(\varepsilon) = \frac{1}{e^{(\varepsilon-\mu)/k_BT} - 1}}$$</div>
+
+        <p>The minus sign (vs. $+1$ for FD) has enormous consequences: there is no Pauli exclusion, so bosons can pile up without limit in the lowest energy state. For a fixed particle number, $\mu$ must satisfy $\mu \leq \varepsilon_{\min}$ (the chemical potential is bounded above by the ground state energy). As $T$ decreases, $\mu$ rises toward $\varepsilon_{\min}$ — when $\mu \to \varepsilon_0^-$, the ground state occupation diverges: $\bar{n}_0 \to \infty$. This is <strong>Bose-Einstein condensation (BEC)</strong>, a macroscopic fraction of all particles collapsing into a single quantum state below the critical temperature. Liquid $^4$He undergoes BEC (superfluid transition at 2.17 K); dilute atomic condensates were first made in 1995 (Nobel Prize 2001 to Cornell, Ketterle, Wieman).</p>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">Maxwell–Boltzmann Classical Limit</h3>
+
+        <p>When $e^{(\varepsilon - \mu)/k_BT} \gg 1$ — either $\varepsilon$ is large or $\mu \ll -k_BT$ (dilute, high-temperature gas) — both distributions reduce to:</p>
+        <div class="math-block">$$\bar{n}_{\text{MB}}(\varepsilon) = e^{(\mu - \varepsilon)/k_BT}$$</div>
+
+        <p>This is the classical Maxwell-Boltzmann distribution. Both quantum corrections (+1 and $-1$) become negligible. The condition for the classical limit is that the average number of particles per state is much less than 1: the thermal de Broglie wavelength $\lambda_{\text{th}} = h/\sqrt{2\pi m k_BT}$ is much smaller than the average interparticle spacing $n^{-1/3}$, i.e., $n\lambda_{\text{th}}^3 \ll 1$. For electrons in metals at room temperature, $n\lambda_{\text{th}}^3 \sim 10^3 \gg 1$ — completely quantum. For air molecules at STP, $n\lambda_{\text{th}}^3 \sim 10^{-6} \ll 1$ — essentially classical.</p>
+
+        <p>The three distributions in a unified picture:</p>
+
+        <table style="width:100%;border-collapse:collapse;margin:16px 0;font-size:0.9rem;">
+          <thead>
+            <tr style="background:#e8f0f5;color:#1a2840;">
+              <th style="text-align:left;padding:8px 12px;border-bottom:2px solid #7ab8d4;">Distribution</th>
+              <th style="text-align:left;padding:8px 12px;border-bottom:2px solid #7ab8d4;">Particles</th>
+              <th style="text-align:left;padding:8px 12px;border-bottom:2px solid #7ab8d4;">$\bar{n}(\varepsilon)$</th>
+              <th style="text-align:left;padding:8px 12px;border-bottom:2px solid #7ab8d4;">Max occupation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="padding:7px 12px;border-bottom:1px solid #dde6ec;">Fermi–Dirac</td>
+              <td style="padding:7px 12px;border-bottom:1px solid #dde6ec;">Fermions (half-integer spin)</td>
+              <td style="padding:7px 12px;border-bottom:1px solid #dde6ec;">$1/(e^{(\varepsilon-\mu)/k_BT}+1)$</td>
+              <td style="padding:7px 12px;border-bottom:1px solid #dde6ec;">1 per state</td>
+            </tr>
+            <tr style="background:#f7f7f4;">
+              <td style="padding:7px 12px;border-bottom:1px solid #dde6ec;">Bose–Einstein</td>
+              <td style="padding:7px 12px;border-bottom:1px solid #dde6ec;">Bosons (integer spin)</td>
+              <td style="padding:7px 12px;border-bottom:1px solid #dde6ec;">$1/(e^{(\varepsilon-\mu)/k_BT}-1)$</td>
+              <td style="padding:7px 12px;border-bottom:1px solid #dde6ec;">Unlimited (BEC possible)</td>
+            </tr>
+            <tr>
+              <td style="padding:7px 12px;">Maxwell–Boltzmann</td>
+              <td style="padding:7px 12px;">Classical (distinguishable)</td>
+              <td style="padding:7px 12px;">$e^{(\mu-\varepsilon)/k_BT}$</td>
+              <td style="padding:7px 12px;">Unlimited (no quantum effects)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- BLACKBODY RADIATION -->
+      <div class="section-head" id="blackbody">Blackbody Radiation: The Photon Gas</div>
+
+      <div class="prose">
+        <p>A cavity in thermal equilibrium with its walls at temperature $T$ is filled with electromagnetic radiation. What is the energy spectrum? This is one of the founding questions of quantum mechanics — Planck solved it in 1900 by quantizing the radiation field.</p>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">Photons as bosons with $\mu = 0$</h3>
+
+        <p>Photons are spin-1 bosons. The crucial difference from material particles: photons can be created and destroyed freely — they are not conserved. The number of photons in the cavity adjusts itself to minimize the free energy. This is equivalent to setting the chemical potential to zero: $\mu = 0$. (More formally: the constraint $N = \text{const}$ is absent, so the Lagrange multiplier $\mu$ enforcing it is zero.)</p>
+
+        <p>The Bose-Einstein distribution with $\mu = 0$ gives the average number of photons in a mode of frequency $\omega$:</p>
+        <div class="math-block">$$\bar{n}(\omega) = \frac{1}{e^{\hbar\omega/k_BT} - 1}$$</div>
+
+        <p>The energy density in the frequency interval $[\omega, \omega + d\omega]$ is $\bar{n}(\omega) \cdot \hbar\omega \cdot g(\omega)\,d\omega$, where the density of states for photons in a cavity of volume $V$ (two polarizations, linear dispersion $\omega = ck$) is:</p>
+        <div class="math-block">$$g(\omega) = \frac{\omega^2}{\pi^2 c^3 V}$$</div>
+
+        <p>This gives the <strong>Planck radiation law</strong> (energy per unit volume per unit angular frequency):</p>
+        <div class="math-block">$$\boxed{u(\omega, T) = \frac{\hbar}{\pi^2 c^3}\frac{\omega^3}{e^{\hbar\omega/k_BT} - 1}}$$</div>
+
+        <p>Or in terms of wavelength (with $I(\lambda) \propto u(\omega)|d\omega/d\lambda|$):</p>
+        <div class="math-block">$$B(\lambda, T) = \frac{2hc^2}{\lambda^5}\frac{1}{e^{hc/\lambda k_BT} - 1}$$</div>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">Classical failure and quantum resolution</h3>
+
+        <p>Classical statistical mechanics (Rayleigh-Jeans) assigns $k_BT$ to every radiation mode, giving $u(\omega) \propto \omega^2 k_BT$ — a result that diverges as $\omega \to \infty$ (the <strong>ultraviolet catastrophe</strong>). The divergence arises because classically there are infinitely many high-frequency modes, each with energy $k_BT$. Quantum mechanics resolves this: at high frequency, the excitation energy $\hbar\omega \gg k_BT$ and the mode is essentially unexcited, $\bar{n} \approx e^{-\hbar\omega/k_BT} \to 0$. The exponential suppression cuts off the high-frequency divergence.</p>
+
+        <p>Two important limiting forms confirm this:</p>
+        <ul style="margin:8px 0 8px 20px;line-height:1.7;">
+          <li><strong>Rayleigh-Jeans (classical) limit:</strong> $\hbar\omega \ll k_BT$ → $e^{\hbar\omega/k_BT} - 1 \approx \hbar\omega/k_BT$ → $u(\omega) \approx \frac{\omega^2 k_BT}{\pi^2 c^3}$.</li>
+          <li><strong>Wien's displacement limit:</strong> $\hbar\omega \gg k_BT$ → $u(\omega) \approx \frac{\hbar\omega^3}{\pi^2 c^3}e^{-\hbar\omega/k_BT}$.</li>
+        </ul>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">Derived laws</h3>
+
+        <p><strong>Wien's displacement law</strong>: the peak frequency $\omega_{\max}$ satisfies $\partial u/\partial\omega = 0$, which reduces (after substituting $x = \hbar\omega/k_BT$) to $3(1-e^{-x}) = x$. Numerically, $x \approx 2.82$, giving:</p>
+        <div class="math-block">$$\omega_{\max} = 2.82\,\frac{k_BT}{\hbar} \implies \lambda_{\max}T = 2.898\times10^{-3}\ \text{m\cdot K}$$</div>
+
+        <p>At $T = 5778\ \text{K}$ (solar surface), $\lambda_{\max} \approx 500\ \text{nm}$ — green light, near the peak sensitivity of the human eye.</p>
+
+        <p><strong>Stefan-Boltzmann law</strong>: the total radiated power per unit area (integrating over all frequencies):</p>
+        <div class="math-block">$$I = \sigma T^4, \qquad \sigma = \frac{\pi^2 k_B^4}{60\hbar^3 c^2} = 5.67\times10^{-8}\ \text{W m}^{-2}\text{K}^{-4}$$</div>
+
+        <p>Both Wien's law and the Stefan-Boltzmann law were known empirically before 1900 but had no fundamental derivation. Planck's quantization — the first quantum hypothesis in history — explained them from scratch. The integral $\int_0^\infty x^3/(e^x-1)\,dx = \pi^4/15$ is a standard result relating to the Riemann zeta function: $\zeta(4) = \pi^4/90$.</p>
+      </div>
+
+      <!-- BLACKBODY WIDGET -->
+      <div class="widget-card">
+        <div class="widget-title">Planck Spectrum vs Temperature</div>
+        <div style="display:flex;gap:28px;flex-wrap:wrap;align-items:center;margin-bottom:12px;">
+          <label style="font-size:0.88rem;color:#2a3040;">
+            Temperature $T$ = <span id="T-val">5778</span> K
+            <br><input type="range" id="T-slider" min="1000" max="20000" step="100" value="5778"
+                       style="width:220px;margin-top:4px;">
+          </label>
+        </div>
+        <div id="planck-plot" style="width:100%;height:300px;"></div>
+        <div style="font-size:0.84rem;color:#6a7a8a;margin-top:6px;">
+          Planck spectrum (solid blue) vs Rayleigh-Jeans classical prediction (dashed red). The classical curve diverges at short wavelength — the ultraviolet catastrophe. Planck's quantum formula converges. The vertical line marks Wien's peak $\lambda_{\max} = 2898/T\ \mu\text{m}$.
+        </div>
+      </div>
+
+      <!-- DEBYE SOLID -->
+      <div class="section-head" id="debye">The Debye Solid: Phonons and Heat Capacity</div>
+
+      <div class="prose">
+        <p>A solid consists of $N$ atoms vibrating about their equilibrium positions. A crystal with $N$ atoms has $3N$ normal modes of vibration — collective wave-like excitations spanning from zero frequency (long-wavelength sound) up to some maximum. In the quantum picture, these modes are <strong>phonons</strong>: quantized lattice vibrations, each with energy $\varepsilon = \hbar\omega$ per quantum, just like photons. And like photons, phonons are bosons with $\mu = 0$ (they can be created and destroyed freely by thermal fluctuations).</p>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">Einstein Model (1907)</h3>
+
+        <p>Einstein's first quantum model of solids assumed all $3N$ modes have the same frequency $\omega_E$ (the "Einstein frequency"). The total energy is:</p>
+        <div class="math-block">$$U = 3N\hbar\omega_E\left(\frac{1}{2} + \bar{n}(\omega_E)\right) = 3N\hbar\omega_E\left(\frac{1}{2} + \frac{1}{e^{\hbar\omega_E/k_BT}-1}\right)$$</div>
+
+        <p>Heat capacity $C = \partial U/\partial T$ (the Einstein formula):</p>
+        <div class="math-block">$$C_E = 3Nk_B\left(\frac{\hbar\omega_E}{k_BT}\right)^2 \frac{e^{\hbar\omega_E/k_BT}}{(e^{\hbar\omega_E/k_BT}-1)^2}$$</div>
+
+        <p>At high temperature ($k_BT \gg \hbar\omega_E$), this recovers the classical <strong>Dulong-Petit law</strong>: $C \to 3Nk_B$. At low temperature ($k_BT \ll \hbar\omega_E$), $C \to 3Nk_B(\hbar\omega_E/k_BT)^2 e^{-\hbar\omega_E/k_BT}$ — exponentially suppressed. This was a triumph over the classical prediction that every solid should have $C = 3Nk_B$ at all temperatures. However, experiment shows $C \propto T^3$ at low $T$, not exponential — Einstein's single-frequency model is too crude.</p>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">Debye Model (1912)</h3>
+
+        <p>Debye's key insight: at low temperatures, only long-wavelength (low-frequency) acoustic phonons are excited, and those behave just like photons with linear dispersion $\omega = v_s k$ (where $v_s$ is the speed of sound). We can treat the solid as a phonon gas, with one crucial difference from photons: there are only $3N$ modes total (not infinitely many), so we impose a <strong>Debye cutoff</strong> frequency $\omega_D$ such that the total number of modes is $3N$.</p>
+
+        <p>The density of states for phonons (3 branches — 2 transverse + 1 longitudinal — with linear dispersion in a volume $V$) is $g(\omega) = 9N\omega^2/\omega_D^3$ for $\omega \leq \omega_D$, and 0 above. The total energy is:</p>
+        <div class="math-block">$$U = \int_0^{\omega_D} \frac{\hbar\omega}{e^{\hbar\omega/k_BT}-1}\cdot g(\omega)\,d\omega = 9Nk_BT\left(\frac{T}{\Theta_D}\right)^3\int_0^{\Theta_D/T}\frac{x^3}{e^x-1}\,dx$$</div>
+
+        <p>where $x = \hbar\omega/k_BT$ and the <strong>Debye temperature</strong> $\Theta_D \equiv \hbar\omega_D/k_B$ characterizes the solid's stiffness.</p>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">Low-temperature limit: the $T^3$ law</h3>
+
+        <p>At $T \ll \Theta_D$, the upper limit of the integral can be extended to $\infty$ (the Bose-Einstein suppression kills the integrand for large $x$ anyway), and $\int_0^\infty x^3/(e^x-1)\,dx = \pi^4/15$:</p>
+        <div class="math-block">$$U \approx 9Nk_B T\left(\frac{T}{\Theta_D}\right)^3\frac{\pi^4}{15} = \frac{3\pi^4 Nk_B}{5}\frac{T^4}{\Theta_D^3}$$</div>
+
+        <div class="math-block">$$\boxed{C_{\text{Debye}} = \frac{12\pi^4}{5}Nk_B\left(\frac{T}{\Theta_D}\right)^3 \propto T^3} \qquad (T \ll \Theta_D)$$</div>
+
+        <p>The $T^3$ law is observed in all crystalline solids at low temperature — it is a direct consequence of the linear dispersion of long-wavelength acoustic phonons. Typical Debye temperatures: Al 428 K, Fe 470 K, diamond 2230 K (stiff lattice, high $\omega_D$), lead 105 K (soft).</p>
+
+        <p>At low temperatures, both the phonon contribution $C_{\text{phonon}} \propto T^3$ and the electronic contribution $C_{\text{el}} \propto T$ (Lesson 16) are present. The total heat capacity of a metal at low $T$ is:</p>
+        <div class="math-block">$$C = \gamma T + AT^3$$</div>
+
+        <p>where $\gamma = \frac{\pi^2}{2}Nk_B^2/E_F$ and $A = 12\pi^4 Nk_B/5\Theta_D^3$. Plotting $C/T$ vs $T^2$ gives a straight line; the intercept gives $\gamma$ (measuring the Fermi energy) and the slope gives $A$ (measuring the Debye temperature). This is a standard low-temperature measurement used to characterize metallic systems.</p>
+      </div>
+
+      <!-- WORKED EXAMPLES -->
+      <div class="section-head" id="examples">Worked Examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Blackbody Radiation from the Sun</strong></div>
+        <div class="example-problem">
+          The Sun's surface temperature is approximately $5778\ \text{K}$. (a) Find the wavelength at which the Sun emits maximum power. (b) Find the total power output of the Sun, given $R_\odot = 6.96\times10^8\ \text{m}$.
+        </div>
+        <div class="example-body">
+          <p><strong>(a) Wien's displacement law:</strong></p>
+          <div class="math-block">$$\lambda_{\max} = \frac{2.898\times10^{-3}\ \text{m\cdot K}}{T} = \frac{2.898\times10^{-3}}{5778} = 501\ \text{nm}$$</div>
+          <p>This falls in the green portion of the visible spectrum — the peak of the solar spectrum, and close to the peak sensitivity of human vision.</p>
+
+          <p><strong>(b) Stefan-Boltzmann law:</strong> The total power radiated per unit area is $j = \sigma T^4$. Total luminosity:</p>
+          <div class="math-block">$$L_\odot = 4\pi R_\odot^2 \cdot \sigma T^4 = 4\pi(6.96\times10^8)^2 \times 5.67\times10^{-8} \times (5778)^4$$</div>
+          <div class="math-block">$$= 4\pi\times 4.84\times10^{17}\times5.67\times10^{-8}\times1.112\times10^{15} = 3.84\times10^{26}\ \text{W}$$</div>
+          <p>This is the measured solar luminosity ($3.828\times10^{26}\ \text{W}$) to within measurement uncertainty — a spectacular success of quantum statistical mechanics.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Debye Heat Capacity of Aluminum</strong></div>
+        <div class="example-problem">
+          Aluminum has Debye temperature $\Theta_D = 428\ \text{K}$, molar mass $27\ \text{g/mol}$, and is a monovalent metal. (a) At room temperature ($T = 300\ \text{K}$), evaluate the molar heat capacity using the Debye model and compare with the Dulong-Petit value. (b) At $T = 10\ \text{K}$, use the $T^3$ approximation to find $C$.
+        </div>
+        <div class="example-body">
+          <p><strong>(a) Room temperature:</strong> $T/\Theta_D = 300/428 = 0.70$. Not in the low-$T$ limit, so we need the full Debye integral (numerical). Standard Debye function tables give $D(0.70) \approx 0.747$, so:</p>
+          <div class="math-block">$$C = 3R \cdot 3\left(\frac{T}{\Theta_D}\right)^3\int_0^{\Theta_D/T}\frac{x^3\,dx}{e^x-1} \approx 3R\times 0.926 \approx 23.1\ \text{J/(mol\cdot K)}$$</div>
+          <p>Dulong-Petit value: $3R = 24.9\ \text{J/(mol\cdot K)}$. At $T = 300\ \text{K} \approx 0.7\Theta_D$, we're approaching but haven't fully reached the classical limit — the actual molar heat capacity of Al is $24.2\ \text{J/(mol\cdot K)}$.</p>
+
+          <p><strong>(b) Low temperature $T = 10\ \text{K} \ll \Theta_D$:</strong></p>
+          <div class="math-block">$$C = \frac{12\pi^4}{5}R\left(\frac{T}{\Theta_D}\right)^3 = \frac{12\pi^4}{5}(8.314)\left(\frac{10}{428}\right)^3$$</div>
+          <div class="math-block">$$= 234\times 8.314\times 1.275\times10^{-5} = 0.0248\ \text{J/(mol\cdot K)}$$</div>
+          <p>Compare to room temperature $C \approx 24\ \text{J/(mol\cdot K)}$ — the heat capacity has dropped by a factor of $\sim 1000$. This dramatic decrease at low temperatures reflects the freezing out of phonon modes: at $10\ \text{K}$, only long-wavelength acoustic phonons are thermally accessible.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Chemical Potential of an Ideal Fermi Gas at Low Temperature</strong></div>
+        <div class="example-problem">
+          Show that the chemical potential of a 3D ideal Fermi gas at low temperature is $\mu \approx E_F\left[1 - \frac{\pi^2}{12}\left(\frac{T}{T_F}\right)^2\right]$ using the Sommerfeld expansion.
+        </div>
+        <div class="example-body">
+          <p>The number of electrons is fixed: $N = \int_0^\infty g(E)\,\bar{n}_{\text{FD}}(E)\,dE$ where $g(E) = (3n/2E_F^{3/2})\sqrt{E}$. The <strong>Sommerfeld expansion</strong> evaluates integrals of the form $\int_0^\infty h(E)\bar{n}_{\text{FD}}(E)\,dE$ at low $T$:</p>
+          <div class="math-block">$$\int_0^\infty h(E)\,\bar{n}_{\text{FD}}(E)\,dE = \int_0^\mu h(E)\,dE + \frac{\pi^2}{6}(k_BT)^2 h'(\mu) + \mathcal{O}(T^4)$$</div>
+
+          <p>Applied to the number constraint with $h(E) = g(E) \propto E^{1/2}$:</p>
+          <div class="math-block">$$N = \int_0^\mu g(E)\,dE + \frac{\pi^2}{6}(k_BT)^2\,g'(\mu) + \cdots$$</div>
+
+          <p>At $T = 0$: $N = \int_0^{E_F} g(E)\,dE$. Setting these equal:</p>
+          <div class="math-block">$$\int_0^{E_F} g\,dE = \int_0^\mu g\,dE + \frac{\pi^2}{6}(k_BT)^2 g'(\mu)$$</div>
+
+          <p>Since $g(E) \propto E^{1/2}$, we have $\int_0^x g\,dE \propto x^{3/2}$ and $g(x) \propto x^{1/2}$, $g'(x) \propto x^{-1/2}$. Expanding $\mu = E_F(1 + \delta)$ for small $\delta$:</p>
+          <div class="math-block">$$E_F^{3/2} = \mu^{3/2} + \frac{\pi^2}{6}(k_BT)^2\cdot\frac{1}{2}\mu^{-1/2} + \cdots \approx E_F^{3/2}\left(1 + \frac{3\delta}{2} + \frac{\pi^2}{12}\frac{k_B^2T^2}{E_F^2}\right)$$</div>
+
+          <p>Therefore $\delta = -\frac{\pi^2}{12}(T/T_F)^2$, giving:</p>
+          <div class="math-block">$$\boxed{\mu \approx E_F\left[1 - \frac{\pi^2}{12}\left(\frac{T}{T_F}\right)^2\right]}$$</div>
+          <p>For copper at $T = 300\ \text{K}$: $(T/T_F)^2 = (300/81000)^2 \approx 1.4\times10^{-5}$, so $\mu$ is essentially indistinguishable from $E_F$ at room temperature.</p>
+        </div>
+      </div>
+
+      <!-- FFT -->
+      <ul class="fft-list">
+        <li class="fft-item">
+          Photons have $\mu = 0$, but material particles (electrons, helium atoms) have $\mu \neq 0$. Why can't we just set $\mu = 0$ for all bosons?
+          <div class="fft-answer">
+            <p>The chemical potential encodes the constraint of fixed particle number. For photons, there is no such constraint — a cavity at temperature $T$ spontaneously emits and absorbs photons until equilibrium is reached, with the number of photons determined by $T$, not by any conservation law. Setting $\mu = 0$ for photons is not an assumption but a consequence of the fact that photon number is not conserved (no global U(1) symmetry for photons). For material bosons like $^4$He, the number of atoms is fixed (conserved by the strong interaction). So $\mu$ must be whatever value is needed to make $N = \int \bar{n}_{\text{BE}}(\varepsilon)\,g(\varepsilon)\,d\varepsilon$ consistent with the actual atom count. As $T$ decreases, $\mu$ rises toward $\varepsilon_0 = 0$ (the ground state energy); when $\mu \to 0^-$, the ground state occupation diverges and Bose-Einstein condensation occurs. You cannot set $\mu = 0$ for $^4$He at finite temperature above $T_c$ — it would give an infinite particle number.</p>
+          </div>
+        </li>
+        <li class="fft-item">
+          The Debye model gives the exact $T^3$ law for phonon heat capacity at low $T$. Does it also give the right high-temperature behavior? And how good is the linear-dispersion approximation?
+          <div class="fft-answer">
+            <p>At high temperature ($T \gg \Theta_D$), the Debye model correctly recovers the Dulong-Petit law $C = 3Nk_B$ — every solid approaches this classical limit, and both Einstein and Debye models give it. The real question is: how accurate is the Debye $T^3$ law itself? It is exact in the long-wavelength limit, which always holds at sufficiently low $T$ because only the lowest-frequency (longest-wavelength) phonons are excited, and their dispersion is always acoustic (linear). The approximation fails for real crystals in the intermediate range — optical phonons (non-acoustic branches with $\omega \neq 0$ at $k = 0$) deviate from linear dispersion, and van Hove singularities in the actual phonon density of states don't appear in the smooth Debye approximation. Despite this, the Debye model is remarkably accurate with a single fit parameter ($\Theta_D$), and the $T^3$ law for the heat capacity is exact (not just a model). The key insight is that at low $T$, the physics is universal and controlled only by the sound velocity — the microscopic details don't matter.</p>
+          </div>
+        </li>
+        <li class="fft-item">
+          The Fermi-Dirac and Bose-Einstein distributions both assume non-interacting particles. Real fermions (electrons in a metal) interact strongly. Why does the FD distribution work at all?
+          <div class="fft-answer">
+            <p>This is the same question raised for the free electron model in Lesson 16, but from a thermodynamics angle. The answer involves Landau's Fermi liquid theory. At low temperatures, the interacting Fermi system has low-energy excitations that map one-to-one onto the non-interacting system's excitations — they are called <em>quasiparticles</em> or <em>quasi-electrons</em>. Each quasiparticle carries the same quantum numbers as a free electron (charge, spin) and has a definite momentum, but its effective mass and interaction parameters are renormalized by the interactions. The key point is that quasiparticles near the Fermi surface have lifetimes $\tau \propto (E - E_F)^{-2}$, which diverges as $E \to E_F$ — quasiparticles right at the Fermi surface live forever, exactly like free particles. This is why the Fermi-Dirac distribution (which implicitly treats particles as free) is exact in the low-energy limit. The interaction just renormalizes some parameters (mass, specific heat coefficient $\gamma$, Pauli susceptibility) without changing the qualitative FD physics. Fermi liquid theory breaks down in one dimension (Luttinger liquid) and in strongly correlated materials (Mott insulators, high-Tc cuprates) — this is active research.</p>
+          </div>
+        </li>
+      </ul>
+
+      <!-- PITFALLS -->
+      <div class="section-head">Common Pitfalls</div>
+      <ul class="pitfall-list">
+        <li><strong>Confusing $\mu = 0$ for photons with $\mu = 0$ for bosons in general.</strong> Setting $\mu = 0$ applies only to bosons whose number is not conserved (photons, phonons). For conserved bosons like $^4$He, $\mu$ is determined by the particle number constraint and is generally nonzero. For BEC to occur in a conserved boson system, $\mu$ approaches (but never exceeds) the ground-state energy from below.</li>
+        <li><strong>Using the Dulong-Petit law at all temperatures.</strong> $C = 3Nk_B$ is valid only for $T \gg \Theta_D$. At room temperature, many materials are still partially quantum (e.g., diamond with $\Theta_D = 2230\ \text{K}$ is far below its quantum limit at $300\ \text{K}$). The heat capacity of solids below their Debye temperature is substantially less than $3Nk_B$.</li>
+        <li><strong>Thinking Bose-Einstein condensation requires interactions.</strong> BEC is a purely quantum-statistical effect arising from the Bose-Einstein distribution — it occurs even in an ideal non-interacting boson gas. The interaction energy between atoms in a BEC can actually be repulsive (positive scattering length) and helps stabilize the condensate against collapse, but it is not the cause of BEC.</li>
+        <li><strong>Forgetting the zero-point energy in phonon and photon modes.</strong> The quantum harmonic oscillator has energy $(n + \frac{1}{2})\hbar\omega$, so even at $T = 0$, each mode has zero-point energy $\frac{1}{2}\hbar\omega$. For phonons, this contributes a constant (temperature-independent) term to $U$ — it doesn't affect the heat capacity but does affect the zero-point energy and hence the stability of the crystal. For photons in cavity QED, zero-point fluctuations produce the Casimir effect.</li>
+      </ul>
+
+      <!-- CONNECTS TO -->
+      <div class="section-head">Connects to</div>
+      <ul class="connects-list">
+        <li><strong>Quantum Mechanics — Identical Particles (Lesson 11):</strong> The distinction between bosons and fermions — and why they obey different distribution functions — is a direct consequence of wavefunction symmetry. FD statistics comes from the antisymmetry requirement and Pauli exclusion; BE statistics from the symmetry requirement and the absence of any occupation limit.</li>
+        <li><strong>Quantum Mechanics — Solids &amp; Band Theory (Lesson 16):</strong> The free electron model and Fermi energy (Lesson 16) are derived from the Fermi-Dirac distribution applied to electrons in a box. The electronic heat capacity $C \propto T$ follows from differentiating the FD-weighted total energy. The Debye phonon contribution $C \propto T^3$ provides the competing term at low temperature.</li>
+        <li><strong>Quantum Mechanics — TDPT (Lesson 12):</strong> The Planck blackbody spectrum and Einstein A/B coefficients (Lesson 12) are connected. The Einstein $B$ coefficient (stimulated emission rate) and $A$ coefficient (spontaneous emission rate) are related by $A/B = \hbar\omega^3/\pi^2c^3$, which is exactly the photon density of states factor in the Planck distribution. Detailed balance between absorption and emission rates reproduces the Planck spectrum.</li>
+      </ul>
+
+      <!-- LESSON NAV -->
+      <div class="lesson-nav">
+        <a href="solids.html" class="lesson-nav-btn">← Lesson 16 · Solids &amp; Band Theory</a>
+        <a href="symmetries.html" class="lesson-nav-btn">Lesson 18 · Symmetries &amp; Conservation Laws →</a>
+      </div>
+
+    </div><!-- /main -->
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+<script src="../books-render.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  renderMathInElement(document.body, {
+    delimiters: [
+      { left: '$$', right: '$$', display: true },
+      { left: '$', right: '$', display: false }
+    ],
+    throwOnError: false
+  });
+
+  // Planck spectrum widget
+  function buildPlanckPlot(T) {
+    const hbar = 1.0546e-34, c = 3e8, kB = 1.381e-23, h = 6.626e-34;
+    const lambdas = [], planck = [], rj = [], wienLambda = 2.898e-3 / T;
+
+    for (let i = 1; i <= 500; i++) {
+      const lam = (i / 500) * 3e-6;  // 0 to 3 µm
+      lambdas.push(lam * 1e9);  // convert to nm
+      // Planck B(λ,T) in W/m^2/m
+      const exp_arg = h * c / (lam * kB * T);
+      const planckVal = exp_arg > 200 ? 0 : (2 * h * c * c / Math.pow(lam, 5)) / (Math.exp(exp_arg) - 1);
+      // Rayleigh-Jeans
+      const rjVal = 2 * c * kB * T / Math.pow(lam, 4);
+      planck.push(planckVal);
+      rj.push(rjVal);
+    }
+
+    // Normalize
+    const maxP = Math.max(...planck);
+    const planckN = planck.map(v => v / maxP);
+    const rjN = rj.map(v => Math.min(v / maxP, 3));  // cap at 3x for visibility
+
+    const wienNm = wienLambda * 1e9;
+
+    const traces = [
+      {
+        x: lambdas, y: planckN,
+        mode: 'lines', name: 'Planck (quantum)',
+        line: { color: '#2a6fc4', width: 2.5 }
+      },
+      {
+        x: lambdas, y: rjN,
+        mode: 'lines', name: 'Rayleigh-Jeans (classical)',
+        line: { color: '#c44040', width: 2, dash: 'dash' }
+      },
+      {
+        x: [wienNm, wienNm], y: [0, 1.05],
+        mode: 'lines', name: `λ_max = ${wienNm.toFixed(0)} nm`,
+        line: { color: '#20904e', width: 1.5, dash: 'dot' }
+      }
+    ];
+
+    const layout = {
+      xaxis: { title: 'Wavelength (nm)', range: [100, 3000] },
+      yaxis: { title: 'Spectral radiance (normalized)', range: [0, 1.2] },
+      legend: { x: 0.5, y: 0.98, xanchor: 'right' },
+      margin: { t: 20, b: 50, l: 60, r: 20 },
+      paper_bgcolor: '#f8f9fa', plot_bgcolor: '#f8f9fa'
+    };
+
+    Plotly.newPlot('planck-plot', traces, layout, { responsive: true, displayModeBar: false });
+  }
+
+  const slider = document.getElementById('T-slider');
+  const valLabel = document.getElementById('T-val');
+
+  slider.addEventListener('input', function() {
+    const T = parseInt(this.value);
+    valLabel.textContent = T;
+    buildPlanckPlot(T);
+  });
+
+  buildPlanckPlot(5778);
+});
+</script>
+
+</body>
+</html>

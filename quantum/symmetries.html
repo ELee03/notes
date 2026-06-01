@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Symmetries &amp; Conservation Laws · Quantum Mechanics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="quantum" data-current="symmetries.html"></div>
+      <hr class="sidebar-rule">
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#noether" class="nav-item">The Quantum Noether Theorem</a>
+        <a href="#translation" class="nav-item">Translation &amp; Momentum</a>
+        <a href="#parity" class="nav-item">Parity</a>
+        <a href="#rotation" class="nav-item">Rotation &amp; Angular Momentum</a>
+        <a href="#time" class="nav-item">Time Translation &amp; Energy</a>
+        <a href="#virial" class="nav-item">The Virial Theorem</a>
+        <a href="#wigner-eckart" class="nav-item">The Wigner–Eckart Theorem</a>
+        <a href="#examples" class="nav-item">Worked Examples</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="breadcrumb-sep">›</span>
+        <a href="index.html">Quantum Mechanics</a>
+        <span class="breadcrumb-sep">›</span>
+        Lesson 18
+      </div>
+
+      <h1 class="lesson-title">Symmetries &amp; Conservation Laws</h1>
+      <div class="lesson-meta">Quantum Noether Theorem · Translation · Parity · Rotation · Time Translation · Virial Theorem · Wigner–Eckart</div>
+
+      <div class="prose">
+        <p>Emmy Noether's theorem (1915) is arguably the deepest result in theoretical physics: every continuous symmetry of the laws of nature corresponds to a conserved quantity. Momentum is conserved because the laws of physics don't depend on where you are. Energy is conserved because they don't depend on when you are. Angular momentum is conserved because they don't depend on which direction you're facing. In quantum mechanics, this connection becomes especially transparent: a symmetry of the Hamiltonian is represented by an operator $\hat{Q}$ that commutes with $\hat{H}$, and $[\hat{H}, \hat{Q}] = 0$ directly implies that $\langle\hat{Q}\rangle$ is constant in time. Discrete symmetries — parity, time-reversal — don't generate conservation laws in the Noether sense, but they impose powerful constraints on selection rules and energy level degeneracies. This lesson develops the quantum theory of symmetries systematically, explaining not only why things are conserved but how symmetry determines what transitions are allowed.</p>
+      </div>
+
+      <!-- NOETHER -->
+      <div class="section-head" id="noether">The Quantum Noether Theorem</div>
+
+      <div class="prose">
+        <p>In classical mechanics, Noether's theorem is a statement about action functionals and Lagrangians. In quantum mechanics, the statement is simpler and more direct.</p>
+
+        <p>A <strong>symmetry</strong> of the Hamiltonian is an operator $\hat{Q}$ such that $[\hat{H}, \hat{Q}] = 0$. The Ehrenfest theorem gives:</p>
+        <div class="math-block">$$\frac{d\langle\hat{Q}\rangle}{dt} = \frac{i}{\hbar}\langle[\hat{H}, \hat{Q}]\rangle = 0$$</div>
+
+        <p>So $\langle\hat{Q}\rangle$ is constant in time — $\hat{Q}$ is a <strong>conserved observable</strong>. Moreover, $[\hat{H}, \hat{Q}] = 0$ implies that $\hat{H}$ and $\hat{Q}$ share a complete set of simultaneous eigenstates. This means that a state of definite energy can also be a state of definite $Q$ — energy eigenstates can be labeled by the conserved quantum number associated with $\hat{Q}$.</p>
+
+        <p class="callout"><em>The connection between symmetry and conservation is not an approximation or a theorem requiring special conditions — in quantum mechanics, it is exact and immediate: $[\hat{H}, \hat{Q}] = 0$ is both the definition of symmetry and the proof of conservation.</em></p>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">Degeneracy from symmetry</h3>
+
+        <p>Symmetry also explains degeneracy. If $[\hat{H}, \hat{Q}] = 0$ and $|n\rangle$ is an energy eigenstate with eigenvalue $E_n$, then $\hat{Q}|n\rangle$ is also an energy eigenstate with the same eigenvalue (since $\hat{H}(\hat{Q}|n\rangle) = \hat{Q}\hat{H}|n\rangle = E_n(\hat{Q}|n\rangle)$). If $\hat{Q}|n\rangle \neq c|n\rangle$ (i.e., $|n\rangle$ is not already an eigenstate of $\hat{Q}$), then $\hat{Q}|n\rangle$ is a new, degenerate eigenstate. This is why the hydrogen atom has $2l+1$ degenerate states with the same $n,l$: the rotational symmetry ($[\hat{H}, \hat{L}_z] = 0$) generates the $2l+1$ states with $m = -l, \ldots, +l$ by repeated application of $\hat{L}_\pm$.</p>
+      </div>
+
+      <!-- TRANSLATION -->
+      <div class="section-head" id="translation">Spatial Translation and Momentum Conservation</div>
+
+      <div class="prose">
+        <p>Define the <strong>translation operator</strong> $\hat{T}(a)$ by its action on position eigenstates: $\hat{T}(a)|x\rangle = |x + a\rangle$, or equivalently on wavefunctions:</p>
+        <div class="math-block">$$\hat{T}(a)\psi(x) = \psi(x - a)$$</div>
+
+        <p>(Moving the state by $+a$ is the same as evaluating the wavefunction shifted by $-a$.) For an infinitesimal displacement $\epsilon$:</p>
+        <div class="math-block">$$\hat{T}(\epsilon)\psi(x) = \psi(x-\epsilon) \approx \psi(x) - \epsilon\frac{\partial\psi}{\partial x} = \left(1 - \frac{i\epsilon}{\hbar}\hat{p}\right)\psi(x)$$</div>
+
+        <p>So $\hat{T}(\epsilon) = 1 - \frac{i\epsilon}{\hbar}\hat{p}$, and for finite $a$ by exponentiation:</p>
+        <div class="math-block">$$\boxed{\hat{T}(a) = e^{-ia\hat{p}/\hbar}}$$</div>
+
+        <p>The momentum operator $\hat{p} = -i\hbar\partial/\partial x$ is the <strong>generator</strong> of spatial translations. Now, if the potential is translationally invariant — $V(x)$ doesn't depend on $x$ (as for a free particle) — then $[\hat{H}, \hat{T}(a)] = 0$ for all $a$, which implies $[\hat{H}, \hat{p}] = 0$, which means momentum is conserved.</p>
+
+        <p>In more general setups, if $V(x)$ is periodic with period $a$ (a crystal), then $[\hat{H}, \hat{T}(a)] = 0$ but $[\hat{H}, \hat{T}(\epsilon)] \neq 0$ for generic $\epsilon$. The conserved quantity is not ordinary momentum but the discrete crystal momentum $K$ — this is exactly Bloch's theorem (Lesson 16). Continuous translational symmetry → momentum conservation. Discrete translational symmetry → crystal momentum conservation (modulo $2\pi/a$).</p>
+      </div>
+
+      <!-- PARITY -->
+      <div class="section-head" id="parity">Parity</div>
+
+      <div class="prose">
+        <p>The <strong>parity operator</strong> $\hat{\Pi}$ reflects all spatial coordinates through the origin:</p>
+        <div class="math-block">$$\hat{\Pi}\psi(\mathbf{r}) = \psi(-\mathbf{r})$$</div>
+
+        <p>Applying parity twice gives back the original state, so $\hat{\Pi}^2 = \mathbf{1}$ and the eigenvalues of $\hat{\Pi}$ are $\pm 1$. If $\hat{\Pi}|E\rangle = +|E\rangle$, the state is <strong>even</strong> (symmetric under $\mathbf{r} \to -\mathbf{r}$); if $\hat{\Pi}|E\rangle = -|E\rangle$, it is <strong>odd</strong>.</p>
+
+        <p>If the potential is symmetric under parity — $V(-\mathbf{r}) = V(\mathbf{r})$, as for any central potential $V(r)$ — then $[\hat{H}, \hat{\Pi}] = 0$ and parity is conserved. In that case, energy eigenstates can always be chosen to have definite parity. This is why:</p>
+        <ul style="margin:8px 0 8px 20px;line-height:1.7;">
+          <li>Infinite square well eigenstates alternate even/odd: $\psi_n(x) \propto \cos(n\pi x/L)$ (even) and $\sin(n\pi x/L)$ (odd) for $n = 1, 2, 3, \ldots$</li>
+          <li>Harmonic oscillator eigenstates $\psi_n(x)$ are even for even $n$, odd for odd $n$.</li>
+          <li>Hydrogen spherical harmonics $Y_l^m(\theta,\phi)$ have parity $(-1)^l$: even $l$ gives even parity, odd $l$ gives odd parity.</li>
+        </ul>
+
+        <p>The parity of a product state $\psi_1(\mathbf{r}_1)\psi_2(\mathbf{r}_2)$ is the product of the individual parities.</p>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">Parity selection rules</h3>
+
+        <p>Consider an electric dipole (E1) transition between states $|i\rangle$ and $|f\rangle$. The transition matrix element is $\langle f|\hat{\mathbf{r}}|i\rangle$ (Lesson 12). Under parity, $\hat{\mathbf{r}} \to -\hat{\mathbf{r}}$ — the dipole operator is odd (parity eigenvalue $-1$).</p>
+
+        <p>For the matrix element to be nonzero:</p>
+        <div class="math-block">$$\langle f|\hat{\mathbf{r}}|i\rangle = \langle f|\hat{\Pi}^\dagger(\hat{\Pi}\hat{\mathbf{r}}\hat{\Pi}^\dagger)\hat{\Pi}|i\rangle = \pi_f\cdot(-1)\cdot\pi_i\cdot\langle f|\hat{\mathbf{r}}|i\rangle$$</div>
+
+        <p>This equals itself only if $\pi_f \cdot (-1) \cdot \pi_i = +1$, i.e., $\pi_f \neq \pi_i$. So E1 transitions require an <em>odd-parity operator between states of opposite parity</em>. Since parity of hydrogen states is $(-1)^l$, this requires $(-1)^{l_f} \neq (-1)^{l_i}$, i.e., $l_f - l_i$ must be odd. Combined with the angular momentum selection rule $\Delta l = \pm 1$ (from the photon carrying one unit of angular momentum), we get:</p>
+        <div class="math-block">$$\Delta l = \pm 1 \qquad \text{(E1 selection rule — from parity + angular momentum conservation)}$$</div>
+
+        <p>Transitions with $\Delta l = 0$ or $\Delta l = \pm 2$ violate parity conservation: the dipole operator cannot connect states of the same parity. This is why $2s \to 1s$ is forbidden in hydrogen (both $s$ states have even parity, $\Delta l = 0$). The actual $2s$ state decays via two-photon emission with lifetime $\sim 0.12\ \text{s}$, compared to $\sim 1.6\ \text{ns}$ for the $2p \to 1s$ (E1-allowed) transition.</p>
+      </div>
+
+      <!-- ROTATION -->
+      <div class="section-head" id="rotation">Rotational Symmetry and Angular Momentum</div>
+
+      <div class="prose">
+        <p>The rotation operator $\hat{R}(\hat{n}, \phi)$ rotates the system by angle $\phi$ about the axis $\hat{n}$. By the same logic as for translations, the generator of rotations about the $z$-axis is $\hat{L}_z$ (and similarly $\hat{L}_x, \hat{L}_y$ for other axes):</p>
+        <div class="math-block">$$\hat{R}(\hat{z}, \phi) = e^{-i\phi\hat{L}_z/\hbar}$$</div>
+
+        <p>For a central potential $V(r)$, the Hamiltonian commutes with all three components of angular momentum: $[\hat{H}, \hat{L}_x] = [\hat{H}, \hat{L}_y] = [\hat{H}, \hat{L}_z] = 0$. Therefore:</p>
+        <ul style="margin:8px 0 8px 20px;line-height:1.7;">
+          <li>All three components of angular momentum are conserved.</li>
+          <li>$l$ and $m$ are good quantum numbers for energy eigenstates.</li>
+          <li>The energy is degenerate in $m$: all $2l + 1$ states $|n,l,m\rangle$ for $m = -l,\ldots,+l$ have the same energy.</li>
+        </ul>
+
+        <p>For the hydrogen atom, there is an additional "accidental" symmetry (the Runge-Lenz vector, specific to $1/r$ potentials) that makes the energy independent of $l$ as well, giving the $n^2$-fold degeneracy. For a general central potential (e.g., a particle in a spherical box), only the $(2l+1)$ degeneracy in $m$ follows from rotational symmetry; states with different $l$ generally have different energies.</p>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">Rotational selection rules</h3>
+
+        <p>For an E1 transition, the photon carries spin $s = 1$ (it is a spin-1 particle). The $z$-component of photon spin is $m_s = \pm 1$ for circularly polarized photons (right/left), and $m_s = 0$ for linearly polarized. Conserving the $z$-component of angular momentum during emission requires:</p>
+        <div class="math-block">$$m_f = m_i + m_s \implies \Delta m = 0, \pm 1$$</div>
+
+        <p>The constraint $\Delta m = 0$ is forbidden for transitions with $\Delta l = 0$ (would require $m_s = 0$, which carries no energy at the dipole level — actually it <em>is</em> allowed for $\Delta l = \pm 1, \Delta m = 0$ with a linearly polarized photon). Combining with parity: the full E1 selection rules are $\Delta l = \pm 1$, $\Delta m = 0, \pm 1$, and $\Delta s = 0$ (electric dipole doesn't couple to spin directly).</p>
+
+        <p>For a system with spin and orbital angular momentum, the conserved quantity under rotation is the <em>total</em> angular momentum $\mathbf{J} = \mathbf{L} + \mathbf{S}$, and the selection rules become $\Delta J = 0, \pm 1$ (but $J_i = 0 \to J_f = 0$ is forbidden). This is why atomic spectral lines are split by spin-orbit coupling into multiplets with selection rules on the $J$ quantum numbers.</p>
+      </div>
+
+      <!-- TIME TRANSLATION -->
+      <div class="section-head" id="time">Time Translation and Energy Conservation</div>
+
+      <div class="prose">
+        <p>Under time translation by $\tau$, any state evolves as $|\psi(t)\rangle \to |\psi(t+\tau)\rangle$. The generator of time translations is $\hat{H}$ itself (the time evolution operator is $\hat{U}(t) = e^{-i\hat{H}t/\hbar}$). If the Hamiltonian is time-independent — the laws of physics don't change with time — then $[\hat{H}, \hat{H}] = 0$ trivially, and energy is conserved.</p>
+
+        <p>More precisely: the Schrödinger equation $i\hbar\partial|\psi\rangle/\partial t = \hat{H}|\psi\rangle$ tells us that for a state $|E\rangle$ with definite energy, $\langle E\rangle = E$ is constant. For a superposition, $\langle\hat{H}\rangle = \sum_n |c_n|^2 E_n$ remains constant as long as $|c_n|^2$ doesn't change with time — which is guaranteed by unitary evolution ($|\hat{U}|^2 = \mathbf{1}$).</p>
+
+        <p>When the Hamiltonian is time-dependent (as in Lesson 12 on time-dependent perturbation theory), time translation symmetry is broken and energy is not conserved. An external oscillating field can transfer energy to a quantum system precisely because $\hat{H}(t) \neq \text{const}$. The energy absorbed is quantized in units of $\hbar\omega$ — the photon energy — matching Fermi's golden rule.</p>
+      </div>
+
+      <!-- VIRIAL THEOREM -->
+      <div class="section-head" id="virial">The Virial Theorem</div>
+
+      <div class="prose">
+        <p>The quantum virial theorem is a deep result relating the expectation values of kinetic and potential energy. It follows not from a symmetry per se, but from the scale transformation (dilatation) $\mathbf{r} \to \lambda\mathbf{r}$, and is most cleanly derived using the Ehrenfest theorem applied to $\mathbf{r}\cdot\hat{\mathbf{p}}$.</p>
+
+        <p>For a stationary state (energy eigenstate), $\langle\hat{Q}\rangle$ is constant for any observable $\hat{Q}$. In particular, $d\langle\mathbf{r}\cdot\hat{\mathbf{p}}\rangle/dt = 0$:</p>
+        <div class="math-block">$$\frac{d}{dt}\langle\mathbf{r}\cdot\hat{\mathbf{p}}\rangle = \frac{i}{\hbar}\langle[\hat{H}, \mathbf{r}\cdot\hat{\mathbf{p}}]\rangle = 0$$</div>
+
+        <p>Computing the commutator (using $\hat{H} = \hat{p}^2/2m + V(\mathbf{r})$):</p>
+        <div class="math-block">$$[\hat{H}, \mathbf{r}\cdot\hat{\mathbf{p}}] = 2i\hat{T} - i\mathbf{r}\cdot\nabla V$$</div>
+
+        <p>where $\hat{T} = \hat{p}^2/2m$ is the kinetic energy operator. Setting this expectation value to zero:</p>
+        <div class="math-block">$$\boxed{2\langle\hat{T}\rangle = \langle\mathbf{r}\cdot\nabla V\rangle} \qquad \text{(Quantum Virial Theorem)}$$</div>
+
+        <p>For a homogeneous potential $V = V_0 r^n$ (where $n$ is any integer), $\mathbf{r}\cdot\nabla V = nV$, giving:</p>
+        <div class="math-block">$$\langle T\rangle = \frac{n}{2}\langle V\rangle \qquad (V \propto r^n)$$</div>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">Key applications</h3>
+
+        <p><strong>Harmonic oscillator</strong> ($n = 2$): $\langle T\rangle = \langle V\rangle = E_n/2 = (n + \frac{1}{2})\hbar\omega/2$. Equal partition between kinetic and potential energy — same as the classical result.</p>
+
+        <p><strong>Hydrogen atom</strong> ($n = -1$, since $V = -e^2/4\pi\epsilon_0 r \propto r^{-1}$): $\langle T\rangle = -\frac{1}{2}\langle V\rangle$. Since $E_n = \langle T\rangle + \langle V\rangle$:</p>
+        <div class="math-block">$$\langle T\rangle = -E_n = \frac{13.6\ \text{eV}}{n^2}, \qquad \langle V\rangle = 2E_n = -\frac{27.2\ \text{eV}}{n^2}$$</div>
+
+        <p>The kinetic energy of the electron is positive and equals $|E_n|$; the potential energy is twice as negative as the total energy. As the electron is confined to a smaller orbit (larger $|E_n|$), its kinetic energy increases — this is the quantum-mechanical origin of atomic stability. An electron can't simply fall to the nucleus: doing so would require infinite kinetic energy (Heisenberg uncertainty principle: $\Delta p \geq \hbar/2\Delta x \to \infty$ as $\Delta x \to 0$).</p>
+
+        <p><strong>Free particle</strong> ($V = 0$, $n = 0$): $\langle T\rangle = 0$, which only holds for the zero-energy state. Consistent: free-particle energy eigenstates don't satisfy the virial theorem's stationarity assumption unless they're bound states.</p>
+
+        <p>The virial theorem applies to all <em>bound</em> (normalizable, stationary) states. It is violated for scattering states, which are not normalizable and not truly stationary in the same sense.</p>
+      </div>
+
+      <!-- WIGNER-ECKART -->
+      <div class="section-head" id="wigner-eckart">The Wigner–Eckart Theorem</div>
+
+      <div class="prose">
+        <p>The Wigner-Eckart theorem is the master statement about how matrix elements of tensor operators depend on angular momentum quantum numbers. It vastly reduces the number of independent matrix elements one needs to compute in atomic, nuclear, and particle physics.</p>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">Tensor operators</h3>
+
+        <p>A <strong>spherical tensor operator</strong> of rank $k$ is a set of $2k+1$ operators $T_q^{(k)}$ ($q = -k, \ldots, +k$) that transform under rotations exactly like the spherical harmonics $Y_k^q(\theta,\phi)$. Specifically, they satisfy the commutation relations with the angular momentum operators:</p>
+        <div class="math-block">$$[\hat{L}_z, T_q^{(k)}] = \hbar q\, T_q^{(k)}, \qquad [\hat{L}_\pm, T_q^{(k)}] = \hbar\sqrt{k(k+1)-q(q\pm 1)}\,T_{q\pm 1}^{(k)}$$</div>
+
+        <p>Examples: scalar operators (rank 0) like $r^2$ or $H$; vector operators (rank 1) like $\hat{\mathbf{r}}$, $\hat{\mathbf{p}}$, $\hat{\mathbf{L}}$ (with $T_{-1} \propto (x-iy), T_0 \propto z, T_{+1} \propto -(x+iy)$); rank-2 tensors like the quadrupole moment.</p>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">The theorem</h3>
+
+        <div class="math-block">$$\boxed{\langle n'l'm'|T_q^{(k)}|nlm\rangle = \langle l'm'|lm;kq\rangle\cdot\frac{\langle n'l'\|T^{(k)}\|nl\rangle}{\sqrt{2l'+1}}}$$</div>
+
+        <p>Here $\langle l'm'|lm;kq\rangle$ is a Clebsch-Gordan coefficient, and $\langle n'l'\|T^{(k)}\|nl\rangle$ is the <strong>reduced matrix element</strong> — a single number that depends only on $n, l, n', l'$ and $k$ (not on $m, m', q$). The Wigner-Eckart theorem factors the matrix element into:</p>
+        <ol style="margin:8px 0 8px 20px;line-height:1.7;">
+          <li>A geometric factor (Clebsch-Gordan coefficient) that encodes all the $m$-dependence.</li>
+          <li>A dynamical factor (reduced matrix element) that contains all the physics of the particular operator and states.</li>
+        </ol>
+
+        <p><strong>Selection rules from Wigner-Eckart:</strong> The Clebsch-Gordan coefficient $\langle l'm'|lm;kq\rangle$ vanishes unless $m' = m + q$ and $|l - k| \leq l' \leq l + k$ (the triangle rule). For an E1 transition ($k = 1$, vector operator $T_q^{(1)} \propto \hat{r}_q$), the triangle rule gives $|l - 1| \leq l' \leq l + 1$, which means $\Delta l = 0, \pm 1$. But $l = 0 \to l' = 0$ is excluded because the Clebsch-Gordan $\langle 00|00;10\rangle = 0$ (angular momentum $l=0 + $ photon spin $k=1$ cannot give $l'=0$). So the selection rule reduces to $\Delta l = \pm 1$, confirming the parity argument.</p>
+
+        <p>The Wigner-Eckart theorem is indispensable in practical calculations: to evaluate a matrix element of any vector operator between two sets of angular momentum states, you only need one integral (the reduced matrix element) and the selection rules fall out automatically from the Clebsch-Gordan coefficient.</p>
+      </div>
+
+      <!-- INTERACTIVE: Parity of Spherical Harmonics -->
+      <div class="widget-card">
+        <div class="widget-title">Parity of Atomic States and E1 Selection Rules</div>
+        <div style="display:flex;gap:28px;flex-wrap:wrap;align-items:flex-start;margin-bottom:12px;">
+          <div>
+            <label style="font-size:0.88rem;color:#2a3040;">
+              Initial state $l_i$ = <span id="li-val">1</span>
+              <br><input type="range" id="li-slider" min="0" max="4" step="1" value="1"
+                         style="width:160px;margin-top:4px;">
+            </label>
+          </div>
+        </div>
+        <div id="parity-plot" style="width:100%;height:300px;"></div>
+        <div style="font-size:0.84rem;color:#6a7a8a;margin-top:6px;">
+          Blue bars: E1-allowed final states ($\Delta l = \pm 1$, opposite parity). Gray bars: forbidden. Height indicates the number of $m$ values available ($2l+1$). Parity $(-1)^l$ labeled on each bar.
+        </div>
+      </div>
+
+      <!-- WORKED EXAMPLES -->
+      <div class="section-head" id="examples">Worked Examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Virial Theorem for the Harmonic Oscillator</strong></div>
+        <div class="example-problem">
+          Verify the virial theorem $\langle T\rangle = \langle V\rangle$ for the harmonic oscillator ground state $\psi_0 = (\frac{m\omega}{\pi\hbar})^{1/4}e^{-m\omega x^2/2\hbar}$.
+        </div>
+        <div class="example-body">
+          <p>Let $\alpha = m\omega/\hbar$. The ground state energy is $E_0 = \frac{1}{2}\hbar\omega$.</p>
+
+          <p><strong>Potential energy:</strong></p>
+          <div class="math-block">$$\langle V\rangle = \frac{m\omega^2}{2}\langle x^2\rangle = \frac{m\omega^2}{2}\cdot\frac{\hbar}{2m\omega} = \frac{\hbar\omega}{4} = \frac{E_0}{2}$$</div>
+          <p>where $\langle x^2\rangle = \hbar/2m\omega$ from the Gaussian integral.</p>
+
+          <p><strong>Kinetic energy:</strong> Using $E_0 = \langle T\rangle + \langle V\rangle$ and $\langle V\rangle = E_0/2$:</p>
+          <div class="math-block">$$\langle T\rangle = E_0 - \langle V\rangle = \frac{\hbar\omega}{2} - \frac{\hbar\omega}{4} = \frac{\hbar\omega}{4} = \frac{E_0}{2}$$</div>
+
+          <p>Indeed $\langle T\rangle = \langle V\rangle$, as required by the virial theorem for $V \propto r^2$ ($n = 2$: $\langle T\rangle = \frac{n}{2}\langle V\rangle = \langle V\rangle$). Alternatively, compute directly:</p>
+          <div class="math-block">$$\langle T\rangle = -\frac{\hbar^2}{2m}\int_{-\infty}^\infty \psi_0\frac{d^2\psi_0}{dx^2}\,dx = \frac{\hbar^2\alpha}{2m}\int_{-\infty}^\infty(\alpha x^2 - \frac{1}{2})|\psi_0|^2\,dx = \frac{\hbar\omega}{4}$$</div>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Parity and Selection Rules in Hydrogen</strong></div>
+        <div class="example-problem">
+          Which of the following hydrogen transitions are E1-allowed, and why? (a) $3p \to 1s$, (b) $3d \to 1s$, (c) $4f \to 2p$, (d) $2s \to 1s$.
+        </div>
+        <div class="example-body">
+          <p><strong>(a) $3p \to 1s$ ($l_i = 1, l_f = 0$):</strong> $\Delta l = -1$. Parity: $(-1)^1 = -1 \to (-1)^0 = +1$, opposite parities. $\Delta m = m_f - m_i \in \{0, \pm 1\}$ is possible since $m_i \in \{-1,0,1\}$ and $m_f = 0$. <strong>Allowed.</strong> This is the hydrogen Lyman-$\beta$ line at 102.6 nm.</p>
+
+          <p><strong>(b) $3d \to 1s$ ($l_i = 2, l_f = 0$):</strong> $\Delta l = -2$. The triangle rule requires $|l_i - k| \leq l_f \leq l_i + k$ with $k = 1$ (E1): $|2 - 1| = 1 \leq l_f$, but $l_f = 0 < 1$. <strong>Forbidden</strong> (by both the $\Delta l = \pm 1$ selection rule and parity: both states have even parity). This transition can occur via E2 (electric quadrupole, $\Delta l = 2$) but with rate $\sim 10^7$ times smaller.</p>
+
+          <p><strong>(c) $4f \to 2p$ ($l_i = 3, l_f = 1$):</strong> $\Delta l = -2$. Triangle rule: $|3-1| = 2 > l_f = 1$. <strong>Forbidden</strong> for E1. Parity check: $(-1)^3 = -1 \to (-1)^1 = -1$ — same parity, confirming the violation (E1 requires opposite parity).</p>
+
+          <p><strong>(d) $2s \to 1s$ ($l_i = 0, l_f = 0$):</strong> $\Delta l = 0$. For $k = 1$ (E1), the triangle rule requires $|0 - 1| = 1 \leq l_f = 0$, which fails. Also, both states have even parity. <strong>Forbidden</strong> for E1 (and for all single-photon electric or magnetic dipole transitions). Decay occurs via two-photon emission with a lifetime of about 121 ms — over $10^8$ times longer than a typical E1 transition.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Angular Momentum Algebra from Rotational Symmetry</strong></div>
+        <div class="example-problem">
+          Using symmetry arguments, explain why a system with $[\hat{H}, \hat{L}^2] = [\hat{H}, \hat{L}_z] = 0$ but $[\hat{L}_x, \hat{L}_y] = i\hbar\hat{L}_z \neq 0$ must have $(2l+1)$-fold degenerate energy levels rather than states that are simultaneously eigenstates of $\hat{L}_x$, $\hat{L}_y$, and $\hat{L}_z$.
+        </div>
+        <div class="example-body">
+          <p>The three components of angular momentum don't commute with each other: $[\hat{L}_i, \hat{L}_j] = i\hbar\epsilon_{ijk}\hat{L}_k$. This means $\hat{L}_x$ and $\hat{L}_y$ cannot be simultaneously diagonalized. However, $\hat{L}^2 = \hat{L}_x^2 + \hat{L}_y^2 + \hat{L}_z^2$ commutes with all three components ($[\hat{L}^2, \hat{L}_i] = 0$), so we can simultaneously diagonalize $\hat{H}$, $\hat{L}^2$, and one component — conventionally $\hat{L}_z$.</p>
+
+          <p>The degeneracy arises because rotational symmetry generates the states. Given any eigenstate $|l, m\rangle$ of $\hat{L}^2$ and $\hat{L}_z$, the ladder operators $\hat{L}_\pm = \hat{L}_x \pm i\hat{L}_y$ (which are rank-1 tensor operators) generate the other $2l$ states:</p>
+          <div class="math-block">$$\hat{L}_\pm|l,m\rangle = \hbar\sqrt{l(l+1)-m(m\pm 1)}\,|l,m\pm 1\rangle$$</div>
+
+          <p>Since $[\hat{H}, \hat{L}_\pm] = 0$ (both $[\hat{H}, \hat{L}_x] = 0$ and $[\hat{H}, \hat{L}_y] = 0$ follow from $[\hat{H}, \hat{L}_i] = 0$ for $i = x, y, z$), the state $\hat{L}_+|n,l,m\rangle$ is also an energy eigenstate with the same eigenvalue $E_{nl}$. Applying $\hat{L}_+$ repeatedly generates all $2l+1$ degenerate states. The degeneracy is $2l+1$ because the algebra of $\hat{L}_\pm$ terminates: $\hat{L}_+|l,l\rangle = 0$ (you can't raise $m$ above $l$).</p>
+
+          <p>If instead you tried to work with eigenstates of $\hat{L}_x$, the fact that $[\hat{H}, \hat{L}_x] = 0$ means $\hat{L}_x$ eigenstates are also degenerate (they're related by linear combination from the $\hat{L}_z$ eigenstates). No matter which component you diagonalize, you get exactly $2l+1$ degenerate states — the multiplicity of the representation is fixed by the symmetry group.</p>
+        </div>
+      </div>
+
+      <!-- FFT -->
+      <ul class="fft-list">
+        <li class="fft-item">
+          Parity is a symmetry of the electromagnetic and strong forces, but it is violated by the weak interaction. What does this mean for selection rules in beta decay?
+          <div class="fft-answer">
+            <p>Parity violation was discovered by Wu et al. in 1957 (following Lee and Yang's 1956 theoretical prediction) by observing that beta particles from the decay of polarized $^{60}$Co were emitted preferentially opposite to the nuclear spin direction. This is impossible if parity is conserved: under $\mathbf{r} \to -\mathbf{r}$, the spin (axial vector) doesn't change sign, but the momentum of the beta particle (polar vector) does — so the angular correlation $\langle\mathbf{J}\cdot\mathbf{p}\rangle$ changes sign under parity. A nonzero value of $\langle\mathbf{J}\cdot\mathbf{p}\rangle$ is direct evidence of parity violation. For the weak interaction, the parity operator $\hat{\Pi}$ no longer commutes with the weak Hamiltonian, so parity is not a conserved quantum number in weak decays. The selection rules derived in this lesson — $\Delta l = \pm 1$ etc. — apply only to electromagnetic transitions, which do conserve parity. Weak decays can and do connect states of the same parity, or produce final states that are superpositions of parities.</p>
+          </div>
+        </li>
+        <li class="fft-item">
+          The quantum virial theorem says $2\langle T\rangle = \langle\mathbf{r}\cdot\nabla V\rangle$ for stationary states. Does this hold for coherent states of the harmonic oscillator, which are not energy eigenstates?
+          <div class="fft-answer">
+            <p>No — the derivation requires $d\langle\mathbf{r}\cdot\hat{\mathbf{p}}\rangle/dt = 0$, which holds only for stationary states (energy eigenstates or states that remain in a fixed energy eigenspace). A coherent state $|\alpha\rangle$ is a superposition of infinitely many energy eigenstates, and $\langle\mathbf{r}\cdot\hat{\mathbf{p}}\rangle(t)$ oscillates periodically. However, the virial theorem holds on average over one full oscillation period: $\overline{\langle T\rangle} = \overline{\langle V\rangle}$. This is analogous to the classical virial theorem, which holds as a time average over periodic orbits. The coherent state traces a circular (or elliptical) orbit in phase space, and the time-averaged kinetic and potential energies are equal. For non-periodic states (like a wavepacket spreading in a free particle), neither the instantaneous nor the time-averaged virial theorem applies.</p>
+          </div>
+        </li>
+        <li class="fft-item">
+          The hydrogen atom has an "accidental" degeneracy — the energy depends only on $n$, not on $l$. Why is this not required by rotational symmetry alone, and what additional symmetry is responsible?
+          <div class="fft-answer">
+            <p>Rotational symmetry ($[\hat{H}, \hat{\mathbf{L}}] = 0$) guarantees $(2l+1)$-fold degeneracy in $m$ for each $l$, but says nothing about states with different $l$ having the same energy. For a generic central potential $V(r)$, states $(n, l=0)$, $(n', l=1)$, $(n'', l=2)$, etc., have different energies. The "accidental" degeneracy in hydrogen ($E$ depends only on $n = n_r + l + 1$ where $n_r$ is the radial quantum number) is a consequence of a hidden symmetry specific to the Coulomb $1/r$ potential: the <strong>Runge-Lenz vector</strong> $\hat{\mathbf{A}} = \hat{\mathbf{p}}\times\hat{\mathbf{L}} - m e^2\hat{\mathbf{r}}/r$ (a vector pointing along the major axis of the classical ellipse). This operator commutes with the hydrogen Hamiltonian: $[\hat{H}, \hat{\mathbf{A}}] = 0$. The algebra of $\hat{\mathbf{L}}$ and $\hat{\mathbf{A}}$ together is isomorphic to $SO(4)$ (4-dimensional rotational symmetry), which has $n^2$-dimensional representations — exactly the $n^2$-fold degeneracy observed. For any other $V(r)$ (e.g., $V \propto r^2$ for the 3D harmonic oscillator — where there's a different $n$-dependent degeneracy for a different hidden symmetry), the degeneracy pattern is different. "Accidental" degeneracy is never truly accidental — it always signals a hidden symmetry.</p>
+          </div>
+        </li>
+      </ul>
+
+      <!-- PITFALLS -->
+      <div class="section-head">Common Pitfalls</div>
+      <ul class="pitfall-list">
+        <li><strong>Confusing "$[\hat{H}, \hat{Q}] = 0$ implies $\hat{Q}$ is conserved" with "all states have definite $Q$."</strong> The conservation law $d\langle\hat{Q}\rangle/dt = 0$ holds for any state (not just eigenstates of $\hat{Q}$). But only states that are eigenstates of $\hat{Q}$ have a definite value of $Q$. For example, $[\hat{H}, \hat{L}^2] = 0$ in a central potential, so $\langle L^2\rangle$ is conserved — but a superposition of $l=1$ and $l=2$ states has $\langle L^2\rangle$ constant (a weighted average), yet no definite $l$.</li>
+        <li><strong>Thinking the $\Delta l = \pm 1$ rule comes solely from angular momentum conservation.</strong> Angular momentum conservation gives $\Delta l = 0, \pm 1$ (photon has spin 1, adding it to the system changes $l$ by at most 1). Parity additionally forbids $\Delta l = 0$. Both rules together give $\Delta l = \pm 1$. Stating only "angular momentum conservation" misses half the argument.</li>
+        <li><strong>Applying the virial theorem to scattering states.</strong> The virial theorem requires $d\langle\mathbf{r}\cdot\hat{\mathbf{p}}\rangle/dt = 0$, which holds for stationary (bound) states. For scattering states, $\langle\mathbf{r}\cdot\hat{\mathbf{p}}\rangle$ grows without bound as the particle moves to infinity, and the virial theorem does not apply.</li>
+        <li><strong>Conflating "symmetry is broken" with "symmetry is absent."</strong> Spontaneous symmetry breaking (as in ferromagnets, superconductors, the Higgs mechanism) means the ground state doesn't have the full symmetry of the Hamiltonian, even though $[\hat{H}, \hat{Q}] = 0$. The conservation law still holds — it's just that the lowest-energy state is not symmetric. This is different from explicit symmetry breaking (like parity violation in the weak interaction), where $[\hat{H}_{\text{weak}}, \hat{\Pi}] \neq 0$.</li>
+      </ul>
+
+      <!-- CONNECTS TO -->
+      <div class="section-head">Connects to</div>
+      <ul class="connects-list">
+        <li><strong>Quantum Mechanics — Angular Momentum (Lesson 7):</strong> The ladder operators $\hat{L}_\pm$ and the commutation relations $[L_i, L_j] = i\hbar\epsilon_{ijk}L_k$ developed in Lesson 7 are the foundation of this lesson. The degeneracy of the $m$ quantum numbers, the spherical harmonics $Y_l^m$, and their parity — all derived there — are interpreted here through symmetry.</li>
+        <li><strong>Quantum Mechanics — TDPT (Lesson 12):</strong> Electric dipole selection rules ($\Delta l = \pm 1$, $\Delta m = 0, \pm 1$) are derived from perturbation theory in Lesson 12 by evaluating the matrix element $\langle f|\hat{\mathbf{r}}|i\rangle$. This lesson explains why those rules hold: parity requires opposite-parity states ($\Delta l$ odd), and photon spin-1 with $m_s \in \{-1,0,1\}$ sets $\Delta m = 0, \pm 1$.</li>
+        <li><strong>Quantum Mechanics — Solids (Lesson 16):</strong> Bloch's theorem ($\psi_K(x+a) = e^{iKa}\psi_K(x)$) is the translation symmetry analysis applied to a discrete lattice. Crystal momentum is the conserved quantum number associated with discrete translational symmetry — the direct analogue of ordinary momentum for continuous translational symmetry.</li>
+      </ul>
+
+      <!-- LESSON NAV -->
+      <div class="lesson-nav">
+        <a href="qsm.html" class="lesson-nav-btn">← Lesson 17 · Quantum Statistical Mechanics</a>
+        <span class="lesson-nav-btn" style="opacity:0.4;cursor:default;">Cluster Complete</span>
+      </div>
+
+    </div><!-- /main -->
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+<script src="../books-render.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  renderMathInElement(document.body, {
+    delimiters: [
+      { left: '$$', right: '$$', display: true },
+      { left: '$', right: '$', display: false }
+    ],
+    throwOnError: false
+  });
+
+  // Parity and E1 selection rules visualization
+  function buildParityPlot(li) {
+    const lVals = [0, 1, 2, 3, 4];
+    const parityLabels = lVals.map(l => `l=${l}<br>π=${l%2===0?'+':'-'}${l%2===0?'1':'1'}`);
+    const paritySign = l => l % 2 === 0 ? '+1' : '−1';
+
+    const colors = lVals.map(lf => {
+      if (Math.abs(lf - li) === 1) return '#2a6fc4';  // E1-allowed
+      return '#c0c8d0';  // forbidden
+    });
+
+    const heights = lVals.map(l => 2*l + 1);
+
+    const labels = lVals.map(l => {
+      const dl = l - li;
+      const parityOk = l % 2 !== li % 2;
+      if (Math.abs(dl) === 1) return `l=${l} (Δl=${dl>0?'+':''}${dl})<br>parity=${paritySign(l)} ✓`;
+      return `l=${l} (Δl=${dl>0?'+':''}${dl})<br>parity=${paritySign(l)} ✗`;
+    });
+
+    const trace = {
+      x: lVals.map(l => `l = ${l}  (π = ${paritySign(l)})`),
+      y: heights,
+      type: 'bar',
+      marker: { color: colors },
+      text: heights.map((h, i) => `${h} m-values`),
+      textposition: 'outside',
+      hovertemplate: '%{x}<br>2l+1 = %{y} states<extra></extra>'
+    };
+
+    const shapes = [{
+      type: 'line',
+      x0: -0.5, x1: lVals.length - 0.5,
+      y0: 0, y1: 0,
+      line: { color: '#888', width: 1 }
+    }];
+
+    // Add annotation for initial state
+    const annotations = [{
+      x: `l = ${li}  (π = ${paritySign(li)})`,
+      y: 2*li + 1 + 0.5,
+      text: '← initial',
+      showarrow: false,
+      font: { color: '#e07030', size: 12 }
+    }];
+
+    const layout = {
+      xaxis: { title: 'Final state angular momentum' },
+      yaxis: { title: '# of magnetic substates (2l+1)', range: [0, 12] },
+      annotations: annotations,
+      margin: { t: 30, b: 80, l: 60, r: 20 },
+      paper_bgcolor: '#f8f9fa', plot_bgcolor: '#f8f9fa',
+      showlegend: false
+    };
+
+    Plotly.newPlot('parity-plot', [trace], layout, { responsive: true, displayModeBar: false });
+  }
+
+  const liSlider = document.getElementById('li-slider');
+  const liLabel = document.getElementById('li-val');
+
+  liSlider.addEventListener('input', function() {
+    const li = parseInt(this.value);
+    liLabel.textContent = li;
+    buildParityPlot(li);
+  });
+
+  buildParityPlot(1);
+});
+</script>
+
+</body>
+</html>

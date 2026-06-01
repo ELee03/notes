@@ -39,6 +39,19 @@
         { "href": "wkb.html",              "text": "14 · The WKB Approximation" },
         { "href": "scattering.html",       "text": "15 · Scattering Theory" }
       ]
+    },
+    {
+      "label": "Many-Particle Systems",
+      "items": [
+        { "href": "solids.html",           "text": "16 · Solids &amp; Band Theory" },
+        { "href": "qsm.html",              "text": "17 · Quantum Statistical Mechanics" }
+      ]
+    },
+    {
+      "label": "Symmetries",
+      "items": [
+        { "href": "symmetries.html",       "text": "18 · Symmetries &amp; Conservation Laws" }
+      ]
     }
   ]
 }
