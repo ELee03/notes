@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Particle &amp; Tunneling — Quantum Mechanics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="quantum" data-current="free-particle.html"></div>
+      <hr class="sidebar-rule">
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#free-particle" class="nav-item">The Free Particle</a>
+        <a href="#wave-packets" class="nav-item">Wave Packets</a>
+        <a href="#delta-potential" class="nav-item">Delta Function Potential</a>
+        <a href="#finite-well" class="nav-item">Finite Square Well</a>
+        <a href="#tunneling" class="nav-item">Quantum Tunneling</a>
+        <a href="#widget" class="nav-item">Transmission Calculator</a>
+        <a href="#examples" class="nav-item">Worked Examples</a>
+        <a href="#fft" class="nav-item">Food for Thought</a>
+        <a href="#pitfalls" class="nav-item">Common Pitfalls</a>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="breadcrumb"><a href="../index.html">Field Notes</a> / <a href="index.html">Quantum Mechanics</a> / Free Particle &amp; Tunneling</div>
+
+      <h1 class="lesson-title">Free Particle &amp; Tunneling</h1>
+      <div class="lesson-meta">Wave Packets · Dispersion · Delta Potential · Quantum Tunneling · WKB</div>
+
+      <p class="prose">
+        A particle with no forces acting on it — the free particle — turns out to be much stranger than it first appears.
+        Its energy eigenstates aren't normalizable: a particle with a perfectly sharp momentum must be spread over all of
+        space. Real particles are <em>wave packets</em>, superpositions of plane waves that localize in space but spread
+        over time. Then things get weirder: put a barrier in the way, and the particle has a nonzero probability of appearing
+        on the other side even when classical mechanics forbids it. That's quantum tunneling — and it powers everything from
+        nuclear fusion to the scanning tunneling microscope.
+      </p>
+
+      <!-- ===================== FREE PARTICLE ===================== -->
+      <div class="section-head" id="free-particle">The Free Particle</div>
+
+      <p class="prose">
+        Set $V(x) = 0$ everywhere. The time-independent Schrödinger equation becomes:
+      </p>
+      <div class="math-block">
+        $$-\frac{\hbar^2}{2m}\frac{d^2\psi}{dx^2} = E\psi \quad\Longrightarrow\quad \frac{d^2\psi}{dx^2} = -k^2\psi, \qquad k \equiv \frac{\sqrt{2mE}}{\hbar}$$
+      </div>
+      <p class="prose">
+        The general solution is $\psi(x) = Ae^{ikx} + Be^{-ikx}$, representing a rightward traveling wave plus a
+        leftward traveling wave. Including the time factor $e^{-iEt/\hbar}$:
+      </p>
+      <div class="math-block">
+        $$\Psi_k(x,t) = Ae^{i(kx - \omega t)}, \qquad \omega \equiv \frac{\hbar k^2}{2m}$$
+      </div>
+      <p class="prose">
+        where $k > 0$ means rightward propagation and $k < 0$ means leftward (we can allow both signs if we define
+        $k = \pm\sqrt{2mE}/\hbar$). These are plane waves — sinusoids that fill all of space.
+      </p>
+
+      <div class="callout">
+        <strong>The normalisation problem.</strong> Plane waves can't be normalised: $\int_{-\infty}^{\infty} |Ae^{ikx}|^2\,dx = |A|^2 \cdot \infty$.
+        A free particle with a definite momentum $p = \hbar k$ is not a physically realisable state — it would require
+        the particle to be found with equal probability at every point in the universe. Real free particles are wave packets.
+      </div>
+
+      <p class="prose">
+        There's a deeper point here. The problem isn't just normalisability — it's that a free particle can't strictly be
+        in a stationary state at all. Stationary states require a potential to confine the particle; without confinement,
+        any sharp-energy state is delocalised over all space. This is the uncertainty principle in action:
+        a perfectly definite momentum ($\Delta p = 0$) demands infinite position uncertainty ($\Delta x = \infty$).
+      </p>
+
+      <!-- PHASE VS GROUP VELOCITY -->
+      <div class="section-head" id="wave-packets">Wave Packets and Dispersion</div>
+
+      <p class="prose">
+        A physical free particle is a <strong>wave packet</strong>: a superposition of plane waves with a spread of wave
+        numbers centred around some $k_0$. By the inverse Fourier theorem:
+      </p>
+      <div class="math-block">
+        $$\Psi(x,t) = \frac{1}{\sqrt{2\pi}}\int_{-\infty}^{\infty} \phi(k)\, e^{i(kx - \omega(k)\,t)}\,dk$$
+      </div>
+      <p class="prose">
+        where $\phi(k)$ is the momentum-space wavefunction. At $t=0$, this reduces to the Fourier transform of $\Psi(x,0)$:
+      </p>
+      <div class="math-block">
+        $$\phi(k) = \frac{1}{\sqrt{2\pi}}\int_{-\infty}^{\infty} \Psi(x,0)\,e^{-ikx}\,dx$$
+      </div>
+      <p class="prose">
+        So given any initial wavepacket shape $\Psi(x,0)$, you Fourier-transform to get $\phi(k)$, stick in the time
+        factors $e^{-i\omega(k)t}$, then inverse-Fourier-transform to propagate forward in time. This is the complete
+        solution for a free particle.
+      </p>
+
+      <p class="prose">
+        Now a critical question: how fast does the packet move? There are <em>two</em> velocities:
+      </p>
+
+      <div class="callout">
+        <strong>Phase velocity vs group velocity.</strong><br>
+        The <em>phase velocity</em> of a single plane wave component is how fast the wavecrest moves:
+        $$v_\text{phase} = \frac{\omega}{k} = \frac{\hbar k}{2m} = \frac{p}{2m}$$
+        The <em>group velocity</em> is how fast the envelope (the packet) moves:
+        $$v_\text{group} = \frac{d\omega}{dk} = \frac{\hbar k}{m} = \frac{p}{m}$$
+        The group velocity equals the classical particle velocity $p/m$. The phase velocity is exactly half of that.
+        The packet moves at the right speed; individual wave crests inside it move at half that speed and drift
+        backward relative to the envelope.
+      </div>
+
+      <p class="prose">
+        This happens because the free-particle dispersion relation is <em>dispersive</em>: $\omega \propto k^2$, not
+        $\omega \propto k$. Different frequency components travel at different speeds, so the packet spreads out over
+        time. A Gaussian wave packet that starts with width $\sigma$ at $t=0$ has width
+      </p>
+      <div class="math-block">
+        $$\sigma(t) = \sigma\sqrt{1 + \left(\frac{\hbar t}{2m\sigma^2}\right)^2}$$
+      </div>
+      <p class="prose">
+        This spreading is irreversible — you can't un-spread a free wavepacket. It's a direct consequence of Heisenberg:
+        a packet with finite position uncertainty $\Delta x = \sigma$ has momentum uncertainty $\Delta p \geq \hbar/(2\sigma)$,
+        and those different momentum components propagate at different speeds, pulling the packet apart.
+      </p>
+
+      <div class="example-box">
+        <div class="example-title">Example 1 — Gaussian wave packet: momentum spread and spreading rate</div>
+        <div class="example-body">
+          <p>Start with a Gaussian wave packet centred at $x=0$ with initial width $\sigma$:</p>
+          <div class="math-block">$$\Psi(x,0) = A\,e^{-x^2/(4\sigma^2)}\,e^{ik_0 x}$$</div>
+          <p>where $k_0 = mv_0/\hbar$ gives the packet a mean momentum $p_0 = \hbar k_0$.</p>
+          <p><strong>Step 1: Find $A$ from normalisation.</strong> $\int_{-\infty}^\infty |Ae^{-x^2/(4\sigma^2)}|^2\,dx = |A|^2\sqrt{2\pi}\,\sigma = 1$, so $A = (2\pi\sigma^2)^{-1/4}$.</p>
+          <p><strong>Step 2: Compute $\phi(k)$.</strong></p>
+          <div class="math-block">$$\phi(k) = \frac{1}{\sqrt{2\pi}}\int_{-\infty}^\infty (2\pi\sigma^2)^{-1/4}\,e^{-x^2/(4\sigma^2)}\,e^{i(k_0-k)x}\,dx = \left(\frac{2\sigma^2}{\pi}\right)^{1/4} e^{-\sigma^2(k-k_0)^2}$$</div>
+          <p>This is also Gaussian — a Gaussian in position gives a Gaussian in momentum. The widths multiply to give $\Delta x \,\Delta k = 1/2$, or $\Delta x\,\Delta p = \hbar/2$: the Gaussian saturates the uncertainty bound.</p>
+          <p><strong>Step 3: Spreading rate.</strong> For a 10 g marble with $\sigma = 1\,\text{mm}$:
+          $$\tau = \frac{2m\sigma^2}{\hbar} = \frac{2(0.01)(10^{-3})^2}{1.055\times10^{-34}} \approx 2\times10^{26}\,\text{s}$$
+          The age of the universe is $\sim 4\times10^{17}$ s. Macroscopic objects don't spread appreciably — the quantum effect is completely negligible. For an electron with $\sigma = 1\,\text{nm}$:
+          $$\tau_e = \frac{2(9.1\times10^{-31})(10^{-9})^2}{1.055\times10^{-34}} \approx 1.7\times10^{-14}\,\text{s}$$
+          Electron wave packets spread on femtosecond timescales.</p>
+        </div>
+      </div>
+
+      <!-- ===================== DELTA POTENTIAL ===================== -->
+      <div class="section-head" id="delta-potential">The Delta Function Potential</div>
+
+      <p class="prose">
+        The simplest potential that has both bound and scattering states is:
+      </p>
+      <div class="math-block">
+        $$V(x) = -\alpha\,\delta(x), \qquad \alpha > 0$$
+      </div>
+      <p class="prose">
+        This is an infinitely deep, infinitely narrow well at the origin — the limit of a rectangular well as you make
+        it taller and thinner while keeping the area $\alpha$ constant. It's a useful toy model for a short-range
+        attractive interaction (e.g. a nucleus), and it's exactly solvable.
+      </p>
+
+      <p class="prose">
+        The TISE is $-(\hbar^2/2m)\psi'' - \alpha\delta(x)\psi = E\psi$. Away from the origin ($x \neq 0$) this is just
+        the free-particle equation $\psi'' = -k^2\psi$ (if $E > 0$) or $\psi'' = \kappa^2\psi$ (if $E < 0$, with
+        $\kappa \equiv \sqrt{-2mE}/\hbar > 0$).
+      </p>
+
+      <p class="prose">
+        <strong>Matching conditions at $x=0$.</strong> Integrating the TISE from $-\epsilon$ to $+\epsilon$ and taking $\epsilon \to 0$:
+      </p>
+      <div class="math-block">
+        $$\psi'(0^+) - \psi'(0^-) = -\frac{2m\alpha}{\hbar^2}\psi(0)$$
+      </div>
+      <p class="prose">
+        So the wavefunction is continuous at $x=0$, but its derivative has a discontinuous jump proportional to
+        $\psi(0)$. This is the key matching condition for any delta-function potential.
+      </p>
+
+      <p class="prose"><strong>Bound state ($E &lt; 0$).</strong> We need $\psi \to 0$ as $|x| \to \infty$.
+      Writing $\kappa = \sqrt{-2mE}/\hbar$:</p>
+      <div class="math-block">
+        $$\psi(x) = \begin{cases} Be^{\kappa x} & x < 0 \\ Be^{-\kappa x} & x > 0 \end{cases}$$
+      </div>
+      <p class="prose">
+        (Continuity at 0 forces both coefficients equal.) Applying the derivative jump condition:
+        $-B\kappa - B\kappa = -(2m\alpha/\hbar^2)B$, giving $\kappa = m\alpha/\hbar^2$.
+        There is exactly <em>one</em> bound state, with energy and wavefunction:
+      </p>
+      <div class="math-block">
+        $$E_\text{bound} = -\frac{m\alpha^2}{2\hbar^2}, \qquad \psi(x) = \frac{\sqrt{m\alpha}}{\hbar}\,e^{-m\alpha|x|/\hbar^2}$$
+      </div>
+
+      <p class="prose"><strong>Scattering states ($E > 0$).</strong> Now $k = \sqrt{2mE}/\hbar > 0$.
+      Send a wave in from the left:</p>
+      <div class="math-block">
+        $$\psi(x) = \begin{cases} Ae^{ikx} + Be^{-ikx} & x < 0 \quad\text{(incident + reflected)} \\ Fe^{ikx} & x > 0 \quad\text{(transmitted)} \end{cases}$$
+      </div>
+      <p class="prose">
+        Continuity at 0 gives $A + B = F$. The derivative jump gives $ik(F - A + B) = -(2m\alpha/\hbar^2)F$.
+        Defining $\beta \equiv m\alpha/(\hbar^2 k)$, the reflection and transmission coefficients are:
+      </p>
+      <div class="math-block">
+        $$R = \left|\frac{B}{A}\right|^2 = \frac{\beta^2}{1+\beta^2}, \qquad T = \left|\frac{F}{A}\right|^2 = \frac{1}{1+\beta^2}$$
+      </div>
+      <p class="prose">
+        Note $R + T = 1$ as required. And crucially: $T &lt; 1$ for all finite energies — even classically allowed
+        scattering off an attractive potential reflects some of the wave. This is a quantum effect with no classical
+        analogue.
+      </p>
+
+      <!-- ===================== FINITE WELL ===================== -->
+      <div class="section-head" id="finite-well">The Finite Square Well</div>
+
+      <p class="prose">
+        The finite square well — $V = -V_0$ for $|x| < a$ and $V = 0$ outside — is the delta function's big brother.
+        It has a finite number of bound states and admits scattering states at all positive energies.
+      </p>
+
+      <p class="prose">
+        <strong>Bound states ($-V_0 &lt; E &lt; 0$).</strong> Inside the well define $l \equiv \sqrt{2m(E+V_0)}/\hbar$ (real,
+        since $E > -V_0$). Outside define $\kappa \equiv \sqrt{-2mE}/\hbar$. Matching the even-parity solution
+        ($\psi \propto \cos(lx)$ inside) at the boundary $x=a$ gives the transcendental equation:
+      </p>
+      <div class="math-block">
+        $$l\tan(la) = \kappa$$
+      </div>
+      <p class="prose">
+        with odd-parity solutions satisfying $-l\cot(la) = \kappa$. These must be solved numerically.
+        The number of bound states is $\lceil \sqrt{2mV_0}\,a/(\pi\hbar/2) \rceil$ — it grows with the well depth
+        and width. In the limit $V_0 \to \infty$, the energies approach those of the infinite square well.
+      </p>
+
+      <p class="prose">
+        <strong>Scattering states and resonant transmission.</strong> At $E > 0$, waves can scatter off the well.
+        The transmission coefficient for a rectangular well of width $2a$ and depth $V_0$ is:
+      </p>
+      <div class="math-block">
+        $$T = \left[1 + \frac{V_0^2 \sin^2(2la)}{4E(E+V_0)}\right]^{-1}, \qquad l = \frac{\sqrt{2m(E+V_0)}}{\hbar}$$
+      </div>
+      <p class="prose">
+        When $\sin(2la) = 0$, i.e. $2la = n\pi$, we get $T = 1$: <strong>perfect transmission</strong> at specific
+        energies. This is the <em>Ramsauer–Townsend effect</em> — electrons pass through noble gas atoms with anomalously
+        high transmission at certain energies, confirming the wave nature of electrons. The resonance condition
+        $2a = n\lambda/2$ means the well contains an integer number of half-wavelengths — standing waves fit perfectly.
+      </p>
+
+      <!-- ===================== TUNNELING ===================== -->
+      <div class="section-head" id="tunneling">Quantum Tunneling</div>
+
+      <p class="prose">
+        Now flip the potential: consider a <strong>barrier</strong> $V = +V_0$ for $0 &lt; x &lt; d$, zero elsewhere.
+        Classically, a particle with $E &lt; V_0$ is reflected at the barrier. In quantum mechanics, it tunnels through.
+      </p>
+
+      <p class="prose">
+        Inside the barrier, the TISE gives $\psi'' = \kappa^2\psi$ with $\kappa = \sqrt{2m(V_0-E)}/\hbar > 0$.
+        The solutions are real exponentials $e^{\pm\kappa x}$ — the wavefunction decays across the barrier rather
+        than oscillating. The amplitude at the far side is suppressed, but nonzero.
+      </p>
+
+      <p class="prose">
+        Working through the matching conditions at both walls of the barrier gives the transmission coefficient:
+      </p>
+      <div class="math-block">
+        $$T = \left[1 + \frac{\sinh^2(\kappa d)}{4\frac{E}{V_0}\left(1-\frac{E}{V_0}\right)}\right]^{-1}$$
+      </div>
+      <p class="prose">
+        For a wide or high barrier ($\kappa d \gg 1$), $\sinh(\kappa d) \approx \frac{1}{2}e^{\kappa d}$, and:
+      </p>
+      <div class="math-block">
+        $$T \approx 16\frac{E}{V_0}\left(1-\frac{E}{V_0}\right)\,e^{-2\kappa d}$$
+      </div>
+      <p class="prose">
+        The dominant factor is the <strong>exponential</strong> in barrier width and height. Doubling the barrier
+        width squares the suppression factor; increasing the height increases $\kappa$ and suppresses exponentially.
+      </p>
+
+      <div class="callout">
+        <strong>WKB approximation (for non-uniform barriers).</strong>
+        When the barrier height $V(x)$ varies slowly, the tunneling exponent generalises to an integral:
+        $$T \approx \exp\!\left(-\frac{2}{\hbar}\int_{x_1}^{x_2} \sqrt{2m(V(x)-E)}\,dx\right)$$
+        where $x_1, x_2$ are the classical turning points where $V(x) = E$. This is the WKB (Wentzel–Kramers–Brillouin)
+        approximation. It lets you estimate tunneling rates for realistic potentials — alpha decay, field emission,
+        and quantum chemistry all use this formula.
+      </div>
+
+      <p class="prose">
+        <strong>Applications of quantum tunneling:</strong>
+      </p>
+      <ul class="prose" style="margin-top:0; padding-left:1.4em;">
+        <li><strong>Alpha decay.</strong> An alpha particle inside a heavy nucleus tunnels through the Coulomb barrier.
+          The Geiger–Nuttall law — the empirical correlation between half-life and alpha energy — follows directly from
+          the WKB formula. A factor of 2 change in decay energy changes the half-life by many orders of magnitude.</li>
+        <li><strong>Scanning tunnelling microscope (STM).</strong> A metallic tip held nanometres above a surface:
+          electrons tunnel across the vacuum gap. Because $T \propto e^{-2\kappa d}$, a 1 Å change in gap
+          changes the current by roughly an order of magnitude — giving atomic-scale height resolution.</li>
+        <li><strong>Josephson junctions.</strong> Cooper pairs in a superconductor tunnel through a thin insulating
+          layer; the resulting supercurrent underpins SQUIDs (quantum magnetometers) and qubit devices.</li>
+        <li><strong>Nuclear fusion in stars.</strong> Protons in the solar core have energies ~1 keV, far below the
+          ~1 MeV Coulomb barrier. Fusion happens only because of tunneling — without it, the Sun wouldn't shine.</li>
+        <li><strong>Tunnel diodes and transistors.</strong> Modern transistor gates are thin enough that gate-leakage
+          tunneling is a real engineering constraint; tunnel diodes exploit resonant tunneling deliberately.</li>
+      </ul>
+
+      <!-- ===================== WIDGET ===================== -->
+      <div class="section-head" id="widget">Rectangular Barrier: Transmission vs Energy</div>
+
+      <div class="widget-card">
+        <div class="widget-title">Transmission coefficient $T(E)$ — rectangular barrier</div>
+        <div id="tunneling-plot" style="width:100%;height:380px;"></div>
+        <div style="margin-top:14px;display:flex;flex-wrap:wrap;gap:18px;align-items:center;">
+          <label style="font-size:13px;color:#3a5a78;">
+            Barrier height $V_0$:
+            <input type="range" id="v0-slider" min="0.5" max="10" step="0.1" value="5"
+                   style="width:130px;vertical-align:middle;margin:0 6px;">
+            <span id="v0-val" style="font-family:'IBM Plex Mono',monospace;font-size:12px;">5.0 eV</span>
+          </label>
+          <label style="font-size:13px;color:#3a5a78;">
+            Barrier width $d$:
+            <input type="range" id="d-slider" min="0.1" max="3" step="0.05" value="1"
+                   style="width:130px;vertical-align:middle;margin:0 6px;">
+            <span id="d-val" style="font-family:'IBM Plex Mono',monospace;font-size:12px;">1.0 nm</span>
+          </label>
+        </div>
+        <p style="font-size:12px;color:#7a8a9a;margin:10px 0 0;">
+          Blue: quantum tunneling regime ($E &lt; V_0$). Red: above-barrier scattering ($E &gt; V_0$) showing
+          Ramsauer–Townsend resonances where $T=1$. Particle mass = electron mass.
+        </p>
+      </div>
+
+      <!-- ===================== EXAMPLES ===================== -->
+      <div class="section-head" id="examples">Worked Examples</div>
+
+      <div class="example-box">
+        <div class="example-title">Example 2 — Delta function potential: bound state and scattering</div>
+        <div class="example-body">
+          <p>Consider $V(x) = -\alpha\delta(x)$ with $\alpha = 3.81\,\text{eV·Å}$ (chosen to give a round energy for an electron).</p>
+          <p><strong>(a) Find the bound state energy.</strong></p>
+          <div class="math-block">$$E = -\frac{m_e\alpha^2}{2\hbar^2} = -\frac{(9.109\times10^{-31})(3.81\times10^{-10}\times 1.602\times10^{-19})^2}{2(1.055\times10^{-34})^2}$$</div>
+          <p>Converting $\alpha$: $3.81\,\text{eV·Å} = 3.81 \times 1.602\times10^{-19}\,\text{J} \times 10^{-10}\,\text{m} = 6.104\times10^{-29}\,\text{J·m}$.</p>
+          <div class="math-block">$$E = -\frac{(9.109\times10^{-31})(6.104\times10^{-29})^2}{2(1.055\times10^{-34})^2} \approx -1.51\,\text{eV}$$</div>
+          <p>This is the energy of the $n=2$ level of hydrogen — not a coincidence; a 1D delta well models the hydrogen atom in a rough sense.</p>
+          <p><strong>(b) Find T and R for an electron with kinetic energy $E = 4E_0 = 6.04\,\text{eV}$ incident on the barrier.</strong></p>
+          <p>Here $\beta = m\alpha/(\hbar^2 k)$. We have $k = \sqrt{2m_e E}/\hbar$. Define $E_0 = |E_\text{bound}| = m_e\alpha^2/(2\hbar^2)$. Then:</p>
+          <div class="math-block">$$\beta = \frac{m_e\alpha}{\hbar^2 k} = \frac{m_e\alpha}{\hbar\sqrt{2m_e E}} = \sqrt{\frac{E_0}{E}} = \sqrt{\frac{1.51}{6.04}} = \frac{1}{2}$$</div>
+          <div class="math-block">$$T = \frac{1}{1+\beta^2} = \frac{1}{1+1/4} = \frac{4}{5} = 0.80, \qquad R = \frac{1}{5} = 0.20$$</div>
+          <p>Even at $4\times$ the binding energy, only 80% of the incident wave is transmitted. There is no classical analogue to this reflection off an attractive well.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-title">Example 3 — Tunneling through a nuclear Coulomb barrier (alpha decay model)</div>
+        <div class="example-body">
+          <p>
+            Model the Coulomb barrier around a nucleus as a rectangular barrier for a rough estimate.
+            Consider an alpha particle ($m = 4 \times 1.67\times10^{-27}\,\text{kg} = 6.68\times10^{-27}\,\text{kg}$)
+            facing a barrier of height $V_0 = 30\,\text{MeV}$ and width $d = 10\,\text{fm} = 10^{-14}\,\text{m}$,
+            with kinetic energy $E = 5\,\text{MeV}$.
+          </p>
+          <p><strong>Step 1: Compute $\kappa$.</strong></p>
+          <div class="math-block">$$\kappa = \frac{\sqrt{2m(V_0-E)}}{\hbar} = \frac{\sqrt{2(6.68\times10^{-27})(25\times10^6)(1.602\times10^{-19})}}{1.055\times10^{-34}}$$</div>
+          <div class="math-block">$$= \frac{\sqrt{5.356\times10^{-19}}}{1.055\times10^{-34}} = \frac{7.319\times10^{-10}}{1.055\times10^{-34}} \approx 6.94\times10^{24}\,\text{m}^{-1}$$</div>
+          <p><strong>Step 2: Compute $\kappa d$.</strong></p>
+          <div class="math-block">$$\kappa d = (6.94\times10^{24})(10^{-14}) \approx 69$$</div>
+          <p><strong>Step 3: Approximate $T$ for large $\kappa d$.</strong></p>
+          <div class="math-block">$$T \approx 16\frac{E}{V_0}\left(1-\frac{E}{V_0}\right)e^{-2\kappa d} = 16\cdot\frac{5}{30}\cdot\frac{25}{30}\cdot e^{-138} \approx 2.2\, e^{-138}$$</div>
+          <div class="math-block">$$T \approx 10^{-59}$$</div>
+          <p>
+            This is extraordinarily small. But an alpha particle inside a nucleus bounces back and forth
+            $\sim 10^{21}$ times per second. The decay rate is proportional to $T$ times this collision frequency,
+            giving half-lives of order $10^{38}\,\text{s}$ for this rough model — far too long. Real alpha emitters
+            have much lower effective barriers (the Coulomb potential decreases as $1/r$, not as a rectangle),
+            and the WKB integral gives the right answer. The key insight: tiny changes in $\kappa d$ produce
+            enormous changes in $T$ — the Geiger–Nuttall law's dramatic range of half-lives
+            (from microseconds to billions of years) follows directly.
+          </p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-title">Example 4 — Group velocity and uncertainty principle for a Gaussian packet</div>
+        <div class="example-body">
+          <p>A Gaussian wave packet has $\phi(k) \propto e^{-(k-k_0)^2/(4\Delta k^2)}$, centred at $k_0$ with spread $\Delta k$.</p>
+          <p><strong>(a) Show the position uncertainty is $\Delta x = 1/(2\Delta k)$ at $t=0$.</strong></p>
+          <p>The Fourier transform of $e^{-(k-k_0)^2/(4\Delta k^2)}$ is $\propto e^{-(\Delta k)^2 x^2}$, so $|\Psi|^2 \propto e^{-2(\Delta k)^2 x^2}$. The standard deviation (half-width at $e^{-1/2}$) is $\Delta x = 1/(2\Delta k)$, giving $\Delta x\,\Delta k = 1/2$, i.e. $\Delta x\,\Delta p = \hbar/2$. The Gaussian saturates the uncertainty bound.</p>
+          <p><strong>(b) Show the packet spreads and find $\Delta x(t)$.</strong></p>
+          <p>Each $k$-component picks up phase $e^{-i\omega(k)t} = e^{-i\hbar k^2 t/(2m)}$. Completing the square in the exponent of the Fourier integral:</p>
+          <div class="math-block">$$\phi(k)e^{-i\hbar k^2 t/(2m)} \propto e^{-(k-k_0)^2/(4\Delta k^2) - i\hbar k^2 t/(2m)}$$</div>
+          <p>This is still Gaussian in $k$ but now with a complex variance. The Fourier transform back gives a Gaussian in $x$ with complex width — the magnitude gives:</p>
+          <div class="math-block">$$\Delta x(t) = \frac{1}{2\Delta k}\sqrt{1 + \left(\frac{2\hbar(\Delta k)^2 t}{m}\right)^2}$$</div>
+          <p>At late times, $\Delta x(t) \approx \hbar\,\Delta k\,t/m = (\Delta p/m)t$: the spread grows at rate $\Delta v = \Delta p/m$, exactly as expected — the range of velocities in the packet pulls it apart at rate $\Delta v$.</p>
+        </div>
+      </div>
+
+      <!-- ===================== FFT ===================== -->
+      <div class="section-head" id="fft">Food for Thought</div>
+      <ul class="fft-list">
+        <li class="fft-item">
+          <div class="fft-question">A free particle can't be in a stationary state — so what is it actually in? If every physical state is a superposition of plane waves (energy eigenstates), doesn't that mean energy is uncertain? How does that square with energy conservation?</div>
+          <div class="fft-answer">Yes — a physical free particle always has an uncertain energy. But energy is still conserved in the sense that the energy expectation value $\langle E\rangle = \int|\phi(k)|^2\hbar\omega(k)\,dk/2\pi$ is time-independent (no external forces, no potential). The energy isn't "changing" — it was always uncertain. Measuring the energy would collapse the state to a plane wave, giving a definite result, but that result is distributed according to $|\phi(k)|^2$. Conservation means the distribution doesn't change; it doesn't require the distribution to be sharp.</div>
+        </li>
+        <li class="fft-item">
+          <div class="fft-question">Tunneling probability falls exponentially with barrier width. Does this mean that if you made a barrier infinitely wide, the tunneling probability would be exactly zero — meaning the particle is perfectly reflected? Or is there always a finite chance of tunneling no matter how wide the barrier?</div>
+          <div class="fft-answer">For a finite barrier, $T \propto e^{-2\kappa d} \to 0$ as $d \to \infty$ but is never exactly zero for any finite $d$. In the strict mathematical limit $d = \infty$ (semi-infinite barrier), $T$ is exactly zero — the exponentially decaying solution must vanish to keep normalisability, and the amplitude at $x \to \infty$ is zero. So there's a discontinuity: for any finite thickness, some tunneling occurs; for a truly infinite barrier, none does. In practice, barriers of 10–20 nm already reduce tunneling to completely negligible levels for electrons in normal conditions.</div>
+        </li>
+        <li class="fft-item">
+          <div class="fft-question">The transmission coefficient formula has $T = 1$ at the Ramsauer–Townsend resonances for a well. But for a barrier (flipped sign), there are no such resonances below the barrier. Why? What's special about the attractive case?</div>
+          <div class="fft-answer">Inside an attractive well, the kinetic energy is enhanced (KE = E + V₀ > 0), so the wavefunction oscillates with a shorter wavelength than outside. At resonance, exactly half an integer number of wavelengths fit inside — the reflected waves from the two walls are in perfect destructive interference and cancel, leaving 100% transmission. Inside a repulsive barrier where E < V₀, there's no oscillation — the solutions are real exponentials that can't produce the same standing-wave resonance. Above the barrier (E > V₀), the same physics applies and you do get resonances there too.</div>
+        </li>
+      </ul>
+
+      <!-- ===================== PITFALLS ===================== -->
+      <div class="section-head" id="pitfalls">Common Pitfalls</div>
+      <ul class="pitfall-list">
+        <li><strong>Plane waves are not physical states.</strong> $\Psi = Ae^{i(kx-\omega t)}$ cannot be normalised — it represents equal probability density everywhere. Using it as though it were a real particle state leads to nonsense. Real particles are always wave packets.</li>
+        <li><strong>The group velocity, not the phase velocity, is the particle velocity.</strong> For a quantum particle, $v_\text{group} = \hbar k/m = p/m$ matches the classical result. The phase velocity $\hbar k/2m$ is half that — it's the speed of individual wave crests, which have no direct physical meaning for probability density.</li>
+        <li><strong>Tunneling doesn't mean the particle travels through the barrier.</strong> There is no trajectory inside the barrier — asking "how long does it spend inside?" or "what is its kinetic energy inside?" has no well-defined answer. The particle doesn't lose energy crossing the barrier; it arrives on the other side with exactly the same kinetic energy it had approaching.</li>
+        <li><strong>The wavefunction inside a classically forbidden region is real, not imaginary.</strong> In the region $E &lt; V(x)$, the TISE gives $\psi'' = \kappa^2\psi$ with real, positive $\kappa^2$. The solutions are real exponentials $e^{\pm\kappa x}$, not complex oscillations. The wavefunction is real there, it just decays rather than oscillates.</li>
+        <li><strong>$R + T = 1$ always — even for attractive potentials.</strong> It's tempting to think an attractive potential can "create" particles (T > 1). It can't — the particle is never absorbed or emitted in elastic scattering. The reflection from an attractive well just comes as a surprise because classically there would be no reflection at all.</li>
+      </ul>
+
+      <!-- ===================== CONNECTS ===================== -->
+      <div class="section-head">Connects to</div>
+      <ul class="connects-list">
+        <li><strong>Formalism &amp; Uncertainty (Lesson 6)</strong> — The momentum-space wavefunction $\phi(k)$ is the full Fourier dual of $\psi(x)$; the uncertainty principle $\Delta x\,\Delta p \geq \hbar/2$ is a theorem about Fourier pairs, proved rigorously in the formalism lesson.</li>
+        <li><strong>The Hydrogen Atom (Lesson 8)</strong> — The Coulomb potential admits both bound states (discrete $E_n$) and scattering states ($E > 0$), exactly as the finite square well does. The continuum of scattering states is what makes photoionisation possible.</li>
+        <li><strong>Waves &amp; Optics (planned)</strong> — Group vs phase velocity, dispersion relations, and wave packet spreading are classical wave phenomena too. Quantum mechanics adds the probability interpretation on top of the same mathematics.</li>
+      </ul>
+
+      <!-- ===================== NAV ===================== -->
+      <div class="lesson-nav">
+        <a href="harmonic.html" class="lesson-nav-btn">← 4 · The Harmonic Oscillator</a>
+        <a href="formalism.html" class="lesson-nav-btn disabled">6 · Formalism &amp; Uncertainty →</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+<script src="../books-render.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // KaTeX
+  renderMathInElement(document.body, {
+    delimiters: [
+      {left: '$$', right: '$$', display: true},
+      {left: '$', right: '$', display: false}
+    ],
+    throwOnError: false
+  });
+
+  // Tunneling plot
+  const HBAR = 1.0546e-34;
+  const ME   = 9.109e-31;
+  const EV   = 1.602e-19;
+
+  function computeT(Earr, V0_eV, d_nm) {
+    const V0 = V0_eV * EV;
+    const d  = d_nm  * 1e-9;
+    return Earr.map(E_eV => {
+      const E = E_eV * EV;
+      if (E <= 0) return 0;
+      if (Math.abs(E - V0) < 1e-30) return 1; // limit at E=V0
+      if (E < V0) {
+        // Tunneling regime
+        const kappa = Math.sqrt(2 * ME * (V0 - E)) / HBAR;
+        const kd = kappa * d;
+        const sinh2 = ((Math.exp(kd) - Math.exp(-kd)) / 2) ** 2;
+        const factor = V0 * V0 * sinh2 / (4 * E * (V0 - E));
+        return 1 / (1 + factor);
+      } else {
+        // Above-barrier: same formula with k real inside
+        const l = Math.sqrt(2 * ME * (E - V0)) / HBAR;
+        const sin2 = Math.sin(l * d) ** 2;
+        const factor = V0 * V0 * sin2 / (4 * E * (E - V0));
+        return 1 / (1 + factor);
+      }
+    });
+  }
+
+  function makePlot() {
+    const V0 = parseFloat(document.getElementById('v0-slider').value);
+    const d  = parseFloat(document.getElementById('d-slider').value);
+    document.getElementById('v0-val').textContent = V0.toFixed(1) + ' eV';
+    document.getElementById('d-val').textContent  = d.toFixed(2) + ' nm';
+
+    // Below barrier: E from 0.05 to V0
+    const Elo = [], Ehi = [];
+    for (let e = 0.02; e < V0; e += V0 / 400) Elo.push(e);
+    for (let e = V0 + 0.01; e <= Math.max(V0 * 3, 20); e += V0 / 200) Ehi.push(e);
+
+    const Tlo = computeT(Elo, V0, d);
+    const Thi = computeT(Ehi, V0, d);
+
+    const traces = [
+      {
+        x: Elo, y: Tlo, name: 'Tunneling (E < V₀)',
+        mode: 'lines', line: { color: '#3a6a8a', width: 2.5 }
+      },
+      {
+        x: Ehi, y: Thi, name: 'Above barrier (E > V₀)',
+        mode: 'lines', line: { color: '#c0503a', width: 2 }
+      },
+      {
+        x: [V0, V0], y: [0, 1], name: 'V₀',
+        mode: 'lines', line: { color: '#888', width: 1, dash: 'dot' },
+        showlegend: false
+      }
+    ];
+
+    const layout = {
+      xaxis: { title: 'Energy E (eV)', color: '#2a3a4a', gridcolor: '#dde5ec', zeroline: false },
+      yaxis: { title: 'Transmission T', range: [-0.03, 1.05], color: '#2a3a4a', gridcolor: '#dde5ec' },
+      paper_bgcolor: 'transparent', plot_bgcolor: '#f8fbfd',
+      font: { family: 'IBM Plex Sans, sans-serif', size: 12, color: '#2a3a4a' },
+      legend: { x: 0.65, y: 0.95, bgcolor: 'rgba(255,255,255,0.8)', bordercolor: '#c0dae8', borderwidth: 1 },
+      margin: { t: 20, b: 50, l: 60, r: 20 },
+      annotations: [{
+        x: V0, y: 0.5, xanchor: 'left', yanchor: 'middle',
+        text: '  V₀', showarrow: false, font: { color: '#666', size: 11 }
+      }]
+    };
+
+    const existing = document.getElementById('tunneling-plot')._fullLayout;
+    if (existing) {
+      Plotly.react('tunneling-plot', traces, layout, { responsive: true });
+    } else {
+      Plotly.newPlot('tunneling-plot', traces, layout, { responsive: true });
+    }
+  }
+
+  makePlot();
+  document.getElementById('v0-slider').addEventListener('input', makePlot);
+  document.getElementById('d-slider').addEventListener('input', makePlot);
+});
+</script>
+</body>
+</html>
