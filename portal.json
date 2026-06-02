@@ -58,7 +58,8 @@
           "label": "Modern Physics",
           "children": [
             { "name": "Quantum Mechanics", "href": "quantum/index.html", "desc": "Wave-particle duality, the Schrödinger equation, quantum states, measurement, perturbation theory, and entanglement.", "lessons": 18 },
-            { "name": "Relativity",        "desc": "Special relativity through Lorentz transformations, 4-vectors, and covariant electrodynamics; extending to the geometry of curved spacetime and general relativity.", "planned": true }
+            { "name": "Relativity",        "desc": "Special relativity through Lorentz transformations, 4-vectors, and covariant electrodynamics; extending to the geometry of curved spacetime and general relativity.", "planned": true },
+            { "name": "Quantum Computing Hardware", "desc": "Physical implementations of quantum computers: superconducting qubits (Josephson junctions, transmon circuit, circuit QED, microwave pulse control at ~15 mK), trapped ions (Paul trap, laser-driven gates, Mølmer-Sørensen entangling gate), neutral atoms (Rydberg blockade, optical tweezers), photonic qubits (linear optical QC, Gaussian boson sampling), silicon spin qubits, and topological qubits (Majorana zero modes). Decoherence, T1/T2 coherence times, gate fidelity, and the engineering path from physical to logical qubits.", "planned": true }
           ]
         }
       ]
@@ -116,7 +117,8 @@
           "label": "Foundations",
           "children": [
             { "name": "Computing Systems", "desc": "Digital logic, computer organization, operating systems, computability, and the theoretical foundations of computing.", "planned": true },
-            { "name": "Information Theory", "desc": "Shannon entropy, mutual information, source coding, channel capacity, error-correcting codes, and connections to statistical mechanics and machine learning.", "planned": true }
+            { "name": "Information Theory", "desc": "Shannon entropy, mutual information, source coding, channel capacity, error-correcting codes, and connections to statistical mechanics and machine learning.", "planned": true },
+            { "name": "Quantum Computing", "desc": "Qubits and the circuit model, key algorithms (Deutsch-Jozsa, Grover's search, quantum Fourier transform, Shor's factoring), phase estimation, quantum error correction (stabilizer codes, surface codes, fault-tolerance threshold), complexity classes BQP and QMA, and quantum information theory (density matrices, quantum channels, no-cloning theorem, teleportation, BB84).", "planned": true }
           ]
         }
       ]
