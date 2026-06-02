@@ -146,7 +146,7 @@
         {
           "label": "Neuroscience &amp; Cognition",
           "children": [
-            { "name": "Neuroscience", "href": "neuroscience/index.html", "desc": "Neural circuits, synaptic transmission, sensory processing, memory, sleep, and the computational brain — from the action potential to the neural correlates of consciousness.", "lessons": 10 },
+            { "name": "Neuroscience", "href": "neuroscience/index.html", "desc": "Neural circuits, synaptic transmission, sensory processing, memory, sleep, and the computational brain — from the action potential to the neural correlates of consciousness.", "lessons": 15 },
             { "name": "Cognitive Science", "desc": "Consciousness, perception, memory, language, and decision-making — studied at the systems level, drawing from neuroscience, AI, linguistics, and philosophy of mind.", "planned": true }
           ]
         },

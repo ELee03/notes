@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Language &amp; Higher Cognition · Neuroscience</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="neuroscience" data-current="language-cognition.html"></div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="breadcrumb-sep">›</span>
+        <a href="index.html">Neuroscience</a>
+        <span class="breadcrumb-sep">›</span>
+        Lesson 15
+      </div>
+
+      <h1 class="lesson-title">Language &amp; Higher Cognition</h1>
+      <div class="lesson-meta">Broca &amp; Wernicke · Arcuate Fasciculus · Split-Brain · Hemispheric Lateralization · Prefrontal Cortex · Executive Function · Working Memory · Attention</div>
+
+      <div class="prose">
+        <p>Language is perhaps the most distinctively human cognitive capacity — and the most revealing window into how the cerebral cortex organizes complex, flexible behavior. The study of language in the brain began with the aphasias: the characteristic language breakdowns produced by focal lesions that allowed neurologists in the 19th century to map specific functions to specific cortical regions with a precision that no other cognitive capacity allowed. This lesson covers the classic and modern neuroscience of language, then broadens to the prefrontal cortex — the largest region of frontal cortex, expanded dramatically in human evolution, and the seat of executive function, working memory, and the brain's capacity for planning and cognitive control.</p>
+      </div>
+
+      <div class="section-head" id="aphasias">The Classical Aphasias</div>
+
+      <div class="prose">
+        <p>In 1861, Paul Broca reported a patient, "Tan" (so named because it was the only syllable he could produce), who had a lesion in the left inferior frontal gyrus — now <strong>Broca's area</strong> (BA44/45). Tan understood speech perfectly but could not produce it. Broca's aphasia: non-fluent, effortful, telegraphic speech (short, grammatically simplified utterances like "want water" rather than "I would like some water"), with relatively preserved comprehension.</p>
+
+        <p>In 1874, Carl Wernicke described patients with fluent but meaningless speech — paraphasias (word substitutions: "spoon" for "fork"), neologisms (invented words), and severely impaired comprehension — due to lesions in the left posterior superior temporal gyrus: <strong>Wernicke's area</strong> (BA22). Wernicke's aphasia: fluent but often incomprehensible speech, poor comprehension of spoken language.</p>
+
+        <p>Wernicke also predicted the existence of conduction aphasia — disruption of the pathway connecting his area to Broca's area — which would produce fluent speech with poor repetition while sparing comprehension and production. This prediction was confirmed: conduction aphasia results from damage to the <strong>arcuate fasciculus</strong>, the white matter tract (a major component of the superior longitudinal fasciculus) that connects posterior temporal/parietal regions to the frontal lobe. Patients can understand speech and produce their own spontaneous speech but cannot repeat heard words — a specific inability explained by the disconnection between auditory language processing and speech production.</p>
+
+        <p>The classical Wernicke-Geschwind model maps language onto a circuit: auditory input → Wernicke's area (comprehension) → arcuate fasciculus → Broca's area (speech production) → motor cortex → speech output. Modern imaging has substantially elaborated this model but validated its core architecture.</p>
+      </div>
+
+      <div class="section-head" id="hemispheric">Hemispheric Lateralization</div>
+
+      <div class="prose">
+        <p>Language is strongly lateralized to the left hemisphere in most people: ~96% of right-handers and ~70% of left-handers have left-dominant language. This makes the left hemisphere uniquely vulnerable — a stroke in the left MCA territory produces much more devastating language impairment than the same stroke on the right.</p>
+
+        <p>Why is language left-lateralized? No definitive answer, but the left hemisphere has a temporal advantage in processing rapid acoustic changes — the millisecond-scale transitions that distinguish speech sounds — while the right hemisphere processes slower temporal structure and prosody (melody, rhythm of speech). Left hemisphere superiority for rapid auditory processing may have been co-opted for language.</p>
+
+        <p>The right hemisphere handles complementary language functions: prosody (emotional tone of speech), metaphor and non-literal meaning, discourse coherence (linking sentences into a narrative), and pragmatics (what is meant vs. what is said). Right hemisphere damage can produce "flat affect" speech, impaired joke understanding, and difficulty with indirect speech acts — subtler impairments than aphasias but real communication deficits.</p>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">The split-brain experiments (Sperry and Gazzaniga)</h3>
+        <p>The corpus callosum — a massive bundle of ~200 million axons connecting the two hemispheres — was surgically severed in epilepsy patients to prevent seizure spread. Roger Sperry and Michael Gazzaniga's experiments on these "split-brain" patients revealed the independent capabilities and limitations of each hemisphere.</p>
+
+        <p>The visual system routes each visual hemifield to the contralateral hemisphere (left visual field → right hemisphere, right visual field → left hemisphere). In split-brain patients with the corpus callosum severed, information presented to each visual field cannot cross to the other hemisphere. When a picture of a spoon is flashed to the right visual field (left hemisphere), the patient can say "spoon" — the left language hemisphere received it. When the same image is flashed to the left visual field (right hemisphere), the patient says "I don't see anything" — the right hemisphere saw it but cannot access left-hemisphere language to verbalize. However, if asked to reach into a bag and pick out what they saw, the patient's left hand (controlled by right hemisphere) correctly selects the spoon — demonstrating that the right hemisphere had the information and acted on it, it just couldn't verbalize it.</p>
+
+        <p>The split-brain experiments also revealed the <strong>left hemisphere interpreter</strong>: when split-brain patients perform actions controlled by the right hemisphere and are asked why they did it, the left hemisphere — which had no access to the actual reason — confabulates a plausible verbal explanation. Gazzaniga argued this reflects a general left-hemisphere tendency to construct post-hoc narrative explanations for behaviors whose actual causes may be inaccessible to conscious verbalization — a phenomenon relevant to understanding confabulation, rationalization, and the limits of introspection in all brains.</p>
+      </div>
+
+      <div class="section-head" id="modern-language">Modern Language Neuroscience: Dual-Stream Model</div>
+
+      <div class="prose">
+        <p>Functional imaging (fMRI) and white matter tractography (DTI) have substantially refined the Wernicke-Geschwind model. The current dominant framework is the <strong>dual-stream model</strong> (Hickok and Poeppel, 2004, 2007), paralleling the visual system's dorsal/ventral streams:</p>
+
+        <p><strong>Ventral stream</strong> (temporal lobe, extending into inferior temporal and anterior temporal regions): maps sound onto meaning — auditory-to-conceptual processing. Bilateral but left-dominant. Damaged in Wernicke's aphasia and semantic dementia. Supports word recognition and comprehension by mapping phonological representations onto conceptual/semantic networks.</p>
+
+        <p><strong>Dorsal stream</strong> (posterior temporal/parietal regions → frontal lobe via arcuate fasciculus): maps sound onto articulation — sensorimotor integration for speech production and repetition. Strongly left-lateralized. Damaged in conduction aphasia (arcuate fasciculus) and Broca's aphasia (frontal endpoint). Supports speech production, phonological working memory, and syntactic processing.</p>
+
+        <p>Broca's area itself is not simply a "speech production" area — it is critical for hierarchical syntactic processing (combining words into phrases and sentences) and is activated during syntactically complex sentences even in comprehension tasks. Its role is better described as combinatorial computation over linguistic elements rather than simply "output."</p>
+      </div>
+
+      <div class="section-head" id="pfc">The Prefrontal Cortex</div>
+
+      <div class="prose">
+        <p>The prefrontal cortex (PFC) — everything anterior to the primary motor cortex and premotor cortex — constitutes ~30% of the human neocortex, dramatically more than in any other species. It receives input from virtually every sensory modality, every subcortical structure, and other cortical regions, and projects back to all of them. It is uniquely positioned to integrate information across time, context, and modality, and to bias processing throughout the brain in service of current goals.</p>
+
+        <p>PFC is not a single area — it has distinct subregions with different functions:</p>
+
+        <ul style="margin:8px 0 8px 20px;line-height:1.8;">
+          <li><strong>Dorsolateral PFC (DLPFC, BA9/46)</strong>: working memory and cognitive control. Lesions produce working memory deficits, distractibility, and perseveration (inability to shift strategy after errors).</li>
+          <li><strong>Ventromedial PFC (vmPFC) and orbitofrontal cortex (OFC)</strong>: value integration, decision-making under uncertainty, and emotional regulation. Lesions (e.g., Phineas Gage) produce poor real-world decision-making despite intact IQ — they fail the Iowa Gambling Task (cannot use emotional "somatic markers" to avoid disadvantageous choices) and show impaired social judgment.</li>
+          <li><strong>Anterior cingulate cortex (ACC)</strong>: conflict monitoring, error detection, and allocating cognitive control. The ACC fires after errors and when competing responses are simultaneously activated. It signals DLPFC to increase control when needed.</li>
+          <li><strong>Inferior frontal gyrus (IFG, including Broca's area)</strong>: language and inhibitory control (inferior frontal gyrus is recruited for response inhibition in stop-signal tasks, beyond its language role).</li>
+        </ul>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">Working memory</h3>
+        <p>Working memory is the capacity to hold information in an active, accessible state for current use — "online" storage for ongoing computation. Goldman-Rakic's seminal work in monkeys showed that DLPFC neurons maintain sustained firing during the delay period of delayed-response tasks: a location is shown, a delay of 5–10 seconds passes, and the monkey must respond to the remembered location. DLPFC neurons fire throughout the delay — their activity encodes the remembered location and disappears when the response is made. Lesions of DLPFC abolish delay-period activity and task performance.</p>
+
+        <p>The cellular mechanism of this persistent activity: recurrent excitatory connections among DLPFC pyramidal neurons create attractor states — self-sustaining activity patterns that persist via mutual excitation even after the triggering stimulus has gone. NMDA receptors are critical (their slow kinetics, ~100 ms time constant, enable sustained plateau potentials). D1 dopamine receptors in DLPFC modulate the stability of these attractor states — too little dopamine (and working memory is noisy, attractor states are unstable), too much (and working memory becomes rigid, unable to update). This inverted-U dependence of working memory on PFC dopamine is the basis of cognitive symptoms in ADHD (too little dopamine/NE in PFC → unstable working memory) and their treatment with stimulants or atomoxetine.</p>
+      </div>
+
+      <div class="section-head" id="attention">Attention Networks</div>
+
+      <div class="prose">
+        <p>Attention is not a single process — it is a family of mechanisms for selectively enhancing neural representations of relevant stimuli and suppressing irrelevant ones. Posner's influential framework identifies three distinct attentional networks, implemented in largely separable brain systems:</p>
+
+        <ul style="margin:8px 0 8px 20px;line-height:1.8;">
+          <li><strong>Alerting network</strong>: maintaining a tonic alert state. Implemented by noradrenergic projections from LC to cortex and the right hemisphere frontal and parietal regions. Noradrenaline is the key modulator — clonidine (α2 agonist, reduces LC firing) impairs alerting; amphetamine enhances it.</li>
+          <li><strong>Orienting network</strong>: selecting and shifting attention to spatial locations or sensory channels. Implemented by the right parietal cortex (TPJ, superior parietal lobule) and frontal eye fields. Lesions produce hemispatial neglect (right parietal damage → neglect of left space) — not a blindness but a failure to attend to the contralesional side even when stimuli are clearly visible.</li>
+          <li><strong>Executive attention network</strong>: resolving conflict between responses, monitoring performance, and allocating cognitive control. Implemented by the anterior cingulate cortex and DLPFC. The target of mindfulness training, which has been shown to modulate ACC function.</li>
+        </ul>
+
+        <p>At the neural level, attention works by increasing the gain of neurons representing the attended stimulus. When a monkey attends to a visual location, V4 neurons with receptive fields at that location show increased firing rates and decreased response variability — the same stimulus is represented more reliably. This gain modulation is not driven by the sensory input (which is identical) but by top-down feedback from parietal and frontal areas. Cholinergic and noradrenergic modulation enhance signal-to-noise in cortical representations, providing the neurochemical substrate of attention.</p>
+      </div>
+
+      <div class="section-head" id="examples">Worked Examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Diagnosing Aphasia Type from Symptoms</strong></div>
+        <div class="example-problem">For each patient, identify the most likely aphasia type, the probable lesion location, and the predicted performance on (a) spontaneous speech, (b) comprehension, (c) repetition:</div>
+        <div class="example-problem" style="margin-top:8px;">Patient A: effortful, halting speech, short telegraphic phrases, normal comprehension of simple sentences, impaired repetition.<br>Patient B: fluent, melodic speech with many neologisms and semantic paraphasias, severely impaired comprehension, impaired repetition.<br>Patient C: fluent speech, good comprehension, severely impaired repetition as the only main deficit.</div>
+        <div class="example-body">
+          <p><strong>Patient A — Broca's aphasia.</strong> Lesion: left inferior frontal gyrus (BA44/45). Non-fluent speech (motor programming impaired), preserved comprehension (Wernicke's area intact), impaired repetition (arcuate fasciculus or Broca's area itself needed for repetition). The telegraphic speech reflects impaired syntactic assembly — function words and grammatical morphemes are omitted, content words retained.</p>
+          <p><strong>Patient B — Wernicke's aphasia.</strong> Lesion: left posterior superior temporal gyrus (BA22). Fluent, melodic speech (Broca's area intact) but empty of correct meaning (comprehension network damaged). Neologisms and semantic paraphasias are hallmarks — patients produce words that sound like words but are wrong (semantic paraphasia: "fork" for "knife") or are invented (neologism: "blurp"). Comprehension is severely impaired — they cannot understand their own errors. Repetition impaired because the phonological representation of heard words (needed for repetition) is corrupted.</p>
+          <p><strong>Patient C — Conduction aphasia.</strong> Lesion: arcuate fasciculus (most commonly in supramarginal gyrus / parietal operculum region). The defining feature is severely impaired repetition with relatively preserved spontaneous speech and comprehension — the disconnection between posterior language areas and frontal production areas specifically disrupts the phonological loop needed for repetition, while other language functions remain accessible via direct connections.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Phineas Gage and the Somatic Marker Hypothesis</strong></div>
+        <div class="example-problem">Phineas Gage survived a railroad accident in 1848 in which a tamping iron passed through his skull, destroying his ventromedial PFC. His IQ, language, and memory were intact afterward. Yet his personality changed radically and he made catastrophically poor life decisions. How does Damasio's somatic marker hypothesis explain this?</div>
+        <div class="example-body">
+          <p>Damasio's somatic marker hypothesis proposes that decision-making under uncertainty relies on emotionally-tagged representations of past outcomes — "somatic markers." When contemplating a choice that was previously associated with a bad outcome, the vmPFC/OFC reactivates the bodily-emotional signal (a "gut feeling" of aversion — a somatic marker) that guides the decision away from that option, even before explicit cognitive analysis is complete. The vmPFC acts as a bridge between the cognitive evaluation of options and the emotional memory of their past consequences stored via the amygdala.</p>
+          <p>Gage's vmPFC destruction severed this bridge. His intellect was intact — he could reason through hypothetical scenarios and verbalize correct answers to moral dilemmas. But he could not use past emotional consequences to guide real-world decisions in the moment, because the somatic marker system was disconnected. Modern patients with vmPFC lesions (studied by Damasio, Bechara, and colleagues) perform identically to controls on IQ tests and explicit reasoning tasks but consistently make poor choices on the Iowa Gambling Task — they cannot learn to avoid decks with large losses even after experiencing them, because no aversive somatic signal is generated by the anticipated bad outcome. Gage, like these patients, could know intellectually what he should do but couldn't feel the pull away from bad options — making him vulnerable to impulsive, shortsighted decisions in daily life.</p>
+        </div>
+      </div>
+
+      <ul class="fft-list">
+        <li class="fft-item">
+          Does language require specialized brain regions, or is it just general-purpose processing applied to a specific domain?
+          <div class="fft-answer">
+            <p>This is one of the deepest debates in cognitive neuroscience and cognitive science. The localizationist view (Broca, Wernicke, Pinker): language requires specific neural machinery (the language network) that is domain-specific and partially innate. The strong version is Chomsky's universal grammar — a language acquisition device that is species-specific. The evidence for some specialization: FOXP2 mutations specifically impair speech and syntactic processing; the left temporal-frontal language network is consistently activated across all languages; damage to Broca's area specifically impairs hierarchical structure building (syntax) even for non-linguistic hierarchical sequences (nested structures in music and mathematics), suggesting it implements a general combinatorial operation that language recruited. The generalist view (Bates, Elman, connectionist models): language is what happens when general-purpose learning machinery (pattern extraction, sequential prediction, statistical regularities) is applied to the specific input statistics of human language; there are no language-specific modules, just general cortical machinery biased by experience. The truth is probably intermediate: general cortical capabilities (rapid auditory processing in left temporal cortex, hierarchical/combinatorial processing in frontal cortex) that were co-opted and specialized for language over human evolution, but whose basic architecture is not uniquely linguistic. Large language models — which learn to process language at human levels using domain-general statistical learning on text — lend some credibility to the generalist view, though they have no embodied/biological constraints that shape biological language acquisition.</p>
+          </div>
+        </li>
+        <li class="fft-item">
+          Working memory capacity predicts intelligence, academic achievement, and life outcomes better than any other single cognitive variable. Why is the PFC bottleneck so consequential?
+          <div class="fft-answer">
+            <p>Working memory's predictive power likely derives from its role as the substrate for fluid intelligence: the capacity to use information flexibly across novel contexts rather than relying on pre-stored solutions. Tasks requiring holding multiple items in mind, manipulating them, inhibiting irrelevant representations, and updating when new information arrives — these are exactly what working memory enables, and they are what distinguishes flexible problem-solving from rote skill. The PFC bottleneck is consequential because most complex cognitive tasks require multiple information streams to be held online simultaneously and integrated — language comprehension (holding earlier clauses while processing later ones), mathematical reasoning (tracking steps), social cognition (holding one's own perspective and another's simultaneously). The ~4-item capacity limit of working memory, and the precision with which items are maintained, determines how many chunks of information can be simultaneously integrated — a hard constraint on cognitive complexity. Individual differences in DLPFC dopamine signaling, PFC grey matter volume, and the efficiency of PFC-parietal connectivity predict working memory span and fluid intelligence. This is why ADHD (PFC catecholamine dysregulation) has such pervasive academic and occupational effects, and why interventions that improve PFC function — whether pharmacological (stimulants) or behavioral (cognitively demanding training, mindfulness) — have disproportionate downstream effects on a wide range of outcomes.</p>
+          </div>
+        </li>
+      </ul>
+
+      <div class="section-head">Common Pitfalls</div>
+      <ul class="pitfall-list">
+        <li><strong>Treating Broca's and Wernicke's areas as the whole language system.</strong> Modern neuroscience uses distributed network models (multiple areas in temporal, parietal, and frontal cortex plus their white matter connections). The inferior frontal gyrus, middle temporal gyrus, angular gyrus, supramarginal gyrus, and superior temporal sulcus all participate in language, along with subcortical structures (basal ganglia for automaticity, thalamus for gating). Broca's and Wernicke's areas are important hubs, not the complete story.</li>
+        <li><strong>Assuming left-hemisphere damage always produces aphasia.</strong> In left-handers, language may be right-lateralized or bilateral. Moreover, right-hemisphere damage can produce pragmatic and prosodic language deficits that are functionally significant even without classical aphasia symptoms. When assessing a patient for language function after brain damage, hemispheric dominance must be established (via fMRI language lateralization or Wada test), not assumed.</li>
+        <li><strong>Conflating working memory and short-term memory.</strong> Working memory is active maintenance and manipulation of information — an executive process involving PFC. Short-term memory is passive holding of recent information in a sensory buffer (e.g., the phonological store that lets you repeat a phone number you just heard). These are related but not identical — patients with digit span deficits may have intact working memory for other tasks, and PFC lesions can impair working memory while leaving digit span intact.</li>
+      </ul>
+
+      <div class="section-head">Connects to</div>
+      <ul class="connects-list">
+        <li><strong>Neuroscience — Sensory Systems (Lesson 5):</strong> The auditory pathway ends in primary auditory cortex (A1, planum temporale), which is the starting point for the language processing hierarchy in the temporal lobe. Tonotopic organization in A1 provides the initial phonemic decomposition that feeds into Wernicke's area for linguistic processing.</li>
+        <li><strong>Neuroscience — Memory Systems (Lesson 8):</strong> Working memory (PFC-based, short-duration) and long-term declarative memory (hippocampus-based) are distinct but interact: hippocampal indexing brings relevant long-term memory representations into working memory for current use, and PFC provides the goal-directed retrieval context for hippocampal search.</li>
+        <li><strong>Neuroscience — Neural Development (Lesson 11):</strong> Language acquisition is critically period-dependent — the sensitive period for language phonology closes by ~12 months, and the window for full grammatical acquisition closes by ~7 years. These critical periods are a direct application of the developmental mechanisms (PV interneuron maturation, perineuronal nets, activity-dependent pruning) from Lesson 11 to the language system.</li>
+      </ul>
+
+      <div class="lesson-nav">
+        <a href="emotion-limbic.html" class="lesson-nav-btn">← Lesson 14 · Emotion &amp; the Limbic System</a>
+        <span class="lesson-nav-btn" style="opacity:0.4;cursor:default;">Cluster Complete</span>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+<script src="../books-render.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  renderMathInElement(document.body, {
+    delimiters: [
+      { left: '$$', right: '$$', display: true },
+      { left: '$', right: '$', display: false }
+    ],
+    throwOnError: false
+  });
+});
+</script>
+
+</body>
+</html>

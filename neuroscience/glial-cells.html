@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Glial Cells · Neuroscience</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="neuroscience" data-current="glial-cells.html"></div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="breadcrumb-sep">›</span>
+        <a href="index.html">Neuroscience</a>
+        <span class="breadcrumb-sep">›</span>
+        Lesson 12
+      </div>
+
+      <h1 class="lesson-title">Glial Cells</h1>
+      <div class="lesson-meta">Astrocytes · Tripartite Synapse · Blood-Brain Barrier · Glymphatic System · Oligodendrocytes · Microglia · Neuroinflammation</div>
+
+      <div class="prose">
+        <p>Glial cells outnumber neurons by roughly 10:1 in the human brain, but for most of neuroscience history they were treated as passive support cells — the "glue" (Greek: <em>glia</em>) holding neurons together. That view is now understood to be profoundly wrong. Astrocytes actively participate in synaptic transmission, regulating glutamate levels and modulating synaptic strength. Oligodendrocytes determine the speed and reliability of neural signaling through myelination. Microglia are the brain's immune cells and active sculptors of synaptic connectivity. And all three types are implicated in neurological and psychiatric disease in ways that were invisible when neuroscience focused exclusively on neurons. Understanding the brain requires understanding glia.</p>
+      </div>
+
+      <div class="section-head" id="astrocytes">Astrocytes</div>
+
+      <div class="prose">
+        <p>Astrocytes are star-shaped glial cells that tile the entire brain — each astrocyte occupies a distinct non-overlapping territory, with processes contacting thousands of synapses, surrounding blood vessels, and connecting to other astrocytes via gap junctions. They perform at least four major functions:</p>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">1. Glutamate uptake and recycling</h3>
+        <p>After glutamate is released at a synapse, it must be rapidly cleared from the synaptic cleft to prevent receptor desensitization and excitotoxicity. The majority of this clearance is performed by astrocytic glutamate transporters (EAAT1/GLAST and EAAT2/GLT-1) rather than by presynaptic reuptake. Astrocytes take up glutamate, convert it to glutamine (via glutamine synthetase), and shuttle it back to neurons, which reconvert it to glutamate and reload it into vesicles. This <strong>glutamate-glutamine cycle</strong> is the primary mechanism for recycling the brain's main excitatory neurotransmitter.</p>
+        <p>Disruption of EAAT2 is catastrophic: EAAT2 knockout mice develop lethal seizures, and reduced EAAT2 expression is found in ALS patients, possibly contributing to motor neuron death via excitotoxicity.</p>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">2. The tripartite synapse</h3>
+        <p>The classical "bipartite" view of the synapse (presynaptic terminal + postsynaptic density) has been replaced by the <strong>tripartite synapse</strong>: pre + post + astrocyte. Astrocytic processes (perisynaptic astrocytic processes, PAPs) are often within 50–100 nm of the synapse. Astrocytes detect neurotransmitter release via their own receptors (metabotropic glutamate receptors, mGluR5; purinergic receptors), triggering calcium waves in the astrocyte. These calcium elevations cause the astrocyte to release <strong>gliotransmitters</strong> — ATP, D-serine, and glutamate — back onto the synapse, modulating transmission.</p>
+        <p>D-serine is particularly important: it is the primary endogenous co-agonist for the NMDA receptor's glycine-binding site. NMDA receptors require both glutamate (at the glutamate site) and either glycine or D-serine (at the co-agonist site) to open. Astrocytes are the main source of D-serine in many brain regions; without adequate D-serine, NMDA receptors are less active and LTP is impaired. This means astrocytes are not just passive bystanders but active modulators of synaptic plasticity.</p>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">3. The blood-brain barrier</h3>
+        <p>Astrocytic end-feet wrap around essentially all of the brain's capillaries, contributing to the blood-brain barrier (BBB). The BBB is not formed by astrocytes directly — the tight junctions that seal the BBB are between brain endothelial cells. But astrocytic signals (particularly Wnt/β-catenin signaling and secretion of angiopoietin-1) are required to induce and maintain tight junction formation in endothelial cells. Astrocytes also regulate local blood flow through calcium-dependent release of vasoactive substances (prostaglandins, NO, EETs), dilating or constricting arterioles in response to neural activity — the cellular basis of neurovascular coupling and the BOLD signal measured by fMRI.</p>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">4. The glymphatic system</h3>
+        <p>Discovered in 2012 (Nedergaard lab), the <strong>glymphatic system</strong> is a brain-wide waste clearance system driven by astrocytic AQP4 water channels. Cerebrospinal fluid (CSF) flows into the brain along periarterial spaces, driven by arterial pulsation. It then moves through astrocytic AQP4 channels into the interstitium, sweeping through the brain parenchyma and draining out along perivenous spaces, carrying soluble waste — including amyloid-β and tau — into the cervical lymphatics. Glymphatic flow is dramatically higher during sleep (the brain's interstitial space expands ~60% during slow-wave sleep, increasing clearance). This provides a mechanistic explanation for why sleep deprivation leads to amyloid-β accumulation — a risk factor for Alzheimer's disease — and more broadly why sleep is essential for brain health.</p>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">5. Synaptogenesis</h3>
+        <p>Astrocytes promote synapse formation by secreting thrombospondins (TSP1, TSP2) and other synaptogenic factors (hevin, SPARC). Retinal ganglion cells grown without astrocytes form very few synapses; adding astrocyte-conditioned medium or astrocytes directly restores robust synaptogenesis. TSP1/2 signals through α2δ-1 on neurons — which is the molecular target of the anticonvulsant/pain drug gabapentin, explaining some of its CNS effects.</p>
+      </div>
+
+      <div class="section-head" id="oligodendrocytes">Oligodendrocytes and Myelination</div>
+
+      <div class="prose">
+        <p>Oligodendrocytes are the myelinating cells of the CNS (Schwann cells perform the same function in the PNS). A single oligodendrocyte wraps myelin around the axons of up to 50 different neurons, forming the insulating sheath that enables saltatory conduction. This was covered in Lesson 1 in terms of its effect on action potential propagation; here we focus on the cellular biology.</p>
+
+        <p>Myelination is not static: it is activity-dependent. When axons fire, they release glutamate from axon-myelin synapses (axon-oligodendrocyte signaling) via vesicular release, which stimulates local myelin synthesis and sheath thickening. This means the thickness and length of myelin segments — which determine the length constant and conduction velocity — are tuned by experience. Learning a new motor skill is accompanied by measurable white matter changes in relevant tracts. This is "white matter plasticity," distinct from synaptic plasticity but equally important for the overall learning capacity of the brain.</p>
+
+        <p>Oligodendrocytes are the target of autoimmune attack in <strong>multiple sclerosis (MS)</strong>, where T cells and antibodies destroy myelin, producing demyelinated plaques. The initial lesion causes slowed or blocked conduction; some remyelination occurs, mediated by oligodendrocyte precursor cells (OPCs) that persist throughout the adult brain. In progressive MS, remyelination eventually fails as OPCs become exhausted, leading to permanent axon loss and irreversible disability. Promoting OPC maturation and remyelination is a major therapeutic target.</p>
+      </div>
+
+      <div class="section-head" id="microglia">Microglia and Neuroinflammation</div>
+
+      <div class="prose">
+        <p>Microglia are the brain's resident immune cells — they constitute ~10–15% of all brain cells. Unlike neurons and other glia, microglia derive from yolk sac progenitors (not neural crest or neural tube), invading the brain early in embryonic development and self-renewing throughout life. They are the brain's resident macrophages: surveilling the environment, phagocytosing debris, mounting inflammatory responses, and — critically — sculpting synaptic connectivity.</p>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">Resting surveillance</h3>
+        <p>In the "resting" (ramified) state, microglia continuously extend and retract their fine processes, scanning the local environment. Each microglial cell surveys its entire territorial domain (roughly 50,000–75,000 µm³) every few hours. They sample synapses, contact neurons (making transient ~5-minute contacts with dendritic spines), and detect damage signals (ATP from dying cells, pathogen-associated molecular patterns). This is not passive — active microglial surveillance maintains synaptic health, and blocking microglia in otherwise healthy animals causes rapid accumulation of damaged synaptic components.</p>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">Synaptic pruning via complement</h3>
+        <p>During development (and in some adult contexts), microglia prune excess synapses. The mechanism involves complement proteins: C1q and C3 are deposited on weak or inactive synapses, tagging them for phagocytosis by microglia expressing the complement receptor CR3 (Mac-1). This was discovered by Ben Barres and colleagues (2007) and revolutionized thinking about both neural development and disease.</p>
+        <p>The developmental role of complement-mediated pruning is to refine circuits — eliminating weak, incorrect connections to sharpen specificity. In the adult brain, aberrant complement activation appears to drive synapse loss in Alzheimer's disease (C1q and C3 accumulate on synapses near amyloid plaques, and blocking C1q prevents synapse loss in mouse models), schizophrenia (GWAS identified complement component 4 (C4) copy number as one of the strongest schizophrenia risk factors — higher C4 expression correlates with excessive synaptic pruning during adolescence, consistent with the synaptic elimination hypothesis of schizophrenia), and West Nile virus encephalitis.</p>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">Inflammatory activation</h3>
+        <p>In response to infection, injury, or amyloid accumulation, microglia become activated (amoeboid morphology): they retract processes, upregulate phagocytic capacity, and release pro-inflammatory cytokines (TNF-α, IL-1β, IL-6) and reactive oxygen species. This acute response clears pathogens and damaged tissue. But chronic activation — as occurs in neurodegeneration, TBI, and aging — becomes damaging: persistent neuroinflammation damages bystander neurons, disrupts synaptic function, and propagates disease.</p>
+        <p><strong>DAM (Disease-Associated Microglia)</strong> is a transcriptional state identified in single-cell RNA-seq studies of Alzheimer's disease tissue (Keren-Shaul et al., 2017). DAM microglia cluster around amyloid plaques, downregulate homeostatic genes, and upregulate phagocytic/lipid metabolism genes. Whether DAM represent a beneficial containment response or a driver of pathology (or both, at different stages) is an active research question.</p>
+      </div>
+
+      <div class="section-head" id="examples">Worked Examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Why Does Sleep Deprivation Increase Alzheimer's Risk?</strong></div>
+        <div class="example-problem">Explain the cellular mechanism linking sleep deprivation to increased amyloid-β accumulation and Alzheimer's disease risk.</div>
+        <div class="example-body">
+          <p>Amyloid-β (Aβ) is continuously produced in the brain as a byproduct of amyloid precursor protein (APP) cleavage by β- and γ-secretase. In healthy brains, Aβ is cleared before it accumulates to toxic levels. The glymphatic system is the primary mechanism for this clearance: during slow-wave sleep, AQP4-mediated CSF flow through the brain increases dramatically, driven by large-amplitude slow oscillations that entrain expansion and contraction of the interstitial space. This sweeps Aβ (and tau) from the parenchyma into perivenous drainage routes.</p>
+          <p>During wakefulness, glymphatic flow is substantially reduced (interstitial space is 15% smaller, flow rate lower). Consequently, Aβ levels in the interstitium rise during the day and fall during sleep — a circadian rhythm of Aβ that has been measured in human CSF. Chronic sleep deprivation keeps Aβ levels elevated, promoting its aggregation into oligomers and fibrils that seed plaques. Sleep disruption is both an early symptom of Alzheimer's (due to neurodegeneration of arousal centers and circadian clock nuclei) and potentially a driver of pathology — creating a vicious cycle. Epidemiological studies consistently find that chronic short sleep (<6 hours/night) is associated with increased Alzheimer's risk, and the glymphatic mechanism provides a plausible cellular explanation.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — MS Lesion and Conduction Failure</strong></div>
+        <div class="example-problem">An MS patient develops a demyelinating lesion in the optic nerve. Explain why vision is impaired even though axons are structurally intact, and why symptoms sometimes temporarily worsen in a hot bath (Uhthoff's phenomenon).</div>
+        <div class="example-body">
+          <p><strong>Conduction failure without axon damage:</strong> Myelination enables saltatory conduction by concentrating voltage-gated Na⁺ channels at nodes of Ranvier and insulating internodal segments. At demyelinated segments, the membrane capacitance is high (uninsulated axon) and Na⁺ channels are absent along the denuded internodal region (they are concentrated at nodes and cannot rapidly redistribute). Current injected at one intact node must now charge the entire denuded membrane before triggering the next node — an enormous capacitive load that slows or blocks conduction even though the axon is anatomically intact. The result is that action potentials either fail to propagate or do so at drastically reduced velocity, impairing vision without destroying the nerve.</p>
+          <p><strong>Uhthoff's phenomenon (heat sensitivity):</strong> The safety factor for action potential conduction — the ratio of available inward Na⁺ current to threshold current — is already marginal in a demyelinated fiber. Elevated temperature reduces the open time of voltage-gated Na⁺ channels (they inactivate faster and recover from inactivation more slowly at higher temperatures), further reducing the inward current available to drive conduction. This pushes already marginal fibers below threshold, blocking conduction entirely. Even a modest temperature rise (1–2°C) from a hot bath or fever can temporarily block optic nerve conduction, causing transient visual blurring that resolves as the patient cools. This is why MS was historically called "a disease of air-conditioned clinics" — patients reported symptoms that were absent when examined at room temperature but present after exercise or hot exposure.</p>
+        </div>
+      </div>
+
+      <ul class="fft-list">
+        <li class="fft-item">
+          If astrocytes release D-serine to activate NMDA receptors, and NMDA receptors are required for LTP, does this mean astrocytes control whether learning occurs?
+          <div class="fft-answer">
+            <p>Substantially yes — this is one of the most provocative implications of the tripartite synapse model. Astrocytes are not passive bystanders gating the NMDA co-agonist site; they actively regulate D-serine availability based on their own calcium signaling, which in turn responds to local network activity, neuromodulatory state, and circadian rhythms. In hippocampal slices, chelating astrocytic calcium to block gliotransmitter release impairs LTP induction. Adding exogenous D-serine rescues it. This suggests that astrocytes function as local "coincidence detectors" at a higher level — not just detecting co-activity between pre and post (as NMDA receptors do synaptically), but gating whether the local synapse is even capable of potentiation based on broader network state. Whether this represents deliberate "astrocyte-directed learning" or an indirect consequence of metabolic/homeostatic regulation is debated. But the practical implication is clear: brain states that alter astrocyte physiology (stress, sleep deprivation, inflammation) could impair learning through reduced D-serine availability independently of any change in neuronal activity. This is an active area with direct therapeutic implications for cognitive disorders.</p>
+          </div>
+        </li>
+        <li class="fft-item">
+          The C4 complement gene is the strongest known genetic risk factor for schizophrenia. If the mechanism is excessive synaptic pruning in adolescence, why does schizophrenia present at 18–25 rather than in childhood?
+          <div class="fft-answer">
+            <p>This timing is actually predicted by the biology. Synaptic pruning in the prefrontal cortex continues into early adulthood — PFC is the last cortical region to mature, with myelination and pruning extending through the mid-twenties. This is very different from primary visual cortex, which matures in the first few years of life. The adolescent-to-young-adult period is when PFC synaptic density peaks and then undergoes its major pruning phase. If C4 amplification leads to excessive complement-mediated pruning, the effects would be most pronounced when that pruning is normally occurring — i.e., in adolescence and early adulthood. Additionally, the PFC is disproportionately affected in schizophrenia (the cognitive and negative symptoms — working memory deficits, executive function impairment — are frontal in origin), and its prolonged developmental window makes it specifically vulnerable to any process that dysregulates the timing or extent of pruning. This explains both the age of onset and the specific cognitive profile: excess pruning of PFC circuits during the normal adolescent pruning window produces the characteristic symptom timeline.</p>
+          </div>
+        </li>
+      </ul>
+
+      <div class="section-head">Common Pitfalls</div>
+      <ul class="pitfall-list">
+        <li><strong>Treating microglia as simply "the brain's macrophages."</strong> While microglia share a lineage with tissue macrophages and perform phagocytic functions, they have unique properties: they are long-lived, self-renewing, survey-oriented rather than patrol-oriented, and have a distinct transcriptional signature from peripheral macrophages. Critically, their synaptic pruning and surveillance functions are not macrophage functions — they are unique to the CNS microglial niche. Peripheral macrophages that infiltrate the brain after BBB breakdown behave differently from resident microglia.</li>
+        <li><strong>Thinking the blood-brain barrier is formed by astrocytes.</strong> The BBB tight junctions are between brain endothelial cells, not astrocytic end-feet. Astrocytes maintain and regulate the BBB but are not its structural basis. Pericytes (cells wrapping CNS capillaries) also play a critical role in BBB integrity. The BBB is a property of the neurovascular unit — endothelial cells + tight junctions + pericytes + astrocytic end-feet together.</li>
+        <li><strong>Assuming oligodendrocyte myelination is fixed after development.</strong> Myelin is dynamically regulated by activity throughout life. Sensory deprivation causes myelin thinning in relevant tracts; enriched experience causes thickening. This adult myelin plasticity is increasingly thought to be a meaningful contributor to learning alongside synaptic plasticity.</li>
+      </ul>
+
+      <div class="section-head">Connects to</div>
+      <ul class="connects-list">
+        <li><strong>Neuroscience — The Neuron &amp; Action Potential (Lesson 1):</strong> Saltatory conduction, myelin structure, and the node of Ranvier were introduced there. This lesson explains the cellular biology behind myelination — who makes it, how it is regulated, and what happens when it is lost (MS).</li>
+        <li><strong>Neuroscience — Synaptic Plasticity (Lesson 7):</strong> The tripartite synapse places astrocytes inside the LTP story. D-serine from astrocytes gates NMDA receptor activation; astrocyte calcium signaling is bidirectionally coupled to synaptic activity. Adult plasticity is partly a neuronal property and partly an astrocyte-neuronal property.</li>
+        <li><strong>Neuroscience — Neural Development (Lesson 11):</strong> Radial glia (astrocyte precursors) scaffold neuronal migration. Astrocytes promote synaptogenesis via thrombospondins. Microglia execute activity-dependent synaptic pruning via complement, shaping the final wiring diagram. Development is a glial process as much as a neuronal one.</li>
+      </ul>
+
+      <div class="lesson-nav">
+        <a href="neural-development.html" class="lesson-nav-btn">← Lesson 11 · Neural Development</a>
+        <a href="reward-neuromodulation.html" class="lesson-nav-btn">Lesson 13 · Reward &amp; Neuromodulation →</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+<script src="../books-render.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  renderMathInElement(document.body, {
+    delimiters: [
+      { left: '$$', right: '$$', display: true },
+      { left: '$', right: '$', display: false }
+    ],
+    throwOnError: false
+  });
+});
+</script>
+
+</body>
+</html>

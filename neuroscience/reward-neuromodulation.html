@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reward &amp; Neuromodulation · Neuroscience</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="neuroscience" data-current="reward-neuromodulation.html"></div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="breadcrumb-sep">›</span>
+        <a href="index.html">Neuroscience</a>
+        <span class="breadcrumb-sep">›</span>
+        Lesson 13
+      </div>
+
+      <h1 class="lesson-title">Reward &amp; Neuromodulation</h1>
+      <div class="lesson-meta">Dopamine · Reward Prediction Error · Mesolimbic Pathway · Serotonin · Noradrenaline · Acetylcholine · Addiction</div>
+
+      <div class="prose">
+        <p>Most of the neurotransmission we have discussed operates fast — glutamate and GABA open ion channels on a millisecond timescale, driving immediate changes in membrane potential. Neuromodulatory systems work differently: they release monoamines and acetylcholine into wide swaths of the brain, binding to G-protein-coupled receptors and modifying the gain, excitability, and plasticity of target circuits rather than driving specific computations. These systems regulate the brain's overall state — attention, arousal, mood, motivation — and they are the target of nearly every psychiatric drug in use. Understanding them is understanding the pharmacology of the mind.</p>
+      </div>
+
+      <div class="section-head" id="dopamine">Dopamine and the Reward System</div>
+
+      <div class="prose">
+        <p>Dopamine neurons are concentrated in two midbrain nuclei: the <strong>substantia nigra pars compacta (SNc)</strong> — projecting to the striatum (nigrostriatal pathway, critical for motor control; the neurons lost in Parkinson's disease) — and the <strong>ventral tegmental area (VTA)</strong> — projecting to the nucleus accumbens, prefrontal cortex, amygdala, and hippocampus (mesolimbic and mesocortical pathways, critical for reward and motivation).</p>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">Reward prediction error (RPE)</h3>
+        <p>The breakthrough discovery by Wolfram Schultz in the 1990s established that VTA dopamine neurons do not signal reward per se — they signal the <strong>difference between received and expected reward</strong>: the reward prediction error (RPE).</p>
+
+        <p>In a classical conditioning experiment, a monkey receives a juice reward (US) unpredicted. Dopamine neurons fire a burst at the moment of reward delivery. After repeated pairings with a cue (CS), a critical shift occurs: dopamine neurons now fire at the cue (when reward is expected) rather than at reward delivery. If the predicted reward is delivered, dopamine neurons maintain baseline firing. If the predicted reward is omitted, dopamine neurons briefly dip below baseline (a pause, the "negative RPE"). If an unpredicted reward arrives, they fire a burst.</p>
+
+        <p>This is exactly the temporal difference (TD) prediction error used in reinforcement learning:</p>
+        <div class="math-block">$$\delta_t = r_t + \gamma V(s_{t+1}) - V(s_t)$$</div>
+        <p>where $\delta$ is the RPE, $r_t$ is immediate reward, $V(s)$ is the predicted future value from state $s$, and $\gamma$ is a discount factor. Dopamine neurons appear to compute this signal in the brain, broadcasting it to the striatum, where it drives synaptic plasticity in the corticostriatal pathway — strengthening actions that led to better-than-expected outcomes and weakening those that led to worse outcomes. This is the biological implementation of reinforcement learning.</p>
+
+        <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">The mesolimbic pathway and wanting vs. liking</h3>
+        <p>The nucleus accumbens (NAc), the primary target of VTA dopamine, is the hub of the brain's reward circuitry. It integrates dopaminergic input from VTA, glutamatergic input from PFC, hippocampus, and amygdala, and outputs to motor systems via the ventral pallidum. A key distinction, developed by Kent Berridge, is between <em>wanting</em> (motivational drive to obtain reward — dopamine-dependent) and <em>liking</em> (hedonic pleasure from reward — surprisingly dopamine-independent, relying on opioid signaling in NAc "hotspots").</p>
+
+        <p>Berridge's experiments: destroying dopamine selectively (with 6-OHDA) produces rats that stop seeking food and die of starvation — but if food is placed in their mouth, they still show normal liking reactions (tongue licking). Dopamine is necessary for wanting but not for liking. This dissociation is clinically important: drug addiction is characterized by pathological wanting (compulsive drug-seeking) that persists even when the drug no longer produces much liking — explaining the subjective experience of craving and the persistence of addiction after any pleasurable effect has diminished.</p>
+      </div>
+
+      <div class="section-head" id="addiction">Addiction: Hijacking the Reward System</div>
+
+      <div class="prose">
+        <p>Drugs of abuse share a common property: they directly or indirectly flood the nucleus accumbens with dopamine, producing dopamine levels far beyond what any natural reward could achieve. Cocaine and amphetamines block or reverse dopamine reuptake transporters (DAT), causing massive accumulation of dopamine in the synapse. Opioids disinhibit VTA dopamine neurons by suppressing GABAergic interneurons (the "brake" on dopamine firing). Nicotine activates nicotinic acetylcholine receptors on VTA dopamine neurons, directly depolarizing them. Alcohol, THC, and other substances converge on the same downstream effect.</p>
+
+        <p>Repeated drug exposure causes several neuroadaptations that together constitute addiction:</p>
+        <ul style="margin:8px 0 8px 20px;line-height:1.8;">
+          <li><strong>Tolerance:</strong> Dopamine neurons reduce their baseline firing rate; D2 receptor density in the striatum decreases (as the system compensates for chronic dopamine flood). The same drug dose produces less dopamine release — and less response to natural rewards — creating a hedonic deficit that motivates increasing drug use.</li>
+          <li><strong>Sensitization of wanting:</strong> The incentive salience of drug cues (people, places, and objects associated with drug use) increases — they trigger pathologically strong dopamine RPE signals and wanting. This is why seeing a syringe or a bar can trigger intense craving years after abstinence.</li>
+          <li><strong>PFC weakening:</strong> Chronic drug use reduces PFC volume and weakens top-down PFC control over the limbic system, impairing impulse control and the ability to override craving.</li>
+          <li><strong>DeltaFosB accumulation:</strong> A transcription factor that accumulates with chronic drug exposure (but not acute), persistently altering gene expression in NAc neurons, increasing synaptic strength and dendritic spine density, and creating long-lasting molecular changes that maintain drug-seeking even after withdrawal.</li>
+        </ul>
+      </div>
+
+      <div class="section-head" id="serotonin">Serotonin</div>
+
+      <div class="prose">
+        <p>Serotonergic neurons are concentrated in the <strong>raphe nuclei</strong> of the brainstem and project extraordinarily widely — essentially the entire brain, from cortex to spinal cord, receives serotonergic innervation. Serotonin (5-hydroxytryptamine, 5-HT) acts predominantly through G-protein-coupled receptors (14 subtypes, all metabotropic except 5-HT3 which is an ionotropic ligand-gated channel). Its effects depend heavily on which receptor subtype is expressed where.</p>
+
+        <p>Serotonin's role in mood is highlighted by the fact that the most widely prescribed antidepressants are SSRIs (selective serotonin reuptake inhibitors: fluoxetine/Prozac, sertraline/Zoloft), which increase synaptic serotonin by blocking the serotonin transporter (SERT). However, the mechanism by which increased synaptic serotonin over weeks produces antidepressant effects is not straightforward — the acute increase in serotonin does not produce immediate mood improvement, and full therapeutic effects take 2–4 weeks, suggesting downstream neuroplastic changes (BDNF upregulation, hippocampal neurogenesis, synaptic remodeling in PFC) rather than simple receptor activation are responsible.</p>
+
+        <p>Serotonin also regulates sleep/wake cycles (raphe neurons are active during waking, quiet during REM), appetite (5-HT2C receptor agonism reduces food intake — the basis of lorcaserin as a weight-loss drug), pain modulation (descending serotonergic projections to the dorsal horn modulate pain), and social behavior. Psilocybin and LSD act as 5-HT2A receptor agonists in cortical pyramidal neurons — their profound perceptual effects demonstrate the importance of serotonin in regulating cortical gain and sensory processing.</p>
+      </div>
+
+      <div class="section-head" id="noradrenaline">Noradrenaline and the Locus Coeruleus</div>
+
+      <div class="prose">
+        <p>Noradrenergic neurons originate almost entirely from the <strong>locus coeruleus (LC)</strong>, a small nucleus in the dorsal pons containing only ~15,000 neurons in each human brain. Despite this tiny number, the LC projects to virtually every brain region — it is perhaps the most widespread projection system in the brain. LC neurons are tonically active, firing 0.5–5 Hz in quiet waking, and burst-fire in response to novel, salient, or threatening stimuli.</p>
+
+        <p>Noradrenaline acts on α1, α2, and β adrenergic receptors and modulates the signal-to-noise ratio of neural processing: low-to-moderate LC activity enhances the gain of relevant signals while suppressing irrelevant background activity (improving the signal-to-noise ratio in target circuits). Very high LC activity (during extreme stress) actually degrades processing — the inverted-U Yerkes-Dodson relationship applies. α2 receptors are presynaptic autoreceptors that limit LC firing — the target of clonidine, used to treat ADHD and anxiety by reducing LC hyperactivity.</p>
+
+        <p>The LC-noradrenaline system is central to the <strong>fight-or-flight response</strong> in the brain (complementing peripheral sympathetic activation). LC burst firing in response to threat rapidly shifts the brain from exploratory to focused, threat-oriented processing — dilated pupils, enhanced attention to relevant stimuli, suppression of non-urgent cognition. Chronic stress-induced LC hyperactivity contributes to anxiety disorders and PTSD.</p>
+      </div>
+
+      <div class="section-head" id="acetylcholine">Acetylcholine and the Cholinergic System</div>
+
+      <div class="prose">
+        <p>Cholinergic neuromodulatory neurons originate in two main locations. The <strong>basal forebrain</strong> (nucleus basalis of Meynert, medial septum, diagonal band) projects diffusely to cortex and hippocampus, regulating attention, learning, and memory. The <strong>brainstem</strong> cholinergic nuclei (LDT, PPT) project to the thalamus and basal ganglia, regulating arousal and REM sleep.</p>
+
+        <p>ACh acts on muscarinic (metabotropic, M1-M5) and nicotinic (ionotropic) receptors. In the cortex, M1 receptors on pyramidal neurons enhance their response to thalamic inputs (increasing signal-to-noise for attended stimuli) and facilitate LTP induction — making acetylcholine a key modulator of cortical learning. Basal forebrain cholinergic neurons degenerate early and severely in Alzheimer's disease, and this degeneration correlates with memory impairment. This is the basis for cholinesterase inhibitors (donepezil, rivastigmine) as symptomatic AD treatments — they inhibit acetylcholinesterase, prolonging ACh in the synapse, partially compensating for the depleted cholinergic innervation. They do not halt progression but modestly improve cognitive symptoms in mild-to-moderate AD.</p>
+
+        <p>In the hippocampus, medial septal cholinergic and GABAergic neurons drive the <strong>theta rhythm</strong> (4–10 Hz oscillation in the hippocampus during active exploration and REM sleep), which is a critical enabling condition for hippocampal LTP and spatial learning. Animals with medial septal lesions lose theta and show impaired spatial memory.</p>
+      </div>
+
+      <div class="section-head" id="examples">Worked Examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Schultz's RPE Experiment: Three Cases</strong></div>
+        <div class="example-problem">A monkey is trained: a tone (CS) predicts a juice reward (US) 1 second later. Describe the expected dopamine neuron firing pattern in three scenarios: (a) tone presented, juice delivered on time; (b) tone presented, juice omitted; (c) unpredicted juice delivered with no tone.</div>
+        <div class="example-body">
+          <p><strong>(a) Tone → juice on time (expected reward):</strong> Dopamine neurons fire a burst at the tone (predicting upcoming reward — positive RPE: value of state transitions upward when cue appears). At the time of juice delivery, no burst — the reward was fully predicted, so $\delta = r_t + \gamma V(s_{t+1}) - V(s_t) = 0$ at delivery. Baseline firing throughout the delay.</p>
+          <p><strong>(b) Tone → juice omitted (negative RPE):</strong> Dopamine neurons fire a burst at the tone (as above). At the time when juice was expected but not delivered, there is a brief pause below baseline — a negative RPE signal ($\delta < 0$). This dip drives "unlearning" of the value associated with the tone, gradually reducing the cue-burst over repeated omissions until the CS is extinguished.</p>
+          <p><strong>(c) Unpredicted juice (positive RPE with no prior expectation):</strong> No cue, so no burst at cue time. At the moment the juice is delivered unexpectedly, a burst at juice delivery ($\delta > 0$ — reward received, none expected). Over repeated pairings, if any reliable cue is available, the burst will shift backward to the earliest reliable predictor — this is the temporal difference bootstrapping of value toward earlier and earlier predictors in the state sequence.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Why SSRIs Take Weeks to Work</strong></div>
+        <div class="example-problem">SSRIs immediately increase synaptic serotonin within hours of the first dose. Why do antidepressant effects typically take 2–4 weeks to emerge?</div>
+        <div class="example-body">
+          <p>The lag is partly explained by autoreceptor desensitization. Raphe neurons express 5-HT1A autoreceptors (somatodendritic) that normally limit firing — when serotonin levels rise acutely, these autoreceptors detect it and reduce raphe neuron firing rate, partially offsetting the SERT blockade. Over 2–4 weeks of sustained SSRI treatment, 5-HT1A autoreceptors desensitize and downregulate, allowing raphe neurons to fire at normal or elevated rates despite elevated synaptic 5-HT. This increases net serotonergic tone far beyond what is achieved acutely.</p>
+          <p>Beyond autoreceptor kinetics, the therapeutic effect may depend on downstream neuroplastic changes: BDNF expression in the hippocampus increases with sustained SSRI treatment (mediated partly by 5-HT4 receptor activation), promoting hippocampal neurogenesis and dendritic remodeling. These structural changes take weeks to manifest. In rodents, blocking hippocampal neurogenesis with irradiation abolishes behavioral antidepressant effects of SSRIs — suggesting the neuroplastic rather than the acute pharmacological effect is the therapeutic one. This explains why ketamine (which rapidly increases glutamatergic AMPA signaling and BDNF release via a different mechanism) produces antidepressant effects within hours — it bypasses the weeks-long process of autoreceptor desensitization and drives the neuroplastic endpoint directly.</p>
+        </div>
+      </div>
+
+      <ul class="fft-list">
+        <li class="fft-item">
+          Dopamine signals reward prediction error, not pleasure. So why do dopamine-boosting drugs like cocaine feel good?
+          <div class="fft-answer">
+            <p>Cocaine produces an enormous, drug-induced dopamine RPE that the brain interprets as: "something much better than expected just happened." This doesn't directly produce pleasure (that's opioid-mediated liking in NAc) but it drives intense wanting — the surge of craving and compulsive motivation to re-experience the drug. It also produces direct learning: the context, cues, and actions associated with the cocaine-dopamine surge become powerfully conditioned predictors of reward, acquiring enormous incentive salience. The subjective "high" of stimulants comes partly from this motivational surge (the dopamine RPE flooding the system) and partly from monoaminergic effects in other regions (cocaine also blocks noradrenaline and serotonin reuptake). But critically, the wanting and the liking are dissociable — chronic cocaine use eventually depletes dopamine tone (downregulating D2 receptors), drastically reducing pleasure from natural rewards and making the user feel anhedonic, while the learned cue reactivity (wanting) persists. This is the trap of addiction: the liking has largely gone, but the wanting, driven by sensitized incentive salience pathways, remains or intensifies.</p>
+          </div>
+        </li>
+        <li class="fft-item">
+          If the locus coeruleus has only ~15,000 neurons per hemisphere and projects to the entire brain, how is it possible for it to differentially modulate different regions? Doesn't it just broadcast a global signal?
+          <div class="fft-answer">
+            <p>This is a genuine puzzle and an active research question. Historically, the LC was thought to broadcast a global signal — a "volume control" for the entire brain. More recent work shows this view is too simple. First, LC neurons are not entirely homogeneous — subpopulations project differentially to prefrontal cortex vs. hippocampus vs. cerebellum, and these subpopulations can have different firing properties and can be activated differently. Second, local regulation of noradrenaline release occurs through presynaptic autoreceptors (α2 receptors at LC terminals regulate transmitter release independently of soma firing) and through locally released neuromodulators at terminals, enabling regional modulation of how much NE is released even given the same LC firing rate. Third, the postsynaptic receptor landscape differs dramatically across regions — frontal cortex α2 receptors enhance signal-to-noise at moderate NE levels while subcortical regions respond differently. So while the LC signal is largely global, differential receptor expression and presynaptic regulation allow region-specific outcomes from a global noradrenergic broadcast. Refinements from optogenetics showing that specific LC axon branches can be locally modulated are beginning to reveal a more nuanced picture.</p>
+          </div>
+        </li>
+      </ul>
+
+      <div class="section-head">Common Pitfalls</div>
+      <ul class="pitfall-list">
+        <li><strong>Equating dopamine with pleasure.</strong> Dopamine signals prediction error (wanting/surprise), not hedonic pleasure (liking). Mice with no dopamine still show normal liking reactions to sweet food — they just won't seek it. Patients with Parkinson's disease (dopamine depletion) lose motivation but do not lose the ability to experience pleasure from rewards given to them.</li>
+        <li><strong>Thinking antidepressants work by directly raising serotonin levels in sad people.</strong> The "serotonin deficiency" model of depression is a popular but oversimplified narrative. Serotonin levels in cerebrospinal fluid are not consistently low in depression. SSRIs have complex downstream effects on neuroplasticity, gene expression, and circuit remodeling that are the likely therapeutic mechanism. The serotonin hypothesis is useful as a mechanistic entry point but inadequate as a complete explanation.</li>
+        <li><strong>Confusing the nigrostriatal and mesolimbic dopamine pathways.</strong> Nigrostriatal (SNc → dorsal striatum/caudate-putamen) is primarily about motor control and habit learning — damaged in Parkinson's. Mesolimbic (VTA → nucleus accumbens) is about reward, motivation, and prediction error — central to addiction and mood. They are not interchangeable, and drugs or lesions targeting one affect behavior very differently from those targeting the other.</li>
+      </ul>
+
+      <div class="section-head">Connects to</div>
+      <ul class="connects-list">
+        <li><strong>Computational Brain (Lesson 10):</strong> Temporal difference (TD) reinforcement learning maps directly onto dopamine RPE signaling. The Schultz experiments are the biological validation of computational RL models, and the dopamine RPE signal is the biological implementation of the TD error $\delta_t$.</li>
+        <li><strong>Neuroscience — Synaptic Plasticity (Lesson 7):</strong> Neuromodulators set the threshold for plasticity. Dopamine in the striatum drives corticostriatal LTP at action-associated synapses (via D1 receptor activation of PKA and DARPP-32). Acetylcholine in the cortex facilitates cortical LTP during attended learning. These modulatory effects on plasticity are how the neuromodulatory systems convert prediction errors and attention signals into lasting memory.</li>
+        <li><strong>Neuroscience — Emotion &amp; the Limbic System (Lesson 14):</strong> The amygdala is a major target of VTA dopamine and LC noradrenaline. Stress-induced noradrenaline release in the basolateral amygdala (BLA) enhances consolidation of fear memories, explaining why emotionally arousing events are remembered more vividly than neutral events. The interaction between the reward/neuromodulatory system and the emotional system is fundamental to understanding how stress, trauma, and drugs reshape behavior.</li>
+      </ul>
+
+      <div class="lesson-nav">
+        <a href="glial-cells.html" class="lesson-nav-btn">← Lesson 12 · Glial Cells</a>
+        <a href="emotion-limbic.html" class="lesson-nav-btn">Lesson 14 · Emotion &amp; the Limbic System →</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+<script src="../books-render.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  renderMathInElement(document.body, {
+    delimiters: [
+      { left: '$$', right: '$$', display: true },
+      { left: '$', right: '$', display: false }
+    ],
+    throwOnError: false
+  });
+});
+</script>
+
+</body>
+</html>
