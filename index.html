@@ -32,15 +32,11 @@
           written to build intuition, not to prepare for tests.
         </div>
         <hr class="sidebar-rule">
-        <div class="sidebar-text">
-          Topics span engineering, mathematics, and the sciences with no allegiance
-          to any particular curriculum. Active clusters have published lessons;
-          planned ones are indexed for future content.
-        </div>
+        <div id="portal-sidebar-nav"></div>
         <hr class="sidebar-rule">
         <div class="sidebar-text" style="font-style: italic; color: #8a9aaa;">
-          Where relevant, connections to courses, textbooks, and other resources
-          are noted inside each cluster — not as prerequisites, but as references.
+          Active clusters have published lessons; planned ones are indexed for future
+          content.
         </div>
       </div>
     </div>
@@ -58,7 +54,10 @@
 </footer>
 
 <script src="notes-portal.js"></script>
-<script>renderPortal();</script>
+<script>
+  renderPortal();
+  renderPortalSidebar();
+</script>
 
 </body>
 </html>

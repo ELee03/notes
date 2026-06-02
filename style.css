@@ -222,11 +222,25 @@ a:hover { text-decoration: underline; }
 .section-head:first-child { margin-top: 0; }
 
 .subsection-head {
-  font-size: 15px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #8a9ab0;
+  margin: 28px 0 8px;
+}
+
+/* Portal top-level category heading — larger and visually dominant */
+.portal-section-head {
+  font-size: 18px;
   font-weight: 600;
   color: #1a2840;
-  margin: 22px 0 8px;
+  border-left: 3px solid #7ab8d4;
+  padding-left: 12px;
+  margin: 56px 0 10px;
+  letter-spacing: 0.01em;
 }
+.portal-section-head:first-child { margin-top: 0; }
 
 /* --- Prose ------------------------------------------------- */
 .prose {
@@ -751,6 +765,54 @@ details.fft-answer[open] > summary::before { transform: rotate(90deg); }
   margin-left: auto;
   margin-right: auto;
 }
+
+/* --- Portal sidebar nav (dropdown) ------------------------- */
+.portal-nav { margin: 0; }
+
+.portal-nav-details {
+  margin-bottom: 1px;
+}
+.portal-nav-details summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 5px 0;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: #4a6070;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+  border-radius: 2px;
+  transition: color 0.1s;
+}
+.portal-nav-details summary:hover { color: #1a2840; }
+.portal-nav-details summary::-webkit-details-marker { display: none; }
+.portal-nav-details summary::after {
+  content: '›';
+  font-size: 14px;
+  color: #9aabb8;
+  transition: transform 0.15s;
+  flex-shrink: 0;
+  margin-left: 6px;
+}
+.portal-nav-details[open] summary::after { transform: rotate(90deg); }
+
+.portal-nav-items { padding: 2px 0 6px 0; }
+
+.portal-nav-item {
+  display: block;
+  font-size: 12px;
+  color: #6a7a8a;
+  padding: 3px 0 3px 10px;
+  text-decoration: none;
+  line-height: 1.5;
+  border-radius: 2px;
+  transition: color 0.1s;
+}
+.portal-nav-item:hover { color: #1a2840; text-decoration: none; }
 
 /* --- Portal sidebar ---------------------------------------- */
 .portal-sidebar-head {
