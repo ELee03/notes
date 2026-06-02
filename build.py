@@ -28,6 +28,7 @@ DATA_FILE     = ROOT / "data" / "books.yaml"
 CLUSTERS_FILE = ROOT / "data" / "clusters.yaml"
 OUTPUT_FILE   = ROOT / "books.json"
 GAPS_FILE     = ROOT / "data" / "resource-gaps.md"
+PORTAL_FILE   = ROOT / "portal.json"
 
 SECTION_ORDER = [
     "Engineering",
@@ -147,9 +148,61 @@ def build_resource_gaps(valid_books):
     print(f"OK: Resource gaps report -> data/resource-gaps.md  ({len(missing)} missing / {len(covered)} covered)")
 
 
+def update_portal_lesson_counts():
+    """
+    For every active cluster leaf in portal.json (nodes that have an 'href'),
+    read that cluster's nav.json and count non-planned items.  Write the result
+    back into the 'lessons' field so the badge on the portal is always in sync.
+    """
+    if not PORTAL_FILE.exists():
+        return
+
+    with open(PORTAL_FILE, "r", encoding="utf-8") as f:
+        portal = json.load(f)
+
+    changed = False
+
+    def process_node(node):
+        nonlocal changed
+        if "name" in node and "href" in node:
+            href = node["href"]                          # e.g. "neuroscience/index.html"
+            cluster_dir = href.split("/")[0]
+            nav_file = ROOT / cluster_dir / "nav.json"
+            if nav_file.exists():
+                with open(nav_file, "r", encoding="utf-8") as f:
+                    nav = json.load(f)
+                count = sum(
+                    1
+                    for section in nav.get("sections", [])
+                    for item in section.get("items", [])
+                    if not item.get("planned", False)
+                )
+                if node.get("lessons") != count:
+                    node["lessons"] = count
+                    changed = True
+        elif "children" in node:
+            for child in node["children"]:
+                process_node(child)
+
+    for section in portal.get("sections", []):
+        process_node(section)
+
+    if changed:
+        # Re-serialise without Python's default HTML-character escaping
+        # (&amp; in JSON strings must stay as &amp;, not become &amp;)
+        content = json.dumps(portal, ensure_ascii=False, indent=2)
+        content = content.replace("\\u0026", "&").replace("\\u003c", "<").replace("\\u003e", ">")
+        with open(PORTAL_FILE, "w", encoding="utf-8") as f:
+            f.write(content + "\n")
+        print("OK: portal.json lesson counts updated from nav.json")
+    else:
+        print("OK: portal.json lesson counts already in sync")
+
+
 def main():
     valid_books = build_books()
     build_resource_gaps(valid_books)
+    update_portal_lesson_counts()
 
 
 if __name__ == "__main__":
