@@ -211,9 +211,9 @@ a:hover { text-decoration: underline; }
 }
 
 .section-head {
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 600;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: #4a6070;
   margin: 40px 0 10px;
