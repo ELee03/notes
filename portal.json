@@ -6,9 +6,15 @@
         {
           "label": "Analysis",
           "children": [
-            { "name": "Calculus &amp; Analysis",      "desc": "Single and multivariable calculus, then real analysis — epsilon-delta, metric spaces, measure theory — and complex analysis with contour integration and residues.", "planned": true },
-            { "name": "Differential Equations",        "desc": "ODEs and systems, PDEs (heat, wave, Laplace), dynamical systems and phase portraits, and an introduction to chaos.", "planned": true },
-            { "name": "Nonlinear Dynamics &amp; Chaos", "desc": "Phase portraits, bifurcation theory, limit cycles, strange attractors, Lyapunov exponents, and the mathematical roots of complex systems behaviour.", "planned": true }
+            { "name": "Calculus &amp; Analysis", "desc": "Single and multivariable calculus, then real analysis — epsilon-delta, metric spaces, measure theory — and complex analysis with contour integration and residues.", "planned": true },
+            { "name": "Differential Equations",   "desc": "ODEs and systems, PDEs (heat, wave, Laplace), dynamical systems and phase portraits, and an introduction to chaos.", "planned": true }
+          ]
+        },
+        {
+          "label": "Dynamical Systems",
+          "children": [
+            { "name": "Nonlinear Dynamics &amp; Chaos", "desc": "Phase portraits, bifurcation theory, limit cycles, strange attractors, Lyapunov exponents, and the mathematical roots of complex systems behaviour.", "planned": true },
+            { "name": "Complex Systems",                "desc": "Emergence, self-organisation, and collective behaviour — Schelling segregation, SIR epidemic models, flocking (Boids), cellular automata, and game theory on networks.", "planned": true }
           ]
         },
         {
@@ -146,11 +152,10 @@
       ]
     },
     {
-      "label": "Other",
+      "label": "Humanities &amp; Social Sciences",
       "children": [
-        { "name": "Complex Systems",          "desc": "Emergence, self-organisation, and collective behaviour — Schelling segregation, SIR epidemic models, flocking (Boids), cellular automata, and game theory on networks.", "planned": true },
-        { "name": "Linguistics",              "desc": "Phonology, morphology, syntax, semantics, pragmatics, and historical linguistics — how language is structured and how it changes.", "planned": true },
-        { "name": "Science of Human Nature",  "desc": "Evolutionary psychology, behavioural economics, cognitive biases, social dynamics, and the empirical study of why people think and act as they do.", "planned": true }
+        { "name": "Linguistics",             "desc": "Phonology, morphology, syntax, semantics, pragmatics, and historical linguistics — how language is structured and how it changes.", "planned": true },
+        { "name": "Science of Human Nature", "desc": "Evolutionary psychology, behavioural economics, cognitive biases, social dynamics, and the empirical study of why people think and act as they do.", "planned": true }
       ]
     }
   ]

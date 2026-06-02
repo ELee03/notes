@@ -211,12 +211,14 @@ a:hover { text-decoration: underline; }
 }
 
 .section-head {
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 600;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #9aabb8;
-  margin: 28px 0 10px;
+  color: #4a6070;
+  margin: 40px 0 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(74,96,112,0.2);
 }
 
 .section-head:first-child { margin-top: 0; }
