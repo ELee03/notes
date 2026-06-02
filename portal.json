@@ -69,11 +69,14 @@
         {
           "label": "Electrical Engineering",
           "children": [
-            { "name": "Circuit Theory",             "desc": "From KVL/KCL and phasors through transistor amplifiers, op-amps, and frequency response.", "planned": true },
-            { "name": "Signals &amp; Systems",      "desc": "Fourier analysis, convolution, modulation, sampling, and analog filter design.", "planned": true },
-            { "name": "Analog &amp; Semiconductor", "desc": "Semiconductor device physics, BJT/MOSFET modeling, and analog IC design.", "planned": true },
-            { "name": "Bioelectricity",              "desc": "Action potentials, Hodgkin-Huxley, neural interfaces, and bioelectric signal processing.", "planned": true },
-            { "name": "Embedded Systems",            "href": "embedded/index.html", "desc": "MCU architecture, communication protocols (UART, SPI, I2C, CAN), PCB layout, and firmware patterns.", "lessons": 19 }
+            { "name": "Circuit Theory",                   "desc": "From KVL/KCL and phasors through transistor amplifiers, op-amps, and frequency response.", "planned": true },
+            { "name": "Signals &amp; Systems",            "desc": "Fourier analysis, convolution, modulation, sampling, and analog filter design.", "planned": true },
+            { "name": "Analog &amp; Semiconductor",       "desc": "Semiconductor device physics, BJT/MOSFET modeling, and basic analog IC design.", "planned": true },
+            { "name": "Analog Signal Processing",         "desc": "Active filter design (Butterworth, Chebyshev, Sallen-Key), switched-capacitor circuits, data converters (ADC/DAC architectures), PLLs, and noise analysis in analog systems.", "planned": true },
+            { "name": "RF &amp; Microwave Engineering",   "desc": "Transmission line theory, Smith chart, impedance matching, S-parameters, two-port network analysis, microwave passive components (couplers, filters, power dividers), and RF amplifier design.", "planned": true },
+            { "name": "Wireless Systems &amp; Antennas",  "desc": "Antenna theory (dipoles, arrays, phased arrays, aperture antennas), Friis transmission and link budgets, multipath propagation, receiver architectures, noise figure in cascaded systems, and applications in radar, satellite, and software-defined radio.", "planned": true },
+            { "name": "Bioelectricity",                   "desc": "Action potentials, Hodgkin-Huxley, neural interfaces, and bioelectric signal processing.", "planned": true },
+            { "name": "Embedded Systems",                 "href": "embedded/index.html", "desc": "MCU architecture, communication protocols (UART, SPI, I2C, CAN), PCB layout, and firmware patterns.", "lessons": 19 }
           ]
         },
         {
