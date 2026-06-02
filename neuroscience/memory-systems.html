@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Memory Systems · Neuroscience</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="neuroscience" data-current="memory-systems.html"></div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="breadcrumb-sep">›</span>
+        <a href="index.html">Neuroscience</a>
+        <span class="breadcrumb-sep">›</span>
+        Lesson 8
+      </div>
+
+      <h1 class="lesson-title">Memory Systems</h1>
+      <div class="lesson-meta">Declarative vs Non-Declarative · Patient H.M. · Hippocampal Trisynaptic Circuit · Place Cells · Systems Consolidation · Working Memory · Amygdala</div>
+
+      <div class="prose">
+        <p>Memory is not one thing. There are multiple distinct memory systems in the brain — anatomically separate, mechanistically different, and carrying different types of information. The clarity of this distinction came from patients: Henry Molaison (H.M.), who could learn a mirror-tracing skill perfectly but had no memory of ever practicing it; E.P., an amnesic who couldn't remember walking to the bathroom but always walked there correctly. What's remembered is stored in a different system from what's known consciously. This lesson traces the neuroscience of each major memory system — where it lives, what it stores, and what breaks when it's damaged.</p>
+      </div>
+
+      <div class="section-head" id="taxonomy">A Taxonomy of Memory</div>
+
+      <div class="prose">
+        <p>Memory divides first into <strong>declarative (explicit)</strong> memory — memories you can consciously access and report — and <strong>non-declarative (implicit)</strong> memory — skills, habits, and conditioned responses that influence behaviour without conscious recollection.</p>
+
+        <p><strong>Declarative memory</strong> subdivides into:</p>
+        <ul style="margin:8px 0 8px 20px;line-height:1.8;">
+          <li><strong>Episodic memory</strong> — memories of specific events with their context: who, what, where, when. "My first day at university." Hippocampus-dependent; highly susceptible to forgetting; reconstructive (not a video replay).</li>
+          <li><strong>Semantic memory</strong> — general factual knowledge without episodic context: "Paris is the capital of France." Initially hippocampus-dependent; gradually becomes hippocampus-independent as it is integrated into neocortical knowledge networks.</li>
+        </ul>
+
+        <p><strong>Non-declarative memory</strong> includes:</p>
+        <ul style="margin:8px 0 8px 20px;line-height:1.8;">
+          <li><strong>Procedural memory</strong> — motor and cognitive skills: riding a bike, typing. Striatum- and cerebellum-dependent; extremely resistant to forgetting once established.</li>
+          <li><strong>Classical conditioning</strong> — association of a neutral stimulus with a biologically significant event. For emotional conditioning (fear): amygdala. For skeletal muscle conditioning (eyeblink): cerebellum.</li>
+          <li><strong>Priming</strong> — enhanced processing of a stimulus due to prior exposure, without conscious recognition. Neocortex (perceptual cortices); preserved in dense amnesia.</li>
+          <li><strong>Habituation and sensitization</strong> — the simplest forms, studied in Aplysia (Kandel). Change in synaptic release probability at sensory-motor synapses.</li>
+        </ul>
+      </div>
+
+      <div class="section-head" id="hm">Patient H.M.</div>
+
+      <div class="prose">
+        <p>Henry Molaison (1926–2008; known as "H.M." during his lifetime) underwent bilateral medial temporal lobe resection in 1953 to relieve intractable epilepsy. The surgery removed most of both hippocampi, the entorhinal cortex, and the amygdala. The epilepsy was cured. The cost was devastating: H.M. developed severe anterograde amnesia — he could not form new declarative memories. Every conversation, every encounter was forgotten within minutes. He did not know the year, the president, or that he had had surgery.</p>
+
+        <p>What he could do is equally revealing:</p>
+        <ul style="margin:8px 0 8px 20px;line-height:1.8;">
+          <li>He retained normal intelligence, language, and working memory (he could hold a conversation)</li>
+          <li>He learned the mirror-tracing task over three days, showing normal skill improvement — but each day he denied ever having practiced before</li>
+          <li>He showed intact priming effects on word stem completion tasks</li>
+          <li>He had significant (though not complete) retrograde amnesia for events 3 years before surgery, but earlier memories were largely preserved</li>
+        </ul>
+
+        <p>H.M.'s case established three facts that shaped modern memory research: (1) the hippocampus is necessary for new declarative memory formation; (2) it is not the permanent storage site — remote memories are stored elsewhere, likely in neocortex; (3) declarative and non-declarative memory are dissociable — the hippocampus is needed for one but not the other.</p>
+      </div>
+
+      <div class="section-head" id="hippocampus">The Hippocampus</div>
+
+      <div class="prose">
+        <p>The hippocampus (named for its seahorse shape) lies in the medial temporal lobe, embedded within the parahippocampal gyrus. Its trisynaptic circuit is the best-studied memory circuit in the brain:</p>
+        <ol style="margin:8px 0 8px 20px;line-height:1.8;">
+          <li><strong>Entorhinal cortex (EC) → Dentate Gyrus (DG)</strong> via the perforant path. The EC is the gateway to the hippocampus, receiving convergent input from virtually all neocortical association areas. DG granule cells receive this highly processed, multimodal information.</li>
+          <li><strong>Dentate Gyrus → CA3</strong> via the mossy fibres. DG granule cells excite CA3 pyramidal neurons. CA3 also receives direct perforant path input from EC. CA3 has extensive recurrent connections within itself — the CA3 autoassociative network can complete patterns (recall from partial cues).</li>
+          <li><strong>CA3 → CA1</strong> via the Schaffer collaterals. This is the most studied synapse in neuroscience — where LTP was first described by Bliss and Lømo. CA1 receives direct input from EC (layer III) as well, allowing comparison of CA3 output with the direct EC input.</li>
+        </ol>
+        <p>CA1 projects to the subiculum and back to EC, closing the loop. Output from subiculum/CA1 projects to mammillary bodies, anterior thalamus, prefrontal cortex, and striatum via the fornix.</p>
+
+        <p>The computational roles of each stage:</p>
+        <ul style="margin:8px 0 8px 20px;line-height:1.8;">
+          <li><strong>DG — pattern separation:</strong> DG uses sparse coding and competitive inhibition to produce dissimilar representations from similar inputs. Two experiences in slightly different contexts produce non-overlapping DG patterns, preventing interference.</li>
+          <li><strong>CA3 — pattern completion:</strong> The autoassociative recurrent network completes degraded or partial patterns — a partial cue reinstates the full representation. This is the attractor dynamics of memory recall.</li>
+          <li><strong>CA1 — mismatch detection / output:</strong> Compares EC direct input (current experience) with CA3 output (predicted/retrieved pattern). Novelty detection when they don't match.</li>
+        </ul>
+      </div>
+
+      <div class="section-head" id="place-cells">Place Cells and the Cognitive Map</div>
+
+      <div class="prose">
+        <p>John O'Keefe (Nobel Prize 2014) discovered in 1971 that CA1 neurons fire selectively when a rat is in a specific location in its environment — <strong>place cells</strong>. Each cell has a <strong>place field</strong>, a region of physical space where it fires; outside this region, the cell is largely silent. Together, the ~300,000 hippocampal neurons tile the environment — the hippocampus encodes a <strong>cognitive map</strong> of space.</p>
+
+        <p>The cognitive map hypothesis: the hippocampus doesn't just store individual memories as isolated episodes — it builds a relational map of the environment in which experiences can be located. When you navigate a new city, your hippocampus builds a spatial framework; memories of where you had dinner, which street was noisy, are encoded with their spatial context within this map.</p>
+
+        <p>May-Britt and Edvard Moser (Nobel Prize 2014, shared with O'Keefe) discovered <strong>grid cells</strong> in the entorhinal cortex: neurons that fire at the vertices of a regular hexagonal grid that tiles the environment. The grid pattern is maintained regardless of running speed or direction, providing a metric coordinate system that underlies place cell firing. Other cell types: head-direction cells (brainstem, retrosplenial cortex) encode heading; border cells encode proximity to walls.</p>
+
+        <p>These discoveries transformed our understanding of hippocampal function: the hippocampus implements a spatial coordinate system for locating experiences, and episodic memory is essentially the tagging of memories with their spatiotemporal context — "what happened where and when."</p>
+      </div>
+
+      <div class="section-head" id="consolidation">Memory Consolidation</div>
+
+      <div class="prose">
+        <p>Newly formed memories are initially fragile and hippocampus-dependent. Over time, declarative memories become hippocampus-independent (as shown by H.M.'s preserved remote memories). How?</p>
+
+        <p><strong>Systems consolidation</strong> (the standard model): During active waking, cortical patterns are encoded rapidly in hippocampus. During sleep — particularly slow-wave sleep — the hippocampus reactivates recent memories ("replay") and drives the neocortical areas that were active during the original encoding. Repeated hippocampal-neocortical dialogue gradually strengthens direct cortico-cortical connections, eventually making the memory accessible without hippocampal reinstantiation. The hippocampus acts as a temporary binding device and indexer; the neocortex is the permanent store.</p>
+
+        <p>Evidence: (1) sleep deprivation impairs declarative memory consolidation; (2) hippocampal "sharp-wave ripples" during NREM sleep are temporally correlated with neocortical slow oscillations and thalamic spindles — a coordinated three-way rhythm that gates replay; (3) optogenetic silencing of hippocampal reactivation during sleep impairs spatial memory tested the following day.</p>
+
+        <p><strong>Multiple trace theory</strong> (MTT, Nadel and Moscovitch) challenges the standard model: hippocampus remains permanently involved in retrieving vivid episodic memories. Multiple traces are created each time a memory is recalled, distributed across the hippocampus and neocortex. Remote semantic memories (general facts) do become hippocampus-independent, but remote episodic memories (specific events with rich contextual detail) remain hippocampus-dependent, because their context-richness requires ongoing hippocampal binding. MTT explains why some hippocampal amnesics lose even very remote episodic memories but retain semantic knowledge from the same period.</p>
+      </div>
+
+      <div class="section-head" id="working-memory">Working Memory and the Prefrontal Cortex</div>
+
+      <div class="prose">
+        <p><strong>Working memory</strong> is the temporary maintenance and manipulation of information in mind — the mental "scratch pad." It is limited in capacity (~7 ± 2 items, Miller 1956; more recent estimates closer to 4 chunks) and duration (seconds, without active maintenance). Working memory is not a hippocampal function — H.M. had near-normal working memory despite profound anterograde amnesia.</p>
+
+        <p>The prefrontal cortex (PFC), particularly the dorsolateral prefrontal cortex (DLPFC), is critical for working memory. DLPFC neurons show sustained firing during the delay period of delayed-response tasks — maintaining the remembered information in an active neural code (persistent activity) in the absence of the stimulus. This activity is driven by recurrent excitation within PFC and supported by dopaminergic modulation from the VTA (D1 receptors stabilize persistent firing; excessive dopamine destabilizes it — the inverted-U relationship between dopamine and PFC performance explains why both too little dopamine in ADHD and too much in schizophrenia impair working memory).</p>
+
+        <p>Baddeley's model of working memory: a central executive (PFC) coordinates two specialized buffers: the phonological loop (rehearsing verbal information, subvocal speech; left temporal/parietal) and the visuospatial sketchpad (maintaining spatial/visual information; right parietal/occipital). A fourth component, the episodic buffer, integrates information from long-term memory with online working memory content.</p>
+      </div>
+
+      <div class="section-head" id="amygdala">Emotional Memory and the Amygdala</div>
+
+      <div class="prose">
+        <p>Emotionally significant events are remembered more vividly than neutral ones — the "flashbulb memory" phenomenon. The neural mechanism: emotionally arousing events activate the amygdala (via direct sensory input and cortical input), which modulates memory encoding in the hippocampus via norepinephrine and glucocorticoid release. This is a form of memory "priority tagging" — experiences that were emotionally significant are flagged for preferential consolidation.</p>
+
+        <p>The amygdala is also the primary substrate for <strong>fear conditioning</strong>: after pairing a tone (CS) with a footshock (US), the tone alone comes to elicit fear responses (CR). The basolateral amygdala (BLA) is where the CS-US association is formed; the central amygdala drives the autonomic (heart rate, blood pressure) and behavioural (freezing) fear responses via brainstem and hypothalamic projections.</p>
+
+        <p>Fear memories are difficult to extinguish — exposure to the CS alone gradually produces extinction learning (new CS→safety learning in prefrontal cortex), but the original fear memory is not erased; it is inhibited. The fear memory can return spontaneously, be reinstated by stress, or reappear in a new context (renewal effect). This is why exposure therapy for PTSD works but has limited generalization — extinction is context-specific.</p>
+
+        <p><strong>Reconsolidation:</strong> Retrieved memories return to a labile state and must be reconsolidated. If protein synthesis is blocked during retrieval, the reactivated memory is erased. This has therapeutic implications: by pairing recall with a reconsolidation-disrupting drug or intervention, it may be possible to permanently modify fear memories. Clinical trials are ongoing (propranolol to block β-adrenergic reconsolidation of PTSD memories).</p>
+      </div>
+
+      <div class="section-head" id="examples">Worked Examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Dissociating memory systems</strong></div>
+        <div class="example-problem">Patient A has complete bilateral hippocampal damage. Patient B has complete bilateral striatal damage. Predict each patient's performance on: (a) learning a new word-pair list, (b) learning a mirror-tracing task, (c) fear conditioning to a tone.</div>
+        <div class="example-body">
+          <p><strong>Patient A (hippocampal damage):</strong> (a) Severely impaired — declarative episodic memory requires hippocampus. (b) Normal — procedural motor learning is striatum/cerebellum-dependent. (c) Normal acquisition — fear conditioning is amygdala-dependent; extinction learning may be impaired due to hippocampal role in context memory.</p>
+          <p><strong>Patient B (striatal damage):</strong> (a) Normal — word-pair learning is hippocampal, not striatal. (b) Severely impaired — mirror-tracing is procedural, requires striatum. (c) Normal acquisition — fear conditioning is amygdala-dependent; habit-based avoidance behaviours may be impaired.</p>
+          <p>These double dissociations confirm the multiple memory systems hypothesis: different neural systems store different types of memory, and damage to one system selectively impairs its specific memory type while sparing others.</p>
+        </div>
+      </div>
+
+      <div class="section-head" id="fft">Food for Thought</div>
+      <ul style="line-height:1.9;padding-left:20px;" class="fft-list">
+        <li class="fft-item">The hippocampus builds a cognitive map of space via place cells. But the hippocampus is also essential for episodic memory of non-spatial events. Is there a unified theory that explains both roles?
+          <div class="fft-answer">The "relational memory" theory (Eichenbaum) proposes that the hippocampus binds arbitrary associations between items, regardless of whether those items are spatial or not. Place fields are a special case where the items being associated are spatial locations and their sensory features. Episodic memory is another case: the hippocampus binds the "what," "where," and "when" components of an event into a single retrievable pattern. The underlying mechanism — pattern completion in a recurrent network — is the same in both cases. The cognitive map is just the most visible instance of the hippocampus's general role as a relational binder.</div>
+        </li>
+        <li class="fft-item">Memory recall is reconstructive — we don't play back a recording, we reconstruct from fragments, and the reconstruction can incorporate new information. What circuit-level mechanism makes memory reconstruction (rather than replay) inevitable, and what are the consequences for reliability?
+          <div class="fft-answer">When a memory is recalled, the hippocampus reinstates the cortical pattern via pattern completion from partial cues (CA3 autoassociation). The reinstated pattern is then processed by the cortex just like a current perception. If the current context contains new related information, it gets incorporated into the reconstruction — post-event misinformation effects. Furthermore, each recall reactivates the memory (opens the reconsolidation window), and protein synthesis during this window is needed to re-stabilize it; any modification that occurs during reconsolidation is incorporated. This is the mechanistic basis for false memories: the cortex's pattern completion fills gaps with plausible (contextually consistent) information rather than veridical details.</div>
+        </li>
+      </ul>
+
+      <div class="section-head" id="pitfalls">Common Pitfalls</div>
+      <div class="prose">
+        <ul style="line-height:1.9;padding-left:20px;">
+          <li><strong>Thinking the hippocampus stores memories permanently.</strong> The hippocampus is a temporary buffer and index. Long-term memories are gradually transferred to neocortex (standard model) or maintained via distributed hippocampal-neocortical traces (MTT). This is why hippocampal damage causes anterograde amnesia (no new memories) and retrograde amnesia for recent but not very remote events.</li>
+          <li><strong>Confusing episodic and semantic memory in terms of hippocampal dependence.</strong> Both initially require hippocampus, but semantic memory becomes hippocampus-independent over time. Dense amnesics can still have excellent semantic knowledge (they know Paris is in France) but no episodic recall of where or when they learned it.</li>
+          <li><strong>Treating working memory and short-term memory as synonymous.</strong> Short-term memory usually refers to passive, limited-capacity storage (digit span). Working memory involves active manipulation and maintenance (n-back tasks, mental arithmetic), and depends on PFC. The two overlap but are not the same.</li>
+        </ul>
+      </div>
+
+      <div class="section-head" id="connects">Connects to</div>
+      <div class="prose">
+        <p><strong>Synaptic Plasticity (Lesson 7)</strong> — LTP in the hippocampal trisynaptic circuit is the cellular mechanism of memory encoding. Systems consolidation depends on LTP at hippocampal-neocortical and neocortical-neocortical synapses during sleep replay.</p>
+        <p><strong>Sleep (Lesson 9)</strong> — hippocampal replay during sharp-wave ripples in NREM sleep is the primary mechanism of systems consolidation. Sleep spindles coordinate hippocampal-neocortical dialogue. Sleep deprivation specifically impairs hippocampus-dependent declarative memory, not procedural memory.</p>
+        <p><strong>Reinforcement Learning (RL cluster)</strong> — the hippocampus contributes to model-based RL: storing the cognitive map and episodic memory supports planning by mentally simulating possible futures (prospective memory, "mental time travel"). The striatum supports model-free habit learning.</p>
+      </div>
+
+      <div class="lesson-nav">
+        <a href="synaptic-plasticity.html" class="lesson-nav-btn">← Lesson 7 · Synaptic Plasticity</a>
+        <a href="sleep.html" class="lesson-nav-btn">Lesson 9 · Sleep &amp; Arousal →</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+
+</body>
+</html>

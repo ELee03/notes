@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Computational Brain · Neuroscience</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="neuroscience" data-current="computational-neuroscience.html"></div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="breadcrumb-sep">›</span>
+        <a href="index.html">Neuroscience</a>
+        <span class="breadcrumb-sep">›</span>
+        Lesson 10
+      </div>
+
+      <h1 class="lesson-title">The Computational Brain</h1>
+      <div class="lesson-meta">Neural Coding · Tuning Curves · Population Vectors · Bayesian Brain · Neural Oscillations · Attractor Networks · Binding Problem · Neural Correlates of Consciousness</div>
+
+      <div class="prose">
+        <p>What is the brain computing? Every previous lesson has described mechanisms — ion channels, synaptic release, circuit motifs, receptor fields. This final lesson steps back and asks the higher-level question: what algorithm is being implemented? Computational neuroscience is the field that tries to answer this at a level above the biophysics but below the psychology. The brain is, at minimum, a Bayesian inference engine — continuously computing the most probable interpretation of ambiguous sensory inputs given prior experience. It organizes its activity in oscillations that structure information flow across regions. Its memory is stored in high-dimensional attractor states. And at the level of consciousness, it remains deeply puzzling — the "hard problem" of why any of this activity is accompanied by subjective experience remains one of the most profound open questions in science.</p>
+      </div>
+
+      <div class="section-head" id="coding">Neural Coding</div>
+
+      <div class="prose">
+        <p>How does a neuron represent information? The fundamental unit is the spike train — a sequence of action potentials over time. The question of neural coding asks: what feature of that train carries the information?</p>
+
+        <p><strong>Rate coding</strong> — the firing rate (spikes per second) over some integration window encodes stimulus intensity. Adrian (1920s) showed that the firing rate of sensory neurons scales with stimulus intensity. For many neurons, average firing rate over 100–500 ms correlates reliably with stimulus magnitude, quality, or behavioural outcome. Rate coding is the dominant view in systems neuroscience for most stimulus dimensions.</p>
+
+        <p><strong>Temporal coding</strong> — information is encoded in the precise timing of individual spikes, not just their average rate. Evidence: auditory neurons phase-lock to sound frequencies up to ~4 kHz (individual spikes are timed to specific phases of the sound wave); olfactory system encodes odour identity via first-spike latency across glomeruli; hippocampal theta phase precession (place cells fire at progressively earlier phases of the theta cycle as the rat moves through the place field). Whether temporal codes are actually decoded by downstream neurons, or whether timing merely reflects rate in a compressed form, remains debated.</p>
+
+        <p><strong>Population coding</strong> — information is distributed across many neurons simultaneously; it is the pattern of activity across a population that encodes a stimulus, not any single cell. Single neurons are noisy and ambiguous; the population average is robust. The direction of an arm movement is decoded from the population vector of ~500 M1 neurons (Georgopoulos). The identity of a visual stimulus can be decoded from distributed patterns in IT cortex. The advantage: higher capacity, robustness to single-cell noise and failures, and smooth generalization across stimuli.</p>
+
+        <p>These codes are not mutually exclusive — a population of neurons can simultaneously use rate (each cell's firing rate represents its preferred stimulus dimension) and relative timing (the phase relationships between cells encode additional variables). Modern "mixed selectivity" — where individual neurons respond to multiple task variables — is evidence for high-dimensional population coding that is only decodable at the population level.</p>
+      </div>
+
+      <div class="section-head" id="bayesian">The Bayesian Brain</div>
+
+      <div class="prose">
+        <p>Sensory information is always ambiguous and noisy. A small dark shape in your peripheral vision could be a leaf or a spider. A sound from the left could be at 1 metre or 10 metres. The brain must resolve these ambiguities to guide behaviour. Helmholtz (19th century) was the first to propose that perception is a form of "unconscious inference" — the brain actively predicts the most likely cause of sensory data rather than passively recording it.</p>
+
+        <p>The modern Bayesian formulation: the brain computes a posterior distribution over environmental states $s$ given sensory data $d$:</p>
+        <div class="math-block">$$P(s|d) \propto P(d|s) \cdot P(s)$$</div>
+        <p>The <strong>likelihood</strong> $P(d|s)$ is determined by the sensory apparatus (how the environment generates data). The <strong>prior</strong> $P(s)$ captures knowledge about the world built from experience. The perception is the maximum a posteriori (MAP) estimate — the most probable state given both the data and the prior.</p>
+
+        <p><strong>Predictive coding</strong> (Rao and Ballard, 1999; Friston, 2005+) proposes a hierarchical implementation: higher cortical areas send top-down predictions to lower areas; lower areas send back up only the prediction errors (residuals). The brain minimises prediction error throughout the hierarchy — "free energy minimisation" in Friston's framework. This elegant theory naturally explains: why top-down context modifies perception, why surprising stimuli generate large N2/P3 ERP components (prediction errors), why primary cortex "hallucinations" can occur when top-down signals dominate, and why active inference (movement) is a way to make predictions come true by acting on the world.</p>
+
+        <p>Behavioural evidence for Bayesian integration: the ventriloquist illusion (auditory and visual signals integrated according to their reliability); cue combination in motor control (proprioception and vision weighted by inverse variance); the speed-accuracy tradeoff as a prior on decision urgency. Neuroscientific evidence: MT cortex represents motion evidence in a format consistent with a likelihood function; parietal LIP accumulates evidence for perceptual decisions in a manner consistent with diffusion-to-bound models of Bayesian inference.</p>
+      </div>
+
+      <div class="section-head" id="oscillations">Neural Oscillations</div>
+
+      <div class="prose">
+        <p>The EEG records rhythmic activity across a broad frequency range. These oscillations are not noise — they reflect coordinated activity patterns that structure the timing of neural communication.</p>
+
+        <table style="border-collapse:collapse;width:100%;font-size:13px;margin:12px 0 20px;">
+          <thead>
+            <tr style="background:#eef4f8;">
+              <th style="padding:8px 12px;text-align:left;border-bottom:2px solid #d0dce8;">Band</th>
+              <th style="padding:8px 12px;text-align:left;border-bottom:2px solid #d0dce8;">Freq (Hz)</th>
+              <th style="padding:8px 12px;text-align:left;border-bottom:2px solid #d0dce8;">Origin</th>
+              <th style="padding:8px 12px;text-align:left;border-bottom:2px solid #d0dce8;">Function</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #e4ecf2;"><td style="padding:8px 12px;">Delta</td><td style="padding:8px 12px;">&lt;4</td><td style="padding:8px 12px;">Thalamo-cortical</td><td style="padding:8px 12px;">Deep NREM sleep; SWS up/down states</td></tr>
+            <tr style="border-bottom:1px solid #e4ecf2;"><td style="padding:8px 12px;">Theta</td><td style="padding:8px 12px;">4–8</td><td style="padding:8px 12px;">Hippocampus/medial septum</td><td style="padding:8px 12px;">Navigation, memory encoding; active exploration</td></tr>
+            <tr style="border-bottom:1px solid #e4ecf2;"><td style="padding:8px 12px;">Alpha</td><td style="padding:8px 12px;">8–12</td><td style="padding:8px 12px;">Thalamo-cortical</td><td style="padding:8px 12px;">Idle / inhibition; suppresses task-irrelevant areas</td></tr>
+            <tr style="border-bottom:1px solid #e4ecf2;"><td style="padding:8px 12px;">Beta</td><td style="padding:8px 12px;">13–30</td><td style="padding:8px 12px;">Motor/sensory cortex</td><td style="padding:8px 12px;">Motor maintenance; "status quo"; sensorimotor idling</td></tr>
+            <tr><td style="padding:8px 12px;">Gamma</td><td style="padding:8px 12px;">30–100+</td><td style="padding:8px 12px;">Local cortical circuits</td><td style="padding:8px 12px;">Local processing; attention; binding; working memory</td></tr>
+          </tbody>
+        </table>
+
+        <p><strong>Theta oscillations (4–8 Hz)</strong> in the hippocampus are generated by the medial septal nucleus (pacemaker) and reflect active memory processing. Place cells fire at a specific phase of the hippocampal theta cycle; as the rat moves through a place field, cells fire at progressively earlier theta phases (<strong>phase precession</strong>). This means place cell sequences during movement are compressed into each theta cycle (~125 ms), producing a temporal coding of the route. STDP within a theta cycle could strengthen the forward CA3→CA3 connections representing the route sequence — a theta-cycle-based mechanism for sequence learning.</p>
+
+        <p><strong>Gamma oscillations (30–100 Hz)</strong> are generated locally by fast-spiking PV interneurons entraining pyramidal cells (PING: Pyramidal Interneuron Network Gamma). Gamma power increases in attended or actively processed cortical regions and decreases in suppressed regions. The synchrony of gamma oscillations across distant cortical areas has been proposed as a mechanism for integrating distributed feature representations into unified percepts — the "binding" hypothesis.</p>
+
+        <p><strong>Theta-gamma coupling (Buzsáki):</strong> Gamma oscillations are nested within theta cycles in the hippocampus. Each theta cycle can contain multiple gamma cycles, each carrying a different item's neural representation. This cross-frequency coupling provides a potential mechanism for sequentially loading multiple items into working memory within the theta framework — a neural basis for the serial structure of verbal working memory.</p>
+      </div>
+
+      <div class="section-head" id="attractors">Attractor Networks and Working Memory</div>
+
+      <div class="prose">
+        <p>Hopfield (1982) showed that a recurrently connected network of binary neurons with symmetric weights can store discrete patterns as energy minima — <strong>attractors</strong>. When presented with a noisy or partial version of a stored pattern, the network relaxes to the nearest attractor state, implementing pattern completion. The capacity of a Hopfield network is approximately $0.14N$ patterns for $N$ neurons.</p>
+
+        <p>The energy function of a Hopfield network is:</p>
+        <div class="math-block">$$E = -\frac{1}{2}\sum_{i \neq j} w_{ij} s_i s_j$$</div>
+        <p>where $w_{ij}$ is the synaptic weight from neuron $j$ to $i$ and $s_i \in \{-1, +1\}$ is the neuron's state. Learning stores pattern $\boldsymbol{\xi}^\mu$ by the Hebbian rule $w_{ij} = \frac{1}{N}\sum_\mu \xi_i^\mu \xi_j^\mu$. The network dynamics (each neuron updates to match the sign of its total input) always decrease $E$, guaranteeing convergence to a local energy minimum.</p>
+
+        <p>Working memory in the PFC may be implemented by <strong>continuous attractor networks</strong> (also called "bump attractors"): recurrent excitation sustains a localized "bump" of activity at the location corresponding to the remembered stimulus value (e.g., the direction of a saccadic target during a delay period). The bump persists after the stimulus is removed because recurrent excitation within the active population is self-sustaining; inhibition from PV interneurons prevents the bump from spreading. Drift in the bump position over time corresponds to working memory error.</p>
+      </div>
+
+      <div class="section-head" id="binding">The Binding Problem</div>
+
+      <div class="prose">
+        <p>You perceive a red round tomato as a unified object. But in the visual system, colour (V4), shape (IT ventral), and location (parietal dorsal) are processed in anatomically distinct areas. How does the brain bind these features into a unified percept? This is the <strong>binding problem</strong>.</p>
+
+        <p>The synchrony hypothesis (von der Malsburg, 1981; Crick and Koch, 1990): neurons representing features of the same object fire in synchrony (particularly in the gamma band); neurons representing different objects fire asynchronously. The coherence of gamma oscillations between feature-specific neurons signals that they belong to the same object. Supporting evidence: gamma synchrony increases between V1 neurons stimulated by the same contiguous bar, and decreases when they are stimulated by two separate bars (Engel et al., early 1990s). Attention increases gamma synchrony between cortical areas.</p>
+
+        <p>Criticisms: simultaneous gamma oscillations from multiple objects would be difficult to segregate (the same mechanism that binds might confuse separate objects). The hypothesis is attractive but lacks direct causal evidence — artificially inducing synchrony has not reliably produced perceptual binding. The binding problem remains unsolved at the circuit level.</p>
+
+        <p>Alternative: sparse, conjunction neurons in high-level areas (like IT face cells) represent complex bound objects directly. Binding is performed by hierarchical convergence, not synchrony. The two views are not mutually exclusive — both hierarchical convergence and dynamic synchrony may contribute at different processing levels.</p>
+      </div>
+
+      <div class="section-head" id="consciousness">Consciousness and the Neural Correlates</div>
+
+      <div class="prose">
+        <p>The "hard problem" of consciousness (Chalmers, 1995): even a complete account of how the brain processes information would not explain <em>why</em> there is something it is like to be the brain — why there is subjective experience (qualia) rather than "just" computation in the dark. The hard problem distinguishes subjective experience from the "easy" problems (explaining function, behaviour, and neural correlates), which are scientifically tractable even if practically difficult.</p>
+
+        <p>The <strong>neural correlates of consciousness (NCC)</strong> are the minimal neural mechanisms sufficient for a specific conscious percept. Identifying NCCs experimentally typically uses paradigms that hold sensory input constant while consciousness changes: binocular rivalry (two images alternate in perception despite constant input); masking (visual stimulus presented briefly becomes invisible with a trailing mask); vegetative-to-aware transitions in disorders of consciousness (DOC).</p>
+
+        <p><strong>Global Workspace Theory (GWT)</strong> (Baars, Dehaene): conscious access occurs when information is broadcast widely across the brain via a "global workspace" — a network of frontal and parietal areas densely interconnected with each other and with all specialized processing areas. Unconscious processing occurs locally; consciousness corresponds to global broadcast. Neural signature: a late (~300 ms) widespread P3b component in the ERP, "ignition" of frontal-parietal network in EEG and fMRI when a stimulus is consciously perceived. GWT predicts that conscious and unconscious processing can dissociate even with identical early visual responses.</p>
+
+        <p><strong>Integrated Information Theory (IIT)</strong> (Tononi): consciousness is identical to integrated information, measured by Φ (phi) — the amount of information generated by a system above and beyond the sum of its parts. High Φ corresponds to high consciousness. IIT makes specific architectural predictions: systems with high Φ (recurrently connected systems where the whole generates more information than the sum of parts) are conscious; feedforward architectures (e.g., a deep convolutional network) have low Φ regardless of complexity. IIT is controversial — it assigns high consciousness to some simple systems and low/zero to some architecturally feedforward systems, which conflicts with intuitions. Its measure Φ is intractable to compute for large systems.</p>
+
+        <p>The <strong>default mode network (DMN)</strong> — medial prefrontal cortex, posterior cingulate, precuneus, lateral parietal — is active at rest and deactivated during focused tasks. Its activity correlates with self-referential thought, mind-wandering, and autobiographical memory retrieval. Disruption of DMN connectivity is the most consistent finding in disorders of consciousness (vegetative state, minimally conscious state) and in the effects of general anaesthesia. The DMN may implement the brain's "self-model" — the continuous background narrative of identity and experience that is disrupted in unconsciousness.</p>
+      </div>
+
+      <div class="section-head" id="examples">Worked Examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Population vector decoding</strong></div>
+        <div class="example-problem">Three M1 neurons have preferred directions 0°, 120°, and 240°. When a monkey plans a reach in the direction 60°, they fire at rates 8, 12, and 4 spikes/s respectively (baseline ~5 spikes/s each). Compute the population vector and confirm it points roughly toward 60°.</div>
+        <div class="example-body">
+          <p>Each neuron contributes its preferred direction vector scaled by its activity above baseline:</p>
+          <p>Neuron 1 (0°): weight = 8−5 = 3. Contribution: $3 \cdot (\cos 0°, \sin 0°) = (3, 0)$</p>
+          <p>Neuron 2 (120°): weight = 12−5 = 7. Contribution: $7 \cdot (\cos 120°, \sin 120°) = 7 \cdot (-0.5, 0.866) = (-3.5, 6.06)$</p>
+          <p>Neuron 3 (240°): weight = 4−5 = −1. Contribution: $-1 \cdot (\cos 240°, \sin 240°) = -1 \cdot (-0.5, -0.866) = (0.5, 0.866)$</p>
+          <p>Population vector sum: $(3 - 3.5 + 0.5, \; 0 + 6.06 + 0.866) = (0, \; 6.93)$</p>
+          <p>Direction: $\theta = \arctan(6.93/0) = 90°$... hmm, that's 90° not 60°. This illustrates that a three-neuron population is very limited — the vector is pulled toward the most active cell's preferred direction. With hundreds of neurons sampled across all directions, the population vector converges accurately to the true movement direction.</p>
+        </div>
+      </div>
+
+      <div class="section-head" id="fft">Food for Thought</div>
+      <ul style="line-height:1.9;padding-left:20px;" class="fft-list">
+        <li class="fft-item">Deep convolutional neural networks trained on ImageNet produce representations in intermediate layers that resemble those in V1, V2, and IT cortex. Does this mean that the brain implements an algorithm similar to convolutional deep learning?
+          <div class="fft-answer">The similarity is striking and informative — it suggests that the ventral visual stream's computations are well-approximated by hierarchical feature extraction with increasing invariance, which CNNs implement. But the similarities are incomplete: CNNs fail at out-of-distribution generalization that humans handle trivially (systematic compositionality, few-shot learning); they don't implement feedback or lateral connections that characterize the cortex; and their "features" often lack semantic interpretability. The more cautious reading: CNNs tell us the representational geometry that the brain needs to achieve, not the algorithmic mechanism the brain uses to achieve it. The brain's solution involves recurrent, feedback-rich circuits that are fundamentally different from the feedforward architecture of standard CNNs.</div>
+        </li>
+        <li class="fft-item">General anaesthesia eliminates consciousness without eliminating all neural activity. What does this tell us about what consciousness requires?
+          <div class="fft-answer">Anaesthetics (propofol, ketamine, sevoflurane) disrupt consciousness while preserving local cortical processing — early visual responses in V1 persist even under propofol, but the late "ignition" spreading to frontal-parietal areas is abolished. This dissociation supports GWT: local unconscious processing can continue, but global broadcast is required for consciousness. Mechanistically, anaesthetics reduce the complexity and integration of cortical activity (measured by TMS-EEG as cortical effective connectivity): under anaesthesia, the cortex responds to a TMS pulse with a simple local slow wave rather than the complex spatiotemporal pattern seen in wakefulness. IIT would interpret this as reduced Φ. The convergence of GWT and IIT predictions here — less global integration, less consciousness — suggests both theories capture something real, even if they describe it differently.</div>
+        </li>
+      </ul>
+
+      <div class="section-head" id="pitfalls">Common Pitfalls</div>
+      <div class="prose">
+        <ul style="line-height:1.9;padding-left:20px;">
+          <li><strong>Thinking rate coding and temporal coding are mutually exclusive.</strong> A neuron can convey information both via its average rate and via the timing of individual spikes relative to population oscillations. In the hippocampus, theta phase of firing and firing rate are simultaneously informative about the animal's position.</li>
+          <li><strong>Treating neural oscillations as epiphenomenal.</strong> The fact that oscillations are measured at the scalp with EEG does not mean they are an averaging artifact. Optogenetic induction of gamma oscillations in V1 has causal effects on visual processing; disruption of hippocampal theta impairs spatial memory. Oscillations are functional, not merely reflective.</li>
+          <li><strong>Conflating the "hard problem" with the "neural correlates of consciousness."</strong> Finding the NCC (which brain states correlate with consciousness) doesn't solve the hard problem (why those states are accompanied by experience). Claiming to have "explained consciousness" by identifying correlates commits the category error of conflating function with phenomenology.</li>
+        </ul>
+      </div>
+
+      <div class="section-head" id="connects">Connects to</div>
+      <div class="prose">
+        <p><strong>All preceding lessons</strong> — this lesson provides the computational vocabulary for interpreting everything from V1 receptive fields (sparse coding, efficient representation), to hippocampal place cells (attractor networks), to sleep oscillations (theta-gamma coupling for memory), to motor cortex activity (population vectors), to synaptic plasticity (STDP as temporal Hebbian learning).</p>
+        <p><strong>Supervised Learning / Deep Learning (Computation & AI)</strong> — the ventral visual stream as a hierarchical feature extractor; predictive coding as a biologically plausible alternative to backpropagation; the "credit assignment problem" and how local synaptic rules might approximate global gradient descent.</p>
+        <p><strong>Information Theory (Computation & AI)</strong> — efficient coding hypothesis (Barlow): the brain encodes stimuli to maximise information transmission given channel capacity constraints, predicting sparse, independent representations in early sensory areas. Neural populations can be analysed using information-theoretic measures (mutual information between stimulus and response).</p>
+      </div>
+
+      <div class="lesson-nav">
+        <a href="sleep.html" class="lesson-nav-btn">← Lesson 9 · Sleep &amp; Arousal</a>
+        <span class="lesson-nav-btn disabled">Cluster complete ✓</span>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  renderMathInElement(document.body, {
+    delimiters: [
+      {left: '$$', right: '$$', display: true},
+      {left: '$', right: '$', display: false}
+    ]
+  });
+});
+</script>
+
+</body>
+</html>

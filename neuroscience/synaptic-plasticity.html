@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Synaptic Plasticity · Neuroscience</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="neuroscience" data-current="synaptic-plasticity.html"></div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="breadcrumb-sep">›</span>
+        <a href="index.html">Neuroscience</a>
+        <span class="breadcrumb-sep">›</span>
+        Lesson 7
+      </div>
+
+      <h1 class="lesson-title">Synaptic Plasticity</h1>
+      <div class="lesson-meta">Hebb's Postulate · LTP · NMDA as Coincidence Detector · LTD · STDP · BCM Theory · Homeostatic Scaling</div>
+
+      <div class="prose">
+        <p>Learning and memory require that the brain physically change in response to experience. The key insight of 20th-century neuroscience — confirmed definitively in the 1970s and 80s — is that the locus of this change is the synapse. Synaptic weights are not fixed: they are modified by activity in ways that are specific, persistent, and Hebbian. Long-term potentiation (LTP) is the best-studied form of this modification, and understanding it molecularly reveals not just how memory works, but how the brain solves the problem of associative learning in wet, noisy, biological hardware.</p>
+      </div>
+
+      <div class="section-head" id="hebb">Hebb's Postulate</div>
+
+      <div class="prose">
+        <p>In 1949, Donald Hebb proposed a learning rule before any of the molecular machinery was known:</p>
+        <div class="callout" style="font-style:italic;">"When an axon of cell A is near enough to excite a cell B and repeatedly or persistently takes part in firing it, some growth process or metabolic change takes place in one or both cells such that A's efficiency, as one of the cells firing B, is increased."</div>
+        <p>In modern language: synapses are strengthened when presynaptic and postsynaptic activity are correlated — when the pre fires and the post fires, their connection grows. Synapses are weakened when they are active but the postsynaptic cell is not — when the pre fires but the post doesn't respond, the synapse weakens. This is the neural implementation of correlation-based learning.</p>
+        <p>Hebb's rule predicts that neurons that are co-activated by the same stimulus will become wired together, creating assemblies that reactivate as a unit even from partial input — the neural basis of associative memory ("hearing a song that evokes a memory").</p>
+      </div>
+
+      <div class="section-head" id="ltp">Long-Term Potentiation (LTP)</div>
+
+      <div class="prose">
+        <p>LTP was discovered by Bliss and Lømo in 1973 in the hippocampus: a brief high-frequency burst of stimulation to a presynaptic pathway produces a persistent increase in synaptic efficacy — the EPSP recorded in the postsynaptic cell is larger for hours, days, or weeks after the induction protocol. This is long-term potentiation.</p>
+
+        <p><strong>Induction — the NMDA receptor as coincidence detector:</strong> LTP induction at most hippocampal synapses requires NMDA receptor activation. The NMDA receptor's unique voltage-dependent Mg²⁺ block (Lesson 2) makes it a molecular coincidence detector: it opens only when glutamate is bound (presynaptic activity) AND the postsynaptic membrane is depolarized (postsynaptic activity). This dual requirement is the molecular implementation of Hebb's rule. In practice, high-frequency stimulation achieves the required postsynaptic depolarization by temporal summation of EPSPs.</p>
+
+        <p>NMDA receptor opening admits Ca²⁺ into the postsynaptic spine. The magnitude and kinetics of this Ca²⁺ transient determines whether LTP or LTD is induced:</p>
+        <ul style="margin:8px 0 8px 20px;line-height:1.8;">
+          <li>Large, rapid Ca²⁺ rise → activates CaMKII (calcium/calmodulin-dependent protein kinase II) → LTP</li>
+          <li>Small, slow Ca²⁺ rise → activates phosphatases (calcineurin, PP1) → LTD</li>
+        </ul>
+
+        <p><strong>LTP expression — AMPA receptor trafficking:</strong> CaMKII activation leads to phosphorylation of existing synaptic AMPA receptors (increasing their conductance) and, critically, rapid insertion of additional AMPA receptors into the postsynaptic density from intracellular pools. Many hippocampal synapses contain NMDA receptors but few or no AMPA receptors at rest — so-called <em>silent synapses</em> that can generate NMDA-mediated currents only at depolarized potentials but no AMPA-mediated fast EPSPs. LTP converts silent synapses to active ones by inserting AMPA receptors.</p>
+
+        <p class="callout"><strong>Why AMPA receptor insertion matters:</strong> Adding AMPA receptors to a synapse increases the EPSP produced by each quantum of glutamate released. This is a postsynaptic mechanism of expression. In some forms of LTP, there is also a presynaptic component (increased release probability), detected as a decrease in the coefficient of variation of EPSP amplitude and a decrease in failure rate.</p>
+
+        <p><strong>Late LTP — consolidation:</strong> The initial, early phase of LTP (E-LTP, lasting 1–3 hours) depends on post-translational modification (phosphorylation, receptor insertion) and doesn't require new protein synthesis. Late LTP (L-LTP, lasting days to weeks) requires gene transcription and protein synthesis. BDNF (brain-derived neurotrophic factor) and CREB (cAMP response element binding protein) are key signalling molecules in this consolidation phase. Blocking protein synthesis during induction prevents L-LTP even if E-LTP forms normally — an experimental model of the amnesic effect of protein synthesis inhibitors on long-term memory.</p>
+      </div>
+
+      <div class="section-head" id="ltd">Long-Term Depression (LTD)</div>
+
+      <div class="prose">
+        <p>LTD is a persistent decrease in synaptic strength. Two main forms:</p>
+
+        <p><strong>NMDA receptor-dependent LTD</strong> (hippocampus, cortex): prolonged low-frequency stimulation (1 Hz for 15 minutes) activates NMDA receptors with low-amplitude, prolonged Ca²⁺ rises that preferentially activate phosphatases. These dephosphorylate AMPA receptors, triggering their endocytosis (removal from the PSD) — the mirror image of LTP. This form of LTD reverses previously induced LTP and provides the mechanism for depotentiation.</p>
+
+        <p><strong>mGluR-dependent LTD</strong> (cerebellum, also hippocampus): at parallel fibre → Purkinje cell synapses in the cerebellum, coincident activity of parallel fibres and climbing fibres induces LTD at the parallel fibre synapse (Ito's model of cerebellar motor learning). Mechanistically, mGluR1 and climbing fibre-mediated Ca²⁺ activate PKC, which internalizes AMPA receptors. Also prominent in hippocampal CA1, where group I mGluRs (mGluR1/5) drive LTD independently of NMDA receptor activation — this pathway is disrupted in fragile X syndrome (FMR1 loss leads to exaggerated mGluR-LTD).</p>
+      </div>
+
+      <div class="section-head" id="stdp">Spike-Timing Dependent Plasticity (STDP)</div>
+
+      <div class="prose">
+        <p>Hebbian learning says "correlated activity" strengthens synapses, but doesn't specify the timescale or the required temporal relationship. STDP, discovered in the 1990s, provides the precise version: the direction and magnitude of synaptic change depends on the relative timing of pre- and postsynaptic spikes to within milliseconds.</p>
+
+        <p>The STDP learning window: if the presynaptic neuron fires slightly <em>before</em> the postsynaptic neuron (pre → post, $\Delta t > 0$), the synapse is strengthened (LTP). If the presynaptic neuron fires slightly <em>after</em> the postsynaptic neuron (post → pre, $\Delta t < 0$), the synapse is weakened (LTD). The magnitude decays exponentially with $|\Delta t|$ — causally close spikes produce strong changes; distant spikes produce no change:</p>
+        <div class="math-block">$$\Delta w = \begin{cases} A_+ e^{-\Delta t/\tau_+} & \Delta t > 0 \\ -A_- e^{\Delta t/\tau_-} & \Delta t < 0 \end{cases}$$</div>
+        <p>where $\tau_+$ and $\tau_-$ are the time constants (~20 ms), and $A_+, A_-$ are the maximum change amplitudes.</p>
+
+        <p>The mechanistic basis of the pre-before-post window: when the presynaptic neuron fires first, glutamate is released and NMDA receptors are primed. When the postsynaptic AP arrives soon after, the resulting BPAP (back-propagating action potential) — which travels from the soma backward into the dendrites — depolarizes the spine and relieves NMDA Mg²⁺ block, admitting Ca²⁺ and inducing LTP. If post fires before pre, the BPAP arrives and partially depolarizes spines before glutamate arrives; when glutamate does arrive, the BPAP has already started repolarizing, the timing is wrong for maximal NMDA activation, and the resulting small Ca²⁺ signal triggers LTD.</p>
+      </div>
+
+      <div class="widget-card">
+        <div class="widget-title">STDP Learning Window</div>
+        <div id="stdp-plot" style="height:260px;"></div>
+        <p style="font-size:12px;color:#7a8a9a;margin-top:8px;">
+          Change in synaptic weight as a function of spike-timing interval Δt = t<sub>pre</sub> − t<sub>post</sub>.
+          Positive Δt (pre before post) → LTP. Negative Δt (post before pre) → LTD.
+        </p>
+      </div>
+
+      <div class="section-head" id="bcm">BCM Theory and Homeostatic Scaling</div>
+
+      <div class="prose">
+        <p>Pure Hebbian plasticity is unstable: LTP would drive synapses stronger indefinitely, and LTD would drive them to zero. Real neural circuits need mechanisms that stabilize plasticity around a useful operating point.</p>
+
+        <p><strong>BCM theory</strong> (Bienenstock, Cooper, Munro, 1982) introduces a sliding modification threshold $\theta_m$: LTP is induced when postsynaptic activity exceeds $\theta_m$; LTD when activity is below $\theta_m$ but above zero; no change when the cell is silent. Crucially, $\theta_m$ itself slides: it increases when the average activity is high and decreases when average activity is low. This is metaplasticity — the plasticity threshold depends on history. The sliding threshold prevents runaway potentiation (high activity raises the threshold, making further LTP harder) and prevents runaway depression (low activity lowers the threshold, making LTP easier). BCM theory predicts the Bienenstock-Cooper-Munro rule: the sign of plasticity depends not just on current activity but on the neuron's recent history.</p>
+
+        <p><strong>Homeostatic synaptic scaling</strong> (Turrigiano and Nelson) is a distinct mechanism: when a neuron's activity is reduced for extended periods (hours to days), the cell upscales all its excitatory synapses proportionally (by inserting more GluA1-containing AMPA receptors) to restore activity toward a set point. When activity is elevated, the cell downscales all synapses. This global, multiplicative adjustment preserves the relative differences between synapses (the learned information) while restoring the overall gain. Scaling is mediated by TNF-α and BDNF signalling. It acts slowly (hours) compared to Hebbian LTP/LTD (milliseconds), making them complementary stability mechanisms.</p>
+      </div>
+
+      <div class="section-head" id="examples">Worked Examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Why protein synthesis inhibitors block long-term but not short-term memory</strong></div>
+        <div class="example-problem">An animal is given a protein synthesis inhibitor (anisomycin) immediately after learning a task. It performs normally 30 minutes later, but has no memory of the task 24 hours later. Explain in terms of LTP.</div>
+        <div class="example-body">
+          <p>The 30-minute test is within the E-LTP window. E-LTP depends on post-translational modification: phosphorylation of existing AMPA receptors and rapid receptor insertion from available pools. These processes don't require new protein synthesis — the molecular machinery is already present. Anisomycin doesn't affect this phase.</p>
+          <p>The 24-hour test requires L-LTP. L-LTP depends on new mRNA transcription (via CREB) and translation of structural proteins (e.g., Arc/Arg3.1, Homer, PSD-95) that permanently remodel the synapse. Anisomycin blocks this phase, preventing the conversion of E-LTP to L-LTP. The synaptic change from learning decays without consolidation. This directly parallels the clinical finding in human memory consolidation: short-term memory (working memory, hours) is hippocampus-independent, while long-term declarative memory requires hippocampal-neocortical consolidation over days to weeks.</p>
+        </div>
+      </div>
+
+      <div class="section-head" id="fft">Food for Thought</div>
+      <ul style="line-height:1.9;padding-left:20px;" class="fft-list">
+        <li class="fft-item">LTP strengthens specific synapses — the ones active during the induction. But memory recall seems to involve patterns of activity distributed across many neurons. How does synapse-specific LTP give rise to distributed memory?
+          <div class="fft-answer">Individual synaptic changes aggregate into changes in the connectivity matrix of the network. When a specific set of neurons co-fires during an experience, all the pairwise synapses between those neurons are strengthened. The stored memory is not "in" any one synapse but in the pattern of strengthened connections between neurons that formed the assembly. During recall, a partial cue reactivates some neurons of the assembly; through strengthened recurrent connections, the whole assembly fires — pattern completion. Hopfield network theory formalizes this: memories are attractors in the synaptic weight matrix, and recall is convergence to the nearest attractor from an initial partial pattern.</div>
+        </li>
+        <li class="fft-item">The STDP window is asymmetric: LTP requires pre before post (causal order), while LTD results from post before pre (anti-causal order). What is the computational advantage of this causal asymmetry?
+          <div class="fft-answer">The causal asymmetry makes STDP implement a temporal version of Hebb's rule that detects causality, not just correlation. If neuron A reliably fires before neuron B, A might be causally responsible for B's firing — STDP strengthens A→B. If B fires before A, A can't be causing B — STDP weakens A→B. Over many trials, STDP carves out causal pathways from correlated but non-causal ones. This is a biological implementation of temporal credit assignment: strengthening connections that predict and drive downstream activity, not those that merely correlate with it.</div>
+        </li>
+      </ul>
+
+      <div class="section-head" id="pitfalls">Common Pitfalls</div>
+      <div class="prose">
+        <ul style="line-height:1.9;padding-left:20px;">
+          <li><strong>Thinking LTP requires large postsynaptic depolarization throughout.</strong> The critical event is Ca²⁺ entry through NMDA receptors in the dendritic spine. This requires both glutamate binding and sufficient depolarization to relieve Mg²⁺ block — but the required depolarization is local (in the spine), not necessarily a full action potential at the soma.</li>
+          <li><strong>Conflating early and late LTP.</strong> E-LTP (translation-independent, hours) and L-LTP (translation-dependent, days–weeks) are mechanistically distinct stages. Protein synthesis inhibitors selectively block L-LTP. Many pharmacological agents that block "LTP" in slice preparations may only be blocking L-LTP — the distinction matters for interpreting results.</li>
+          <li><strong>Treating LTP as the only plasticity mechanism.</strong> LTD, STDP, metaplasticity, homeostatic scaling, and structural plasticity (dendritic spine growth) all contribute to learning. LTP is the most studied but not the only mechanism, and the brain's actual learning strategy likely involves all of them operating on different timescales.</li>
+        </ul>
+      </div>
+
+      <div class="section-head" id="connects">Connects to</div>
+      <div class="prose">
+        <p><strong>Memory Systems (Lesson 8)</strong> — the trisynaptic hippocampal circuit is the prototypical LTP substrate for declarative memory. Patient H.M.'s inability to form new memories after hippocampal removal is the clinical correlate of why LTP in hippocampus is necessary for memory consolidation.</p>
+        <p><strong>Motor Systems (Lesson 6)</strong> — LTD at the parallel fibre-Purkinje cell synapse in the cerebellum is the mechanism for motor learning and error correction. Same molecular principle (Ca²⁺-triggered AMPA receptor trafficking), but LTD not LTP.</p>
+        <p><strong>Deep Learning (Computation & AI)</strong> — backpropagation is a mathematically optimal learning rule for multi-layer networks but biologically implausible (requires knowing the error at every synapse). STDP, Hebbian learning, and local synaptic rules are the brain's alternative — local, causal, and self-organizing without a global error signal.</p>
+      </div>
+
+      <div class="lesson-nav">
+        <a href="motor-systems.html" class="lesson-nav-btn">← Lesson 6 · Motor Systems</a>
+        <a href="memory-systems.html" class="lesson-nav-btn">Lesson 8 · Memory Systems →</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  renderMathInElement(document.body, {
+    delimiters: [
+      {left: '$$', right: '$$', display: true},
+      {left: '$', right: '$', display: false}
+    ]
+  });
+
+  var dt = [], dw = [];
+  for (var i = -100; i <= 100; i++) {
+    dt.push(i);
+    var w;
+    if (i === 0) { w = 0; }
+    else if (i > 0) { w = 0.5 * Math.exp(-i / 20); }
+    else { w = -0.35 * Math.exp(i / 25); }
+    dw.push(w);
+  }
+
+  Plotly.newPlot('stdp-plot', [
+    { x: dt, y: dw, type: 'scatter', mode: 'lines',
+      line: { color: '#5c3a8a', width: 2.5 },
+      fill: 'tozeroy',
+      fillcolor: function(v) { return v > 0 ? 'rgba(92,58,138,0.12)' : 'rgba(138,58,92,0.12)'; }
+    }
+  ], {
+    margin: { t: 10, r: 20, b: 45, l: 65 },
+    paper_bgcolor: 'transparent', plot_bgcolor: '#f8f7f4',
+    font: { family: 'IBM Plex Sans', size: 11, color: '#3a4a5a' },
+    xaxis: { title: 'Δt = t<sub>pre</sub> − t<sub>post</sub> (ms)', gridcolor: '#e0e8ee',
+             zeroline: true, zerolinecolor: '#9aabb8' },
+    yaxis: { title: 'Δw (synaptic change)', range: [-0.45, 0.6], gridcolor: '#e0e8ee',
+             zeroline: true, zerolinecolor: '#9aabb8' },
+    shapes: [
+      { type: 'rect', x0: 0, x1: 100, y0: -0.45, y1: 0.6, fillcolor: 'rgba(44,111,154,0.04)', line: { width: 0 } },
+      { type: 'rect', x0: -100, x1: 0, y0: -0.45, y1: 0.6, fillcolor: 'rgba(138,58,58,0.04)', line: { width: 0 } }
+    ],
+    annotations: [
+      { x: 50, y: 0.55, text: 'LTP (pre before post)', showarrow: false, font: { size: 10, color: '#2c6f9a' } },
+      { x: -50, y: -0.40, text: 'LTD (post before pre)', showarrow: false, font: { size: 10, color: '#8a3a52' } }
+    ]
+  }, { responsive: true, displayModeBar: false });
+});
+</script>
+
+</body>
+</html>

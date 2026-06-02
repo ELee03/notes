@@ -1,0 +1,44 @@
+{
+  "sections": [
+    {
+      "label": "The Cellular Foundation",
+      "items": [
+        { "href": "neurons.html",              "text": "1 · The Neuron &amp; the Action Potential", "topics": "Neuron anatomy · resting membrane potential · Nernst equation · ion channels · action potential phases · propagation · myelination · saltatory conduction" },
+        { "href": "synaptic-transmission.html","text": "2 · Synaptic Transmission",               "topics": "Chemical synapses · vesicle release · quantal transmission · ionotropic vs metabotropic receptors · glutamate · GABA · monoamines · synaptic integration" }
+      ]
+    },
+    {
+      "label": "Circuits &amp; Organization",
+      "items": [
+        { "href": "neural-circuits.html",      "text": "3 · Neural Circuits &amp; Brain Organization", "topics": "CNS overview · cortical layers and columns · feedforward and feedback circuits · lateral inhibition · interneuron types · thalamus as relay" }
+      ]
+    },
+    {
+      "label": "Sensory Systems",
+      "items": [
+        { "href": "visual-system.html",        "text": "4 · The Visual System",                   "topics": "Retina · phototransduction · center-surround receptive fields · LGN · V1 simple and complex cells · dorsal and ventral streams" },
+        { "href": "auditory-somatosensory.html","text": "5 · Auditory &amp; Somatosensory Systems","topics": "Cochlea · tonotopy · hair cells · auditory pathway · sound localization · mechanoreceptors · dorsal column pathway · spinothalamic tract · pain" }
+      ]
+    },
+    {
+      "label": "Motor Systems",
+      "items": [
+        { "href": "motor-systems.html",        "text": "6 · Motor Systems",                        "topics": "Motor units · spinal reflexes · central pattern generators · motor cortex · corticospinal tract · basal ganglia direct/indirect pathways · cerebellum" }
+      ]
+    },
+    {
+      "label": "Plasticity &amp; Memory",
+      "items": [
+        { "href": "synaptic-plasticity.html",  "text": "7 · Synaptic Plasticity",                  "topics": "Hebb's postulate · LTP induction and expression · NMDA as coincidence detector · LTD · STDP · BCM theory · homeostatic scaling" },
+        { "href": "memory-systems.html",       "text": "8 · Memory Systems",                       "topics": "Declarative vs non-declarative · Patient H.M. · hippocampal trisynaptic circuit · place cells · systems consolidation · working memory · amygdala" }
+      ]
+    },
+    {
+      "label": "Sleep &amp; Computation",
+      "items": [
+        { "href": "sleep.html",                "text": "9 · Sleep, Arousal &amp; Circadian Rhythms","topics": "Sleep stages · EEG correlates · flip-flop switch model · REM circuits · functions of sleep · circadian clock · SCN · molecular clock" },
+        { "href": "computational-neuroscience.html","text": "10 · The Computational Brain",        "topics": "Neural coding · tuning curves · population vectors · Bayesian brain · neural oscillations · attractor networks · binding problem · neural correlates of consciousness" }
+      ]
+    }
+  ]
+}

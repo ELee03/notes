@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Neural Circuits &amp; Brain Organization · Neuroscience</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="neuroscience" data-current="neural-circuits.html"></div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="breadcrumb-sep">›</span>
+        <a href="index.html">Neuroscience</a>
+        <span class="breadcrumb-sep">›</span>
+        Lesson 3
+      </div>
+
+      <h1 class="lesson-title">Neural Circuits &amp; Brain Organization</h1>
+      <div class="lesson-meta">CNS Overview · Cortical Layers · Circuit Motifs · Interneurons · Thalamus</div>
+
+      <div class="prose">
+        <p>Individual neurons do not compute in isolation. The brain's power comes from the organization of neurons into circuits — structured arrangements of excitatory and inhibitory cells connected in specific patterns. Some of these patterns appear again and again across brain regions: feedforward inhibition, recurrent excitation, lateral inhibition. Understanding these canonical circuit motifs is like learning the logic gates of neuroscience — once you recognize them, you see them everywhere, and you can reason about what any brain region might be computing just from its wiring diagram.</p>
+      </div>
+
+      <div class="section-head" id="overview">Overview of the Nervous System</div>
+
+      <div class="prose">
+        <p>The nervous system divides into the <strong>central nervous system</strong> (brain and spinal cord) and the <strong>peripheral nervous system</strong> (all nerves outside the CNS — somatic, autonomic, and enteric).</p>
+
+        <p>The brain's major divisions, from most ancient to most recently evolved:</p>
+        <ul style="margin:8px 0 8px 20px;line-height:1.8;">
+          <li><strong>Brainstem</strong> (medulla, pons, midbrain) — controls vital functions (breathing, heart rate, blood pressure), contains the nuclei for cranial nerves III–XII, houses arousal systems (locus coeruleus, raphe nuclei), and coordinates sensorimotor reflexes.</li>
+          <li><strong>Cerebellum</strong> — receives sensory and motor signals, computes prediction errors, coordinates and refines movement. Contains more neurons than the rest of the brain combined (~69 billion of the brain's ~86 billion).</li>
+          <li><strong>Diencephalon</strong> — thalamus (the sensory relay to cortex) and hypothalamus (homeostasis, hormonal control, the hub of the autonomic nervous system).</li>
+          <li><strong>Basal ganglia</strong> — striatum, globus pallidus, subthalamic nucleus, substantia nigra. Action selection, habit learning, reinforcement. Deep within the cerebral hemispheres.</li>
+          <li><strong>Limbic system</strong> — hippocampus, amygdala, cingulate cortex, entorhinal cortex. Memory consolidation, emotional processing, spatial navigation.</li>
+          <li><strong>Neocortex</strong> — the outer 2–4 mm, ~2,500 cm² of surface area (extensively folded), six layers, ~16 billion neurons. The seat of perception, language, planning, consciousness.</li>
+        </ul>
+
+        <p>The spinal cord contains local reflex circuits, central pattern generators for locomotion, and the ascending sensory tracts and descending motor tracts that connect periphery to brain.</p>
+      </div>
+
+      <div class="section-head" id="cortex">Cortical Organization</div>
+
+      <div class="prose">
+        <p>The neocortex is divided into four lobes (frontal, parietal, temporal, occipital) and is organized into functional areas. Within any area, the cortex has a consistent laminar structure: <strong>six layers</strong> (I–VI), each with distinct cell types, connection patterns, and functional roles.</p>
+
+        <ul style="margin:8px 0 8px 20px;line-height:1.8;">
+          <li><strong>Layer I</strong> — molecular layer; mostly axons and dendrite tips; few neurons</li>
+          <li><strong>Layer II/III</strong> — small pyramidal and stellate cells; major source of cortico-cortical projections to other areas</li>
+          <li><strong>Layer IV</strong> — granule cells; the primary recipient of thalamic input (densely developed in primary sensory areas, absent in motor cortex)</li>
+          <li><strong>Layer V</strong> — large pyramidal cells; projects to subcortical targets (brainstem, spinal cord, basal ganglia). In motor cortex, these are the Betz cells that send signals directly to spinal motor neurons.</li>
+          <li><strong>Layer VI</strong> — projects back to thalamus (corticothalamic feedback)</li>
+        </ul>
+
+        <p>The two main neuron types in cortex are <strong>pyramidal cells</strong> (excitatory, glutamatergic, ~80% of neurons, characterized by an apical dendrite and a triangular soma) and <strong>interneurons</strong> (inhibitory, GABAergic, ~20%). The interplay between these two populations generates the diversity of computations the cortex performs.</p>
+
+        <p>Vertically, the cortex is organized into <strong>columns</strong> (~300–500 µm diameter) — groups of neurons spanning all layers that share a common response property. In primary somatosensory cortex, neurons in the same column respond to the same body location and modality. In primary visual cortex, neurons in the same column share orientation preference and ocular dominance. The column is often considered the fundamental processing unit of neocortex, though this view is debated.</p>
+      </div>
+
+      <div class="section-head" id="motifs">Canonical Circuit Motifs</div>
+
+      <div class="prose">
+        <p>Despite the brain's complexity, a small number of circuit patterns appear with remarkable regularity across regions. Understanding these motifs is the key to understanding circuits.</p>
+
+        <p><strong>Feedforward excitation:</strong> Neuron A excites neuron B. The simplest connection. In sensory pathways, this carries signals from lower to higher processing areas. Limitation: without inhibitory check, signals amplify uncontrollably.</p>
+
+        <p><strong>Feedforward inhibition:</strong> Neuron A excites both neuron B and an interneuron C; C inhibits B. The net effect: an excitatory input produces a brief window of excitation in B, then inhibition closes the window. This creates temporally precise responses and prevents sustained firing. Ubiquitous in the thalamo-cortical projection (thalamic axons excite both cortical excitatory neurons and inhibitory cells in layer IV).</p>
+
+        <p><strong>Feedback (recurrent) inhibition:</strong> Neuron B excites neuron C (an inhibitory interneuron); C inhibits B (negative feedback). This controls the gain of excitation, preventing runaway. The spinal Renshaw cell (inhibited by motor neuron collaterals) is the classical example.</p>
+
+        <p><strong>Lateral inhibition:</strong> Each neuron in a population inhibits its neighbours via interneurons. The result: the most active neuron suppresses its neighbours, sharpening the contrast between strongly and weakly driven cells. This is the neural basis of contrast enhancement — it's why the Mach band illusion exists, why two-point discrimination has a threshold, and why receptive fields in sensory cortex are sharper than what the peripheral receptor density alone would predict.</p>
+
+        <p><strong>Recurrent excitation:</strong> Neurons excite each other within a population. Can sustain activity after the input is removed (working memory) or amplify weak signals. But it can also destabilize — recurrent excitation without adequate inhibitory control leads to seizures.</p>
+
+        <p class="callout">The balance between excitation and inhibition (E/I balance) is critical. Most active cortical circuits maintain an approximate balance where excitation and inhibition are roughly matched and arrive nearly simultaneously. Disruption of E/I balance is implicated in autism, schizophrenia, and epilepsy.</p>
+      </div>
+
+      <div class="section-head" id="interneurons">Inhibitory Interneurons</div>
+
+      <div class="prose">
+        <p>Cortical interneurons (all GABAergic) are not a single population — they are a diverse collection of cell types distinguishable by their morphology, intrinsic firing properties, molecular markers, and synapse targets. Three main classes, defined by molecular marker expression:</p>
+
+        <p><strong>Parvalbumin (PV) interneurons</strong> — fast-spiking cells that target the soma and axon initial segment of pyramidal neurons. Because they synapse on or near the spike generation zone, PV cells exert powerful control over whether the postsynaptic cell fires. They are driven by strong feedforward excitation and generate the synchronous oscillations in the gamma band (30–80 Hz) that appear during active processing. Critical for E/I balance; PV cell dysfunction is strongly implicated in schizophrenia.</p>
+
+        <p><strong>Somatostatin (SST) interneurons</strong> — target the distal dendrites of pyramidal cells, where they suppress incoming excitatory input before it reaches the soma. SST cells are activated by sustained excitatory drive and act as a feedback gain control. They suppress plasticity-inducing inputs at the dendrite, potentially gating what gets learned.</p>
+
+        <p><strong>VIP interneurons</strong> — inhibit other interneurons, particularly SST cells (disinhibitory circuit). When VIP cells are activated (e.g., by cholinergic input from the basal forebrain during attention), they suppress SST inhibition, releasing pyramidal neurons from dendritic inhibition and increasing their responsiveness. VIP→SST→pyramidal is a canonical disinhibitory motif for state-dependent modulation of cortical gain.</p>
+      </div>
+
+      <div class="section-head" id="thalamus">The Thalamus</div>
+
+      <div class="prose">
+        <p>Every sensory modality (except olfaction) relays through the thalamus on its way to cortex. The thalamus is not a passive relay — it gates information, modulates gain, and is the hub through which cortex communicates with itself via cortico-thalamo-cortical loops.</p>
+
+        <p>Key thalamic nuclei and their cortical targets:</p>
+        <ul style="margin:8px 0 8px 20px;line-height:1.8;">
+          <li><strong>LGN</strong> (lateral geniculate nucleus) → primary visual cortex (V1)</li>
+          <li><strong>MGN</strong> (medial geniculate nucleus) → primary auditory cortex (A1)</li>
+          <li><strong>VPL/VPM</strong> (ventral posterior lateral/medial) → primary somatosensory cortex (S1)</li>
+          <li><strong>VL/VA</strong> (ventrolateral/ventroanterior) → motor cortex and SMA (receives cerebellar and basal ganglia output)</li>
+          <li><strong>MD</strong> (mediodorsal) → prefrontal cortex</li>
+          <li><strong>Pulvinar</strong> → parietal and temporal association cortex; attention modulation</li>
+        </ul>
+
+        <p>Thalamic relay cells have two firing modes: <strong>tonic mode</strong> (during wakefulness — faithfully relay incoming signals) and <strong>burst mode</strong> (during drowsiness and sleep — low-threshold Ca²⁺ spikes generate bursts that trigger sleep spindles and cortical slow oscillations). The switch between modes is driven by depolarization state. This is one of the neural mechanisms by which arousal state controls the fidelity of sensory processing.</p>
+
+        <p>The <strong>reticular nucleus of the thalamus</strong> (TRN) is a shell of GABAergic neurons surrounding the dorsal thalamus. All thalamo-cortical and cortico-thalamic axons send collaterals to TRN. TRN neurons inhibit thalamic relay cells, and their activity is modulated by attention: attending to one stimulus enhances the thalamic relay for that stimulus while the TRN suppresses competing inputs. The TRN is a candidate mechanism for attentional selection at the thalamic gate.</p>
+      </div>
+
+      <div class="section-head" id="examples">Worked Examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Lateral inhibition sharpens contrast</strong></div>
+        <div class="example-problem">A sensory surface receives a graded stimulus that drives activity levels of [2, 5, 8, 5, 2] in five adjacent neurons. If lateral inhibition suppresses each neuron by 0.4× the activity of each immediate neighbour, what are the resulting activity levels?</div>
+        <div class="example-body">
+          <p>Neuron $i$ receives inhibition $0.4 \times (\text{activity}_{i-1} + \text{activity}_{i+1})$, assuming edge neurons have one neighbour. Net activity = original − inhibition (floor at 0):</p>
+          <ul style="margin:6px 0 6px 20px;line-height:1.8;">
+            <li>Neuron 1: $2 - 0.4\times5 = 0$ (floor at 0)</li>
+            <li>Neuron 2: $5 - 0.4\times(2+8) = 5 - 4 = 1$</li>
+            <li>Neuron 3: $8 - 0.4\times(5+5) = 8 - 4 = 4$</li>
+            <li>Neuron 4: $5 - 0.4\times(8+2) = 5 - 4 = 1$</li>
+            <li>Neuron 5: $2 - 0.4\times5 = 0$ (floor at 0)</li>
+          </ul>
+          <p>Output: [0, 1, 4, 1, 0]. The peak neuron (3) is still the most active, but the gradient is steeper — the weakly stimulated edge neurons are suppressed to zero, sharpening the representation.</p>
+        </div>
+      </div>
+
+      <div class="section-head" id="fft">Food for Thought</div>
+      <ul style="line-height:1.9;padding-left:20px;" class="fft-list">
+        <li class="fft-item">Recurrent excitation can sustain activity after a stimulus is removed. This is used for working memory. But what prevents such networks from going into runaway excitation (seizure)?
+          <div class="fft-answer">Recurrent inhibition: the same excitatory drive that activates pyramidal cells also recruits fast-spiking PV interneurons, which clamp the activity within a stable range. Additionally, short-term synaptic depression weakens recurrent excitatory synapses during sustained high-frequency firing. The precise balance between excitation and inhibition in a recurrent network determines whether it settles at a stable attractor state (working memory) or diverges to seizure. Some models (e.g., the Wilson-Cowan equations) make this stability analysis explicit.</div>
+        </li>
+        <li class="fft-item">The cortex is organized in columns, but the defining characteristic of a column varies between brain regions (orientation in V1, body part in S1, frequency in A1). What does this suggest about the organizing principle underlying columnar structure?
+          <div class="fft-answer">Columns likely reflect the topographic organization of thalamic inputs to layer IV — neurons that receive similar thalamic input are clustered together, and the intracortical connections that develop vertically (and within-column) amplify this initial grouping. The "shared property" of a column is essentially whatever feature the driving input encodes. This suggests that column formation is a general developmental mechanism (Hebbian refinement of thalamo-cortical connections) applied to whatever information the thalamus delivers — not a pre-specified feature detector.</div>
+        </li>
+      </ul>
+
+      <div class="section-head" id="pitfalls">Common Pitfalls</div>
+      <div class="prose">
+        <ul style="line-height:1.9;padding-left:20px;">
+          <li><strong>Thinking the thalamus is just a relay.</strong> The thalamus has massive feedback from cortex (corticothalamic axons outnumber thalamocortical axons), actively gates sensory information based on behavioural state, and is essential for the generation of sleep rhythms. It is a computation, not a cable.</li>
+          <li><strong>Assuming inhibitory interneurons are all the same.</strong> PV, SST, and VIP cells perform completely different computations (fast E/I control, dendritic gain, disinhibition respectively) and are affected differently by disease states and anesthetics. Using "interneurons" as a single category loses critical information.</li>
+        </ul>
+      </div>
+
+      <div class="section-head" id="connects">Connects to</div>
+      <div class="prose">
+        <p><strong>Visual System (Lesson 4)</strong> — center-surround receptive fields are produced by lateral inhibition in the retina and LGN; orientation selectivity in V1 emerges from feedforward thalamic input shaped by intracortical circuitry.</p>
+        <p><strong>Motor Systems (Lesson 6)</strong> — the basal ganglia and cerebellum both project through thalamus (VL/VA nuclei) back to motor cortex; understanding thalamo-cortical gating is essential for understanding motor command generation.</p>
+        <p><strong>Computational Neuroscience (Lesson 10)</strong> — the circuit motifs of feedforward inhibition, lateral inhibition, and recurrent excitation map directly onto gain control, contrast sharpening, and attractor dynamics in network models.</p>
+      </div>
+
+      <div class="lesson-nav">
+        <a href="synaptic-transmission.html" class="lesson-nav-btn">← Lesson 2 · Synaptic Transmission</a>
+        <a href="visual-system.html" class="lesson-nav-btn">Lesson 4 · The Visual System →</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+
+</body>
+</html>

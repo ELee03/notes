@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Synaptic Transmission · Neuroscience</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="neuroscience" data-current="synaptic-transmission.html"></div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="breadcrumb-sep">›</span>
+        <a href="index.html">Neuroscience</a>
+        <span class="breadcrumb-sep">›</span>
+        Lesson 2
+      </div>
+
+      <h1 class="lesson-title">Synaptic Transmission</h1>
+      <div class="lesson-meta">Chemical Synapses · Vesicle Release · Quantal Transmission · Ionotropic vs Metabotropic · Neurotransmitters · Synaptic Integration</div>
+
+      <div class="prose">
+        <p>The action potential arrives at an axon terminal and faces a gap. Neurons don't touch — they are separated from their targets by a 20–40 nm <strong>synaptic cleft</strong>, and the electrical signal cannot jump this gap directly. Instead, the arriving AP triggers the release of chemical messengers — <strong>neurotransmitters</strong> — that diffuse across the cleft and bind to receptor proteins on the postsynaptic cell. This chemical handoff, completed in less than a millisecond, is where the real information processing of the nervous system happens: the postsynaptic response is not a fixed copy of the presynaptic signal, but a computation — amplified or attenuated, excitatory or inhibitory, brief or prolonged — determined by the receptor types present and the history of recent activity at that synapse.</p>
+      </div>
+
+      <div class="section-head" id="anatomy">Anatomy of the Synapse</div>
+
+      <div class="prose">
+        <p>The <strong>presynaptic terminal</strong> (axon bouton) is packed with <strong>synaptic vesicles</strong> — small membrane-bound spheres (~40 nm diameter) containing thousands of neurotransmitter molecules. A subset of vesicles is docked at the <strong>active zone</strong>, a specialized region of the presynaptic membrane directly opposite the postsynaptic density, where voltage-gated Ca²⁺ channels are clustered.</p>
+
+        <p>The <strong>postsynaptic density (PSD)</strong> is a disk-shaped protein scaffold on the cytoplasmic face of the postsynaptic membrane, holding receptors in place directly opposite the active zone. The alignment of presynaptic active zone and postsynaptic density ensures that released transmitter encounters receptors quickly.</p>
+
+        <p>The synapse is not a passive cleft — it contains <strong>cleft proteins</strong> (neurexins on the pre side, neuroligins and PSD-95 on the post side) that hold the two sides in register, and <strong>degradative enzymes</strong> (acetylcholinesterase at neuromuscular junctions) or <strong>reuptake transporters</strong> (for glutamate, dopamine, serotonin) that clear neurotransmitter rapidly, terminating the signal.</p>
+      </div>
+
+      <div class="section-head" id="release">Neurotransmitter Release</div>
+
+      <div class="prose">
+        <p>The sequence of events from AP arrival to transmitter release:</p>
+
+        <p><strong>1. AP arrives → Ca²⁺ channels open.</strong> The depolarization of the terminal opens voltage-gated Ca²⁺ channels (primarily N-type and P/Q-type at CNS synapses) concentrated in the active zone. Ca²⁺ floods in — its equilibrium potential is about $+130$ mV, so it is strongly driven inward by both electrical and chemical gradients.</p>
+
+        <p><strong>2. Ca²⁺ triggers vesicle fusion.</strong> The local Ca²⁺ concentration at the active zone rises to $\sim$100 µM within microseconds. This binds to <strong>synaptotagmin</strong>, a Ca²⁺ sensor protein on the vesicle membrane. Synaptotagmin's Ca²⁺-binding triggers interaction with the <strong>SNARE complex</strong> (syntaxin and SNAP-25 on the plasma membrane, VAMP/synaptobrevin on the vesicle). The SNARE proteins zipper together like a coiled coil, pulling the vesicle and plasma membranes together until they fuse. The vesicle content pours into the cleft.</p>
+
+        <p><strong>3. Transmitter diffuses and binds.</strong> Neurotransmitter molecules (~3,000–5,000 molecules per vesicle for glutamate) diffuse across the 20 nm cleft in ~10–100 µs and bind to postsynaptic receptors.</p>
+
+        <p><strong>4. Vesicle recycling.</strong> After fusion, the empty vesicle membrane is retrieved by clathrin-mediated endocytosis, refilled with neurotransmitter by vesicular transporters, and returned to the docked pool within seconds to minutes.</p>
+
+        <p class="callout"><strong>Quantal release (Bernard Katz, Nobel Prize 1970):</strong> Bernard Katz discovered that transmitter release is quantized — each quantum corresponds to the contents of a single vesicle. At the neuromuscular junction, even in the absence of an AP, spontaneous release of single vesicles produces miniature end-plate potentials (mEPPs) of fixed amplitude (~0.5 mV). An AP releases multiple quanta simultaneously (typically 1–5 at a CNS synapse, up to 200 at the NMJ), producing an end-plate potential that is a simple integer multiple of the quantal unit.</p>
+
+        <p>The probability of release per vesicle ($p$), the number of docked vesicles ($n$), and the quantal amplitude ($q$) together determine the average synaptic response: $\langle \text{EPSP} \rangle = n \cdot p \cdot q$. This framework, from statistical mechanics applied to synaptic biology, makes precise predictions about fluctuations in synaptic responses that have been extensively confirmed.</p>
+      </div>
+
+      <div class="section-head" id="receptors">Postsynaptic Receptors: Ionotropic vs Metabotropic</div>
+
+      <div class="prose">
+        <p>The critical fork in the road for all neurotransmitter signalling: does the receptor <em>itself</em> form an ion channel, or does it signal through intermediate proteins?</p>
+
+        <p><strong>Ionotropic receptors</strong> (ligand-gated ion channels) are single proteins that serve as both receptor and channel. Transmitter binding directly opens the channel pore. The response is fast (onset within ~1 ms, duration ~5–50 ms) and is determined by the channel's ion selectivity. Examples: AMPA and NMDA receptors (Na⁺/K⁺, sometimes Ca²⁺), GABA-A receptors (Cl⁻), nicotinic acetylcholine receptors (Na⁺/K⁺). Fast synaptic transmission in the CNS is entirely mediated by ionotropic receptors.</p>
+
+        <p><strong>Metabotropic receptors</strong> (G protein-coupled receptors, GPCRs) are seven-transmembrane proteins. Transmitter binding activates a coupled G protein, which dissociates and either (a) directly gates ion channels via $\beta\gamma$ subunits, or (b) activates second-messenger cascades (adenylyl cyclase → cAMP → PKA, or phospholipase C → IP₃/DAG → PKC/Ca²⁺) that phosphorylate proteins over timescales of seconds to minutes. Metabotropic signalling modulates excitability and sets the "gain" of fast transmission — it is the basis of neuromodulation. Examples: mGluR (glutamate), GABA-B (GABA), D1/D2 (dopamine), 5-HT receptors (serotonin), muscarinic AChRs.</p>
+
+        <p>The same neurotransmitter can activate both receptor types at different synapses (or even the same synapse). Glutamate, the main excitatory transmitter in the brain, activates fast AMPA channels for rapid depolarization, coincidence-detecting NMDA channels for plasticity (Lesson 7), and slow metabotropic mGluRs for modulation.</p>
+      </div>
+
+      <div class="section-head" id="transmitters">Major Neurotransmitters</div>
+
+      <div class="prose">
+        <p><strong>Glutamate</strong> — the principal excitatory transmitter in the CNS, used at roughly 90% of all synapses. It activates three classes of ionotropic receptors:</p>
+        <ul style="margin:8px 0 8px 20px;line-height:1.8;">
+          <li><strong>AMPA receptors</strong> — fast, Na⁺/K⁺ permeable. Mediate the initial depolarizing phase of most excitatory synaptic potentials. Most AMPA receptors at rest lack a GluA2 subunit containing a critical Arg residue — those that lack it are also Ca²⁺-permeable.</li>
+          <li><strong>NMDA receptors</strong> — Na⁺/K⁺/Ca²⁺ permeable. Crucially, they require <em>both</em> glutamate binding <em>and</em> postsynaptic depolarization to conduct — a Mg²⁺ ion sits in the channel pore at rest, blocking current until the membrane is depolarized. This makes NMDA receptors coincidence detectors: they open only when the presynaptic cell releases glutamate <em>and</em> the postsynaptic cell is already depolarized. The Ca²⁺ influx through NMDA receptors triggers LTP (Lesson 7).</li>
+          <li><strong>Kainate receptors</strong> — Na⁺/K⁺ permeable, involved in presynaptic modulation and some postsynaptic responses.</li>
+        </ul>
+
+        <p><strong>GABA (γ-aminobutyric acid)</strong> — the principal inhibitory transmitter. Synthesized from glutamate by GAD (glutamic acid decarboxylase). Two receptor classes:</p>
+        <ul style="margin:8px 0 8px 20px;line-height:1.8;">
+          <li><strong>GABA-A</strong> — ionotropic Cl⁻ channel. Cl⁻ influx hyperpolarizes the cell (or shunts incoming currents), producing fast inhibitory postsynaptic potentials (IPSPs). Benzodiazepines (Valium) and barbiturates enhance GABA-A conductance.</li>
+          <li><strong>GABA-B</strong> — metabotropic, Gi-coupled. Activates K⁺ channels (hyperpolarization) and inhibits Ca²⁺ channels (reduces transmitter release from presynaptic terminals). Slower, longer-lasting inhibition.</li>
+        </ul>
+
+        <p><strong>Acetylcholine (ACh)</strong> — used at the neuromuscular junction (nicotinic, ionotropic, excitatory) and in the autonomic nervous system (nicotinic in ganglia, muscarinic in end-organs). In the CNS, cholinergic projections from the basal forebrain (nucleus basalis) diffusely innervate the cortex, regulating attention and arousal via muscarinic (metabotropic) receptors.</p>
+
+        <p><strong>Dopamine</strong> — synthesized in the substantia nigra (projecting to striatum — nigrostriatal pathway, critical for motor control) and the ventral tegmental area (projecting to prefrontal cortex and limbic system — mesocortical/mesolimbic pathways, critical for reward and motivation). All dopamine receptors are metabotropic (D1–D5). D1/D5 are Gs-coupled (increase cAMP); D2/D3/D4 are Gi-coupled (decrease cAMP). Loss of nigrostriatal dopamine neurons causes Parkinson's disease.</p>
+
+        <p><strong>Serotonin (5-HT)</strong> — produced in the raphe nuclei of the brainstem, projecting widely through the brain. Regulates mood, sleep, appetite, and impulsivity. Most serotonin receptors are metabotropic GPCRs; 5-HT₃ is the exception (ionotropic, Na⁺/K⁺ channel). SSRIs (selective serotonin reuptake inhibitors, the most prescribed antidepressants) block the serotonin transporter SERT, increasing synaptic 5-HT.</p>
+
+        <p><strong>Norepinephrine (NE)</strong> — from the locus coeruleus, a small nucleus in the pons with diffuse projections throughout the brain. Regulates arousal, attention, and the stress response. All NE receptors are metabotropic (α1, α2, β1, β2). NE is released massively during the fight-or-flight response.</p>
+      </div>
+
+      <div class="section-head" id="integration">Synaptic Integration</div>
+
+      <div class="prose">
+        <p>A cortical neuron receives thousands of synaptic inputs simultaneously — some excitatory (EPSPs), some inhibitory (IPSPs). The neuron's job is to integrate these, and fire an AP if the total depolarization at the axon hillock exceeds threshold. This is the neuron as a computing element.</p>
+
+        <p><strong>Spatial summation:</strong> EPSPs from inputs at different locations on the dendritic tree spread passively toward the soma (decaying with distance — the cable equation governs this spread). Multiple simultaneous inputs sum together; inputs close to the soma contribute most, distant dendritic inputs are attenuated by the passive cable properties of the dendrite.</p>
+
+        <p><strong>Temporal summation:</strong> Each EPSP decays with a time constant $\tau_m = R_m C_m$ (typically 5–30 ms). If a second EPSP arrives before the first has decayed, they sum. High presynaptic firing rates produce sustained postsynaptic depolarization through temporal summation.</p>
+
+        <p><strong>Shunting inhibition:</strong> GABA-A Cl⁻ influx often doesn't just hyperpolarize — it increases membrane conductance (decreases $R_m$), which shrinks $\tau_m$ and reduces the amplitude of any simultaneously arriving EPSPs. This "shunting" of EPSPs can be inhibitory even when the GABA-A reversal potential ($E_{Cl}$) is close to the resting potential.</p>
+
+        <p>The integrate-and-fire (I&F) model captures the essential neuron computation: the membrane charges up as a leaky capacitor toward a threshold, fires an AP when threshold is crossed, then resets. Despite its simplicity, the I&F model reproduces many features of real neuron firing and forms the basis for large-scale network simulations.</p>
+
+        <p><strong>Short-term plasticity:</strong> Synaptic strength is not fixed — it changes over timescales of tens to hundreds of milliseconds based on recent activity. <em>Facilitation</em>: residual Ca²⁺ from prior APs adds to the next pulse's Ca²⁺ rise, increasing release probability ($p$ in the quantal model). <em>Depression</em>: repeated activity depletes the pool of readily releasable vesicles, decreasing the response. Which dominates at a given synapse depends on the baseline release probability and vesicle replenishment rate.</p>
+      </div>
+
+      <div class="section-head" id="examples">Worked Examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Why NMDA receptors require coincidence</strong></div>
+        <div class="example-problem">Explain the molecular basis of the coincidence detection property of NMDA receptors and why it's essential for Hebbian learning.</div>
+        <div class="example-body">
+          <p>At resting potential (–70 mV), Mg²⁺ sits in the NMDA channel pore, blocking ion flow even when glutamate is bound (open state). To eject the Mg²⁺, the membrane must depolarize to approximately –30 mV or above, at which point the electrical force holding Mg²⁺ in the pore is reduced enough for Mg²⁺ to exit.</p>
+          <p>Glutamate is released only when the presynaptic neuron fires. Mg²⁺ unblocking only occurs when the postsynaptic neuron is already depolarized (typically by other inputs firing simultaneously). Therefore, NMDA-mediated Ca²⁺ influx occurs only when pre- <em>and</em> postsynaptic activity coincide. This is the molecular implementation of Hebb's rule ("neurons that fire together wire together") — the Ca²⁺ triggers the molecular cascade that strengthens that specific synapse (LTP, Lesson 7).</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Quantal analysis</strong></div>
+        <div class="example-problem">A synapse has $n = 10$ release sites, release probability $p = 0.2$ per site, and quantal amplitude $q = 0.3$ mV. What is the expected EPSP amplitude, and what is the variance?</div>
+        <div class="example-body">
+          <p>The number of quanta released follows a binomial distribution with parameters $n$ and $p$.</p>
+          <p>Mean number of quanta: $\langle m \rangle = np = 10 \times 0.2 = 2$</p>
+          <p>Mean EPSP: $\langle V \rangle = \langle m \rangle \cdot q = 2 \times 0.3 = 0.6$ mV</p>
+          <p>Variance in quanta: $\text{Var}(m) = np(1-p) = 10 \times 0.2 \times 0.8 = 1.6$</p>
+          <p>Variance in EPSP: $\text{Var}(V) = q^2 \cdot \text{Var}(m) = 0.09 \times 1.6 = 0.144$ mV²</p>
+          <p>So trial-to-trial amplitude fluctuations are expected even from this "simple" synapse. This binomial quantal model is tested experimentally by recording many trials and fitting the resulting amplitude histogram.</p>
+        </div>
+      </div>
+
+      <div class="section-head" id="fft">Food for Thought</div>
+      <ul style="line-height:1.9;padding-left:20px;" class="fft-list">
+        <li class="fft-item">GABA is inhibitory in the adult brain, but excitatory in developing neurons. How can the same transmitter have opposite effects, and what are the developmental implications?
+          <div class="fft-answer">The key is the Cl⁻ reversal potential, which depends on intracellular Cl⁻ concentration. In adult neurons, the KCC2 transporter actively extrudes Cl⁻, keeping [Cl⁻]ᵢ low, so $E_{Cl}$ ≈ –70 to –80 mV (more negative than threshold → GABA-A opening is inhibitory). In immature neurons, KCC2 is not yet expressed; the NKCC1 transporter instead accumulates Cl⁻ intracellularly, making $E_{Cl}$ ≈ –40 mV (above threshold → GABA-A opening depolarizes and excites). This excitatory GABA in early development drives spontaneous activity critical for circuit formation.</div>
+        </li>
+        <li class="fft-item">SSRIs prevent serotonin reuptake, immediately increasing synaptic 5-HT. Yet their antidepressant effect takes 2–4 weeks. Why the delay?
+          <div class="fft-answer">The immediate rise in synaptic 5-HT activates presynaptic 5-HT1A autoreceptors on raphe neurons, which suppress raphe firing (negative feedback). Over weeks, these autoreceptors desensitize, allowing raphe activity to recover and maintaining elevated 5-HT. Additionally, the therapeutic effect may involve downstream neuroplasticity — BDNF expression, hippocampal neurogenesis, synaptic remodelling — that takes weeks to develop. The acute pharmacology and the therapeutic timeline are decoupled.</div>
+        </li>
+        <li class="fft-item">At many synapses in the CNS, only 1 vesicle is released per AP even though many are docked. What advantage does single-vesicle release have, and what does it imply about neural coding?
+          <div class="fft-answer">Single-vesicle release means each synapse transmits a binary signal — either 0 or 1 quantum per event. This prevents synaptic saturation (postsynaptic receptors don't get overwhelmed) and maximises the dynamic range of the synapse through release probability ($p$) modulation. It implies that individual synapses are unreliable (stochastic), but neurons sample hundreds of synapses, so the postsynaptic neuron computes a reliable average over a population of unreliable inputs — analogous to averaging noisy measurements.</div>
+        </li>
+      </ul>
+
+      <div class="section-head" id="pitfalls">Common Pitfalls</div>
+      <div class="prose">
+        <ul style="line-height:1.9;padding-left:20px;">
+          <li><strong>Thinking neurotransmitters are always excitatory or always inhibitory.</strong> A transmitter's effect depends entirely on the receptor and the receptor's ion selectivity — not on the transmitter itself. Acetylcholine is excitatory at the NMJ (nicotinic receptor, Na⁺/K⁺ channel) but inhibitory at the heart (muscarinic M2, K⁺ channel via Gi). GABA can be inhibitory or excitatory depending on the Cl⁻ reversal potential.</li>
+          <li><strong>Conflating ionotropic and metabotropic timescales.</strong> Ionotropic responses peak in milliseconds and last tens of milliseconds. Metabotropic cascades operate on seconds to minutes — they modulate rather than replace fast transmission. Don't describe a dopaminergic "excitatory" response as fast.</li>
+          <li><strong>Assuming more Ca²⁺ channels at the terminal = more release.</strong> Release depends on the local Ca²⁺ concentration at the active zone microdomains where synaptotagmin and Ca²⁺ channels are co-localised. The relationship between bulk Ca²⁺ and release is highly nonlinear (approximately the 4th power of Ca²⁺ concentration for some synapses).</li>
+        </ul>
+      </div>
+
+      <div class="section-head" id="connects">Connects to</div>
+      <div class="prose">
+        <p><strong>The Neuron (Lesson 1)</strong> — the action potential's depolarization is the trigger for Ca²⁺ influx and vesicle fusion. The cable properties of dendrites determine how EPSPs spread from synapse to soma.</p>
+        <p><strong>Synaptic Plasticity (Lesson 7)</strong> — the NMDA receptor's Ca²⁺ influx is the induction signal for LTP. Short-term plasticity (facilitation and depression) is a dynamic modulation of $n$, $p$, and $q$ from the quantal release model.</p>
+        <p><strong>Motor Systems (Lesson 6)</strong> — the neuromuscular junction is the best-characterized synapse, where the quantal theory of transmission was developed. The NMJ uses nicotinic ACh receptors and has a high safety factor ($\gg$1 quantum per AP) to ensure reliable muscle activation.</p>
+      </div>
+
+      <div class="lesson-nav">
+        <a href="neurons.html" class="lesson-nav-btn">← Lesson 1 · The Neuron</a>
+        <a href="neural-circuits.html" class="lesson-nav-btn">Lesson 3 · Neural Circuits →</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  renderMathInElement(document.body, {
+    delimiters: [
+      {left: '$$', right: '$$', display: true},
+      {left: '$', right: '$', display: false}
+    ]
+  });
+});
+</script>
+
+</body>
+</html>

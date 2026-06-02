@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Motor Systems · Neuroscience</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="neuroscience" data-current="motor-systems.html"></div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="breadcrumb-sep">›</span>
+        <a href="index.html">Neuroscience</a>
+        <span class="breadcrumb-sep">›</span>
+        Lesson 6
+      </div>
+
+      <h1 class="lesson-title">Motor Systems</h1>
+      <div class="lesson-meta">Motor Units · Spinal Reflexes · Central Pattern Generators · Motor Cortex · Corticospinal Tract · Basal Ganglia · Cerebellum</div>
+
+      <div class="prose">
+        <p>Movement is the only way the brain affects the world. Every thought, memory, and perception is silent unless it eventually drives a motor output — a contraction of muscle fibres that moves bones, produces speech, or directs the eyes. The motor system is therefore not a single thing but a hierarchy: the spinal cord contains the final common pathway (motor neurons) and local reflex circuits; the brainstem coordinates posture and eye movements; the motor cortex plans and executes voluntary movements; the basal ganglia select what to do; and the cerebellum predicts and corrects motor errors. Understanding how these interact — and what breaks when each is damaged — reveals how the brain solves the engineering problem of coordinated movement.</p>
+      </div>
+
+      <div class="section-head" id="motor-units">Motor Neurons and Motor Units</div>
+
+      <div class="prose">
+        <p>The output of the entire motor hierarchy ultimately converges on <strong>alpha motor neurons</strong> in the ventral horn of the spinal cord (and brainstem motor nuclei for cranial muscles) — Sherrington's "final common pathway." Each alpha motor neuron innervates a group of muscle fibres; together they form a <strong>motor unit</strong>, the smallest independently controllable element of the muscular system.</p>
+
+        <p>Motor units vary enormously in their properties:</p>
+        <ul style="margin:8px 0 8px 20px;line-height:1.8;">
+          <li><strong>Slow (S)</strong> — small motor neurons, few small slow-twitch Type I (oxidative) fibres, low force, very fatigue-resistant. Used for sustained postural support and slow movements.</li>
+          <li><strong>Fast fatigable (FF)</strong> — large motor neurons, many large fast-twitch Type IIb (glycolytic) fibres, high force, fatigue rapidly. Used for brief high-force contractions.</li>
+          <li><strong>Fast fatigue-resistant (FR)</strong> — intermediate properties; fast but resistant to fatigue.</li>
+        </ul>
+
+        <p><strong>Henneman's size principle</strong>: motor units are recruited in order from smallest (S) to largest (FF) as the required force increases. Slow motor neurons have the lowest input resistance and lowest recruitment threshold — they fire first at low excitatory drive. Fast motor neurons are recruited only when maximum force is needed. This automatic size-ordering ensures smooth grading of force and preferential use of fatigue-resistant units for sustained tasks.</p>
+
+        <p>Force is graded by two mechanisms: <strong>recruitment</strong> (adding more motor units) and <strong>rate coding</strong> (increasing the firing rate of already-recruited units). At low forces, recruitment dominates; at high forces, rate coding of already-recruited units contributes more.</p>
+
+        <p><strong>Gamma motor neurons</strong> innervate the contractile ends of muscle spindles (intrafusal fibres), keeping the spindle taut and sensitive during muscle contraction. Without gamma drive, a muscle contraction would slacken the spindle (removing its sensitivity). The alpha-gamma co-activation preserves spindle sensitivity throughout the range of movement.</p>
+      </div>
+
+      <div class="section-head" id="reflexes">Spinal Reflexes</div>
+
+      <div class="prose">
+        <p><strong>The stretch reflex (myotatic reflex)</strong> — the classic knee-jerk reflex. Tapping the patellar tendon stretches the quadriceps muscle; muscle spindles detect the stretch and fire Ia afferents that monosynaptically excite the alpha motor neurons of the same muscle (homonymous muscle), causing contraction. Simultaneously, Ia interneurons inhibit the antagonist (biceps femoris) — reciprocal inhibition. This is the only monosynaptic reflex in the body; all others involve at least one interneuron.</p>
+
+        <p>The stretch reflex is the sensorimotor loop that stabilizes joint position against unexpected perturbations. When you carry a tray and someone nudges it, the stretch reflex fires before you consciously notice — it is the automatic first line of mechanical compensation, with a latency of ~25 ms (spinal loop) vs ~100 ms for a voluntary response.</p>
+
+        <p><strong>The Golgi tendon reflex</strong> — Golgi tendon organs (GTOs) in muscle tendons detect tension. High tension activates Ib afferents, which excite Ib inhibitory interneurons in the spinal cord that inhibit the alpha motor neurons of the same muscle (autogenic inhibition) and excite the antagonist. The reflex protects muscle and tendon from excessive tension damage. At lower activation levels, the GTO pathway contributes to muscle tone regulation.</p>
+
+        <p><strong>The withdrawal reflex</strong> — a painful stimulus (stepping on a nail) activates nociceptors; polysynaptic pathways via interneurons withdraw the stimulated limb (flexor muscles contract, extensors inhibited — flexor reflex) and simultaneously extend the contralateral limb to support body weight (<strong>crossed extension reflex</strong>). This reflexive redistribution of weight prevents falling while withdrawing from pain.</p>
+      </div>
+
+      <div class="section-head" id="cpg">Central Pattern Generators</div>
+
+      <div class="prose">
+        <p>Rhythmic movements — locomotion, breathing, chewing, scratching — are not driven by a continuous stream of commands from the brain. Instead, spinal cord circuits called <strong>central pattern generators (CPGs)</strong> produce the basic rhythmic output autonomously, with descending brain systems modulating the timing and intensity.</p>
+
+        <p>Evidence: cats with completely transected spinal cords can still produce rhythmic stepping patterns on a treadmill, provided the cord is pharmacologically activated. The locomotor CPG is entirely intrinsic to the spinal cord.</p>
+
+        <p>The basic circuit principle is the <strong>half-centre oscillator</strong>: two populations of interneurons mutually inhibit each other. When one population is active (driving flexion), it inhibits the other (which would drive extension). After adaptation (slow fatigue of the active population), the inhibited population escapes, drives extension, and in turn suppresses flexion. This produces alternating flexor-extensor activity — the fundamental rhythm of walking.</p>
+
+        <p>The mesencephalic locomotor region (MLR) in the brainstem activates the spinal CPG; the reticulospinal tract transmits this drive. The speed of locomotion is set by the intensity of descending input, not by the CPG's own frequency being changed in a complex way — the CPG is speed-adaptive.</p>
+      </div>
+
+      <div class="section-head" id="motor-cortex">The Motor Cortex</div>
+
+      <div class="prose">
+        <p>Voluntary movement originates in the motor cortex, which occupies the precentral gyrus (primary motor cortex, M1; Brodmann area 4), plus the premotor cortex (PM; area 6) and supplementary motor area (SMA; medial area 6) just anterior.</p>
+
+        <p><strong>Primary motor cortex (M1)</strong> contains the largest pyramidal neurons in the brain (Betz cells) in layer V, which send axons directly to spinal cord motor neurons via the corticospinal tract. M1 is somatotopically organized as the motor homunculus (Penfield), with disproportionate representation of face, hand, and fingers — the areas requiring most dexterity.</p>
+
+        <p>Microstimulation of M1 elicits muscle twitches at low currents, movements at higher currents. Early views held that M1 neurons encode specific muscles. More accurate: M1 neurons encode movements, with complex many-to-many mappings between neurons and muscles. Evarts (1968) showed that M1 neurons modulate their firing before EMG activity begins, and their firing rates correlate more closely with force and direction of movement than with which specific muscles are active.</p>
+
+        <p><strong>Population vector coding</strong> (Georgopoulos, 1986): when a monkey reaches in different directions, each M1 neuron has a preferred direction (the direction that drives its maximum firing). The actual arm movement direction is encoded by the <em>population vector</em> — the vector sum of all active neurons' preferred directions weighted by their firing rates. This population code is accurate, robust to noise, and generalizes across movement tasks. It was one of the first demonstrations that motor commands are encoded in a distributed, population basis rather than single cells.</p>
+
+        <p><strong>Premotor cortex</strong> is active during motor planning and preparation, before movement begins. It selects movements based on sensory context and stores motor programs. <strong>SMA</strong> is active during internally-generated movement sequences and shows preparatory activity (the "readiness potential") up to 1.5 seconds before self-initiated movement.</p>
+      </div>
+
+      <div class="section-head" id="cst">The Corticospinal Tract</div>
+
+      <div class="prose">
+        <p>The corticospinal tract (CST) is the direct pathway from motor cortex to spinal motor neurons. It originates from multiple cortical areas (M1, PM, SMA, and somatosensory cortex), descends through the corona radiata, converges in the internal capsule, traverses the brainstem, and in the medullary pyramids, 85–90% of fibres cross to the contralateral side (the pyramidal decussation). The crossed fibres form the lateral corticospinal tract; uncrossed fibres form the anterior CST (largely for axial muscles).</p>
+
+        <p>This crossing means that the left motor cortex controls the right side of the body — which is why a left hemisphere stroke causes right-sided weakness (hemiplegia).</p>
+
+        <p>Two clinically crucial categories of motor neurons:</p>
+        <ul style="margin:8px 0 8px 20px;line-height:1.8;">
+          <li><strong>Upper motor neurons (UMN)</strong> — cortical neurons and their axons in the CST. UMN lesion (stroke, MS) produces spastic paralysis: weakness, increased tone (spasticity), hyperreflexia (exaggerated reflexes, because the UMN normally provides tonic inhibition to spinal motor neurons), and Babinski sign (big toe extends to plantar stimulation).</li>
+          <li><strong>Lower motor neurons (LMN)</strong> — spinal cord alpha motor neurons and their axons. LMN lesion (polio, ALS motor neuron component, disc herniation) produces flaccid paralysis: weakness, decreased tone, hyporeflexia, fasciculations (spontaneous twitching from denervated motor units firing sporadically), and muscle atrophy.</li>
+        </ul>
+      </div>
+
+      <div class="section-head" id="basal-ganglia">The Basal Ganglia</div>
+
+      <div class="prose">
+        <p>The basal ganglia are a set of subcortical nuclei — striatum (caudate + putamen), globus pallidus (GPe and GPi), subthalamic nucleus (STN), and substantia nigra (SNc and SNr) — that are crucial for action selection, habit learning, and reinforcement-based motor learning.</p>
+
+        <p>The key circuit: cortex → striatum → (direct and indirect pathways) → GPi/SNr (output nuclei) → thalamus (VL/VA) → motor cortex. The basal ganglia output nuclei (GPi and SNr) are tonically active and inhibitory (GABAergic), continuously suppressing the thalamus and preventing unwanted movements.</p>
+
+        <p><strong>Direct pathway</strong> (Go): Cortex → striatum (D1 receptors, excited by dopamine) → GPi/SNr. The striatal output is GABAergic and inhibits GPi/SNr, <em>disinhibiting</em> the thalamus → facilitates the desired movement. Net effect: activation of direct pathway promotes movement.</p>
+
+        <p><strong>Indirect pathway</strong> (No-go): Cortex → striatum (D2 receptors, inhibited by dopamine) → GPe → STN → GPi. The net effect is increased GPi inhibition of the thalamus → suppresses competing movements. Dopamine, via D2 receptors, inhibits this pathway — dopamine therefore facilitates movement on both routes: promoting the desired action (D1) and suppressing competing actions (D2).</p>
+
+        <p>In <strong>Parkinson's disease</strong>, dopaminergic neurons in SNc degenerate, depleting striatal dopamine. Direct pathway activity falls (less go signal) and indirect pathway activity rises (more no-go signal). GPi becomes overactive, excessively inhibiting the thalamus. Clinical result: rigidity, bradykinesia (slowness of movement initiation), rest tremor, and postural instability. Treatment with L-DOPA (dopamine precursor) restores dopaminergic tone and relieves symptoms.</p>
+
+        <p>In <strong>Huntington's disease</strong>, the indirect pathway's medium spiny neurons in the striatum degenerate first. Loss of indirect pathway reduces GPi inhibition of thalamus → excessive, unwanted movements (chorea). As the disease progresses, direct pathway neurons degenerate too, producing akinesia.</p>
+      </div>
+
+      <div class="section-head" id="cerebellum">The Cerebellum</div>
+
+      <div class="prose">
+        <p>The cerebellum contains more neurons than the rest of the brain combined, yet cerebellar damage produces no paralysis and no sensory loss. What it does produce is <strong>ataxia</strong> — movements that are dysmetric (wrong amplitude), decomposed (joints moved one at a time), and imprecisely timed. The cerebellum is a movement coordinator and error corrector, operating as an internal model of the body and the world.</p>
+
+        <p>The cerebellar cortex has a remarkably uniform three-layer structure: the Purkinje cell layer (large inhibitory Purkinje neurons), the molecular layer (parallel fibres, climbing fibres, stellate and basket cells), and the granule cell layer (the densest cell packing in the brain).</p>
+
+        <p>Two key inputs to the cerebellum:</p>
+        <ul style="margin:8px 0 8px 20px;line-height:1.8;">
+          <li><strong>Mossy fibres</strong> — from spinal cord (proprioception) and pontine nuclei (relaying cortical motor commands). They excite granule cells in the granular layer. Granule cell axons ascend to the molecular layer, bifurcate, and run as <strong>parallel fibres</strong> for up to 6 mm, synapsing onto Purkinje cells en route.</li>
+          <li><strong>Climbing fibres</strong> — from the inferior olive (IO) in the brainstem. Each climbing fibre wraps around a single Purkinje cell and delivers a powerful, all-or-none "complex spike" with each IO discharge (~1 Hz at rest, brief bursts during errors). Climbing fibres are the motor error signal — they fire when a movement deviates from its intended trajectory.</li>
+        </ul>
+
+        <p>The output is via <strong>Purkinje cells</strong>, which project to the deep cerebellar nuclei (DCN), the only output pathway. Purkinje cells are spontaneously active and tonically inhibit DCN neurons. When parallel fibre input reduces Purkinje cell firing, DCN neurons are disinhibited and can drive the thalamus and motor cortex.</p>
+
+        <p><strong>Motor learning in the cerebellum:</strong> Ito's classic model holds that climbing fibre input (error signal) modifies the strength of parallel fibre synapses onto Purkinje cells via long-term depression (LTD at the PF-Purkinje synapse). Active PF synapses that coincide with climbing fibre input are weakened, so the next time that motor command is issued, the error-associated activity pattern is dampened. This is the cerebellar implementation of supervised learning — adapting the forward model of motor output to reduce future errors.</p>
+      </div>
+
+      <div class="section-head" id="examples">Worked Examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Diagnosing a motor lesion</strong></div>
+        <div class="example-problem">A patient presents with right arm weakness, increased tone (spasticity), exaggerated reflexes, and a Babinski sign. Where is the lesion?</div>
+        <div class="example-body">
+          <p>Spasticity, hyperreflexia, and Babinski sign are the classic signs of an <strong>upper motor neuron (UMN) lesion</strong> — i.e., damage to the corticospinal tract or motor cortex, not the spinal motor neurons themselves.</p>
+          <p>Right arm weakness indicates a lesion in the contralateral (left) motor cortex or the left corticospinal tract above the level of the pyramidal decussation in the medulla. Below the decussation, a left-sided lesion would produce left arm weakness. Given the right arm is affected: the lesion is in the left hemisphere or in the left CST above the medullary pyramids.</p>
+          <p>Most likely diagnosis: left hemisphere stroke affecting the primary motor cortex or internal capsule. A brain MRI would be the next step.</p>
+        </div>
+      </div>
+
+      <div class="section-head" id="fft">Food for Thought</div>
+      <ul style="line-height:1.9;padding-left:20px;" class="fft-list">
+        <li class="fft-item">The cerebellum is classically a movement coordinator, but cerebellar damage also impairs cognitive tasks like timing, sequence learning, and even some aspects of language. Does this mean the cerebellum is doing something more general than motor coordination?
+          <div class="fft-answer">The current view is that the cerebellum implements a general-purpose "internal model" computation — predicting the outcome of any action (motor or cognitive) and comparing it to actual outcomes. The cognitive cerebellum (cerebellar cortex connected to prefrontal and parietal cortex via pons) applies the same error-correction algorithm to cognitive sequences and timing that the motor cerebellum applies to movement. The architecture is identical; only the inputs/outputs differ. This explains why cerebellar patients show impaired timing not just in finger-tapping but in interval timing judgments.</div>
+        </li>
+        <li class="fft-item">Deep brain stimulation (DBS) of the subthalamic nucleus dramatically relieves Parkinson's symptoms. Given the model of basal ganglia circuitry, would you predict that DBS excites or inhibits the STN — and why does the result work regardless of the answer?
+          <div class="fft-answer">DBS delivers high-frequency (130+ Hz) electrical pulses. This actually depolarizes STN neurons, but at 130 Hz, it disrupts their normal oscillatory firing patterns (replacing pathological synchronous bursting with a regular pattern) rather than simply inhibiting them. The therapeutic effect is less about excitation/inhibition and more about desynchronizing abnormal rhythmic activity in the basal ganglia loop. Both "inhibition" and "regularization" of STN output reduce GPi overactivity — the net effect on thalamic disinhibition is similar. This is why DBS works despite being a stimulation rather than a lesion.</div>
+        </li>
+      </ul>
+
+      <div class="section-head" id="pitfalls">Common Pitfalls</div>
+      <div class="prose">
+        <ul style="line-height:1.9;padding-left:20px;">
+          <li><strong>Thinking cerebellar damage causes paralysis.</strong> Cerebellar lesions never cause paralysis — the cerebellum does not drive motor neurons directly. It modulates timing, coordination, and error correction. Weakness is a cortical or spinal sign; incoordination without weakness is cerebellar.</li>
+          <li><strong>Forgetting the inhibitory sign of the basal ganglia output.</strong> GPi/SNr are tonically inhibitory. To enable a movement, you must reduce GPi inhibition (disinhibition via direct pathway). Thinking of the basal ganglia as "activating" movement is backwards — they gate movement by releasing the brake.</li>
+          <li><strong>Confusing the crossed projections.</strong> The CST crosses in the medullary pyramids: left cortex → right limbs. Spinal cord lesions below the decussation: left CST damage → left limb weakness. Brain/brainstem lesions above the decussation: left CST damage → right limb weakness.</li>
+        </ul>
+      </div>
+
+      <div class="section-head" id="connects">Connects to</div>
+      <div class="prose">
+        <p><strong>Synaptic Plasticity (Lesson 7)</strong> — cerebellar motor learning relies on LTD at the parallel fibre-Purkinje cell synapse, mediated by mGluR and AMPA receptor internalization. The same molecular machinery underlies many forms of synaptic plasticity.</p>
+        <p><strong>Memory Systems (Lesson 8)</strong> — the cerebellum stores procedural motor memory (e.g., eyeblink conditioning, adaptation of limb movements). This is a completely separate memory system from hippocampal declarative memory and is preserved in amnesic patients.</p>
+        <p><strong>Reinforcement Learning (RL cluster)</strong> — the basal ganglia direct/indirect pathway model maps precisely onto actor-critic RL: the striatum is the actor, dopamine encodes the prediction error (TD signal), and the selection of actions based on past reward mirrors policy gradient methods.</p>
+      </div>
+
+      <div class="lesson-nav">
+        <a href="auditory-somatosensory.html" class="lesson-nav-btn">← Lesson 5 · Auditory &amp; Somatosensory</a>
+        <a href="synaptic-plasticity.html" class="lesson-nav-btn">Lesson 7 · Synaptic Plasticity →</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+
+</body>
+</html>

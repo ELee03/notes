@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Neuroscience · Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="neuroscience" data-current="index.html"></div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="breadcrumb-sep">›</span>
+        Neuroscience
+      </div>
+
+      <h1 class="lesson-title">Neuroscience</h1>
+      <div class="lesson-meta">Neural Circuits · Synaptic Transmission · Sensory Systems · Motor Control · Memory · Sleep · Computation</div>
+
+      <div class="prose">
+        <p>The nervous system is the most complex object we know of in the universe — roughly 86 billion neurons, each making thousands of synaptic contacts, organized into circuits that generate perception, movement, thought, and consciousness. This cluster covers systems-level neuroscience: how neurons signal each other, how circuits process information, how sensory systems transform physical energy into perception, how motor systems coordinate movement, and how the brain learns, consolidates memories, and generates the rhythms of sleep and wakefulness. The final lesson steps back to ask what computation the brain is performing — and what it means for the brain to be a Bayesian inference machine.</p>
+
+        <p>The entry point is the single neuron and the action potential — the electrical pulse that carries information along an axon. From there, lessons build up to the systems and circuits that define the field: the visual hierarchy from retina to cortex, the hippocampal memory system, the basal ganglia and cerebellum of motor control, and the arousal systems that govern the sleep-wake cycle. The thread connecting all of it is synaptic plasticity — the molecular mechanism by which experience physically rewires the brain.</p>
+      </div>
+
+      <div class="section-head">Lessons</div>
+
+      <table class="lesson-list" style="width:100%;border-collapse:collapse;margin-bottom:32px;">
+        <thead>
+          <tr style="border-bottom:2px solid #d8e4ec;">
+            <th style="text-align:left;padding:8px 12px 8px 0;font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#9aabb8;font-weight:500;">#</th>
+            <th style="text-align:left;padding:8px 12px 8px 0;font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#9aabb8;font-weight:500;">Lesson</th>
+            <th style="text-align:left;padding:8px 0;font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#9aabb8;font-weight:500;">Topics</th>
+          </tr>
+        </thead>
+        <tbody id="lesson-tbody"></tbody>
+      </table>
+
+      <div class="section-head">References</div>
+      <ul class="book-list" id="cluster-refs"></ul>
+
+    </div>
+
+  </div>
+</div>
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-index.js"></script>
+<script src="../books-render.js"></script>
+<script>
+  renderLessonTable();
+  renderBooks({ containerId: 'cluster-refs', clusterId: 'neuroscience', jsonPath: '../books.json' });
+</script>
+
+</body>
+</html>

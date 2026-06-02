@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Visual System · Neuroscience</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="neuroscience" data-current="visual-system.html"></div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="breadcrumb-sep">›</span>
+        <a href="index.html">Neuroscience</a>
+        <span class="breadcrumb-sep">›</span>
+        Lesson 4
+      </div>
+
+      <h1 class="lesson-title">The Visual System</h1>
+      <div class="lesson-meta">Retina · Phototransduction · Receptive Fields · LGN · V1 · Cortical Streams</div>
+
+      <div class="prose">
+        <p>Vision is the brain's most studied sense — not because it is the most important, but because it is the most experimentally tractable. The visual system converts a two-dimensional pattern of photons into the rich, stable, three-dimensional world of conscious experience. What makes it so informative for neuroscience is that the input is quantifiable and controllable in ways that sound or touch are not: you can present a precise spatial and temporal stimulus and record what neurons respond. The principles discovered in the visual system — hierarchical processing, feature selectivity, the dorsal and ventral processing streams — have turned out to generalize across the brain.</p>
+      </div>
+
+      <div class="section-head" id="retina">The Retina</div>
+
+      <div class="prose">
+        <p>The retina is a sheet of neural tissue lining the back of the eye — it is technically a part of the brain (an outgrowth of the diencephalon). Its five major cell layers, from outer to inner:</p>
+        <ul style="margin:8px 0 8px 20px;line-height:1.8;">
+          <li><strong>Photoreceptors</strong> (rods and cones) — the light-sensing cells, outermost in the retina (light must pass through all other layers to reach them)</li>
+          <li><strong>Horizontal cells</strong> — lateral inhibitory connections at the outer plexiform layer</li>
+          <li><strong>Bipolar cells</strong> — connect photoreceptors to ganglion cells</li>
+          <li><strong>Amacrine cells</strong> — lateral inhibitory connections at the inner plexiform layer</li>
+          <li><strong>Retinal ganglion cells (RGCs)</strong> — the output neurons; their axons form the optic nerve</li>
+        </ul>
+
+        <p><strong>Rods</strong> (~120 million per retina) are exquisitely sensitive to light — a single photon can trigger a detectable response. They are densely distributed in the peripheral retina and provide scotopic (low-light) vision but no colour discrimination. All rods contain the same photopigment, rhodopsin (absorption peak ~498 nm).</p>
+
+        <p><strong>Cones</strong> (~6 million per retina) require brighter light and provide colour discrimination via three types: L-cones (~560 nm peak), M-cones (~530 nm), and S-cones (~420 nm). The <strong>fovea</strong> (central 1° of visual field) contains only cones at the highest density (~160,000/mm²), giving maximum acuity. The fovea has a disproportionately large cortical representation — this is the neural basis of the cortical magnification factor.</p>
+      </div>
+
+      <div class="section-head" id="phototransduction">Phototransduction</div>
+
+      <div class="prose">
+        <p>Photoreceptors transduce light into an electrical signal via a G-protein cascade — the same basic machinery as olfaction and taste.</p>
+
+        <p><strong>In the dark:</strong> The outer segment of the photoreceptor contains cGMP-gated channels in the plasma membrane, held open by high cytoplasmic cGMP. Na⁺ and Ca²⁺ flow in continuously — the "dark current." The cell is depolarized (~–40 mV) and continuously releasing glutamate at its synapse.</p>
+
+        <p><strong>When light hits:</strong></p>
+        <ol style="margin:8px 0 8px 20px;line-height:1.8;">
+          <li>Photon absorbed by retinal (the chromophore) → retinal isomerizes from 11-<em>cis</em> to all-<em>trans</em></li>
+          <li>This activates <strong>rhodopsin</strong> (R*), which activates the G-protein <strong>transducin</strong> (G*)</li>
+          <li>Transducin activates <strong>phosphodiesterase (PDE)</strong>, which hydrolyses cGMP → 5'-GMP</li>
+          <li>cGMP drops → cGMP-gated channels close → Na⁺/Ca²⁺ influx stops</li>
+          <li>Membrane hyperpolarizes to ~–75 mV → glutamate release decreases</li>
+        </ol>
+
+        <p>Light therefore <strong>hyperpolarizes</strong> photoreceptors — the opposite of what you might expect. The signal is a decrease in glutamate release. Downstream bipolar cells interpret this as either excitation (ON bipolar cells, which are inhibited by glutamate at rest → depolarize in light) or inhibition (OFF bipolar cells, which are excited by glutamate at rest → hyperpolarize in light). This establishes parallel ON and OFF pathways from the very first synapse in the visual system.</p>
+
+        <p>The cascade amplifies enormously: one activated rhodopsin activates ~800 transducin molecules per second; each PDE hydrolyses ~2,000 cGMP/s; the resulting channel closure produces a ~1 pA current change. Single-photon detection is possible.</p>
+      </div>
+
+      <div class="section-head" id="receptive-fields">Center-Surround Receptive Fields</div>
+
+      <div class="prose">
+        <p>A neuron's <strong>receptive field</strong> is the region of sensory space that, when stimulated, changes the neuron's firing rate. Retinal ganglion cells do not simply average light intensity over their receptive field — they compare the center to the surround via lateral inhibition from horizontal and amacrine cells.</p>
+
+        <p><strong>ON-center/OFF-surround RGCs</strong> fire strongly to a bright spot in the center and a dark surround; they are suppressed by diffuse illumination that equally stimulates center and surround.</p>
+
+        <p><strong>OFF-center/ON-surround RGCs</strong> show the opposite — they respond to dark spots on a bright background.</p>
+
+        <p>This center-surround organisation implements edge detection and contrast enhancement (analogous to the lateral inhibition example in Lesson 3). It explains the <strong>Mach band</strong> illusion: at the border between a light and dark region, ON-center cells with their receptive fields straddling the boundary show enhanced/suppressed responses, making the bright side appear brighter and the dark side darker than they physically are.</p>
+
+        <p>There are ~20 types of RGC in the primate retina; the two most important for conscious vision:</p>
+        <ul style="margin:8px 0 8px 20px;line-height:1.8;">
+          <li><strong>M (Magnocellular) pathway</strong> — large receptive fields, high temporal resolution, high contrast sensitivity, but low spatial resolution; not wavelength selective. Carries information about motion and coarse spatial structure.</li>
+          <li><strong>P (Parvocellular) pathway</strong> — small receptive fields, colour-selective, high spatial resolution, lower temporal resolution. Carries information about fine detail and colour.</li>
+        </ul>
+      </div>
+
+      <div class="section-head" id="lgn">From Retina to Cortex: The LGN</div>
+
+      <div class="prose">
+        <p>RGC axons form the optic nerve. At the <strong>optic chiasm</strong>, axons from the nasal retina of each eye cross to the opposite hemisphere, while temporal retina axons stay ipsilateral. The result: each hemisphere processes the contralateral visual field, regardless of which eye the signals came from.</p>
+
+        <p>Most RGC axons (for conscious vision) project to the <strong>lateral geniculate nucleus (LGN)</strong> of the thalamus. The LGN has 6 layers: layers 1–2 receive M-pathway input, layers 3–6 receive P-pathway input. The two eyes project to alternating layers (contralateral eye to layers 1, 4, 6; ipsilateral to 2, 3, 5), so the two eyes are not yet combined in the LGN.</p>
+
+        <p>The LGN is not just a relay — it receives massive feedback from V1 (roughly 10× more corticothalamic than thalamocortical axons). This feedback modulates thalamic gain based on attentional state.</p>
+      </div>
+
+      <div class="section-head" id="v1">Primary Visual Cortex (V1)</div>
+
+      <div class="prose">
+        <p>V1 (Brodmann area 17, striate cortex) is where LGN input arrives (in layer IVc) and the first cortical processing of visual information occurs. Hubel and Wiesel's Nobel Prize-winning work (1981) established that V1 neurons are selective for stimulus properties the LGN lacks:</p>
+
+        <p><strong>Orientation selectivity.</strong> Unlike LGN neurons (which respond to spots of light), V1 neurons respond strongly to bars and edges at a particular angle. A neuron with 45° preferred orientation fires maximally to a bar tilted 45°, and is silent to bars at 90° from its preference. Hubel and Wiesel proposed that orientation selectivity arises from the convergence of LGN inputs whose center-surround receptive fields are aligned along an axis — the "feedforward model." Subsequent work showed cortical circuit contributions are also important.</p>
+
+        <p><strong>Simple vs complex cells:</strong></p>
+        <ul style="margin:8px 0 8px 20px;line-height:1.8;">
+          <li><strong>Simple cells</strong> have spatially segregated ON and OFF subregions within their receptive field. A bright bar in the ON region excites; a bright bar in the OFF region inhibits. They are position-sensitive — moving the bar slightly changes the response dramatically.</li>
+          <li><strong>Complex cells</strong> respond to an oriented bar regardless of its exact position within the receptive field (position invariance). They are thought to pool inputs from several simple cells.</li>
+        </ul>
+
+        <p><strong>Ocular dominance columns:</strong> Many V1 neurons respond to input from either eye, but most prefer one eye (ocular dominance). Neurons with the same ocular dominance are clustered in vertical columns (~500 µm wide). Adjacent columns prefer opposite eyes. These form alternating stripes visible with appropriate staining or optical imaging.</p>
+
+        <p><strong>Orientation columns:</strong> Neurons with similar orientation preferences cluster together. Orientation preference varies systematically across the cortical surface, rotating about 180° over ~500 µm. A complete set of orientations (0°–180°) repeats every ~500 µm. The combination of ocular dominance and orientation columns forms a regular mosaic — the <strong>hypercolumn</strong> — that tiles V1 such that every part of the visual field is processed by a set of neurons with all orientations and both eye inputs.</p>
+      </div>
+
+      <div class="widget-card">
+        <div class="widget-title">V1 Orientation Tuning Curve</div>
+        <div id="tuning-plot" style="height:280px;"></div>
+        <p style="font-size:12px;color:#7a8a9a;margin-top:8px;">
+          A typical V1 simple cell's orientation tuning curve. Maximum firing near the preferred orientation (here ~45°), half-maximum at ±22°, suppression beyond ±90°. The bandwidth (half-width at half-max) averages ~20–30° in primate V1.
+        </p>
+      </div>
+
+      <div class="section-head" id="streams">Visual Areas Beyond V1</div>
+
+      <div class="prose">
+        <p>V1 sends processed output to V2, then diverges into two hierarchical processing streams that extend through dozens of distinct cortical areas:</p>
+
+        <p><strong>The ventral stream ("what" pathway)</strong> — V1 → V2 → V4 → IT (inferotemporal cortex). Processes form, colour, texture, and object identity. Neurons in IT cortex have very large receptive fields and are selective for complex objects (faces, hands, chairs). IT neurons are invariant to translation, scale, and viewpoint in ways that V1 neurons are not — reflecting the hierarchical transformation from simple to complex feature detectors. Damage to ventral stream areas produces visual agnosias (inability to recognize objects, faces, colours) while sparing the ability to reach for objects.</p>
+
+        <p><strong>The dorsal stream ("where/how" pathway)</strong> — V1 → V2 → MT (V5) → MST → parietal cortex. Processes motion, spatial location, and visuomotor control (guiding reaching and grasping movements). MT neurons are highly selective for the direction of motion. Damage to MT produces motion blindness (akinetopsia). Parietal damage produces hemispatial neglect (ignoring the contralateral visual field) and optic ataxia (poor reaching despite intact vision).</p>
+
+        <p>The two streams are not independent — they interact extensively. Object recognition often requires spatial processing (where are the parts relative to each other?), and visuomotor control requires knowing what you're reaching for.</p>
+      </div>
+
+      <div class="section-head" id="examples">Worked Examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Why diffuse illumination gives a weak response in RGCs</strong></div>
+        <div class="example-problem">An ON-center RGC has a center radius producing +10 spikes/s per unit illumination, and a surround of equal total area producing –8 spikes/s per unit illumination. Predict the response to (a) a spot confined to the center, (b) an annulus confined to the surround, (c) a uniform full-field illumination.</div>
+        <div class="example-body">
+          <p>(a) Center spot: $+10$ spikes/s above baseline. Strong excitation.</p>
+          <p>(b) Annulus in surround: $-8$ spikes/s (inhibition below baseline resting firing rate — may reduce to 0 if resting rate is below 8).</p>
+          <p>(c) Full-field: center excitation + surround inhibition: $+10 - 8 = +2$ spikes/s. Much weaker than the center-only response. Diffuse illumination gives nearly the same amount of light to center and surround, and they roughly cancel. This is why the retina (and visual cortex) are sensitive to edges and contrast, not absolute light level — the center-surround organisation is a spatial differentiator.</p>
+        </div>
+      </div>
+
+      <div class="section-head" id="fft">Food for Thought</div>
+      <ul style="line-height:1.9;padding-left:20px;" class="fft-list">
+        <li class="fft-item">Orientation-selective neurons in V1 can be explained either by the specific pattern of thalamic inputs (Hubel & Wiesel's feedforward model) or by intracortical circuit mechanisms. How would you distinguish these two accounts experimentally?
+          <div class="fft-answer">The key test is what happens when you inactivate intracortical connections. Silencing lateral inhibition pharmacologically (GABA blockers) or optogenetically inactivating nearby excitatory neurons should broaden tuning if intracortical sharpening is important, but leave it intact if tuning is fully determined by feedforward input. Experiments have shown that pharmacological broadening occurs, but the preferred orientation is preserved even when cortical activity is blocked — suggesting the feedforward connectivity sets the preferred orientation while cortical circuits sharpen the tuning.</div>
+        </li>
+        <li class="fft-item">If the two visual processing streams are partially independent, why does bilateral damage to posterior parietal cortex (dorsal stream) cause difficulty with object recognition in some patients, even though object recognition is a ventral stream function?
+          <div class="fft-answer">Object recognition is not purely a ventral stream process — it requires spatial information about how parts relate to each other, and attentional selection (which is parietal/dorsal) determines which objects in a cluttered scene are processed in IT cortex. Without parietal-mediated spatial attention, ventral stream processing becomes degraded for complex multi-object scenes. This illustrates the general principle that "what" and "where" streams are anatomically distinct but computationally interdependent.</div>
+        </li>
+      </ul>
+
+      <div class="section-head" id="pitfalls">Common Pitfalls</div>
+      <div class="prose">
+        <ul style="line-height:1.9;padding-left:20px;">
+          <li><strong>Thinking photoreceptors depolarize to light.</strong> They hyperpolarize — light closes the cGMP-gated dark-current channels. In the dark, they are tonically active and releasing glutamate; light reduces this release.</li>
+          <li><strong>Conflating "where" with "what" streams.</strong> The dorsal stream processes spatial location and visuomotor control; the ventral stream processes identity. Lesion studies confirm the double dissociation. Do not say the dorsal stream is the spatial stream and leave it there — it is specifically the <em>action</em>-relevant stream, not just a map.</li>
+          <li><strong>Thinking V1 is the "starting point" of visual processing.</strong> Substantial processing happens before V1: the retina implements spatial filtering (center-surround), temporal filtering (transient vs sustained), colour opponency, and motion detection. By the time signals reach V1, they are already substantially transformed.</li>
+        </ul>
+      </div>
+
+      <div class="section-head" id="connects">Connects to</div>
+      <div class="prose">
+        <p><strong>Neural Circuits (Lesson 3)</strong> — the LGN → V1 projection implements feedforward inhibition via layer IVc interneurons; lateral inhibition in V1 sharpens orientation tuning.</p>
+        <p><strong>Motor Systems (Lesson 6)</strong> — the dorsal visual stream projects to posterior parietal cortex, which drives visuomotor transformation for reaching and grasping. The "mirror neuron" system in premotor cortex also receives visual input from the temporal stream.</p>
+        <p><strong>Computational Neuroscience (Lesson 10)</strong> — V1 simple cells as Gabor filter banks; the ventral stream as a hierarchical feature detector matching the architecture of deep convolutional neural networks.</p>
+      </div>
+
+      <div class="lesson-nav">
+        <a href="neural-circuits.html" class="lesson-nav-btn">← Lesson 3 · Neural Circuits</a>
+        <a href="auditory-somatosensory.html" class="lesson-nav-btn">Lesson 5 · Auditory &amp; Somatosensory →</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  // V1 orientation tuning curve
+  var orientations = [];
+  var responses    = [];
+  var preferred    = 45; // degrees
+  for (var i = -90; i <= 270; i += 3) {
+    orientations.push(i);
+    var diff = Math.abs(i - preferred);
+    if (diff > 180) diff = 360 - diff;
+    var resp = 40 * Math.exp(-0.5 * Math.pow(diff / 25, 2));
+    responses.push(Math.max(0, resp));
+  }
+  Plotly.newPlot('tuning-plot', [
+    { x: orientations, y: responses, type: 'scatter', mode: 'lines', fill: 'tozeroy',
+      line: { color: '#2c6f9a', width: 2 }, fillcolor: 'rgba(44,111,154,0.12)' }
+  ], {
+    margin: { t: 10, r: 20, b: 45, l: 55 },
+    paper_bgcolor: 'transparent', plot_bgcolor: '#f8f7f4',
+    font: { family: 'IBM Plex Sans', size: 11, color: '#3a4a5a' },
+    xaxis: { title: 'Stimulus orientation (°)', tickvals: [0, 45, 90, 135, 180, 225], ticktext: ['0°','45°','90°','135°','180°','225°'], gridcolor: '#e0e8ee' },
+    yaxis: { title: 'Firing rate (spikes/s)', range: [0, 50], gridcolor: '#e0e8ee' },
+    shapes: [{ type: 'line', x0: preferred, x1: preferred, y0: 0, y1: 50, line: { color: '#9aabb8', width: 1, dash: 'dot' } }],
+    annotations: [{ x: preferred + 5, y: 38, text: 'Preferred 45°', showarrow: false, font: { size: 10, color: '#9aabb8' } }]
+  }, { responsive: true, displayModeBar: false });
+});
+</script>
+
+</body>
+</html>

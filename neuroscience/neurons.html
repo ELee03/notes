@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Neuron &amp; the Action Potential · Neuroscience</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="neuroscience" data-current="neurons.html"></div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="breadcrumb-sep">›</span>
+        <a href="index.html">Neuroscience</a>
+        <span class="breadcrumb-sep">›</span>
+        Lesson 1
+      </div>
+
+      <h1 class="lesson-title">The Neuron &amp; the Action Potential</h1>
+      <div class="lesson-meta">Resting Potential · Ion Channels · Action Potential · Propagation · Myelination</div>
+
+      <div class="prose">
+        <p>The entire nervous system runs on a single trick: the electrical pulse. Neurons encode information as brief voltage spikes — action potentials — that travel along axons and trigger the release of chemical signals at synapses. Everything the brain does, from detecting a whisper to planning a movement to consolidating a memory, traces back to this fundamental event: an electrochemical wave that takes about one millisecond to generate, travels at speeds up to 120 m/s, and is the same shape and amplitude every time it fires. By the end of this lesson you'll understand why that pulse arises from the physics of ion gradients across a membrane, what determines whether a neuron fires at all, and how that signal travels without decaying over the length of an axon.</p>
+      </div>
+
+      <div class="callout">
+        <strong>Notation used in this lesson</strong><br>
+        $V_m$ — membrane potential (mV), convention: intracellular minus extracellular<br>
+        $E_X$ — equilibrium (Nernst) potential for ion $X$<br>
+        $g_X$ — conductance of ion $X$ (the reciprocal of resistance)<br>
+        $[X]_i$, $[X]_o$ — intracellular and extracellular concentrations of ion $X$<br>
+        $F$ — Faraday's constant (96,485 C/mol); $R$ — gas constant; $T$ — temperature (K)<br>
+        $z$ — valence of ion ($+1$ for Na$^+$, K$^+$; $-1$ for Cl$^-$; $+2$ for Ca$^{2+}$)
+      </div>
+
+      <div class="section-head" id="anatomy">Neurons and Glia</div>
+
+      <div class="prose">
+        <p>The nervous system contains two broad classes of cells: <strong>neurons</strong>, which generate and transmit electrical signals, and <strong>glia</strong>, which support, insulate, and maintain neurons.</p>
+
+        <p>A typical neuron has four anatomically distinct regions, each serving a distinct computational role:</p>
+        <ul style="margin:8px 0 8px 20px;line-height:1.8;">
+          <li><strong>Dendrites</strong> — branching processes that receive synaptic inputs from other neurons. The dendritic tree can be vast, integrating thousands of inputs simultaneously.</li>
+          <li><strong>Cell body (soma)</strong> — contains the nucleus and metabolic machinery. Also the site where incoming signals are summed to determine whether the cell fires.</li>
+          <li><strong>Axon</strong> — the output cable. A single long process (up to 1 metre in some motor neurons) that carries the action potential away from the soma to synaptic terminals.</li>
+          <li><strong>Axon terminals (boutons)</strong> — the presynaptic endings that release neurotransmitter into the synapse when an action potential arrives.</li>
+        </ul>
+
+        <p>Neurons come in many shapes: <strong>multipolar</strong> neurons (many dendrites, one axon) dominate the CNS; <strong>bipolar</strong> neurons appear in sensory systems (retina, olfactory epithelium); <strong>unipolar</strong> neurons carry somatosensory information from the periphery to the spinal cord.</p>
+
+        <p>Glia outnumber neurons roughly 1:1 in the human brain, though this ratio varies by region. Key types: <strong>astrocytes</strong> regulate the extracellular environment, buffer K$^+$ and glutamate, and form the blood-brain barrier; <strong>oligodendrocytes</strong> (CNS) and <strong>Schwann cells</strong> (PNS) wrap axons in myelin; <strong>microglia</strong> are the brain's immune cells, pruning synapses and clearing debris.</p>
+      </div>
+
+      <div class="section-head" id="resting">The Resting Membrane Potential</div>
+
+      <div class="prose">
+        <p>At rest, the inside of a neuron is about $-70$ mV relative to the outside — the <strong>resting membrane potential</strong>. Understanding where this comes from is the key to understanding everything that follows.</p>
+
+        <p>The membrane is a lipid bilayer, essentially impermeable to ions. Embedded in it are <strong>ion channels</strong> — protein pores that allow specific ions through. At rest, most of the open channels are selective for K$^+$. The cell maintains steep concentration gradients across the membrane via the Na$^+$/K$^+$-ATPase pump:</p>
+        <ul style="margin:8px 0 8px 20px;line-height:1.8;">
+          <li>K$^+$: high inside (140 mM), low outside (5 mM)</li>
+          <li>Na$^+$: low inside (12 mM), high outside (145 mM)</li>
+          <li>Cl$^-$: low inside, high outside</li>
+          <li>Large organic anions (A$^-$): trapped inside the cell, cannot cross the membrane</li>
+        </ul>
+
+        <p>The <strong>Nernst equation</strong> gives the equilibrium potential $E_X$ at which the electrical force on ion $X$ exactly balances its concentration-driven diffusion force:</p>
+        <div class="math-block">$$E_X = \frac{RT}{zF}\ln\frac{[X]_o}{[X]_i}$$</div>
+
+        <p>At body temperature ($T = 310$ K), $RT/F \approx 26.7$ mV. For K$^+$ ($z = +1$):</p>
+        <div class="math-block">$$E_K = 26.7\,\text{mV} \cdot \ln\frac{5}{140} \approx -90\,\text{mV}$$</div>
+
+        <p>K$^+$ wants to flow outward (driven by its concentration gradient), but leaving takes positive charge away from the inside, making the interior more negative. Equilibrium is reached at $-90$ mV, where the electrical attraction pulling K$^+$ back exactly cancels the concentration force pushing it out.</p>
+
+        <p>The resting potential ($-70$ mV) is not $E_K$ because the membrane is not <em>only</em> permeable to K$^+$. The <strong>Goldman-Katz equation</strong> accounts for multiple ion species weighted by their permeabilities $P_X$:</p>
+        <div class="math-block">$$V_m = \frac{RT}{F}\ln\frac{P_K[K^+]_o + P_{Na}[Na^+]_o + P_{Cl}[Cl^-]_i}{P_K[K^+]_i + P_{Na}[Na^+]_i + P_{Cl}[Cl^-]_o}$$</div>
+
+        <p>At rest, $P_K \gg P_{Na}$ (roughly 40:1), so the resting potential sits close to $E_K$ but is shifted toward $E_{Na} \approx +62$ mV by the small Na$^+$ leak. The Na$^+$/K$^+$ pump continuously corrects for this leak, expelling 3 Na$^+$ and importing 2 K$^+$ per ATP hydrolysis cycle.</p>
+
+        <p class="callout"><strong>The core principle:</strong> The resting potential is the weighted average of the equilibrium potentials for all permeable ions, weighted by their relative permeabilities. Change the permeability of any ion, and $V_m$ shifts toward that ion's Nernst potential.</p>
+      </div>
+
+      <div class="section-head" id="channels">Ion Channels</div>
+
+      <div class="prose">
+        <p>Ion channels are transmembrane proteins with a water-filled pore at their center, selective for specific ions via the geometry and charge distribution of the pore's narrowest region (the <strong>selectivity filter</strong>). Their critical property: they are <strong>gated</strong>, meaning they switch between open and closed states in response to stimuli.</p>
+
+        <p><strong>Voltage-gated channels</strong> open in response to membrane depolarization and are the key players in the action potential:</p>
+        <ul style="margin:8px 0 8px 20px;line-height:1.8;">
+          <li><strong>Voltage-gated Na$^+$ channels (Na$_v$)</strong> — activate (open) rapidly on depolarization, then inactivate within ~1 ms despite continued depolarization. This inactivation is caused by a separate "ball-and-chain" inactivation gate that physically blocks the pore. The channel must repolarize fully before it can be recruited again (the <em>refractory period</em>).</li>
+          <li><strong>Voltage-gated K$^+$ channels (K$_v$)</strong> — activate more slowly than Na$_v$ and do <em>not</em> inactivate rapidly. Their opening drives repolarization.</li>
+          <li><strong>Voltage-gated Ca$^{2+}$ channels</strong> — open during depolarization; the Ca$^{2+}$ influx triggers neurotransmitter release at axon terminals.</li>
+        </ul>
+
+        <p><strong>Ligand-gated channels</strong> open in response to neurotransmitter binding — these are the postsynaptic receptors discussed in Lesson 2.</p>
+
+        <p><strong>Leak channels</strong> are always open (or open/close stochastically without a stimulus trigger). Resting K$^+$ leak channels set the resting potential.</p>
+
+        <p>Single-channel recordings using the <strong>patch-clamp technique</strong> (Neher and Sakmann, Nobel Prize 1991) revealed that individual channels produce discrete current pulses — they are either fully open or fully closed (stochastic two-state switches). The smooth macroscopic current measured from a whole neuron is the average of thousands of such all-or-nothing events.</p>
+      </div>
+
+      <div class="section-head" id="ap">The Action Potential</div>
+
+      <div class="prose">
+        <p>The action potential is a rapid, stereotyped reversal of membrane potential that propagates along the axon. Its key properties are: it is <strong>all-or-none</strong> (either fires fully or not at all), it has a fixed <strong>threshold</strong> (typically around $-55$ mV), and it is followed by a <strong>refractory period</strong> during which the cell cannot fire again.</p>
+
+        <p>The sequence of events, from first principles:</p>
+
+        <p><strong>1. Depolarization to threshold.</strong> A synaptic input (or any other stimulus) depolarizes the membrane from $-70$ mV toward the threshold of $-55$ mV. At threshold, enough voltage-gated Na$_v$ channels have opened to produce a self-reinforcing cycle: depolarization opens more channels, which admits more Na$^+$, which further depolarizes the membrane. This is the <strong>positive feedback</strong> that makes the AP all-or-none.</p>
+
+        <p><strong>2. The upstroke (depolarization).</strong> Na$_v$ channels open massively; Na$^+$ floods in, driven by both its concentration gradient <em>and</em> the negative interior. $V_m$ rockets from $-55$ mV to approximately $+40$ mV in under a millisecond — near (but not quite reaching) $E_{Na} = +62$ mV.</p>
+
+        <p><strong>3. The peak and early repolarization.</strong> Two things now conspire to reverse the depolarization: (a) Na$_v$ channels <strong>inactivate</strong> — the inactivation gate closes, halting Na$^+$ influx even though the channel's activation gate is still open; (b) voltage-gated K$_v$ channels, which open more slowly, are now fully activated and K$^+$ flows outward, removing positive charge from the interior.</p>
+
+        <p><strong>4. Repolarization.</strong> K$^+$ efflux drives $V_m$ back toward $E_K$. The Na$_v$ inactivation ensures that once the AP is underway, the upstroke cannot be re-triggered during this same cycle.</p>
+
+        <p><strong>5. The undershoot (after-hyperpolarization).</strong> K$_v$ channels close slowly; the membrane transiently overshoots the resting potential toward $E_K \approx -90$ mV. During this period, the cell is in the <strong>relative refractory period</strong> — a stronger-than-normal stimulus is needed to re-fire because (a) the membrane is further from threshold, and (b) some Na$_v$ channels are still inactivated. The absolute refractory period (immediately after the AP) prevents re-firing entirely, no matter how large the stimulus.</p>
+      </div>
+
+      <div class="widget-card">
+        <div class="widget-title">Action Potential Waveform</div>
+        <div id="ap-plot" style="height:320px;"></div>
+        <p style="font-size:12px;color:#7a8a9a;margin-top:8px;">
+          Typical action potential: upstroke driven by Na⁺ influx, repolarization by K⁺ efflux,
+          undershoot as K⁺ channels close slowly. Na⁺ and K⁺ conductance changes are shown below.
+        </p>
+      </div>
+
+      <div class="section-head" id="propagation">Propagation and Myelination</div>
+
+      <div class="prose">
+        <p>An action potential generated at the axon hillock (the junction of soma and axon) must travel the entire length of the axon to its terminals. How does a signal that lasts 1 ms travel up to a meter without decaying?</p>
+
+        <p>The answer is <strong>active regeneration</strong>. The AP does not travel like a wave on a string (which decays with distance). Instead, the depolarization at each point spreads electrotonically to the adjacent membrane, brings that membrane to threshold, and triggers a fresh AP there. The original site then enters its refractory period, which prevents the AP from traveling backward. The result is a self-regenerating wave that is the same amplitude at every point along the axon.</p>
+
+        <p>The speed of propagation depends on two competing factors:</p>
+        <ul style="margin:8px 0 8px 20px;line-height:1.8;">
+          <li><strong>Axon diameter</strong> — larger diameter means less resistance to current flow along the axon interior, so depolarization spreads faster to adjacent membrane. Propagation speed scales approximately as $\sqrt{d}$ for unmyelinated axons.</li>
+          <li><strong>Membrane capacitance</strong> — current must charge the membrane capacitance before depolarizing it. High capacitance slows propagation.</li>
+        </ul>
+
+        <p><strong>Myelination</strong> is evolution's solution to the speed problem. Oligodendrocytes (in the CNS) and Schwann cells (in the PNS) wrap sections of axon in multiple layers of myelin — essentially compacted cell membrane with very low capacitance and high electrical resistance. The myelin sheath is interrupted every 1–2 mm at the <strong>nodes of Ranvier</strong>, short gaps densely packed with voltage-gated Na$_v$ channels.</p>
+
+        <p>In a myelinated axon, the depolarizing current jumps from node to node — <strong>saltatory conduction</strong> (from Latin <em>saltare</em>, to jump). The signal is regenerated only at the nodes, not along the entire axon. This is vastly more energy-efficient (fewer Na$^+$ ions need to be pumped back) and enormously faster: unmyelinated C fibres conduct at 0.5–2 m/s, while the largest myelinated Aα fibres (muscle afferents) conduct at up to 120 m/s.</p>
+
+        <p>The functional importance of myelin is starkly illustrated by <strong>multiple sclerosis</strong>, a demyelinating disease where the immune system destroys myelin sheaths. Loss of myelin slows and eventually blocks conduction, producing the progressive sensory and motor deficits characteristic of the disease.</p>
+      </div>
+
+      <div class="section-head" id="examples">Worked Examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Nernst potential for Na⁺</strong></div>
+        <div class="example-problem">Calculate the Nernst potential for Na⁺ at 37°C given $[\text{Na}^+]_i = 12$ mM and $[\text{Na}^+]_o = 145$ mM.</div>
+        <div class="example-body">
+          <p>Using $RT/F = 26.7$ mV at $T = 310$ K and $z = +1$:</p>
+          $$E_{Na} = 26.7\,\text{mV} \cdot \ln\frac{145}{12} = 26.7 \times 2.49 \approx +66\,\text{mV}$$
+          <p>Na⁺ has a strong drive to enter the cell — both the chemical gradient (high outside, low inside) and the electrical gradient (negative interior) push it inward. The membrane only needs to depolarize to $+66$ mV before the two forces exactly balance.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Why does the action potential not exceed E_Na?</strong></div>
+        <div class="example-problem">The AP peaks at roughly $+40$ mV, yet $E_{Na} \approx +62$ mV. Why doesn't $V_m$ reach $E_{Na}$?</div>
+        <div class="example-body">
+          <p>Two reasons. First, Na$_v$ channels begin to inactivate even as they are opening — by the time $V_m$ approaches $+40$ mV, inactivation is already reducing Na$^+$ conductance. Second, the voltage-gated K$^+$ channels are also opening, and K$^+$ efflux acts to pull the membrane back toward $E_K$. The peak $V_m$ reflects a race between the decaying Na$^+$ current and the rising K$^+$ current. The membrane reaches whatever voltage balances these two competing currents at their instantaneous values — and at the time of the peak, that happens to be around $+40$ mV.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Absolute vs relative refractory period</strong></div>
+        <div class="example-problem">A neuron fires an AP at $t=0$. Explain why it cannot fire again at $t=0.5$ ms regardless of stimulus strength, but can fire at $t=3$ ms given a strong enough stimulus.</div>
+        <div class="example-body">
+          <p>At $t=0.5$ ms, the AP is still in its upstroke or early repolarization phase. Na$_v$ channels are inactivated — even fully open, they cannot pass current, so no amount of additional depolarizing stimulus can generate a new AP. This is the <strong>absolute refractory period</strong>.</p>
+          <p>By $t=3$ ms (typically during or just after the undershoot), Na$_v$ channels have recovered from inactivation — their inactivation gate has reset. However, the membrane is still hyperpolarized (near $-80$ mV during the undershoot), so a larger depolarization is required to reach threshold. The voltage-gated K$^+$ channels may still be partially open. A sufficiently strong stimulus can overcome both obstacles. This is the <strong>relative refractory period</strong>.</p>
+        </div>
+      </div>
+
+      <div class="section-head" id="fft">Food for Thought</div>
+      <ul style="line-height:1.9;padding-left:20px;" class="fft-list">
+        <li class="fft-item">The action potential is all-or-none, yet neurons encode graded information. How does a neuron represent the intensity of a stimulus when its outputs are identical pulses?
+          <div class="fft-answer">Rate coding: stronger stimuli produce higher firing rates (more APs per second). The neuron converts a graded receptor potential into a train of all-or-none spikes, with frequency proportional to input intensity. This is the classic view — though temporal coding (precise spike timing) may carry additional information in some systems.</div>
+        </li>
+        <li class="fft-item">The Na⁺/K⁺-ATPase pump is essential for maintaining ion gradients. It consumes roughly 40% of the brain's ATP. Yet if you poisoned the pump, the neuron could still fire many thousands of action potentials before the gradients collapsed enough to matter. Why? And what does that imply about the energetics of the AP itself?
+          <div class="fft-answer">Each AP moves only a tiny fraction of the total ion gradient — roughly 1 in 10⁶ K⁺ ions crosses per AP. The capacitance of the membrane is small ($\sim$1 µF/cm²), so only a small charge displacement is needed to change $V_m$ by 100 mV. The pump's role is maintenance over long timescales, not immediate AP support. This implies that the AP itself is energetically cheap; most of the brain's ATP goes to maintaining the resting potential continuously, not to firing.</div>
+        </li>
+        <li class="fft-item">MS destroys myelin and slows conduction. But which aspects of function would be disrupted first — fast reflexes, sensory perception, or complex cognition — and why?
+          <div class="fft-answer">Fast reflexes require rapid conduction in large-diameter myelinated axons (motor and proprioceptive). These would fail first as myelin is damaged. Sensory perception via slow C fibres is already unmyelinated, so less affected. Complex cognition relies on distributed cortical circuits with relatively short connection distances — it might be surprisingly resilient initially, degrading gradually as cortico-cortical white matter tracts demyelinate.</div>
+        </li>
+      </ul>
+
+      <div class="section-head" id="pitfalls">Common Pitfalls</div>
+      <div class="prose">
+        <ul style="line-height:1.9;padding-left:20px;">
+          <li><strong>Thinking the AP is "made of" Na⁺ and K⁺ flowing in bulk.</strong> Very few ions actually cross the membrane per AP (roughly 1 in a million). It's a <em>charge redistribution</em> — a small movement of ions across a highly insulating membrane generates a large voltage change, exactly because of the membrane's low capacitance.</li>
+          <li><strong>Confusing the Nernst potential with the resting potential.</strong> $E_K = -90$ mV is the potential at which K⁺ is in equilibrium; the resting potential ($-70$ mV) is the actual steady state, set by the weighted average of all permeable ions. They differ because the membrane is also slightly permeable to Na⁺.</li>
+          <li><strong>Thinking the undershoot requires "extra" K⁺ efflux.</strong> The undershoot (after-hyperpolarization) results from K⁺ channels that close slowly. While they remain open after $V_m$ has returned to $-70$ mV, they continue to pull $V_m$ toward $E_K = -90$ mV. No extra K⁺ is needed — the existing K⁺ conductance is simply slow to turn off.</li>
+          <li><strong>Conflating absolute and relative refractory periods mechanistically.</strong> Absolute refractory = Na$_v$ channels physically inactivated (can't open). Relative refractory = Na$_v$ channels recovered but membrane hyperpolarized + residual K⁺ conductance. Different mechanisms, different timescales.</li>
+        </ul>
+      </div>
+
+      <div class="section-head" id="connects">Connects to</div>
+      <div class="prose">
+        <p><strong>Synaptic Transmission (Lesson 2)</strong> — the AP arriving at an axon terminal opens voltage-gated Ca²⁺ channels; Ca²⁺ entry triggers vesicle fusion and neurotransmitter release. Everything in the rest of the course depends on the AP reliably reaching its destination.</p>
+        <p><strong>Bioelectricity</strong> — the Hodgkin-Huxley equations model Na$_v$ and K$_v$ conductances as variable resistors whose values depend on voltage and time. The four coupled ODEs reproduce the AP quantitatively and are the foundation of computational neuroscience. The cable equation (Rall model) extends this to dendrites with realistic geometry.</p>
+        <p><strong>Motor Systems (Lesson 6)</strong> — the speed of the corticospinal tract's AP (up to 70 m/s in myelinated Aα fibres) sets the latency between a motor command and muscle contraction, relevant for fine motor control and reaction time.</p>
+      </div>
+
+      <div class="lesson-nav">
+        <span class="lesson-nav-btn disabled">← Start of cluster</span>
+        <a href="synaptic-transmission.html" class="lesson-nav-btn">Lesson 2 · Synaptic Transmission →</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  renderMathInElement(document.body, {
+    delimiters: [
+      {left: '$$', right: '$$', display: true},
+      {left: '$', right: '$', display: false}
+    ]
+  });
+
+  // Action potential waveform
+  var t = [], Vm = [], gNa = [], gK = [];
+  for (var i = 0; i <= 500; i++) {
+    var ti = i * 0.02; // ms, 0 to 10 ms
+    t.push(ti);
+    // Simplified AP waveform using piecewise functions
+    var vm, gna, gk;
+    if (ti < 1.0) {
+      // Resting
+      vm = -70;
+      gna = 0.02; gk = 0.3;
+    } else if (ti < 1.4) {
+      // Upstroke
+      var u = (ti - 1.0) / 0.4;
+      vm = -70 + 110 * u * u;
+      gna = 0.02 + 29.98 * u * u;
+      gk = 0.3 + 0.7 * u;
+    } else if (ti < 2.0) {
+      // Peak + early repolarization (Na inactivation)
+      var u = (ti - 1.4) / 0.6;
+      vm = 40 - 50 * u * u;
+      gna = 30 * (1 - u) * (1 - u);
+      gk = 1.0 + 9 * u * u;
+    } else if (ti < 3.0) {
+      // Repolarization + undershoot
+      var u = (ti - 2.0) / 1.0;
+      vm = -10 - 80 * u + 20 * u * u;
+      gna = 0.02 + 0.5 * (1 - u);
+      gk = 10 * (1 - u) * (1 - u) + 0.3;
+    } else if (ti < 5.0) {
+      // Recovery from undershoot
+      var u = (ti - 3.0) / 2.0;
+      vm = -90 + 20 * u;
+      gna = 0.02; gk = 0.3 + 2 * (1 - u) * (1 - u);
+    } else {
+      vm = -70; gna = 0.02; gk = 0.3;
+    }
+    Vm.push(vm); gNa.push(gna); gK.push(gk);
+  }
+
+  Plotly.newPlot('ap-plot', [
+    { x: t, y: Vm, name: 'V<sub>m</sub> (mV)', line: { color: '#2c6f9a', width: 2.5 }, yaxis: 'y1' },
+    { x: t, y: gNa, name: 'g<sub>Na</sub>', line: { color: '#c04040', width: 1.8, dash: 'dot' }, yaxis: 'y2' },
+    { x: t, y: gK, name: 'g<sub>K</sub>', line: { color: '#3a7a52', width: 1.8, dash: 'dash' }, yaxis: 'y2' }
+  ], {
+    margin: { t: 10, r: 60, b: 40, l: 55 },
+    paper_bgcolor: 'transparent', plot_bgcolor: '#f8f7f4',
+    font: { family: 'IBM Plex Sans', size: 11, color: '#3a4a5a' },
+    xaxis: { title: 'Time (ms)', range: [0, 8], gridcolor: '#e0e8ee' },
+    yaxis:  { title: 'V<sub>m</sub> (mV)', range: [-100, 55], gridcolor: '#e0e8ee' },
+    yaxis2: { title: 'Conductance (mS/cm²)', overlaying: 'y', side: 'right', range: [0, 32], gridcolor: '#e0e8ee', showgrid: false },
+    legend: { x: 0.65, y: 0.98, bgcolor: 'rgba(248,247,244,0.9)', bordercolor: '#d0d8e0', borderwidth: 1 },
+    shapes: [
+      { type: 'line', x0: 1.0, x1: 1.0, y0: -100, y1: 55, xref: 'x', yref: 'y', line: { color: '#9aabb8', width: 1, dash: 'dot' } }
+    ],
+    annotations: [
+      { x: 1.05, y: -50, text: 'Threshold', showarrow: false, font: { size: 10, color: '#9aabb8' }, xref: 'x', yref: 'y' }
+    ]
+  }, { responsive: true, displayModeBar: false });
+});
+</script>
+
+</body>
+</html>
