@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prerequisite Guide · Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .prereq-canvas {
+      height: calc(100vh - 218px);
+      min-height: 480px;
+      border-radius: 6px;
+      background: #f8f7f4;
+      overflow: hidden;
+      position: relative;
+    }
+    #prereq-svg { display: block; width: 100%; height: 100%; cursor: grab; }
+    #prereq-svg:active { cursor: grabbing; }
+    .zoom-btns {
+      position: absolute; top: 10px; right: 10px;
+      display: flex; flex-direction: column; gap: 4px; z-index: 10;
+    }
+    .zoom-btn {
+      width: 28px; height: 28px; background: #fff;
+      border: 1px solid #c8d4dc; border-radius: 4px; cursor: pointer;
+      font-size: 16px; line-height: 26px; text-align: center;
+      color: #3a4a5a; user-select: none;
+    }
+    .zoom-btn:hover { background: #eef2f5; }
+    .zoom-btn-fit { font-size: 11px; line-height: 27px; }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="map.html" class="topbar-link">Map</a>
+    <span class="topbar-sep">·</span>
+    <span class="topbar-link" style="color:#9aabb8;cursor:default;">Guide</span>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Field Notes</div>
+        <a href="index.html" class="nav-item">← Portal</a>
+        <a href="map.html" class="nav-item">Taxonomy Map</a>
+      </div>
+      <hr class="sidebar-rule">
+      <div id="portal-sidebar-nav"></div>
+    </div>
+
+    <div class="main">
+      <h1 class="lesson-title" style="margin-bottom:4px;">Prerequisite Guide</h1>
+      <p class="lesson-meta" style="margin-bottom:22px;">
+        Arrows point from prerequisites to dependents. Filled nodes are active clusters; outlined are planned.
+        Pan, scroll to zoom, or use the controls.
+      </p>
+      <div class="prereq-canvas" id="prereq-canvas">
+        <svg id="prereq-svg"></svg>
+        <div class="zoom-btns">
+          <div class="zoom-btn" id="zoom-in">+</div>
+          <div class="zoom-btn" id="zoom-out">−</div>
+          <div class="zoom-btn zoom-btn-fit" id="zoom-fit">fit</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/dagre@0.8.5/dist/dagre.min.js"></script>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="notes-portal.js"></script>
+<script>renderPortalSidebar();</script>
+<script>
+(function () {
+  var PALETTE = ['#2c6f9a','#3a7a52','#8c5e1a','#5c3a8a','#2a7a6a','#8a3a52'];
+  var SEC_CLR = {};
+  var NODE_H  = 26;
+
+  var SHORT = {
+    'Thermodynamics & Statistical Mechanics': 'Thermo & Stat Mech',
+    'Semiconductor Device Physics':           'Semiconductor Phys.',
+    'Unsupervised & Generative Models':       'Unsupervised Learning',
+    'Biochemistry & Molecular Biology':       'Biochemistry',
+    'Adaptive & Robust Control':              'Adaptive Control',
+    'Nonlinear Dynamics & Chaos':             'Nonlinear Dynamics',
+    'Wireless Systems & Antennas':            'Wireless & Antennas',
+    'RF & Microwave Engineering':             'RF/Microwave Eng.',
+    'Analog Signal Processing':               'Analog Signal Proc.',
+    'Engineering Thermodynamics':             'Eng. Thermodynamics',
+    'Game Theory & Decision Theory':          'Game Theory',
+    'Quantum Computing Hardware':             'QC Hardware',
+    'Statistics & Inference':                 'Stats & Inference'
+  };
+
+  function decode(s) {
+    return (s || '').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+  }
+  function lbl(name)  { return SHORT[name] || name; }
+  function nodeW(name){ return Math.max(100, lbl(name).length * 6.4 + 26); }
+
+  function buildNodeMap(portalData) {
+    var map = {};
+    portalData.sections.forEach(function (sec, i) {
+      var secLabel = decode(sec.label);
+      SEC_CLR[secLabel] = PALETTE[i % PALETTE.length];
+      function walk(node) {
+        if (node.name !== undefined) {
+          var name = decode(node.name);
+          map[name] = { href: node.href || null, planned: !!node.planned, sec: secLabel };
+        } else if (node.children) {
+          node.children.forEach(walk);
+        }
+      }
+      (sec.children || []).forEach(walk);
+    });
+    return map;
+  }
+
+  function secClr(meta) { return SEC_CLR[meta.sec] || '#6a7a8a'; }
+
+  Promise.all([
+    fetch('portal.json').then(function (r) { return r.json(); }),
+    fetch('prereqs.json').then(function (r) { return r.json(); })
+  ]).then(function (results) {
+    var nodeMap  = buildNodeMap(results[0]);
+    var edges    = results[1].edges;
+
+    // Collect nodes referenced in any edge
+    var usedSet = {};
+    edges.forEach(function (e) { usedSet[e.from] = true; usedSet[e.to] = true; });
+    var usedNames = Object.keys(usedSet);
+
+    // ── Build dagre graph ───────────────────────────────────────────────────
+    var g = new dagre.graphlib.Graph();
+    g.setGraph({ rankdir: 'LR', nodesep: 14, ranksep: 90, marginx: 30, marginy: 30 });
+    g.setDefaultEdgeLabel(function () { return {}; });
+
+    usedNames.forEach(function (name) {
+      var meta = nodeMap[name] || { href: null, planned: true, sec: null };
+      g.setNode(name, { width: nodeW(name), height: NODE_H, meta: meta });
+    });
+
+    edges.forEach(function (e) {
+      if (usedSet[e.from] && usedSet[e.to]) g.setEdge(e.from, e.to);
+    });
+
+    dagre.layout(g);
+
+    // ── SVG setup ───────────────────────────────────────────────────────────
+    var canvas = document.getElementById('prereq-canvas');
+    var svg    = d3.select('#prereq-svg').attr('font-family', 'IBM Plex Sans, sans-serif');
+
+    // Arrowhead
+    svg.append('defs').append('marker')
+      .attr('id', 'arr').attr('viewBox', '0 -5 10 10')
+      .attr('refX', 10).attr('refY', 0)
+      .attr('markerWidth', 7).attr('markerHeight', 7)
+      .attr('orient', 'auto')
+      .append('path').attr('d', 'M0,-4L10,0L0,4Z')
+      .attr('fill', '#9ab0be').attr('stroke', 'none');
+
+    var root   = svg.append('g').attr('id', 'graph-root');
+    var gEdges = root.append('g');
+    var gNodes = root.append('g');
+
+    var zoom = d3.zoom().scaleExtent([0.06, 5])
+      .on('zoom', function (event) { root.attr('transform', event.transform); });
+    svg.call(zoom).on('dblclick.zoom', null);
+
+    function fitGraph() {
+      var gw = g.graph().width  + 60;
+      var gh = g.graph().height + 60;
+      var cw = canvas.clientWidth;
+      var ch = canvas.clientHeight;
+      var scale = Math.min(cw / gw, ch / gh) * 0.94;
+      var tx = (cw - gw * scale) / 2 + 30 * scale;
+      var ty = (ch - gh * scale) / 2 + 30 * scale;
+      svg.call(zoom.transform, d3.zoomIdentity.translate(tx, ty).scale(scale));
+    }
+
+    // ── Edges ───────────────────────────────────────────────────────────────
+    var line = d3.line()
+      .x(function (p) { return p.x; })
+      .y(function (p) { return p.y; })
+      .curve(d3.curveCatmullRom.alpha(0.5));
+
+    g.edges().forEach(function (e) {
+      gEdges.append('path')
+        .datum(g.edge(e).points)
+        .attr('fill', 'none')
+        .attr('stroke', '#bccad4')
+        .attr('stroke-width', 1.2)
+        .attr('marker-end', 'url(#arr)')
+        .attr('d', line);
+    });
+
+    // ── Nodes ───────────────────────────────────────────────────────────────
+    g.nodes().forEach(function (v) {
+      var nd     = g.node(v);
+      var meta   = nd.meta;
+      var active = !!meta.href;
+      var clr    = secClr(meta);
+      var fill   = active ? clr  : '#eff2f5';
+      var txtClr = active ? '#fff' : clr;
+
+      var ng = gNodes.append('g')
+        .attr('class', 'p-node')
+        .attr('transform', 'translate(' + nd.x + ',' + nd.y + ')');
+
+      ng.append('title').text(v + (active ? ' — click to open' : ' — planned'));
+
+      ng.append('rect')
+        .attr('x', -nd.width / 2).attr('y', -NODE_H / 2)
+        .attr('width', nd.width).attr('height', NODE_H)
+        .attr('rx', 5)
+        .attr('fill', fill)
+        .attr('stroke', active ? 'none' : clr)
+        .attr('stroke-width', 1.5);
+
+      ng.append('text')
+        .attr('text-anchor', 'middle').attr('dominant-baseline', 'middle')
+        .attr('font-size', 10.5)
+        .attr('font-weight', active ? '500' : '400')
+        .attr('fill', txtClr)
+        .text(lbl(v));
+
+      if (active) {
+        ng.style('cursor', 'pointer')
+          .on('click', function () { window.location.href = meta.href; });
+      }
+    });
+
+    fitGraph();
+
+    document.getElementById('zoom-in').addEventListener('click', function () {
+      svg.transition().duration(220).call(zoom.scaleBy, 1.5);
+    });
+    document.getElementById('zoom-out').addEventListener('click', function () {
+      svg.transition().duration(220).call(zoom.scaleBy, 0.67);
+    });
+    document.getElementById('zoom-fit').addEventListener('click', fitGraph);
+
+  }).catch(function (e) { console.error('prereq guide:', e); });
+})();
+</script>
+
+</body>
+</html>
