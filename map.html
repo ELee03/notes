@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Knowledge Map · Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .map-wrap { overflow-x: auto; overflow-y: visible; }
+    #map-svg  { display: block; }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <span class="topbar-link" style="color:#9aabb8;cursor:default;">Map</span>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Field Notes</div>
+        <a href="index.html" class="nav-item">← Portal</a>
+      </div>
+      <hr class="sidebar-rule">
+      <div id="portal-sidebar-nav"></div>
+    </div>
+
+    <div class="main">
+      <h1 class="lesson-title" style="margin-bottom:4px;">Knowledge Map</h1>
+      <p class="lesson-meta" style="margin-bottom:28px;">
+        Click any subcategory to expand its clusters. Active clusters link directly.
+      </p>
+      <div class="map-wrap">
+        <svg id="map-svg"></svg>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="notes-portal.js"></script>
+<script>renderPortalSidebar();</script>
+<script>
+(function () {
+  var COL_W   = 240,
+      ROW_H   = 36,
+      MG      = { top: 24, right: 290, bottom: 24, left: 28 },
+      PALETTE = ['#2c6f9a','#3a7a52','#8c5e1a','#5c3a8a','#2a7a6a','#8a3a52'],
+      SEC_CLR = {},
+      _uid    = 0;
+
+  function decode(s) {
+    return (s || '').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>');
+  }
+
+  function norm(node, sec) {
+    if (node.name !== undefined) {
+      return { id: ++_uid, label: decode(node.name), leaf: true,
+               href: node.href || null, planned: !!node.planned,
+               lessons: node.lessons || 0, desc: decode(node.desc || ''), sec: sec };
+    }
+    return { id: ++_uid, label: decode(node.label), leaf: false, sec: sec,
+             children: (node.children || []).map(function (c) { return norm(c, sec); }) };
+  }
+
+  function secClr(d) { return SEC_CLR[d.data.sec] || '#5a7a8a'; }
+
+  fetch('portal.json')
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+
+      data.sections.forEach(function (s, i) { SEC_CLR[s.label] = PALETTE[i]; });
+
+      var rootData = { id: 0, label: '__root__', leaf: false, sec: null,
+                       children: data.sections.map(function (s) { return norm(s, s.label); }) };
+
+      var root = d3.hierarchy(rootData);
+
+      // Collapse subcategory branch nodes initially (depth 2 with children)
+      root.each(function (d) {
+        if (d.depth === 2 && d.children) { d._children = d.children; d.children = null; }
+        d.x0 = 0; d.y0 = 0;
+      });
+
+      var svg    = d3.select('#map-svg').attr('font-family', 'IBM Plex Sans, sans-serif');
+      var gLinks = svg.append('g');
+      var gNodes = svg.append('g');
+      var layout = d3.tree().nodeSize([ROW_H, COL_W]);
+
+      var lh = d3.linkHorizontal()
+        .x(function (d) { return d.y; })
+        .y(function (d) { return d.x; });
+
+      function update(src) {
+        layout(root);
+
+        var nodes = root.descendants();
+        var links = root.links();
+        var dur   = src ? 260 : 0;
+
+        var xMin = d3.min(nodes, function (d) { return d.x; });
+        var xMax = d3.max(nodes, function (d) { return d.x; });
+        var maxD = d3.max(nodes, function (d) { return d.depth; });
+
+        var vbX = COL_W - MG.left;
+        var vbY = xMin  - MG.top;
+        var vbW = (maxD - 1) * COL_W + MG.left + MG.right;
+        var vbH = (xMax - xMin) + MG.top + MG.bottom;
+
+        svg.transition().duration(dur)
+          .attr('width',   vbW)
+          .attr('height',  vbH)
+          .attr('viewBox', vbX + ' ' + vbY + ' ' + vbW + ' ' + vbH);
+
+        // ── Links (skip root→section) ─────────────────────────────────────
+        var filtLinks = links.filter(function (d) { return d.source.depth > 0; });
+
+        var link = gLinks.selectAll('path.mlink')
+          .data(filtLinks, function (d) { return d.target.data.id; });
+
+        var sx0 = src ? src.x0 : 0, sy0 = src ? src.y0 : 0;
+
+        link.enter().append('path')
+          .attr('class', 'mlink')
+          .attr('fill', 'none').attr('stroke', '#c4cfd8').attr('stroke-width', 1.5)
+          .attr('d', lh({ source: { x: sx0, y: sy0 }, target: { x: sx0, y: sy0 } }))
+          .merge(link)
+          .transition().duration(dur).attr('d', lh);
+
+        link.exit().transition().duration(dur)
+          .attr('d', lh({ source: { x: src ? src.x : 0, y: src ? src.y : 0 },
+                          target: { x: src ? src.x : 0, y: src ? src.y : 0 } }))
+          .remove();
+
+        // ── Nodes ─────────────────────────────────────────────────────────
+        var node = gNodes.selectAll('g.mnode')
+          .data(nodes, function (d) { return d.data.id; });
+
+        var ne = node.enter().append('g')
+          .attr('class', 'mnode')
+          .attr('transform', 'translate(' + sy0 + ',' + sx0 + ')')
+          .on('click', function (event, d) {
+            if (d.depth <= 1) return;
+            if (d.data.leaf && d.data.href && !d.data.planned) {
+              window.location.href = d.data.href; return;
+            }
+            if (!d.data.leaf) {
+              if (d.children)        { d._children = d.children; d.children = null; }
+              else if (d._children)  { d.children = d._children; d._children = null; }
+              update(d);
+            }
+          });
+
+        // Tooltip
+        ne.append('title').text(function (d) {
+          if (!d.data.leaf || !d.data.desc) return d.data.label;
+          var snip = d.data.desc.length > 110 ? d.data.desc.slice(0, 110) + '…' : d.data.desc;
+          return d.data.label + ' — ' + snip;
+        });
+
+        ne.append('circle').attr('r', 0).attr('stroke-width', 1.5);
+
+        ne.append('text').attr('dy', '0.32em').attr('opacity', 0)
+          .text(function (d) {
+            if (d.depth === 0) return '';
+            return (d.data.leaf && d.data.lessons)
+              ? d.data.label + ' (' + d.data.lessons + ')'
+              : d.data.label;
+          });
+
+        var na = ne.merge(node);
+
+        na.transition().duration(dur)
+          .attr('transform', function (d) { return 'translate(' + d.y + ',' + d.x + ')'; });
+
+        // Circle
+        na.select('circle')
+          .attr('cursor', function (d) {
+            if (d.depth <= 1) return 'default';
+            if (d.data.leaf && d.data.href && !d.data.planned) return 'pointer';
+            return !d.data.leaf ? 'pointer' : 'default';
+          })
+          .transition().duration(dur)
+          .attr('r', function (d) { return d.depth === 0 ? 0 : d.data.leaf ? 4.5 : 6; })
+          .attr('fill', function (d) {
+            if (d.depth === 0) return 'none';
+            if (d.data.leaf)   return d.data.planned ? '#e6ecf2' : secClr(d);
+            return d.children ? '#f7f6f3' : secClr(d);  // hollow=open, filled=closed
+          })
+          .attr('stroke', function (d) {
+            if (d.depth === 0) return 'none';
+            return (d.data.leaf && d.data.planned) ? '#aabac8' : secClr(d);
+          });
+
+        // Text
+        na.select('text')
+          .attr('cursor', function (d) {
+            return (d.data.leaf && d.data.href && !d.data.planned) ? 'pointer' : 'default';
+          })
+          .attr('x', function (d) { return d.depth === 0 ? 0 : 11; })
+          .attr('text-anchor', 'start')
+          .attr('font-size',   function (d) { return d.depth === 0 ? 0 : d.depth === 1 ? 14 : 12.5; })
+          .attr('font-weight', function (d) { return d.depth === 1 ? '600' : '400'; })
+          .attr('fill', function (d) {
+            if (d.depth === 0)                        return 'none';
+            if (d.depth === 1)                        return secClr(d);
+            if (d.data.leaf && d.data.planned)        return '#9aabb8';
+            if (d.data.leaf)                          return '#1a2840';
+            return '#3a4c5e';  // subcategory
+          })
+          .transition().duration(dur)
+          .attr('opacity', function (d) { return d.depth === 0 ? 0 : 1; });
+
+        // Exit
+        node.exit().transition().duration(dur)
+          .attr('transform', 'translate(' + (src ? src.y : 0) + ',' + (src ? src.x : 0) + ')')
+          .attr('opacity', 0).remove();
+
+        root.each(function (d) { d.x0 = d.x; d.y0 = d.y; });
+      }
+
+      update(null);
+    })
+    .catch(function (e) { console.error('Knowledge map: failed to load portal.json', e); });
+})();
+</script>
+
+</body>
+</html>
