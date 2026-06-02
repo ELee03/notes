@@ -69,9 +69,11 @@
         {
           "label": "Electrical Engineering",
           "children": [
-            { "name": "Circuit Theory",                   "desc": "From KVL/KCL and phasors through transistor amplifiers, op-amps, and frequency response.", "planned": true },
-            { "name": "Signals &amp; Systems",            "desc": "Fourier analysis, convolution, modulation, sampling, and analog filter design.", "planned": true },
-            { "name": "Analog &amp; Semiconductor",       "desc": "Semiconductor device physics, BJT/MOSFET modeling, and basic analog IC design.", "planned": true },
+            { "name": "Circuit Theory",                   "desc": "Linear circuit analysis — KVL/KCL, node and mesh methods, Thevenin/Norton, phasors and AC steady-state, first and second-order transients, op-amps as ideal elements, and Bode plots.", "planned": true },
+            { "name": "Signals &amp; Systems",            "desc": "Fourier series and transform, Laplace and z-transforms, convolution, sampling theorem, modulation, and the frequency-domain view of filtering.", "planned": true },
+            { "name": "Semiconductor Device Physics",     "desc": "Carrier statistics, p-n junction theory, diode equation, BJT and MOSFET physics from first principles, band diagrams, LEDs, photodiodes, and solar cells.", "planned": true },
+            { "name": "Analog Electronics",               "desc": "Small-signal models, single-stage amplifier topologies (CE/CS, CB/CG, CC/CD), differential pairs, current mirrors, op-amp internal architecture, feedback theory (four topologies), Miller effect, and amplifier frequency response.", "planned": true },
+            { "name": "Digital Electronics",              "desc": "Boolean algebra, combinational and sequential logic design, CMOS gate analysis (noise margins, propagation delay, power dissipation), transmission gates, latches and flip-flops, counters, decoders, dynamic logic, and memory (SRAM, DRAM, EEPROM).", "planned": true },
             { "name": "Analog Signal Processing",         "desc": "Active filter design (Butterworth, Chebyshev, Sallen-Key), switched-capacitor circuits, data converters (ADC/DAC architectures), PLLs, and noise analysis in analog systems.", "planned": true },
             { "name": "RF &amp; Microwave Engineering",   "desc": "Transmission line theory, Smith chart, impedance matching, S-parameters, two-port network analysis, microwave passive components (couplers, filters, power dividers), and RF amplifier design.", "planned": true },
             { "name": "Wireless Systems &amp; Antennas",  "desc": "Antenna theory (dipoles, arrays, phased arrays, aperture antennas), Friis transmission and link budgets, multipath propagation, receiver architectures, noise figure in cascaded systems, and applications in radar, satellite, and software-defined radio.", "planned": true },
