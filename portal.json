@@ -153,7 +153,11 @@
         {
           "label": "Applied",
           "children": [
-            { "name": "Food Science", "href": "food-science/index.html", "desc": "The chemistry and physics of cooking — Maillard reactions, protein denaturation, emulsification, fermentation, and why recipes work.", "lessons": 14 }
+            { "name": "Food Science",                 "href": "food-science/index.html", "desc": "The chemistry and physics of cooking — Maillard reactions, protein denaturation, emulsification, fermentation, and why recipes work.", "lessons": 14 },
+            { "name": "Pharmacology",                 "desc": "Pharmacokinetics (ADME), receptor theory, dose-response, agonists and antagonists, and the major drug classes — CNS, cardiovascular, antimicrobial, analgesic, and anticancer agents.", "planned": true },
+            { "name": "Nutrition &amp; Metabolism",   "desc": "Metabolic pathways (glycolysis, TCA cycle, fatty acid oxidation, amino acid metabolism), micronutrient roles, energy balance, and the biochemistry of diet and disease.", "planned": true },
+            { "name": "Immunology",                   "desc": "Innate and adaptive immunity, antigen presentation, T and B cell activation, antibody structure and function, vaccines, autoimmunity, and cancer immunotherapy.", "planned": true },
+            { "name": "Epidemiology &amp; Biostatistics", "desc": "Study designs (RCT, cohort, case-control), bias and confounding, causal inference, p-values and confidence intervals, Bayesian methods in medicine, and critical appraisal of health research.", "planned": true }
           ]
         }
       ]

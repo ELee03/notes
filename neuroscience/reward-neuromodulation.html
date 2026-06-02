@@ -63,6 +63,79 @@
         <div class="math-block">$$\delta_t = r_t + \gamma V(s_{t+1}) - V(s_t)$$</div>
         <p>where $\delta$ is the RPE, $r_t$ is immediate reward, $V(s)$ is the predicted future value from state $s$, and $\gamma$ is a discount factor. Dopamine neurons appear to compute this signal in the brain, broadcasting it to the striatum, where it drives synaptic plasticity in the corticostriatal pathway — strengthening actions that led to better-than-expected outcomes and weakening those that led to worse outcomes. This is the biological implementation of reinforcement learning.</p>
 
+        <div class="widget-card" style="margin:24px 0;">
+          <div class="widget-title">Dopamine RPE — The Three Schultz Scenarios</div>
+          <div id="rpe-plot"></div>
+          <script>
+          document.addEventListener('DOMContentLoaded', function() {
+            var dt = 0.02, t = [];
+            for (var ti = -0.5; ti <= 2.0 + dt/2; ti += dt) t.push(parseFloat(ti.toFixed(3)));
+            function gauss(ti, t0, amp, sigma) {
+              return amp * Math.exp(-0.5 * Math.pow((ti - t0) / sigma, 2));
+            }
+            function makeY(t, base, bursts, dips) {
+              return t.map(function(ti) {
+                var v = base;
+                bursts.forEach(function(b) { v += gauss(ti, b[0], b[1], b[2]); });
+                dips.forEach(function(d)   { v -= gauss(ti, d[0], d[1], d[2]); });
+                return Math.max(0, v);
+              });
+            }
+            var base = 3;
+            var y1 = makeY(t, base, [[1.0, 8, 0.09]], []);
+            var y2 = makeY(t, base, [[0.0, 8, 0.09]], []);
+            var y3 = makeY(t, base, [[0.0, 8, 0.09]], [[1.0, 2.8, 0.10]]);
+            var blue = '#3a6a8a', fillC = 'rgba(58,106,138,0.13)';
+            var axBase = { showgrid: false, zeroline: true, zerolinecolor: '#d0d8df',
+                           showline: true, linecolor: '#c0ccd5', range: [-0.55, 2.1],
+                           tickfont: { size: 10, color: '#9aabb8', family: 'IBM Plex Sans' } };
+            function mkTrace(y, xi, yi) {
+              return { x: t, y: y, xaxis: xi, yaxis: yi, type: 'scatter', mode: 'lines',
+                       line: { color: blue, width: 2 }, showlegend: false,
+                       fill: 'tozeroy', fillcolor: fillC };
+            }
+            function vLines(xref, yref) {
+              return [
+                { type: 'line', xref: xref, yref: yref, x0: 0, x1: 0, y0: 0, y1: 1,
+                  line: { color: '#3a6a8a', width: 1.5, dash: 'dot' } },
+                { type: 'line', xref: xref, yref: yref, x0: 1, x1: 1, y0: 0, y1: 1,
+                  line: { color: '#c17c2e', width: 1.5, dash: 'dot' } }
+              ];
+            }
+            var annS = { xref: 'paper', xanchor: 'left', showarrow: false,
+                         font: { size: 11, color: '#1a2840', family: 'IBM Plex Sans' } };
+            Plotly.newPlot('rpe-plot', [
+              mkTrace(y1, 'x',  'y'),
+              mkTrace(y2, 'x2', 'y2'),
+              mkTrace(y3, 'x3', 'y3'),
+            ], {
+              grid: { rows: 3, columns: 1, pattern: 'independent', roworder: 'top to bottom' },
+              height: 470, margin: { l: 58, r: 16, t: 14, b: 44 },
+              paper_bgcolor: '#f5f5f2', plot_bgcolor: '#f5f5f2',
+              xaxis:  Object.assign({}, axBase, { title: '' }),
+              xaxis2: Object.assign({}, axBase, { title: '' }),
+              xaxis3: Object.assign({}, axBase, { title: 'Time relative to CS onset (s)' }),
+              yaxis:  Object.assign({}, axBase, { title: 'DA rate (spk/s)', range: [0, 13] }),
+              yaxis2: Object.assign({}, axBase, { title: 'DA rate (spk/s)', range: [0, 13] }),
+              yaxis3: Object.assign({}, axBase, { title: 'DA rate (spk/s)', range: [0, 13] }),
+              shapes: [].concat(vLines('x','y domain'), vLines('x2','y2 domain'), vLines('x3','y3 domain')),
+              annotations: [
+                Object.assign({}, annS, { x: 0.01, y: 1.015, yref: 'paper', yanchor: 'bottom',
+                  text: '<b>① Before conditioning</b> — unpredicted reward: δ > 0 burst at US' }),
+                Object.assign({}, annS, { x: 0.01, y: 0.677, yref: 'paper', yanchor: 'bottom',
+                  text: '<b>② After conditioning</b> — predicted reward delivered: burst shifts to CS, δ = 0 at US' }),
+                Object.assign({}, annS, { x: 0.01, y: 0.343, yref: 'paper', yanchor: 'bottom',
+                  text: '<b>③ Reward omitted</b> — burst at CS, dip below baseline at US time (δ < 0)' }),
+                { xref: 'x3', yref: 'y3 domain', x: 0, y: -0.12, showarrow: false,
+                  text: 'CS', font: { size: 10, color: '#3a6a8a', family: 'IBM Plex Sans' }, yanchor: 'top' },
+                { xref: 'x3', yref: 'y3 domain', x: 1, y: -0.12, showarrow: false,
+                  text: 'US', font: { size: 10, color: '#c17c2e', family: 'IBM Plex Sans' }, yanchor: 'top' },
+              ],
+            }, { displayModeBar: false, responsive: true });
+          });
+          </script>
+        </div>
+
         <h3 style="font-size:1rem;font-weight:600;color:#1a2840;margin:16px 0 6px;">The mesolimbic pathway and wanting vs. liking</h3>
         <p>The nucleus accumbens (NAc), the primary target of VTA dopamine, is the hub of the brain's reward circuitry. It integrates dopaminergic input from VTA, glutamatergic input from PFC, hippocampus, and amygdala, and outputs to motor systems via the ventral pallidum. A key distinction, developed by Kent Berridge, is between <em>wanting</em> (motivational drive to obtain reward — dopamine-dependent) and <em>liking</em> (hedonic pleasure from reward — surprisingly dopamine-independent, relying on opioid signaling in NAc "hotspots").</p>
 
