@@ -39,7 +39,7 @@ books:
     year: 2024
     clusters: [embedded]
     annotation: Practical patterns for firmware architecture. Best entry point for embedded software design — state machines, driver layering, RTOS concepts.
-    source: SchoolStuff:Textbooks/embedded/making_embedded_systems.pdf
+    source: SchoolStuff:Textbooks/embedded/White - Making Embedded Systems (2nd ed, 2024).pdf
 
   - id: yiu-arm
     title: The Definitive Guide to ARM Cortex-M3 and Cortex-M4 Processors
@@ -49,7 +49,7 @@ books:
     year: 2013
     clusters: [embedded]
     annotation: Authoritative reference for the Cortex-M architecture, NVIC, memory model, and fault handling. The ground truth for ARM-core specifics. Covers M3 and M4; newer M33 core (EFR32xG21+) requires the ARM Architecture Reference Manual.
-    source: SchoolStuff:Textbooks/embedded/pdfcoffee.com-yiu-j-the-definitive-guide-to-arm-cortex-m3-and-cortex-m4-processors-3rd-edition.pdf
+    source: SchoolStuff:Textbooks/embedded/Yiu - Definitive Guide to ARM Cortex-M3 and Cortex-M4 (3rd ed, 2013).pdf
 
   - id: barr-massa
     title: Programming Embedded Systems
@@ -69,7 +69,7 @@ books:
     year: 2015
     clusters: [embedded, circuits, analog]
     annotation: The definitive practical electronics reference. Chapters on op-amps, ADCs, noise, and mixed-signal design are essential reading for any embedded hardware work.
-    source: SchoolStuff:Textbooks/embedded/_The Art of Electronics 3rd ed [2015].pdf
+    source: SchoolStuff:Textbooks/embedded/Horowitz & Hill - The Art of Electronics (3rd ed, 2015).pdf
 
   - id: ott-emc
     title: Electromagnetic Compatibility Engineering
@@ -115,7 +115,7 @@ books:
     year: 2024
     clusters: [control, rl]
     annotation: UofT course notes bridging classical adaptive control and modern RL. Covers LQR, adaptive control, policy gradients, and Q-learning within a unified control-theoretic framework.
-    source: SchoolStuff:Textbooks/computing/ece411_text.pdf
+    source: SchoolStuff:Textbooks/computing/Broucke - A First Course on Adaptive Control and RL (UofT, 2024).pdf
 
   # ── Signals & Systems ─────────────────────────────────────────────────────
 
@@ -191,7 +191,7 @@ books:
     year: 2018
     clusters: [quantum]
     annotation: The standard undergraduate quantum mechanics text. Clear pedagogical style, covers wave functions, Schrodinger equation, infinite square well, harmonic oscillator, hydrogen atom, and perturbation theory.
-    source: SchoolStuff:Textbooks/quantum/Griffiths-Introduction-to-Quantum-Mechanics.pdf  # pending OneDrive sync
+    source: SchoolStuff:Textbooks/quantum/Griffiths & Schroeter - Introduction to Quantum Mechanics (3rd ed, 2018).pdf
 
   - id: taylor-modern-physics
     title: Modern Physics for Scientists and Engineers
@@ -220,7 +220,17 @@ books:
     year: 2013
     clusters: [neuroscience, bioelectricity]
     annotation: The authoritative neuroscience reference. Comprehensive coverage from ion channels and synaptic transmission to motor systems, cognition, and disorders.
-    source: SchoolStuff:Textbooks/neuroscience/Principles of Neural Science, Fifth - KANDEL.pdf
+    source: SchoolStuff:Textbooks/neuroscience/Kandel et al - Principles of Neural Science (5th ed, 2013).pdf
+
+  - id: kandel-neuroscience-6th
+    title: Principles of Neural Science
+    authors: [Eric R. Kandel, John D. Koester, Sarah H. Mack, Steven A. Siegelbaum]
+    edition: 6th
+    publisher: McGraw-Hill
+    year: 2021
+    clusters: [neuroscience, bioelectricity]
+    annotation: The 6th edition — updated coverage of neural circuits, synaptic mechanisms, perception, movement, cognition, and neurological disorders. Supersedes the 5th for most purposes; 5th retained for reference.
+    source: SchoolStuff:Textbooks/neuroscience/Kandel et al - Principles of Neural Science (6th ed, 2021).pdf
 
   - id: bear-neuroscience
     title: "Neuroscience: Exploring the Brain"
@@ -230,7 +240,7 @@ books:
     year: 2015
     clusters: [neuroscience]
     annotation: Accessible undergraduate neuroscience text. Strong on cellular and systems-level neuroscience without requiring a graduate background.
-    source: SchoolStuff:Textbooks/neuroscience/Mark_F._Bear_PhD_Barry_W._Connors_PhD_Michael_A._Paradiso_PhD_-_Neuroscience__Exploring_the_Brain_2015_LWW_-_libgen.li.pdf
+    source: SchoolStuff:Textbooks/neuroscience/Bear, Connors & Paradiso - Neuroscience Exploring the Brain (4th ed, 2015).pdf
 
   - id: buzsaki-rhythms
     title: Rhythms of the Brain
@@ -239,7 +249,7 @@ books:
     year: 2006
     clusters: [neuroscience]
     annotation: Explores neural oscillations and brain rhythms — theta, gamma, sharp-wave ripples. Essential background for anyone thinking about neural signals and brain dynamics.
-    source: SchoolStuff:Textbooks/neuroscience/Buzsaki G. Rhythms of the brain.pdf
+    source: SchoolStuff:Textbooks/neuroscience/Buzsaki - Rhythms of the Brain (2006).pdf
 
   # ── Neural Engineering / Bioelectricity ───────────────────────────────────
 
@@ -263,7 +273,7 @@ books:
     year: 2018
     clusters: [rl]
     annotation: The foundational RL textbook. Covers MDPs, dynamic programming, Monte Carlo methods, TD-learning, Q-learning, policy gradient methods, and deep RL connections.
-    source: SchoolStuff:Textbooks/rl/Sutton-Barto-RL.pdf
+    source: SchoolStuff:Textbooks/rl/Sutton & Barto - Reinforcement Learning An Introduction (2nd ed, 2018).pdf
 
   # ── Mathematics ───────────────────────────────────────────────────────────
 
@@ -275,7 +285,7 @@ books:
     year: 2015
     clusters: [mathematics, physics]
     annotation: Exceptionally readable introduction to nonlinear dynamics — bifurcations, phase portraits, limit cycles, and chaos. Builds intuition through physical examples before formalism.
-    source: SchoolStuff:Textbooks/mathematics/Strogatz-Nonlinear-Dynamics-and-Chaos.pdf
+    source: SchoolStuff:Textbooks/mathematics/Strogatz - Nonlinear Dynamics and Chaos (2nd ed, 2015).pdf
 
   # ── Food Science ──────────────────────────────────────────────────────────
 

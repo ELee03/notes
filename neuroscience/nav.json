@@ -141,6 +141,12 @@
         { "href": "autism.html",         "text": "Autism Spectrum",      "topics": "Heterogeneity · neurodiversity framing · executive function · sensory processing · masking · what the biology shows · no vaccine link" },
         { "href": "adhd.html",           "text": "ADHD",                 "topics": "Attention dysregulation not deficit · three presentations · gender diagnosis gap · executive function model · time blindness · adult ADHD · stimulants" }
       ]
+    },
+    {
+      "label": "Pharmacology &amp; Altered States",
+      "items": [
+        { "href": "psychedelics.html", "text": "Psychedelics &amp; the Brain", "topics": "5-HT2A agonism · biased agonism · default mode network · ego dissolution · REBUS model · neuroplasticity · MDMA · therapeutic applications · safety" }
+      ]
     }
   ]
 }
