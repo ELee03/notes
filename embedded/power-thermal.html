@@ -128,9 +128,51 @@
         important layout rule for switching regulators.</strong>
       </div>
 
-      <img src="_buck_hotloop_v2.svg"
-           alt="Buck converter layout view: C_IN and Regulator IC in the hot loop (red shaded area), inductor and C_OUT in the larger ripple loop, GND plane at bottom, feedback trace dashed"
-           style="width:100%;max-width:800px;display:block;margin:20px auto 8px;">
+      <svg viewBox="0 0 820 300" xmlns="http://www.w3.org/2000/svg"
+           role="img" aria-label="Buck converter layout view: C_IN and Regulator IC in the hot loop (red shaded area), inductor and C_OUT in the larger ripple loop, GND plane at bottom, feedback trace dashed"
+           style="width:100%;max-width:800px;display:block;margin:20px auto 8px;font-family:'IBM Plex Sans',sans-serif;">
+  <defs>
+    <marker id="b-arr-grn" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><polygon points="0 0, 7 3.5, 0 7" fill="#40a060"/></marker>
+    <marker id="b-arr-amb" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><polygon points="0 0, 7 3.5, 0 7" fill="#c8a020"/></marker>
+    <marker id="b-arr-blue" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><polygon points="0 0, 7 3.5, 0 7" fill="#3a6a8a"/></marker>
+  </defs>
+  <rect width="820" height="300" fill="#f7f7f4" rx="6"/>
+  <text x="410" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#1a2840">Buck Converter — Layout View</text>
+  <rect x="34" y="80" width="172" height="112" rx="3" fill="#c05050" opacity="0.09"/>
+  <rect x="396" y="66" width="310" height="154" rx="3" fill="#3a6a8a" opacity="0.06"/>
+  <rect x="40" y="60" width="80" height="155" rx="6" fill="white" stroke="#c8a020" stroke-width="1.5"/>
+  <text x="80" y="133" text-anchor="middle" font-size="14" font-weight="700" fill="#1a2840">C_IN</text>
+  <text x="80" y="153" text-anchor="middle" font-size="10" fill="#7a6010">10 µF</text>
+  <rect x="200" y="42" width="230" height="186" rx="6" fill="white" stroke="#3a6a8a" stroke-width="2"/>
+  <text x="315" y="132" text-anchor="middle" font-size="14" font-weight="700" fill="#1a2840">Regulator</text>
+  <text x="315" y="152" text-anchor="middle" font-size="10" fill="#5a7a9a">TPS62x / AP63</text>
+  <rect x="490" y="78" width="120" height="124" rx="6" fill="white" stroke="#7ab8d4" stroke-width="1.5"/>
+  <text x="550" y="145" text-anchor="middle" font-size="15" font-weight="700" fill="#1a2840">L</text>
+  <rect x="650" y="60" width="80" height="155" rx="6" fill="white" stroke="#7ab8d4" stroke-width="1.5"/>
+  <text x="690" y="133" text-anchor="middle" font-size="14" font-weight="700" fill="#1a2840">C_OUT</text>
+  <text x="690" y="153" text-anchor="middle" font-size="10" fill="#5a7a9a">22 µF</text>
+  <line x1="120" y1="90" x2="200" y2="90" stroke="#c05050" stroke-width="3.5"/>
+  <line x1="120" y1="185" x2="200" y2="185" stroke="#c05050" stroke-width="3.5"/>
+  <text x="196" y="76" text-anchor="end" font-size="9" fill="#5a7a9a">VIN</text>
+  <text x="196" y="203" text-anchor="end" font-size="9" fill="#5a7a9a">GND</text>
+  <line x1="430" y1="137" x2="490" y2="137" stroke="#3a6a8a" stroke-width="2" marker-end="url(#b-arr-blue)"/>
+  <text x="432" y="129" font-size="9" fill="#5a7a9a">SW</text>
+  <line x1="610" y1="137" x2="650" y2="137" stroke="#3a6a8a" stroke-width="2"/>
+  <line x1="730" y1="137" x2="780" y2="137" stroke="#40a060" stroke-width="2" marker-end="url(#b-arr-grn)"/>
+  <text x="784" y="141" font-size="10" fill="#1a4020">VOUT</text>
+  <rect x="30" y="238" width="750" height="12" rx="2" fill="#40a060" opacity="0.3"/>
+  <line x1="30" y1="238" x2="780" y2="238" stroke="#40a060" stroke-width="1.5"/>
+  <line x1="80"  y1="215" x2="80"  y2="238" stroke="#40a060" stroke-width="1.5"/>
+  <line x1="315" y1="228" x2="315" y2="238" stroke="#40a060" stroke-width="1.5"/>
+  <line x1="690" y1="215" x2="690" y2="238" stroke="#40a060" stroke-width="1.5"/>
+  <text x="410" y="252" text-anchor="middle" font-size="9" fill="#1a4020">GND plane</text>
+  <rect x="119" y="121" width="82" height="32" rx="4" fill="#ffe8e8" stroke="#c05050" stroke-width="1" opacity="0.95"/>
+  <text x="160" y="133" text-anchor="middle" font-size="11" font-weight="700" fill="#c05050">HOT LOOP</text>
+  <text x="160" y="147" text-anchor="middle" font-size="8.5" font-style="italic" fill="#c05050">keep area small!</text>
+  <text x="550" y="230" text-anchor="middle" font-size="9" font-style="italic" fill="#3a6a8a">ripple loop (larger OK)</text>
+  <path d="M 690 215 C 715 228 500 234 360 228 C 310 225 290 228 280 228" fill="none" stroke="#c8a020" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#b-arr-amb)"/>
+  <text x="490" y="260" text-anchor="middle" font-size="8.5" font-style="italic" fill="#7a6010">FB trace (away from L)</text>
+</svg>
       <div class="prose" style="font-size:12.5px;color:#5a6a7a;text-align:center;margin-top:0;margin-bottom:20px;">
         The hot loop (red, shaded) — input cap to regulator — must be as small as possible. The inductor and output cap form a larger ripple loop where EMI is less critical.
       </div>
