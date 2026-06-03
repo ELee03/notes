@@ -3,54 +3,126 @@
     {
       "label": "The Quantum Framework",
       "items": [
-        { "href": "quantum-world.html", "text": "1 · The Quantum World",           "topics": "Blackbody radiation · UV catastrophe · photoelectric effect · Compton scattering · double-slit experiment · de Broglie wavelength · wavefunction · Born rule" },
-        { "href": "schrodinger.html",   "text": "2 · The Schrödinger Equation",   "topics": "TDSE and TISE · stationary states · normalization · expectation values · momentum operator · Ehrenfest's theorem · continuity equation" }
+        {
+          "href": "quantum-world.html",
+          "text": "The Quantum World",
+          "topics": "Blackbody radiation · UV catastrophe · photoelectric effect · Compton scattering · double-slit experiment · de Broglie wavelength · wavefunction · Born rule"
+        },
+        {
+          "href": "schrodinger.html",
+          "text": "The Schrödinger Equation",
+          "topics": "TDSE and TISE · stationary states · normalization · expectation values · momentum operator · Ehrenfest's theorem · continuity equation"
+        }
       ]
     },
     {
       "label": "Exactly Solvable Systems",
       "items": [
-        { "href": "square-well.html",   "text": "3 · Infinite Square Well",        "topics": "Energy quantization · wavefunctions and nodes · orthonormality and completeness · superposition of stationary states · time evolution · quantum revival" },
-        { "href": "harmonic.html",      "text": "4 · The Harmonic Oscillator",     "topics": "Ladder operators · algebraic solution · energy levels E_n = (n+½)ℏω · zero-point energy · matrix elements of x̂ and p̂ · coherent states" },
-        { "href": "free-particle.html", "text": "5 · Free Particle &amp; Tunneling", "topics": "Wave packets · group vs phase velocity · delta-function potential · finite square well · quantum tunneling · WKB tunneling preview" }
+        {
+          "href": "square-well.html",
+          "text": "Infinite Square Well",
+          "topics": "Energy quantization · wavefunctions and nodes · orthonormality and completeness · superposition of stationary states · time evolution · quantum revival"
+        },
+        {
+          "href": "harmonic.html",
+          "text": "The Harmonic Oscillator",
+          "topics": "Ladder operators · algebraic solution · energy levels E_n = (n+½)ℏω · zero-point energy · matrix elements of x̂ and p̂ · coherent states"
+        },
+        {
+          "href": "free-particle.html",
+          "text": "Free Particle &amp; Tunneling",
+          "topics": "Wave packets · group vs phase velocity · delta-function potential · finite square well · quantum tunneling · WKB tunneling preview"
+        }
       ]
     },
     {
       "label": "Formalism",
       "items": [
-        { "href": "formalism.html",     "text": "6 · Formalism &amp; Uncertainty", "topics": "Hilbert space · Dirac notation (bras and kets) · Hermitian operators · spectral theorem · generalized uncertainty principle · compatible observables and commutators" }
+        {
+          "href": "formalism.html",
+          "text": "Formalism &amp; Uncertainty",
+          "topics": "Hilbert space · Dirac notation (bras and kets) · Hermitian operators · spectral theorem · generalized uncertainty principle · compatible observables and commutators"
+        }
       ]
     },
     {
       "label": "Quantum Mechanics in 3D",
       "items": [
-        { "href": "angular-momentum.html", "text": "7 · Angular Momentum",         "topics": "L² and L_z operators · commutation relations · eigenvalues (l, m quantum numbers) · spherical harmonics Y_l^m · ladder operators L±" },
-        { "href": "hydrogen.html",         "text": "8 · The Hydrogen Atom",        "topics": "3D Schrödinger equation in spherical coordinates · separation of variables · radial equation · E_n = −13.6 eV/n² · wavefunctions ψ_nlm · degeneracy · spectral series" },
-        { "href": "spin.html",             "text": "9 · Spin",                     "topics": "Intrinsic spin · Stern-Gerlach experiment · spin-½ and Pauli matrices · spinors · addition of angular momenta · Clebsch-Gordan coefficients · spin-orbit coupling" }
+        {
+          "href": "angular-momentum.html",
+          "text": "Angular Momentum",
+          "topics": "L² and L_z operators · commutation relations · eigenvalues (l, m quantum numbers) · spherical harmonics Y_l^m · ladder operators L±"
+        },
+        {
+          "href": "hydrogen.html",
+          "text": "The Hydrogen Atom",
+          "topics": "3D Schrödinger equation in spherical coordinates · separation of variables · radial equation · E_n = −13.6 eV/n² · wavefunctions ψ_nlm · degeneracy · spectral series"
+        },
+        {
+          "href": "spin.html",
+          "text": "Spin",
+          "topics": "Intrinsic spin · Stern-Gerlach experiment · spin-½ and Pauli matrices · spinors · addition of angular momenta · Clebsch-Gordan coefficients · spin-orbit coupling"
+        }
       ]
     },
     {
       "label": "Approximation Methods",
       "items": [
-        { "href": "perturbation.html",  "text": "10 · Perturbation Theory",        "topics": "Non-degenerate 1st and 2nd order corrections · degenerate perturbation theory · fine structure of hydrogen (relativistic + spin-orbit) · Zeeman and Stark effects" },
-        { "href": "identical.html",     "text": "11 · Identical Particles &amp; Entanglement", "topics": "Exchange symmetry · bosons and fermions · Pauli exclusion principle · multi-electron atoms · entanglement · EPR paradox · Bell inequalities" },
-        { "href": "tdpt.html",          "text": "12 · Time-Dependent Perturbation Theory", "topics": "First-order transition amplitudes · Fermi's golden rule · sinusoidal perturbations · Rabi oscillations · Einstein A and B coefficients · selection rules" },
-        { "href": "variational.html",   "text": "13 · The Variational Principle",  "topics": "Variational theorem · trial wavefunctions · helium atom (screened nuclear charge) · H₂⁺ molecule ion (LCAO) · excited states via orthogonality · Ritz method" },
-        { "href": "wkb.html",           "text": "14 · The WKB Approximation",     "topics": "Semiclassical limit · WKB wavefunctions (1/√p amplitude) · connection formulae · Bohr-Sommerfeld quantization · Gamow theory of alpha decay" },
-        { "href": "scattering.html",    "text": "15 · Scattering Theory",          "topics": "Scattering amplitude f(θ,φ) · differential cross-section · Born approximation · partial waves and phase shifts · optical theorem · Breit-Wigner resonances" }
+        {
+          "href": "perturbation.html",
+          "text": "Perturbation Theory",
+          "topics": "Non-degenerate 1st and 2nd order corrections · degenerate perturbation theory · fine structure of hydrogen (relativistic + spin-orbit) · Zeeman and Stark effects"
+        },
+        {
+          "href": "identical.html",
+          "text": "Identical Particles &amp; Entanglement",
+          "topics": "Exchange symmetry · bosons and fermions · Pauli exclusion principle · multi-electron atoms · entanglement · EPR paradox · Bell inequalities"
+        },
+        {
+          "href": "tdpt.html",
+          "text": "Time-Dependent Perturbation Theory",
+          "topics": "First-order transition amplitudes · Fermi's golden rule · sinusoidal perturbations · Rabi oscillations · Einstein A and B coefficients · selection rules"
+        },
+        {
+          "href": "variational.html",
+          "text": "The Variational Principle",
+          "topics": "Variational theorem · trial wavefunctions · helium atom (screened nuclear charge) · H₂⁺ molecule ion (LCAO) · excited states via orthogonality · Ritz method"
+        },
+        {
+          "href": "wkb.html",
+          "text": "The WKB Approximation",
+          "topics": "Semiclassical limit · WKB wavefunctions (1/√p amplitude) · connection formulae · Bohr-Sommerfeld quantization · Gamow theory of alpha decay"
+        },
+        {
+          "href": "scattering.html",
+          "text": "Scattering Theory",
+          "topics": "Scattering amplitude f(θ,φ) · differential cross-section · Born approximation · partial waves and phase shifts · optical theorem · Breit-Wigner resonances"
+        }
       ]
     },
     {
       "label": "Many-Particle Systems",
       "items": [
-        { "href": "solids.html",        "text": "16 · Solids &amp; Band Theory",   "topics": "Free electron gas · Fermi energy · degeneracy pressure · electronic heat capacity · Bloch's theorem · Dirac comb · band gaps · metals, insulators, semiconductors" },
-        { "href": "qsm.html",           "text": "17 · Quantum Statistical Mechanics", "topics": "Grand canonical ensemble · Fermi-Dirac distribution · Bose-Einstein distribution · Maxwell-Boltzmann limit · Planck blackbody spectrum · Debye solid · T³ heat capacity" }
+        {
+          "href": "solids.html",
+          "text": "Solids &amp; Band Theory",
+          "topics": "Free electron gas · Fermi energy · degeneracy pressure · electronic heat capacity · Bloch's theorem · Dirac comb · band gaps · metals, insulators, semiconductors"
+        },
+        {
+          "href": "qsm.html",
+          "text": "Quantum Statistical Mechanics",
+          "topics": "Grand canonical ensemble · Fermi-Dirac distribution · Bose-Einstein distribution · Maxwell-Boltzmann limit · Planck blackbody spectrum · Debye solid · T³ heat capacity"
+        }
       ]
     },
     {
       "label": "Symmetries",
       "items": [
-        { "href": "symmetries.html",    "text": "18 · Symmetries &amp; Conservation Laws", "topics": "Quantum Noether theorem · translation operator and momentum · parity and selection rules · rotational symmetry and degeneracy · virial theorem · Wigner-Eckart theorem" }
+        {
+          "href": "symmetries.html",
+          "text": "Symmetries &amp; Conservation Laws",
+          "topics": "Quantum Noether theorem · translation operator and momentum · parity and selection rules · rotational symmetry and degeneracy · virial theorem · Wigner-Eckart theorem"
+        }
       ]
     }
   ]

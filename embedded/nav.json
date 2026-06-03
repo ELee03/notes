@@ -3,52 +3,136 @@
     {
       "label": "Architecture &amp; Internals",
       "items": [
-        {"href": "mcu-architecture.html",  "text": "1 · MCU Architecture",        "topics": "ARM Cortex-M core · register file · privileged/unprivileged modes · fixed memory map · reset sequence · EFR32 overview"},
-        {"href": "memory-clocks.html",     "text": "2 · Memory &amp; Clock Systems", "topics": "Flash wait states · SRAM layout (.data/.bss/stack/heap) · clock tree · PLLs · CMU · energy modes EM0–EM4"},
-        {"href": "interrupts-nvic.html",   "text": "3 · Interrupts &amp; the NVIC",  "topics": "Exception model · vector table · NVIC priority levels · preemption · tail-chaining · interrupt-safe code patterns"},
-        {"href": "dma.html",               "text": "4 · DMA",                      "topics": "Why DMA exists · transfer descriptors · EFR32 LDMA · circular buffer for ADC/UART streaming · DMA vs interrupt tradeoffs"}
+        {
+          "href": "mcu-architecture.html",
+          "text": "MCU Architecture",
+          "topics": "ARM Cortex-M core · register file · privileged/unprivileged modes · fixed memory map · reset sequence · EFR32 overview"
+        },
+        {
+          "href": "memory-clocks.html",
+          "text": "Memory &amp; Clock Systems",
+          "topics": "Flash wait states · SRAM layout (.data/.bss/stack/heap) · clock tree · PLLs · CMU · energy modes EM0–EM4"
+        },
+        {
+          "href": "interrupts-nvic.html",
+          "text": "Interrupts &amp; the NVIC",
+          "topics": "Exception model · vector table · NVIC priority levels · preemption · tail-chaining · interrupt-safe code patterns"
+        },
+        {
+          "href": "dma.html",
+          "text": "DMA",
+          "topics": "Why DMA exists · transfer descriptors · EFR32 LDMA · circular buffer for ADC/UART streaming · DMA vs interrupt tradeoffs"
+        }
       ]
     },
     {
       "label": "Peripherals",
       "items": [
-        {"href": "gpio.html",        "text": "5 · GPIO",           "topics": "Push-pull vs open-drain · input pull-ups · Schmitt trigger · alternate function routing · GPIO interrupts · switch debouncing"},
-        {"href": "timers-pwm.html",  "text": "6 · Timers &amp; PWM", "topics": "Counter modes (up/up-down) · compare/capture channels · PWM generation · dead-time insertion · LETIMER for low-power wakeup"},
-        {"href": "adc-dac.html",     "text": "7 · ADC &amp; DAC",    "topics": "SAR architecture · quantisation error · reference voltage · acquisition time · antialiasing filter · DMA+TIMER+PRS pipeline"}
+        {
+          "href": "gpio.html",
+          "text": "GPIO",
+          "topics": "Push-pull vs open-drain · input pull-ups · Schmitt trigger · alternate function routing · GPIO interrupts · switch debouncing"
+        },
+        {
+          "href": "timers-pwm.html",
+          "text": "Timers &amp; PWM",
+          "topics": "Counter modes (up/up-down) · compare/capture channels · PWM generation · dead-time insertion · LETIMER for low-power wakeup"
+        },
+        {
+          "href": "adc-dac.html",
+          "text": "ADC &amp; DAC",
+          "topics": "SAR architecture · quantisation error · reference voltage · acquisition time · antialiasing filter · DMA+TIMER+PRS pipeline"
+        }
       ]
     },
     {
       "label": "Protocols",
       "items": [
-        {"href": "uart.html", "text": "8 · UART",           "topics": "8N1 frame format · baud rate generation · RS-232 vs TTL levels · RTS/CTS flow control · interrupt-driven receive with ring buffer"},
-        {"href": "spi.html",  "text": "9 · SPI",            "topics": "Full-duplex shift register · CPOL/CPHA four clock modes · hardware vs software CS · independent vs daisy-chain · clock frequency limits"},
-        {"href": "i2c.html",  "text": "10 · I2C",           "topics": "Open-drain topology · pull-up resistor sizing · START/STOP/Repeated START · 7-bit addressing · ACK/NAK · clock stretching · bus lockup recovery"},
-        {"href": "can.html",  "text": "11 · CAN Bus",       "topics": "Differential signalling · dominant/recessive bits · non-destructive arbitration · data frame fields · bit stuffing · error confinement state machine"},
-        {"href": "usb.html",  "text": "12 · USB Fundamentals", "topics": "Host-centric model · enumeration sequence · descriptor hierarchy · four transfer types · 1 ms frame boundary · CDC-ACM virtual serial port"}
+        {
+          "href": "uart.html",
+          "text": "UART",
+          "topics": "8N1 frame format · baud rate generation · RS-232 vs TTL levels · RTS/CTS flow control · interrupt-driven receive with ring buffer"
+        },
+        {
+          "href": "spi.html",
+          "text": "SPI",
+          "topics": "Full-duplex shift register · CPOL/CPHA four clock modes · hardware vs software CS · independent vs daisy-chain · clock frequency limits"
+        },
+        {
+          "href": "i2c.html",
+          "text": "I2C",
+          "topics": "Open-drain topology · pull-up resistor sizing · START/STOP/Repeated START · 7-bit addressing · ACK/NAK · clock stretching · bus lockup recovery"
+        },
+        {
+          "href": "can.html",
+          "text": "CAN Bus",
+          "topics": "Differential signalling · dominant/recessive bits · non-destructive arbitration · data frame fields · bit stuffing · error confinement state machine"
+        },
+        {
+          "href": "usb.html",
+          "text": "USB Fundamentals",
+          "topics": "Host-centric model · enumeration sequence · descriptor hierarchy · four transfer types · 1 ms frame boundary · CDC-ACM virtual serial port"
+        }
       ]
     },
     {
       "label": "Firmware",
       "items": [
-        {"href": "bare-metal.html", "text": "13 · Bare-Metal Patterns", "topics": "C startup (.data/.bss init) · superloop vs interrupt-driven hybrid · FSM design · interrupt-safe ring buffers · driver layering · volatile and memory barriers"},
-        {"href": "rtos.html",       "text": "14 · RTOS Concepts",       "topics": "Task states and context switch (PendSV) · preemptive priority scheduling · binary semaphore and mutex · priority inversion · FreeRTOS task creation"},
-        {"href": "debug.html",      "text": "15 · Debugging &amp; Test",  "topics": "SWD vs JTAG · CoreSight (DAP/FPB/DWT/ITM) · OpenOCD+GDB workflow · HardFault analysis (CFSR/BFAR) · ITM/SWO tracing · logic analyser"}
+        {
+          "href": "bare-metal.html",
+          "text": "Bare-Metal Patterns",
+          "topics": "C startup (.data/.bss init) · superloop vs interrupt-driven hybrid · FSM design · interrupt-safe ring buffers · driver layering · volatile and memory barriers"
+        },
+        {
+          "href": "rtos.html",
+          "text": "RTOS Concepts",
+          "topics": "Task states and context switch (PendSV) · preemptive priority scheduling · binary semaphore and mutex · priority inversion · FreeRTOS task creation"
+        },
+        {
+          "href": "debug.html",
+          "text": "Debugging &amp; Test",
+          "topics": "SWD vs JTAG · CoreSight (DAP/FPB/DWT/ITM) · OpenOCD+GDB workflow · HardFault analysis (CFSR/BFAR) · ITM/SWO tracing · logic analyser"
+        }
       ]
     },
     {
       "label": "PCB Design",
       "items": [
-        {"href": "layout.html",        "text": "16 · Layout Fundamentals",   "topics": "2-layer vs 4-layer stackup · return current path · GND plane · bulk vs local decoupling · via stitching · clearance and creepage"},
-        {"href": "mixed-signal.html",  "text": "17 · Mixed-Signal Layout",   "topics": "Analog/digital floorplanning · single continuous GND plane · AVDD/VREF bypass · ADC input routing · guard rings · ferrite bead LPF"},
-        {"href": "power-thermal.html", "text": "18 · Power &amp; Thermal",    "topics": "Buck/boost hot loop · PDN target impedance · capacitor cascade · thermal resistance model T_J = T_A + P_D × θ_JA · exposed pad via array"},
-        {"href": "high-speed-rf.html", "text": "19 · High-Speed &amp; RF",   "topics": "Transmission lines · λ/10 threshold · microstrip/stripline Z₀ · differential pair length matching · USB layout · PCB antenna · matching network"}
+        {
+          "href": "layout.html",
+          "text": "Layout Fundamentals",
+          "topics": "2-layer vs 4-layer stackup · return current path · GND plane · bulk vs local decoupling · via stitching · clearance and creepage"
+        },
+        {
+          "href": "mixed-signal.html",
+          "text": "Mixed-Signal Layout",
+          "topics": "Analog/digital floorplanning · single continuous GND plane · AVDD/VREF bypass · ADC input routing · guard rings · ferrite bead LPF"
+        },
+        {
+          "href": "power-thermal.html",
+          "text": "Power &amp; Thermal",
+          "topics": "Buck/boost hot loop · PDN target impedance · capacitor cascade · thermal resistance model T_J = T_A + P_D × θ_JA · exposed pad via array"
+        },
+        {
+          "href": "high-speed-rf.html",
+          "text": "High-Speed &amp; RF",
+          "topics": "Transmission lines · λ/10 threshold · microstrip/stripline Z₀ · differential pair length matching · USB layout · PCB antenna · matching network"
+        }
       ]
     },
     {
       "label": "Tooling &amp; Deployment",
       "items": [
-        {"href": "build-systems.html", "text": "20 · Build Systems &amp; Toolchains", "topics": "arm-none-eabi-gcc flags · Makefile anatomy · linker scripts (MEMORY/SECTIONS) · startup file · CMake for embedded · CMSIS structure · objcopy/nm/size · firmware CI"},
-        {"href": "bootloaders.html",   "text": "21 · Bootloaders &amp; Firmware Update", "topics": "Boot sequence · flash partitioning (single-slot / dual-slot A/B) · VTOR relocation · jump-to-app · IAP flash write · OTA update · CRC and ECDSA verification · rollback protection · Gecko Bootloader · secure boot"}
+        {
+          "href": "build-systems.html",
+          "text": "Build Systems &amp; Toolchains",
+          "topics": "arm-none-eabi-gcc flags · Makefile anatomy · linker scripts (MEMORY/SECTIONS) · startup file · CMake for embedded · CMSIS structure · objcopy/nm/size · firmware CI"
+        },
+        {
+          "href": "bootloaders.html",
+          "text": "Bootloaders &amp; Firmware Update",
+          "topics": "Boot sequence · flash partitioning (single-slot / dual-slot A/B) · VTOR relocation · jump-to-app · IAP flash write · OTA update · CRC and ECDSA verification · rollback protection · Gecko Bootloader · secure boot"
+        }
       ]
     }
   ]

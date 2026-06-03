@@ -3,59 +3,131 @@
     {
       "label": "The Cellular Foundation",
       "items": [
-        { "href": "neurons.html",              "text": "1 · The Neuron &amp; the Action Potential", "topics": "Neuron anatomy · resting membrane potential · Nernst equation · ion channels · action potential phases · propagation · myelination · saltatory conduction" },
-        { "href": "synaptic-transmission.html","text": "2 · Synaptic Transmission",               "topics": "Chemical synapses · vesicle release · quantal transmission · ionotropic vs metabotropic receptors · glutamate · GABA · monoamines · synaptic integration" }
+        {
+          "href": "neurons.html",
+          "text": "The Neuron &amp; the Action Potential",
+          "topics": "Neuron anatomy · resting membrane potential · Nernst equation · ion channels · action potential phases · propagation · myelination · saltatory conduction"
+        },
+        {
+          "href": "synaptic-transmission.html",
+          "text": "Synaptic Transmission",
+          "topics": "Chemical synapses · vesicle release · quantal transmission · ionotropic vs metabotropic receptors · glutamate · GABA · monoamines · synaptic integration"
+        }
       ]
     },
     {
       "label": "Circuits &amp; Organization",
       "items": [
-        { "href": "neural-circuits.html",      "text": "3 · Neural Circuits &amp; Brain Organization", "topics": "CNS overview · cortical layers and columns · feedforward and feedback circuits · lateral inhibition · interneuron types · thalamus as relay" }
+        {
+          "href": "neural-circuits.html",
+          "text": "Neural Circuits &amp; Brain Organization",
+          "topics": "CNS overview · cortical layers and columns · feedforward and feedback circuits · lateral inhibition · interneuron types · thalamus as relay"
+        }
       ]
     },
     {
       "label": "Sensory Systems",
       "items": [
-        { "href": "visual-system.html",        "text": "4 · The Visual System",                   "topics": "Retina · phototransduction · center-surround receptive fields · LGN · V1 simple and complex cells · dorsal and ventral streams" },
-        { "href": "auditory-somatosensory.html","text": "5 · Auditory &amp; Somatosensory Systems","topics": "Cochlea · tonotopy · hair cells · auditory pathway · sound localization · mechanoreceptors · dorsal column pathway · spinothalamic tract · pain" },
-        { "href": "chemical-senses.html",      "text": "16 · The Chemical Senses",                "topics": "Olfactory receptor neurons · olfactory bulb · glomeruli · odorant receptor genes · taste receptor cells · five basic tastes · gustatory pathway · flavor integration" }
+        {
+          "href": "visual-system.html",
+          "text": "The Visual System",
+          "topics": "Retina · phototransduction · center-surround receptive fields · LGN · V1 simple and complex cells · dorsal and ventral streams"
+        },
+        {
+          "href": "auditory-somatosensory.html",
+          "text": "Auditory &amp; Somatosensory Systems",
+          "topics": "Cochlea · tonotopy · hair cells · auditory pathway · sound localization · mechanoreceptors · dorsal column pathway · spinothalamic tract · pain"
+        },
+        {
+          "href": "chemical-senses.html",
+          "text": "The Chemical Senses",
+          "topics": "Olfactory receptor neurons · olfactory bulb · glomeruli · odorant receptor genes · taste receptor cells · five basic tastes · gustatory pathway · flavor integration"
+        }
       ]
     },
     {
       "label": "Motor Systems",
       "items": [
-        { "href": "motor-systems.html",        "text": "6 · Motor Systems",                        "topics": "Motor units · spinal reflexes · central pattern generators · motor cortex · corticospinal tract · basal ganglia direct/indirect pathways · cerebellum" }
+        {
+          "href": "motor-systems.html",
+          "text": "Motor Systems",
+          "topics": "Motor units · spinal reflexes · central pattern generators · motor cortex · corticospinal tract · basal ganglia direct/indirect pathways · cerebellum"
+        }
       ]
     },
     {
       "label": "Plasticity &amp; Memory",
       "items": [
-        { "href": "synaptic-plasticity.html",  "text": "7 · Synaptic Plasticity",                  "topics": "Hebb's postulate · LTP induction and expression · NMDA as coincidence detector · LTD · STDP · BCM theory · homeostatic scaling" },
-        { "href": "memory-systems.html",       "text": "8 · Memory Systems",                       "topics": "Declarative vs non-declarative · Patient H.M. · hippocampal trisynaptic circuit · place cells · systems consolidation · working memory · amygdala" }
+        {
+          "href": "synaptic-plasticity.html",
+          "text": "Synaptic Plasticity",
+          "topics": "Hebb's postulate · LTP induction and expression · NMDA as coincidence detector · LTD · STDP · BCM theory · homeostatic scaling"
+        },
+        {
+          "href": "memory-systems.html",
+          "text": "Memory Systems",
+          "topics": "Declarative vs non-declarative · Patient H.M. · hippocampal trisynaptic circuit · place cells · systems consolidation · working memory · amygdala"
+        }
       ]
     },
     {
       "label": "Sleep &amp; Computation",
       "items": [
-        { "href": "sleep.html",                "text": "9 · Sleep, Arousal &amp; Circadian Rhythms","topics": "Sleep stages · EEG correlates · flip-flop switch model · REM circuits · functions of sleep · circadian clock · SCN · molecular clock" },
-        { "href": "computational-neuroscience.html","text": "10 · The Computational Brain",        "topics": "Neural coding · tuning curves · population vectors · Bayesian brain · neural oscillations · attractor networks · binding problem · neural correlates of consciousness" }
+        {
+          "href": "sleep.html",
+          "text": "Sleep, Arousal &amp; Circadian Rhythms",
+          "topics": "Sleep stages · EEG correlates · flip-flop switch model · REM circuits · functions of sleep · circadian clock · SCN · molecular clock"
+        },
+        {
+          "href": "computational-neuroscience.html",
+          "text": "The Computational Brain",
+          "topics": "Neural coding · tuning curves · population vectors · Bayesian brain · neural oscillations · attractor networks · binding problem · neural correlates of consciousness"
+        }
       ]
     },
     {
       "label": "Development &amp; Glia",
       "items": [
-        { "href": "neural-development.html",   "text": "11 · Neural Development",                 "topics": "Neural tube · neurogenesis · neuronal migration · axon guidance (growth cones, netrins, semaphorins, ephrins) · synaptogenesis · critical periods · experience-dependent plasticity" },
-        { "href": "glial-cells.html",          "text": "12 · Glial Cells",                        "topics": "Astrocytes · tripartite synapse · blood-brain barrier · glymphatic system · oligodendrocytes and myelination · Schwann cells · microglia · neuroinflammation" }
+        {
+          "href": "neural-development.html",
+          "text": "Neural Development",
+          "topics": "Neural tube · neurogenesis · neuronal migration · axon guidance (growth cones, netrins, semaphorins, ephrins) · synaptogenesis · critical periods · experience-dependent plasticity"
+        },
+        {
+          "href": "glial-cells.html",
+          "text": "Glial Cells",
+          "topics": "Astrocytes · tripartite synapse · blood-brain barrier · glymphatic system · oligodendrocytes and myelination · Schwann cells · microglia · neuroinflammation"
+        }
       ]
     },
     {
       "label": "Higher Functions",
       "items": [
-        { "href": "reward-neuromodulation.html","text": "13 · Reward &amp; Neuromodulation",       "topics": "Dopamine reward prediction error · Schultz experiments · mesolimbic pathway · nucleus accumbens · serotonin and mood · noradrenergic system · cholinergic attention system · addiction mechanisms" },
-        { "href": "emotion-limbic.html",       "text": "14 · Emotion &amp; the Limbic System",    "topics": "Amygdala circuitry (BLA, CeA) · fear conditioning · LeDoux low-road and high-road · HPA axis and stress · prefrontal regulation · emotional memory · mood disorders" },
-        { "href": "language-cognition.html",   "text": "15 · Language &amp; Higher Cognition",    "topics": "Broca and Wernicke areas · arcuate fasciculus · split-brain experiments · hemispheric lateralization · prefrontal cortex and executive function · working memory circuits · attention networks" },
-        { "href": "sex-brain.html",            "text": "17 · Sex and the Brain",                  "topics": "Sexual differentiation of the brain · gonadal hormones · hypothalamic sex differences · sexual orientation · sex differences in cognition · puberty and neuroplasticity" },
-        { "href": "mental-illness.html",       "text": "18 · Mental Illness",                     "topics": "Schizophrenia (dopamine hypothesis) · depression and monoamine theory · bipolar disorder · anxiety disorders · OCD · neurodevelopmental disorders (autism, ADHD) · psychopharmacology" }
+        {
+          "href": "reward-neuromodulation.html",
+          "text": "Reward &amp; Neuromodulation",
+          "topics": "Dopamine reward prediction error · Schultz experiments · mesolimbic pathway · nucleus accumbens · serotonin and mood · noradrenergic system · cholinergic attention system · addiction mechanisms"
+        },
+        {
+          "href": "emotion-limbic.html",
+          "text": "Emotion &amp; the Limbic System",
+          "topics": "Amygdala circuitry (BLA, CeA) · fear conditioning · LeDoux low-road and high-road · HPA axis and stress · prefrontal regulation · emotional memory · mood disorders"
+        },
+        {
+          "href": "language-cognition.html",
+          "text": "Language &amp; Higher Cognition",
+          "topics": "Broca and Wernicke areas · arcuate fasciculus · split-brain experiments · hemispheric lateralization · prefrontal cortex and executive function · working memory circuits · attention networks"
+        },
+        {
+          "href": "sex-brain.html",
+          "text": "Sex and the Brain",
+          "topics": "Sexual differentiation of the brain · gonadal hormones · hypothalamic sex differences · sexual orientation · sex differences in cognition · puberty and neuroplasticity"
+        },
+        {
+          "href": "mental-illness.html",
+          "text": "Mental Illness",
+          "topics": "Schizophrenia (dopamine hypothesis) · depression and monoamine theory · bipolar disorder · anxiety disorders · OCD · neurodevelopmental disorders (autism, ADHD) · psychopharmacology"
+        }
       ]
     }
   ]
