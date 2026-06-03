@@ -347,6 +347,18 @@
         $$A^n + a_{n-1}A^{n-1} + \cdots + a_1 A + a_0 I = 0$$
       </div>
 
+      <div class="proof-box">
+        <div class="proof-header">Proof — Cayley-Hamilton theorem</div>
+        <div class="proof-body">
+          <p>Let $p(\lambda) = \det(\lambda I - A)$ and write the adjugate (classical adjoint) of $(\lambda I - A)$ as $\text{adj}(\lambda I - A)$. Since $(\lambda I - A)\,\text{adj}(\lambda I - A) = \det(\lambda I - A)\,I = p(\lambda)I$, the entries of $\text{adj}(\lambda I - A)$ are polynomials of degree at most $n-1$ in $\lambda$. Write:</p>
+          $$\text{adj}(\lambda I - A) = B_{n-1}\lambda^{n-1} + B_{n-2}\lambda^{n-2} + \cdots + B_0$$
+          <p>where $B_k$ are $n\times n$ constant matrices. Also write $p(\lambda) = \lambda^n + a_{n-1}\lambda^{n-1} + \cdots + a_0$. Substituting into $(\lambda I - A)(B_{n-1}\lambda^{n-1} + \cdots + B_0) = p(\lambda)I$ and matching powers of $\lambda$:</p>
+          $$B_{n-1} = I, \quad B_{k-1} - AB_k = a_k I \text{ for } k=n-1,\ldots,1, \quad -AB_0 = a_0 I$$
+          <p>Now multiply each equation on the right by $A^k$ and sum: the $AB_k$ and $B_{k-1}$ terms telescope, leaving $p(A) = A^n + a_{n-1}A^{n-1} + \cdots + a_0 I = 0$. $\blacksquare$</p>
+          <p style="color:#9aabb8;font-size:12px;margin-top:8px;">Note: naively "substituting $A$ for $\lambda$" in $\det(\lambda I - A)$ does <em>not</em> work — $\det(AI - A) = \det(0) = 0$ is trivially true but proves nothing. The proof via the adjugate is the correct argument.</p>
+        </div>
+      </div>
+
       <div class="prose">
         This is not obvious — substituting a matrix for a scalar argument in a determinant
         requires careful proof. But the result is powerful:
@@ -506,8 +518,8 @@
       <!-- ═══ WORKED EXAMPLES ═══ -->
       <div class="section-head" id="worked-examples">Worked examples</div>
 
-      <details class="example-box">
-        <summary><strong>Example 1 — $e^{At}$ via eigendecomposition</strong></summary>
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — $e^{At}$ via eigendecomposition</strong></div>
         <div class="example-problem">
           Compute $e^{At}$ for $A = \begin{bmatrix}-3 & 1 \\ 0 & -1\end{bmatrix}$ using eigendecomposition.
         </div>
@@ -527,10 +539,10 @@
 
           <span style="font-size:12.5px; color:#4a6a4a;">Check: $e^{A\cdot 0} = I$ ✓. All entries $\to 0$ as $t\to\infty$ (both eigenvalues in LHP) ✓.</span>
         </div>
-      </details>
+      </div>
 
-      <details class="example-box">
-        <summary><strong>Example 2 — $e^{At}$ via Laplace transform (resolvent)</strong></summary>
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — $e^{At}$ via Laplace transform (resolvent)</strong></div>
         <div class="example-problem">
           Compute $e^{At}$ for $A = \begin{bmatrix}0 & 1 \\ -2 & -3\end{bmatrix}$ using the resolvent $(sI-A)^{-1}$.
         </div>
@@ -546,10 +558,10 @@
 
           $$e^{At} = \begin{bmatrix}2e^{-t}-e^{-2t} & e^{-t}-e^{-2t} \\ -2e^{-t}+2e^{-2t} & -e^{-t}+2e^{-2t}\end{bmatrix}$$
         </div>
-      </details>
+      </div>
 
-      <details class="example-box">
-        <summary><strong>Example 3 — $e^{At}$ via Cayley-Hamilton ($2\times 2$)</strong></summary>
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — $e^{At}$ via Cayley-Hamilton ($2\times 2$)</strong></div>
         <div class="example-problem">
           Find $e^{At}$ for $A = \begin{bmatrix}-1 & 2 \\ 0 & -3\end{bmatrix}$ using the Cayley-Hamilton approach.
         </div>
@@ -568,7 +580,7 @@
 
           <span style="font-size:12.5px; color:#4a6a4a;">Check: $t=0$ gives $I$ ✓. Differentiate: $\dot{\Phi}(0) = A$ ✓.</span>
         </div>
-      </details>
+      </div>
 
       <!-- ═══ FOOD FOR THOUGHT ═══ -->
       <div class="section-head" id="food-for-thought">Food for thought</div>
@@ -580,9 +592,7 @@
           the same — why does the matrix case require strictly negative real parts while the
           scalar case allows $a = 0$ for marginal stability (constant solution $x(t) = x_0$)?
           (Hint: think about Jordan blocks.)
-          <details class="fft-answer">
-            <summary>Answer</summary>
-            <div class="fft-answer-body">
+                      <div class="fft-answer-body">
               For a scalar, $a = 0$ gives $e^{0 \cdot t} = 1$ — perfectly bounded, marginally stable.
               In the matrix case, $\lambda = 0$ alone does not guarantee boundedness. The issue is
               <strong>Jordan blocks</strong>: if $\lambda = 0$ has geometric multiplicity less than its
@@ -597,16 +607,14 @@
               decay, even when eigenvalues are repeated. Strict stability is the price of the more
               complex algebraic structure of matrices.
             </div>
-          </details>
+          
         </li>
         <li style="margin-bottom:10px;">
           The Cayley-Hamilton theorem says $A$ satisfies its own characteristic polynomial.
           Does this mean you can compute $e^{At}$ for any $n \times n$ matrix using only a
           degree-$(n-1)$ polynomial in $A$? What does this imply about the computational
           complexity of evaluating $e^{At}$ for a high-dimensional system?
-          <details class="fft-answer">
-            <summary>Answer</summary>
-            <div class="fft-answer-body">
+                      <div class="fft-answer-body">
               Yes — Cayley-Hamilton guarantees that $A^n = -(a_{n-1}A^{n-1} + \cdots + a_0 I)$, so
               every power $A^k$ for $k \geq n$ can be reduced to a linear combination of
               $I, A, \ldots, A^{n-1}$. Since $e^{At} = \sum_{k=0}^\infty \frac{(At)^k}{k!}$ and
@@ -621,7 +629,7 @@
               mainly useful for small systems. In practice, <code>scipy.linalg.expm</code> uses Padé
               approximations with scaling and squaring — a much more numerically stable algorithm.
             </div>
-          </details>
+          
         </li>
         <li>
           The state response $x(t) = e^{At}x_0 + \int_0^t e^{A(t-\tau)}Bu(\tau)\,d\tau$
@@ -629,9 +637,7 @@
           is no such closed form. The linear time-invariant assumption is doing a lot of
           work here — what specifically does linearity buy you (superposition), and what does
           time-invariance buy you (the convolution structure)?
-          <details class="fft-answer">
-            <summary>Answer</summary>
-            <div class="fft-answer-body">
+                      <div class="fft-answer-body">
               <strong>Linearity → superposition.</strong> Because $f(x,u) = Ax + Bu$ is linear in both $x$
               and $u$, the solution is the sum of two independent contributions: the homogeneous
               response $e^{At}x_0$ (due to initial conditions, as if $u=0$) and the particular
@@ -649,7 +655,7 @@
               no convolution, no transfer function, and no frequency-domain analysis in the usual sense.
               Time-invariance is what makes the $\mathcal{L}$-transform approach exact, not approximate.
             </div>
-          </details>
+          
         </li>
       </ol>
 

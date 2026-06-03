@@ -305,8 +305,8 @@
       <!-- ── Worked examples ─────────────────────────────────────────── -->
       <div class="section-head" id="examples">Worked examples</div>
 
-      <details class="example-box">
-        <summary><strong>Example 1 — PI control of a first-order plant</strong></summary>
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — PI control of a first-order plant</strong></div>
         <div class="example-problem">
           Plant: $P(s) = \dfrac{1}{2s+1}$. Design a PI controller for zero steady-state error
           to a step reference with phase margin $\approx 90°$ and crossover frequency $\omega_c = 1$ rad/s.
@@ -326,10 +326,10 @@
           <strong>Final controller:</strong> $C(s) = 2\!\left(1 + \dfrac{1}{2s}\right) = 2 + \dfrac{1}{s}$.
           Zero steady-state error to steps (integrator), PM = 90°.
         </div>
-      </details>
+      </div>
 
-      <details class="example-box">
-        <summary><strong>Example 2 — Effect of derivative on a second-order plant</strong></summary>
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Effect of derivative on a second-order plant</strong></div>
         <div class="example-problem">
           Plant: $P(s) = \dfrac{1}{s(s+1)}$ (Type 1 position servo). Compare proportional control
           ($K_p=1$, $K_d=0$) with PD control ($K_p=1$, $K_d=1$).
@@ -348,7 +348,7 @@
           lightly-damped plant pole — a clean illustration of how derivative action can reshape
           the closed-loop dynamics.
         </div>
-      </details>
+      </div>
 
       <!-- ── Interactive ──────────────────────────────────────────────── -->
       <div class="section-head" id="interactive">Interactive: PID step response simulator</div>
@@ -570,9 +570,7 @@
             step references. But what happens to the integral term at steady state — what value
             does $\int e\,dt$ converge to, and why does a nonzero integral not cause the output
             to keep drifting past the reference?
-            <details class="fft-answer">
-              <summary>Answer</summary>
-              <div class="fft-answer-body">
+                          <div class="fft-answer-body">
                 At steady state, $e(\infty) = 0$ (the whole point of integral action), so the integrator
                 stops accumulating. But the integral $I(\infty) = \int_0^\infty e\,dt$ is nonzero —
                 it has settled to a constant value. This constant value is exactly what's needed to
@@ -585,15 +583,13 @@
                 because $e = 0$ means the integrator has stopped changing; the integral is frozen at
                 its steady-state value. The "driving force" for drift is gone.
               </div>
-            </details>
+            
           </li>
           <li style="margin-bottom:12px;">A PID controller has two zeros and one pole (at the
             origin). Where are these zeros in terms of $K_p$, $T_i$, $T_d$? Using the root locus,
             sketch qualitatively how the closed-loop poles of a first-order plant $P(s)=1/(s+1)$
             under PID control move as $K_p$ increases from 0 to $\infty$ (with fixed $T_i$, $T_d$).
-            <details class="fft-answer">
-              <summary>Answer</summary>
-              <div class="fft-answer-body">
+                          <div class="fft-answer-body">
                 The standard PID: $C(s) = K_p + K_i/s + K_d s = K_d(s^2 + (K_p/K_d)s + K_i/K_d)/s$.
                 The two zeros are at the roots of $s^2 + (K_p/K_d)s + K_i/K_d = 0$. In terms of
                 $T_i = K_p/K_i$ and $T_d = K_d/K_p$: the zeros are at
@@ -607,15 +603,13 @@
                 For small $K_p$ the system is underdamped; near the zeros the poles settle; for large
                 $K_p$ one pole races to $-\infty$ and the closed-loop becomes fast but with large overshoot.
               </div>
-            </details>
+            
           </li>
           <li>Anti-windup clamping stops integration when the output is saturated.
             But this means the integral state $I(t)$ no longer reflects the true $\int e\,dt$.
             When the saturation lifts and the integral resumes, is there any offset or transient
             due to the clamping? How does back-calculation anti-windup avoid this issue?
-            <details class="fft-answer">
-              <summary>Answer</summary>
-              <div class="fft-answer-body">
+                          <div class="fft-answer-body">
                 Simple clamping prevents the integral from growing <em>further</em> during saturation,
                 so when saturation lifts, the integral is at the value it held when clamping began.
                 This value may be too large (it wound up before the clamp) — leading to a transient
@@ -631,7 +625,7 @@
                 the integral is already at the "right" value and no transient occurs. The integral
                 actively tracks the achievable control, not the ideal one.
               </div>
-            </details>
+            
           </li>
         </ol>
       </div>

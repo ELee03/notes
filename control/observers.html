@@ -428,12 +428,20 @@
         splits it into two independent, tractable design problems.
       </div>
 
-      <div class="prose">
-        <strong>Proof sketch.</strong> The upper-triangular structure of $A_{cl}$ is the
-        key. Substituting $\hat{x} = x - e$ into $u = -K\hat{x}$:
-        $$\dot{x} = Ax + Bu = Ax - BK(x - e) = (A-BK)x + BKe$$
-        The $x$-dynamics are driven by $e$, but the $e$-dynamics are independent of $x$.
-        The block structure isolates the two subsystems' eigenvalues.
+      <div class="proof-box">
+        <div class="proof-header">Proof — Separation principle</div>
+        <div class="proof-body">
+          <p>Let $e = x - \hat{x}$ be the estimation error. The observer equation gives $\dot{\hat{x}} = A\hat{x} + Bu + L(y - C\hat{x})$. Subtracting from $\dot{x} = Ax + Bu$:
+          $$\dot{e} = \dot{x} - \dot{\hat{x}} = (A - LC)e$$
+          The error dynamics are <em>independent of $u$ and $K$</em> — they depend only on $A$, $C$, and $L$.</p>
+          <p>Now substitute $u = -K\hat{x} = -K(x - e)$ into the state equation:
+          $$\dot{x} = Ax - BK(x - e) = (A - BK)x + BKe$$
+          Writing as a joint system in the coordinates $(x, e)$:
+          $$\begin{bmatrix}\dot{x}\\\dot{e}\end{bmatrix} = \underbrace{\begin{bmatrix}A-BK & BK \\ 0 & A-LC\end{bmatrix}}_{A_{cl}}\begin{bmatrix}x\\e\end{bmatrix}$$</p>
+          <p>$A_{cl}$ is <strong>block upper-triangular</strong>. The eigenvalues of a block upper-triangular matrix are the union of the eigenvalues of the diagonal blocks:
+          $$\text{eig}(A_{cl}) = \text{eig}(A-BK) \cup \text{eig}(A-LC)$$
+          Since the error dynamics do not depend on $K$ and the state-feedback block does not affect error convergence, $K$ and $L$ can be designed independently without affecting each other's pole placement. $\blacksquare$</p>
+        </div>
       </div>
 
       <!-- ── Kalman Filter ───────────────────────────────────── -->
@@ -653,8 +661,8 @@
       <div id="worked-examples"></div>
       <div class="section-head">Worked Examples</div>
 
-      <details class="example-box">
-        <summary><strong>Example 1 — Observer design by duality</strong></summary>
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Observer design by duality</strong></div>
         <div class="example-problem">
           Design a Luenberger observer for:
           $$A = \begin{bmatrix}0&1\\-2&-3\end{bmatrix},\quad C = \begin{bmatrix}1&0\end{bmatrix}$$
@@ -680,10 +688,10 @@
           Verify: $A - LC = \begin{bmatrix}0-7&1\\-2-27&-3\end{bmatrix} = \begin{bmatrix}-7&1\\-29&-3\end{bmatrix}$.
           Char poly: $s^2 + 10s + (21+29) = s^2 + 10s + 50$. ✓
         </div>
-      </details>
+      </div>
 
-      <details class="example-box">
-        <summary><strong>Example 2 — Verifying the separation principle</strong></summary>
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Verifying the separation principle</strong></div>
         <div class="example-problem">
           For the double integrator ($A = \begin{bmatrix}0&1\\0&0\end{bmatrix}$, $B = \begin{bmatrix}0\\1\end{bmatrix}$, $C=[1,0]$)
           with state-feedback gain $K = [1,\,\sqrt{3}]$ and observer poles at $-3 \pm 3j$,
@@ -703,10 +711,10 @@
           $A-LC$: char poly $s^2 + 6s + 18$, roots $-3 \pm 3j$.
           Combined eigenvalues: $\{-0.866 \pm 0.5j,\ -3 \pm 3j\}$ — the two designs are completely decoupled. ✓
         </div>
-      </details>
+      </div>
 
-      <details class="example-box">
-        <summary><strong>Example 3 — Kalman filter gain for a noisy double integrator</strong></summary>
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Kalman filter gain for a noisy double integrator</strong></div>
         <div class="example-problem">
           The double integrator has process noise entering through acceleration ($G = [0;\,1]$, $W = 0.1$)
           and position measurement noise ($V = 0.01$). Describe how the Kalman filter gain is determined
@@ -726,7 +734,7 @@
             <li>$W/V$ large (noisy model, good sensors): large $L$, aggressive correction each measurement step.</li>
           </ul>
         </div>
-      </details>
+      </div>
 
       <!-- ── Food for Thought ──────────────────────────────────── -->
       <div id="food-for-thought"></div>
@@ -738,9 +746,7 @@
           and observer eigenvalues. But the LQR guarantee of $\geq 60°$ phase margin does
           not carry over to the combined LQG controller. Why not — what changes when the
           observer is in the loop?
-          <details class="fft-answer">
-            <summary>Answer</summary>
-            <div class="fft-answer-body">
+                      <div class="fft-answer-body">
               The LQR margin proof relies on the return-difference inequality
               $\|I + K^*(j\omega I-A)^{-1}B\| \geq 1$, which holds because the feedback path
               is the direct state $x$. When an observer is inserted, the actual
@@ -751,15 +757,13 @@
               margins can shrink to near zero even when both $K^*$ and $L$ are individually well-designed.
               This failure mode is known as the "LQG fragility" problem; loop transfer recovery (LTR) is the standard fix.
             </div>
-          </details>
+          
         </li>
         <li>
           In the observer error dynamics $\dot{e} = (A-LC)e$, the input $u$ does not appear.
           Does this mean the control design has no effect on how fast the observer converges?
           What would happen if you used a very bad state-feedback gain $K$?
-          <details class="fft-answer">
-            <summary>Answer</summary>
-            <div class="fft-answer-body">
+                      <div class="fft-answer-body">
               Correct — the error $e = x - \hat x$ converges at the rate of $A-LC$ eigenvalues,
               independent of $K$. A bad $K$ doesn't slow the observer. However, a destabilising
               $K$ causes the true state $x(t)$ to grow without bound. The observer faithfully
@@ -769,15 +773,13 @@
               principle guarantees stability only when <em>both</em> $A-BK$ and $A-LC$ are
               independently stable.
             </div>
-          </details>
+          
         </li>
         <li>
           The Kalman filter is optimal for Gaussian noise. If the noise is heavy-tailed
           (occasional large outliers), would a Kalman filter still work well? What might
           you use instead?
-          <details class="fft-answer">
-            <summary>Answer</summary>
-            <div class="fft-answer-body">
+                      <div class="fft-answer-body">
               No — the Kalman filter is optimal for minimum mean-squared error under Gaussian
               assumptions. Heavy-tailed noise (e.g. Cauchy, Student-$t$) means occasional very
               large measurement residuals. A standard Kalman filter treats these outliers as high-probability events and overcorrects, producing large transient estimation errors.
@@ -787,7 +789,7 @@
               (3) <em>particle filter</em> — represents the posterior distribution with a set of
               weighted samples, making no Gaussian assumption and handling arbitrary noise distributions.
             </div>
-          </details>
+          
         </li>
       </ul>
 

@@ -349,8 +349,8 @@
       <!-- ── Worked examples ─────────────────────────────────────────── -->
       <div class="section-head" id="examples">Worked examples</div>
 
-      <details class="example-box">
-        <summary><strong>Example 1 — Gain and phase margins for a Type-1 third-order loop</strong></summary>
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Gain and phase margins for a Type-1 third-order loop</strong></div>
         <div class="example-problem">
           Compute the gain margin (GM) and phase margin (PM) for $L(s) = \dfrac{3}{s(s+1)(s+3)}$.
         </div>
@@ -370,10 +370,10 @@
           $$\text{PM} = 180° - 140.3° = 39.7° \approx 40°$$
           Both margins are acceptable (GM $\geq 6$ dB, PM $\approx 40°$), indicating reasonable robustness.
         </div>
-      </details>
+      </div>
 
-      <details class="example-box">
-        <summary><strong>Example 2 — Delay margin: how much transport delay is tolerable?</strong></summary>
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Delay margin: how much transport delay is tolerable?</strong></div>
         <div class="example-problem">
           Using the same loop $L(s) = 3/[s(s+1)(s+3)]$, add a transport delay $e^{-\tau s}$.
           Find the maximum delay $\tau_\text{max}$ before the system becomes unstable.
@@ -392,7 +392,7 @@
           <strong>delay margin</strong> — a direct measure of how sensitive the system is to communication
           or sensing latency.
         </div>
-      </details>
+      </div>
 
       <!-- ── Interactive ──────────────────────────────────────────────── -->
       <div class="section-head" id="interactive">Interactive: Bode plot with stability margins</div>
@@ -664,9 +664,7 @@
             Sketch qualitatively what the Nyquist plot must look like for a closed-loop system
             with one open-loop unstable pole ($P=1$) to be stable. How many counterclockwise
             encirclements of $-1$ are required?
-            <details class="fft-answer">
-              <summary>Answer</summary>
-              <div class="fft-answer-body">
+                          <div class="fft-answer-body">
                 The Nyquist stability criterion: $Z = P - N$, where $Z$ = closed-loop RHP poles,
                 $P$ = open-loop RHP poles, $N$ = net clockwise encirclements of $-1$.
                 For stability, $Z = 0$, so we need $N = -P$ — that is, $P$ <em>counterclockwise</em>
@@ -679,15 +677,13 @@
                 in the loop requires active feedback to stabilize, and the stabilizing feedback produces
                 exactly this wrapping behavior in the Nyquist plot.
               </div>
-            </details>
+            
           </li>
           <li style="margin-bottom:12px;">The interactive shows that higher $K$ reduces phase
             margin. But what if you could add phase to the loop — a "phase lead" network — at
             the gain crossover frequency? How would this change the Bode phase plot and the PM?
             What does this suggest about what a lead compensator (Lesson 8) would do?
-            <details class="fft-answer">
-              <summary>Answer</summary>
-              <div class="fft-answer-body">
+                          <div class="fft-answer-body">
                 Adding a phase lead network $C(s) = (s+z)/(s+p)$ with $p > z > 0$ inserts
                 positive phase around a frequency band centered near $\sqrt{zp}$. On the Bode
                 phase plot, this appears as a "hump" of positive phase centered at the lead
@@ -701,15 +697,13 @@
                 the original one. The overall effect is: more phase margin, higher bandwidth, slightly
                 more noise sensitivity.
               </div>
-            </details>
+            
           </li>
           <li>Gain and phase margins are two separate robustness measures. Is it possible to
             have a large GM but a small PM? A large PM but a small GM? What physical scenario
             would produce each? (Think about where on the Nyquist plot the system comes close
             to $-1$ in each case.)
-            <details class="fft-answer">
-              <summary>Answer</summary>
-              <div class="fft-answer-body">
+                          <div class="fft-answer-body">
                 <strong>Large GM, small PM:</strong> The Nyquist plot crosses the negative real axis
                 far from $-1$ (large GM), but passes close to the unit circle at some angle near $-180°$
                 (small PM). This happens when the gain rolls off quickly but the phase stays near
@@ -728,7 +722,7 @@
                 is a single measure that reflects both simultaneously — it equals the inverse of
                 the minimum distance from the Nyquist plot to the $-1$ point.
               </div>
-            </details>
+            
           </li>
         </ol>
       </div>

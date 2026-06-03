@@ -266,8 +266,8 @@
       <!-- ── Worked example ────────────────────────────────────────── -->
       <div class="section-head" id="worked-example">Worked example</div>
 
-      <details class="example-box">
-        <summary><strong>Computing returns backward through a 5-step episode</strong></summary>
+      <div class="example-box">
+        <div class="example-header"><strong>Computing returns backward through a 5-step episode</strong></div>
         <div class="example-problem">
           A 5-step episode: the agent moves north four times before reaching a terminal state.
           Each non-terminal step gives $R = -1$; the terminal transition gives $R = 0$.
@@ -303,7 +303,7 @@
             reward counts less. The backward recursion is efficient: $O(T)$ instead of $O(T^2)$.
           </div>
         </div>
-      </details>
+      </div>
 
       <div class="interactive" id="gamma-explorer">
         <div class="int-title">Explorer — adjust γ and rewards</div>
@@ -452,9 +452,7 @@
           <li>The <strong>reward hypothesis</strong> claims any goal can be encoded as a scalar reward
             signal. Is this actually true? Can you think of a goal that might be difficult or
             impossible to capture faithfully this way — without creating unintended agent behaviour?
-            <details class="fft-answer">
-              <summary>Answer</summary>
-              <div class="fft-answer-body">
+                          <div class="fft-answer-body">
                 The reward hypothesis is more of a working assumption than a proven theorem.
                 Goals that are genuinely hard to encode:
 
@@ -475,14 +473,12 @@
                 The hypothesis is useful as a framework, not a guarantee. Many real-world RL systems
                 require careful reward engineering to avoid unintended emergent behaviors.
               </div>
-            </details>
+            
           </li>
           <li>If you added a constant $c$ to every reward $R_t$, would the optimal policy change?
             What about multiplying every reward by a positive constant? What if the constant were
             negative? Think through the effect on $G_t$ and on the ordering of policies.
-            <details class="fft-answer">
-              <summary>Answer</summary>
-              <div class="fft-answer-body">
+                          <div class="fft-answer-body">
                 <strong>Adding a constant $c$ to every reward:</strong>
                 For an episodic task with $T$ steps, $G_t^\text{new} = G_t + c/(1-\gamma)$ (continuous)
                 or $G_t + c \cdot \sum_{k=0}^{T-t-1}\gamma^k$ (episodic). This adds the same constant
@@ -499,15 +495,13 @@
                 the worst policy. The <em>optimal policy reverses</em>. If you accidentally negate
                 your rewards, your agent learns to minimize reward instead of maximize it.
               </div>
-            </details>
+            
           </li>
           <li>Discounting with $\gamma < 1$ ensures the infinite sum $G_t$ converges (as long as rewards
             are bounded). But $\gamma = 1$ is also used in practice for episodic tasks. Why doesn't
             the return diverge in that case — and when might $\gamma = 1$ cause problems even for
             tasks that do terminate?
-            <details class="fft-answer">
-              <summary>Answer</summary>
-              <div class="fft-answer-body">
+                          <div class="fft-answer-body">
                 For episodic tasks (finite episodes), $G_t = \sum_{k=0}^{T-t-1} R_{t+k+1}$ is a
                 finite sum regardless of $\gamma$ — there are only $T-t$ terms. So $\gamma = 1$
                 doesn't cause divergence when episodes always terminate in finite time.
@@ -525,7 +519,7 @@
                 so the variance of $G_t$ is the sum of variances of all future rewards — potentially
                 very high for long episodes. This slows learning compared to discounted returns.
               </div>
-            </details>
+            
           </li>
         </ol>
       </div>

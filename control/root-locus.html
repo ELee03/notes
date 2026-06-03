@@ -286,8 +286,8 @@
       <!-- ── Worked examples ─────────────────────────────────────────── -->
       <div class="section-head" id="examples">Worked examples</div>
 
-      <details class="example-box">
-        <summary><strong>Example 1 — Root locus of the double integrator</strong></summary>
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Root locus of the double integrator</strong></div>
         <div class="example-problem">
           Sketch the root locus for $G(s) = 1/s^2$ (two poles at the origin, no zeros).
           Can proportional control stabilize this plant?
@@ -300,10 +300,10 @@
             <li><strong>Locus:</strong> Both branches leave $s=0$ along $\pm j$ — straight up and down the imaginary axis. The closed-loop poles are <em>always</em> at $\pm j\sqrt{K}$ for all $K > 0$: marginally stable, never asymptotically stable. Proportional control alone cannot stabilize a double integrator.</li>
           </ul>
         </div>
-      </details>
+      </div>
 
-      <details class="example-box">
-        <summary><strong>Example 2 — Three-pole type-1 system</strong></summary>
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Three-pole type-1 system</strong></div>
         <div class="example-problem">
           Sketch the root locus for $G(s) = K/[s(s+1)(s+3)]$ (poles at $0, -1, -3$, no zeros)
           and find the critical gain $K_{cr}$.
@@ -316,7 +316,7 @@
             <li style="margin-bottom:6px;"><strong>Imaginary-axis crossing:</strong> From Routh (Lesson 4): $K_{cr} = 12$ at $\omega = \sqrt{3}$. System stable for $0 < K < 12$.</li>
           </ul>
         </div>
-      </details>
+      </div>
 
       <!-- SVG: Annotated root locus for Example 2 -->
       <svg viewBox="0 0 500 340" style="width:100%;max-width:540px;display:block;margin:22px auto 8px;font-family:'IBM Plex Sans',sans-serif;">
@@ -423,8 +423,8 @@
         Root locus for $G(s) = 1/[s(s+1)(s+3)]$. Green = locus; orange dashed = asymptotes; red circles = $j\omega$ crossing at $K_{cr}=12$.
       </div>
 
-      <details class="example-box">
-        <summary><strong>Example 3 — Adding a zero (lead compensation preview)</strong></summary>
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Adding a zero (lead compensation preview)</strong></div>
         <div class="example-problem">
           Add a zero at $z = -2$ to give $G(s) = K(s+2)/[s(s+1)(s+3)]$. How does the zero change the root locus?
         </div>
@@ -439,7 +439,7 @@
             <li>The asymptotes now shoot straight up/down from $\sigma_A = -1$, and the complex branches stay further left. The added zero "attracts" nearby branches, pulling the locus toward more negative real parts. The critical gain increases significantly — the zero improves stability and demonstrates the principle behind lead compensation.</li>
           </ul>
         </div>
-      </details>
+      </div>
 
       <!-- ── Interactive ──────────────────────────────────────────────── -->
       <div class="section-head" id="interactive">Interactive: root locus with gain slider</div>
@@ -666,9 +666,7 @@
             at $s=-3$ to $s=-10$? Does the locus cross the imaginary axis at a higher or lower
             gain? Why? (Try modifying the interactive by mentally changing the breakaway and
             asymptote calculations.)
-            <details class="fft-answer">
-              <summary>Answer</summary>
-              <div class="fft-answer-body">
+                          <div class="fft-answer-body">
                 Moving the pole from $s=-3$ to $s=-10$ makes $K_{cr}$ larger — the locus crosses the
                 imaginary axis at a higher gain. Intuitively: the pole at $-10$ is now "far" from the
                 imaginary axis and contributes less phase lag near the crossover frequency. With less
@@ -680,15 +678,13 @@
                 which means the branches leave in more stable directions and the locus stays in the LHP
                 for a much larger range of $K$.
               </div>
-            </details>
+            
           </li>
           <li style="margin-bottom:12px;">The root locus shows only the paths for $K > 0$
             (positive gain). What would you sketch for $K < 0$ (negative gain, or positive
             feedback)? The angle condition becomes $\angle G(s^*) = 0°$ instead of $180°$ —
             how does this change the real-axis rule and the asymptote angles?
-            <details class="fft-answer">
-              <summary>Answer</summary>
-              <div class="fft-answer-body">
+                          <div class="fft-answer-body">
                 For $K < 0$ (complementary root locus), the angle condition changes to
                 $\angle G(s^*) = 0°, \pm 360°, \ldots$ (even multiples of $180°$).
 
@@ -704,16 +700,14 @@
                 The complementary locus is used in the design of positive feedback systems (rare in
                 practice) and in analyzing gain variations below zero.
               </div>
-            </details>
+            
           </li>
           <li>Rule 4 says a real-axis point is on the locus if there are an odd number of
             real poles+zeros to its right. Prove this from the angle condition: for a real test
             point, all complex poles and zeros come in conjugate pairs whose angle contributions
             cancel in pairs. The only surviving angle contributions are from the real poles and
             zeros.
-            <details class="fft-answer">
-              <summary>Answer</summary>
-              <div class="fft-answer-body">
+                          <div class="fft-answer-body">
                 Let $s_0$ be a real test point. For each complex pole $p = -a + jb$ (with $b > 0$),
                 there is a conjugate pole $\bar{p} = -a - jb$. The angle contribution of $p$ to
                 $\angle(s_0 - p)$ is $\angle(s_0 + a - jb)$. For the conjugate: $\angle(s_0 + a + jb)$.
@@ -729,7 +723,7 @@
                 $(2k+1) \times 180°$, which requires an odd number of $+180°$ contributions — i.e., an
                 odd total count of real poles and zeros to the right. □
               </div>
-            </details>
+            
           </li>
         </ol>
       </div>

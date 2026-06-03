@@ -33,6 +33,13 @@
         {"href": "lqr.html",             "text": "13 · Linear Quadratic Regulator",           "topics": "Optimal control formulation · quadratic cost J = ∫(x^TQx + u^TRu) dt · algebraic Riccati equation · Q/R weight tuning"},
         {"href": "observers.html",       "text": "14 · Observers &amp; Separation Principle",  "topics": "Luenberger observer · observer gain design · error dynamics · duality with controllability · separation principle · Kalman filter preview"}
       ]
+    },
+    {
+      "label": "Digital &amp; Robust Control",
+      "items": [
+        {"href": "discrete-time.html",  "text": "15 · Discrete-Time Systems",      "topics": "z-transform · pulse transfer functions · sampling theorem · ZOH and Tustin discretisation · unit circle stability · digital PID"},
+        {"href": "robust-control.html", "text": "16 · Introduction to Robust Control", "topics": "Plant uncertainty · H∞ norm · small gain theorem · structured vs unstructured uncertainty · sensitivity functions · μ-analysis preview"}
+      ]
     }
   ]
 }

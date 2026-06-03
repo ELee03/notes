@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Discrete-Time Systems — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$',  right: '$',  display: false}
+        ],
+        throwOnError: false
+      });
+    });
+  </script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="control" data-current="discrete-time.html"></div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Control Theory</a>
+        <span class="sep">›</span>
+        <span>Lesson 15</span>
+      </div>
+
+      <div class="lesson-title">Discrete-Time Systems</div>
+      <div class="lesson-meta">z-Transform · Pulse Transfer Functions · Sampling · ZOH · Tustin · Digital PID</div>
+
+      <div class="prose">
+        Every control loop implemented in software runs on a computer that reads sensors and computes actuator commands at discrete time instants — once every $T_s$ seconds. The continuous-time theory of Lessons 1–14 assumes signals exist at every moment; a digital controller breaks this assumption. Discrete-time control is not a minor implementation detail. It introduces its own stability conditions (the unit circle replaces the left half-plane), its own design tools (the z-transform replaces Laplace), and its own failure modes (aliasing, quantisation, inter-sample ripple). Half of practical modern control is digital — this lesson covers the tools needed to design and analyse digital controllers rigorously.
+      </div>
+
+      <div class="callout" style="margin-top:20px;">
+        <strong>Notation recap</strong>
+        <table style="margin-top:10px;border-collapse:collapse;font-size:13.5px;">
+          <tr><td style="padding:3px 10px 3px 0;font-family:'IBM Plex Mono',monospace;">$T_s$</td><td>Sampling period (seconds)</td></tr>
+          <tr><td style="padding:3px 10px 3px 0;font-family:'IBM Plex Mono',monospace;">$f_s = 1/T_s$</td><td>Sampling frequency (Hz)</td></tr>
+          <tr><td style="padding:3px 10px 3px 0;font-family:'IBM Plex Mono',monospace;">$z$</td><td>Complex variable in the z-domain; $z = e^{sT_s}$</td></tr>
+          <tr><td style="padding:3px 10px 3px 0;font-family:'IBM Plex Mono',monospace;">$x[k]$</td><td>Signal sampled at $t = kT_s$</td></tr>
+          <tr><td style="padding:3px 10px 3px 0;font-family:'IBM Plex Mono',monospace;">$\mathcal{Z}\{x[k]\}$</td><td>z-transform: $X(z) = \sum_{k=0}^\infty x[k]\,z^{-k}$</td></tr>
+          <tr><td style="padding:3px 10px 3px 0;font-family:'IBM Plex Mono',monospace;">$G(z)$</td><td>Pulse transfer function (discrete-time equivalent of $G(s)$)</td></tr>
+        </table>
+      </div>
+
+      <!-- ── Why discrete-time ── -->
+      <div class="section-head" id="why">Why discrete-time analysis matters</div>
+
+      <div class="prose">
+        A continuous-time plant is connected to a digital controller through two operations: an <strong>analogue-to-digital converter (ADC)</strong> that samples the plant output at intervals $T_s$, and a <strong>digital-to-analogue converter (DAC)</strong> that holds the computed control signal constant until the next sample (a zero-order hold, ZOH).
+      </div>
+
+      <div class="prose">
+        The key effects introduced by sampling:
+      </div>
+
+      <ul class="prose" style="padding-left:22px;">
+        <li style="margin-bottom:8px;"><strong>Aliasing.</strong> If the plant signal contains frequency components above $f_s/2$ (the Nyquist frequency), they fold back into the sampled signal as lower-frequency imposters — aliasing. An anti-aliasing low-pass filter must remove these components before sampling.</li>
+        <li style="margin-bottom:8px;"><strong>Phase lag.</strong> The ZOH introduces a time delay of approximately $T_s/2$ in the effective loop. This phase lag reduces the phase margin compared to the continuous-time design, potentially destabilising a system that was stable in continuous time.</li>
+        <li style="margin-bottom:8px;"><strong>Stability boundary changes.</strong> In continuous time, stability requires poles in the left half-plane. In discrete time, it requires poles inside the unit circle $|z| < 1$. A stable continuous-time pole at $s = \sigma + j\omega$ ($\sigma < 0$) maps to $z = e^{sT_s}$, which is inside the unit circle — but the mapping is nonlinear, and high-gain or fast-sampling effects can push poles outside.</li>
+        <li><strong>Finite word length.</strong> Digital controllers implement arithmetic with finite precision. Coefficient quantisation and limit cycles (oscillations due to rounding) are real concerns in fixed-point implementations.</li>
+      </ul>
+
+      <!-- ── z-Transform ── -->
+      <div class="section-head" id="z-transform">The z-transform</div>
+
+      <div class="prose">
+        The z-transform is to difference equations what the Laplace transform is to differential equations. For a causal discrete-time signal $x[k]$:
+        $$X(z) = \mathcal{Z}\{x[k]\} = \sum_{k=0}^\infty x[k]\,z^{-k}$$
+        The key property is the <strong>time-shift theorem</strong>: $\mathcal{Z}\{x[k-1]\} = z^{-1}X(z)$. This is the discrete-time analogue of multiplying by $s$ in Laplace. A delay of $n$ samples corresponds to multiplication by $z^{-n}$.
+      </div>
+
+      <div class="prose">
+        Common z-transform pairs:
+      </div>
+
+      <table style="width:100%;border-collapse:collapse;font-size:13.5px;margin:8px 0 16px 0;">
+        <thead>
+          <tr style="background:#e8f0f5;">
+            <th style="padding:8px 10px;border:1px solid #c8d8e4;text-align:left;">Signal $x[k]$</th>
+            <th style="padding:8px 10px;border:1px solid #c8d8e4;">z-transform $X(z)$</th>
+            <th style="padding:8px 10px;border:1px solid #c8d8e4;">ROC</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td style="padding:7px 10px;border:1px solid #e0e8ed;">$\delta[k]$ (unit impulse)</td><td style="padding:7px 10px;border:1px solid #e0e8ed;">$1$</td><td style="padding:7px 10px;border:1px solid #e0e8ed;">All $z$</td></tr>
+          <tr style="background:#f8f9fb;"><td style="padding:7px 10px;border:1px solid #e0e8ed;">$u[k]$ (unit step)</td><td style="padding:7px 10px;border:1px solid #e0e8ed;">$\frac{z}{z-1}$</td><td style="padding:7px 10px;border:1px solid #e0e8ed;">$|z|>1$</td></tr>
+          <tr><td style="padding:7px 10px;border:1px solid #e0e8ed;">$a^k u[k]$</td><td style="padding:7px 10px;border:1px solid #e0e8ed;">$\frac{z}{z-a}$</td><td style="padding:7px 10px;border:1px solid #e0e8ed;">$|z|>|a|$</td></tr>
+          <tr style="background:#f8f9fb;"><td style="padding:7px 10px;border:1px solid #e0e8ed;">$k\,a^k u[k]$</td><td style="padding:7px 10px;border:1px solid #e0e8ed;">$\frac{az}{(z-a)^2}$</td><td style="padding:7px 10px;border:1px solid #e0e8ed;">$|z|>|a|$</td></tr>
+          <tr><td style="padding:7px 10px;border:1px solid #e0e8ed;">$e^{-\alpha k T_s}u[k]$</td><td style="padding:7px 10px;border:1px solid #e0e8ed;">$\frac{z}{z - e^{-\alpha T_s}}$</td><td style="padding:7px 10px;border:1px solid #e0e8ed;">$|z|>e^{-\alpha T_s}$</td></tr>
+        </tbody>
+      </table>
+
+      <div class="prose">
+        The <strong>final value theorem</strong> for discrete-time systems: if $x[k] \to x_\infty$ as $k\to\infty$, then $x_\infty = \lim_{z\to 1}(1-z^{-1})X(z) = \lim_{z\to 1}\frac{z-1}{z}X(z)$. This is the exact analogue of the Laplace final value theorem $\lim_{s\to 0} sX(s)$.
+      </div>
+
+      <!-- ── Sampling theorem ── -->
+      <div class="section-head" id="sampling">Sampling theorem and aliasing</div>
+
+      <div class="prose">
+        <strong>Shannon-Nyquist sampling theorem.</strong> A continuous-time signal with no frequency content above $f_\text{max}$ Hz can be perfectly reconstructed from samples taken at rate $f_s \geq 2f_\text{max}$. The frequency $f_s/2$ is the <strong>Nyquist frequency</strong>.
+      </div>
+
+      <div class="proof-box">
+        <div class="proof-header">Why aliasing happens</div>
+        <div class="proof-body">
+          <p>Sampling at rate $f_s$ is equivalent to multiplying the signal by an impulse train $\sum_k \delta(t - kT_s)$. In the frequency domain, this is convolution with another impulse train at multiples of $f_s$. The spectrum of the sampled signal is:
+          $$X_s(f) = f_s \sum_{n=-\infty}^\infty X(f - nf_s)$$
+          Each term is a copy of $X(f)$ shifted by $nf_s$. If $X(f) = 0$ for $|f| > f_s/2$, the copies don't overlap and $X(f)$ can be recovered by low-pass filtering. If the signal has energy above $f_s/2$, the copies overlap — the high-frequency content folds back into $[0, f_s/2]$ and is indistinguishable from a genuine lower-frequency signal. This is aliasing. $\blacksquare$</p>
+        </div>
+      </div>
+
+      <div class="prose">
+        <strong>Choosing $T_s$ in practice.</strong> The Nyquist criterion gives a lower bound. In practice, sample at least $10\times$ the closed-loop bandwidth — this keeps the ZOH phase lag small compared to the system dynamics and leaves room for the anti-aliasing filter roll-off. For a bandwidth of $\omega_{bw}$:
+        $$f_s \geq \frac{10\,\omega_{bw}}{2\pi}$$
+      </div>
+
+      <!-- ── Pulse transfer function ── -->
+      <div class="section-head" id="ptf">Pulse transfer functions</div>
+
+      <div class="prose">
+        The <strong>pulse transfer function</strong> $G(z)$ is the z-domain input-output relationship of a discrete-time system, analogous to $G(s)$ in continuous time. For a difference equation:
+        $$y[k] + a_1 y[k-1] + \cdots + a_n y[k-n] = b_0 u[k] + b_1 u[k-1] + \cdots + b_m u[k-m]$$
+        Taking the z-transform and dividing: $G(z) = Y(z)/U(z) = \frac{b_0 + b_1 z^{-1} + \cdots + b_m z^{-m}}{1 + a_1 z^{-1} + \cdots + a_n z^{-n}}$.
+      </div>
+
+      <div class="callout">
+        <strong>Stability: the unit circle.</strong> A discrete-time system is stable if and only if all poles of $G(z)$ lie strictly inside the unit circle: $|z_i| < 1$ for all poles $z_i$. Compare to continuous time: $\text{Re}(s_i) < 0$.
+      </div>
+
+      <div class="prose">
+        The mapping $z = e^{sT_s}$ connects the s-plane to the z-plane:
+      </div>
+
+      <ul class="prose" style="padding-left:22px;">
+        <li style="margin-bottom:6px;">Left half-plane ($\text{Re}(s) < 0$) $\to$ inside unit circle ($|z| < 1$). Stable in both.</li>
+        <li style="margin-bottom:6px;">Imaginary axis ($\text{Re}(s) = 0$) $\to$ unit circle ($|z| = 1$). Marginally stable in both.</li>
+        <li style="margin-bottom:6px;">Right half-plane ($\text{Re}(s) > 0$) $\to$ outside unit circle ($|z| > 1$). Unstable in both.</li>
+        <li>The strip $-\pi/T_s < \text{Im}(s) < \pi/T_s$ (the primary strip) maps to the entire z-plane. Frequencies above $\omega_s/2$ alias to lower frequencies — another view of the aliasing problem.</li>
+      </ul>
+
+      <!-- ── Discretisation ── -->
+      <div class="section-head" id="discretisation">Discretisation: ZOH and Tustin methods</div>
+
+      <div class="prose">
+        Given a continuous-time plant $G_p(s)$, we need a discrete-time equivalent $G_p(z)$ for analysis and simulation. Two main methods:
+      </div>
+
+      <div class="prose">
+        <strong>Zero-Order Hold (ZOH) discretisation</strong> — the exact discretisation that matches the physical setup (the DAC holds the input constant between samples):
+        $$G_p(z) = \mathcal{Z}\!\left\{\frac{1-e^{-sT_s}}{s}\,G_p(s)\right\} = (1-z^{-1})\,\mathcal{Z}\!\left\{\frac{G_p(s)}{s}\right\}$$
+        ZOH discretisation exactly reproduces the continuous-time step response at the sample instants. It's the standard for converting a plant model to discrete time.
+      </div>
+
+      <div class="prose">
+        <strong>Tustin (bilinear) method</strong> — the standard for converting a continuous-time <em>controller</em> $C(s)$ to discrete time. It uses the approximation $s \approx \frac{2}{T_s}\frac{z-1}{z+1}$, substituted into $C(s)$:
+        $$C(z) = C(s)\big|_{s = \frac{2}{T_s}\frac{z-1}{z+1}}$$
+        The bilinear mapping preserves the left-half-plane $\leftrightarrow$ unit circle relationship exactly (no aliasing in the frequency response) and preserves passivity. The frequency response of $C(z)$ matches $C(s)$ up to a frequency <em>warping</em> — frequencies are distorted by $\omega_a = \frac{2}{T_s}\tan(\omega T_s / 2)$.
+      </div>
+
+      <div class="callout">
+        <strong>Pre-warping for Tustin.</strong> If the controller has a critical frequency $\omega_c$ (e.g. a notch filter or resonance), apply Tustin with pre-warping: replace $s \to \frac{\omega_c}{\tan(\omega_c T_s/2)}\frac{z-1}{z+1}$ to ensure the digital controller matches $C(j\omega_c)$ exactly at $\omega_c$.
+      </div>
+
+      <!-- ── Digital PID ── -->
+      <div class="section-head" id="digital-pid">Digital PID</div>
+
+      <div class="prose">
+        The continuous-time PID controller $C(s) = K_p + \frac{K_i}{s} + K_d s$ must be discretised for implementation. Using Tustin with $s \to \frac{2}{T_s}\frac{z-1}{z+1}$:
+      </div>
+
+      <div class="prose">
+        <strong>Proportional term:</strong> $K_p \to K_p$ (unchanged).
+      </div>
+
+      <div class="prose">
+        <strong>Integral term:</strong> $\frac{K_i}{s} \to \frac{K_i T_s}{2}\frac{z+1}{z-1}$. This is the trapezoidal (bilinear) integration rule. In the time domain:
+        $$I[k] = I[k-1] + \frac{K_i T_s}{2}(e[k] + e[k-1])$$
+      </div>
+
+      <div class="prose">
+        <strong>Derivative term:</strong> $K_d s \to K_d \frac{2}{T_s}\frac{z-1}{z+1}$. In practice, the pure derivative is also low-pass filtered at frequency $N/T_s$ (where $N \approx 5$–$20$) to reduce noise sensitivity:
+        $$C_D(z) = K_d \frac{N(z-1)}{z - e^{-NT_s/T_s}}$$
+      </div>
+
+      <div class="prose">
+        The complete digital PID update equations (velocity form — avoids integrator reset on mode change):
+      </div>
+
+      <pre class="code-block">// Velocity (incremental) form — update ΔU at each sample
+e_k = r[k] - y[k]                   // current error
+dU = Kp*(e_k - e_prev)              // P increment
+   + Ki*Ts*e_k                       // I increment (backward Euler, simpler)
+   + Kd/Ts*(e_k - 2*e_prev + e_pprev) // D increment (second difference)
+u[k] = u[k-1] + dU
+e_pprev = e_prev
+e_prev = e_k</pre>
+
+      <!-- ── Worked examples ── -->
+      <div class="section-head" id="worked-examples">Worked examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — z-transform of a first-order system</strong></div>
+        <div class="example-problem">
+          A continuous-time plant $G_p(s) = \frac{1}{s+2}$ is sampled with $T_s = 0.1$ s using ZOH discretisation. Find the pulse transfer function $G_p(z)$.
+        </div>
+        <div class="example-body">
+          ZOH formula: $G_p(z) = (1-z^{-1})\,\mathcal{Z}\!\left\{\frac{G_p(s)}{s}\right\}$.
+
+          First, $\frac{G_p(s)}{s} = \frac{1}{s(s+2)} = \frac{1}{2}\left(\frac{1}{s} - \frac{1}{s+2}\right)$.
+
+          z-transform: $\mathcal{Z}\!\left\{\frac{1}{s}\right\} = \frac{z}{z-1}$ and $\mathcal{Z}\!\left\{\frac{1}{s+2}\right\} = \frac{z}{z-e^{-2T_s}} = \frac{z}{z - e^{-0.2}}$.
+
+          So $\mathcal{Z}\!\left\{\frac{G_p(s)}{s}\right\} = \frac{1}{2}\left(\frac{z}{z-1} - \frac{z}{z-e^{-0.2}}\right)$.
+
+          Multiply by $(1-z^{-1}) = \frac{z-1}{z}$:
+          $$G_p(z) = \frac{z-1}{z} \cdot \frac{z}{2}\cdot\frac{(z-e^{-0.2}) - (z-1)}{(z-1)(z-e^{-0.2})} = \frac{1 - e^{-0.2}}{2(z - e^{-0.2})}$$
+
+          With $e^{-0.2} \approx 0.8187$: $G_p(z) = \frac{0.0907}{z - 0.8187}$.
+
+          The pole at $z = 0.8187$ is inside the unit circle — stable, as expected (the continuous-time pole at $s = -2$ is stable).
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Tustin discretisation of a PI controller</strong></div>
+        <div class="example-problem">
+          A PI controller $C(s) = 3 + \frac{1.5}{s}$ with $T_s = 0.05$ s. Convert to discrete time using Tustin. Write the difference equation.
+        </div>
+        <div class="example-body">
+          Substitute $s = \frac{2}{T_s}\frac{z-1}{z+1} = 40\frac{z-1}{z+1}$:
+
+          $$C(z) = 3 + \frac{1.5}{40\frac{z-1}{z+1}} = 3 + \frac{1.5(z+1)}{40(z-1)} = 3 + \frac{0.01875(z+1)}{z-1}$$
+
+          Combining over a common denominator:
+          $$C(z) = \frac{3(z-1) + 0.01875(z+1)}{z-1} = \frac{(3+0.01875)z + (0.01875-3)}{z-1} = \frac{3.01875z - 2.98125}{z-1}$$
+
+          In the time domain ($U(z)/E(z) = C(z)$, multiply both sides by $(z-1)$):
+          $$(z-1)U = (3.01875z - 2.98125)E$$
+          $$u[k] - u[k-1] = 3.01875\,e[k] - 2.98125\,e[k-1]$$
+          $$u[k] = u[k-1] + 3.01875\,e[k] - 2.98125\,e[k-1]$$
+
+          This is the velocity form of the PI controller. Only one delay of stored state ($u[k-1]$ and $e[k-1]$) is needed.
+        </div>
+      </div>
+
+      <!-- ── Food for thought ── -->
+      <div class="section-head" id="food-for-thought">Food for thought</div>
+
+      <div class="fft-block">
+        <div class="fft-title">Reflection questions</div>
+        <ol>
+          <li class="fft-item">
+            The ZOH introduces a phase lag of approximately $T_s/2$ per radian. For a system with phase margin $45°$, what is the maximum sampling period (as a fraction of the crossover frequency period) that keeps the system stable with at least $10°$ phase margin to spare?
+            <div class="fft-answer">The ZOH phase lag is $\omega \cdot T_s/2$ radians at frequency $\omega$. At the gain crossover frequency $\omega_c$, this equals $\omega_c T_s/2$ radians. To keep $10°$ of margin: $45° - \omega_c T_s/2 \cdot (180°/\pi) \geq 10°$, so $\omega_c T_s/2 \leq 35° \cdot \pi/180° \approx 0.61$ rad. Thus $T_s \leq 1.22/\omega_c$. Since the crossover period is $2\pi/\omega_c$, the maximum $T_s \approx 0.19 \times 2\pi/\omega_c$ — about 19% of the crossover period. This is why the rule "sample at least 5–10 times the bandwidth" exists.</div>
+          </li>
+          <li class="fft-item">
+            Why does Tustin (bilinear) discretisation preserve the stability boundary (left half-plane ↔ unit circle), while forward Euler ($s \to (z-1)/T_s$) does not guarantee this?
+            <div class="fft-answer">Tustin maps $s = j\omega$ (imaginary axis) to $z = (1 + j\omega T_s/2)/(1 - j\omega T_s/2)$, which has $|z| = 1$ for all $\omega$ — the imaginary axis maps exactly to the unit circle. This means the left half-plane maps to the unit disk. Forward Euler maps $s = -\sigma$ (stable, $\sigma > 0$) to $z = 1 - \sigma T_s$, which is inside the unit circle only if $\sigma T_s < 2$ — for fast poles or large $T_s$, a stable continuous-time system can produce an unstable discrete-time system with forward Euler. Tustin is always stability-preserving; forward Euler is not.</div>
+          </li>
+        </ol>
+      </div>
+
+      <!-- ── Pitfalls ── -->
+      <div class="section-head" id="pitfalls">Common pitfalls</div>
+
+      <div class="pitfalls-block">
+        <div class="pitfalls-title">Mistakes worth knowing about in advance</div>
+        <ul>
+          <li><span class="pitfall-name">Sampling too slowly and ignoring the ZOH phase lag.</span> The rule of thumb is $f_s \geq 10 f_{bw}$. Slower sampling increases ZOH phase lag, reducing phase margin — a continuous-time design with $45°$ phase margin can become unstable when implemented with $f_s = 3 f_{bw}$.</li>
+          <li><span class="pitfall-name">Skipping the anti-aliasing filter.</span> Without a low-pass filter before the ADC, high-frequency noise above $f_s/2$ aliases into the control bandwidth and looks like plant disturbances. The anti-aliasing filter should roll off by at least $40$ dB before $f_s/2$.</li>
+          <li><span class="pitfall-name">Using forward Euler for controller discretisation.</span> Forward Euler is simple but does not preserve the stability boundary. Use Tustin (bilinear) for controllers, and ZOH for plant models.</li>
+          <li><span class="pitfall-name">Forgetting integrator windup in digital PID.</span> The discrete integrator accumulates without bound if the actuator saturates. Always implement anti-windup (e.g. conditional integration — freeze the integrator when the actuator is saturated and the error has the same sign as the integrator state).</li>
+        </ul>
+      </div>
+
+      <!-- ── Connects to ── -->
+      <div class="section-head" id="connects-to">Connects to</div>
+
+      <div class="connects-to">
+        <div class="connects-to-label">Connects to</div>
+        <ul>
+          <li><strong>Control · Nyquist &amp; Stability Margins</strong> (Lesson 6) — the continuous-time stability margin analysis carries over to the discrete-time loop, but the ZOH phase lag reduces the effective phase margin. Always redo margin analysis after discretisation.</li>
+          <li><strong>Control · PID Control</strong> (Lesson 7) — the continuous-time PID is the starting point for digital PID. Tustin discretisation gives the standard implementation; the velocity form avoids windup on mode switches.</li>
+          <li><strong>Signals &amp; Systems</strong> (planned cluster) — the sampling theorem, DTFT, DFT, and FFT are the signals-and-systems foundation for understanding aliasing and reconstructability in detail.</li>
+          <li><strong>Embedded Systems · ADC &amp; DAC</strong> (Embedded Lesson 7) — the hardware layer where sampling physically happens. ADC acquisition time, anti-aliasing filters, and DAC reconstruction are implementation aspects of the theory here.</li>
+        </ul>
+      </div>
+
+      <div id="lesson-nav"></div>
+
+    </div><!-- /main -->
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+
+</body>
+</html>

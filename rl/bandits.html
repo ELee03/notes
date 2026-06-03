@@ -450,8 +450,8 @@
       <!-- ── Worked example ────────────────────────────────────────── -->
       <div class="section-head" id="worked-example">Worked example</div>
 
-      <details class="example-box">
-        <summary><strong>Tracing ε-greedy by hand (3-armed bandit, 5 steps)</strong></summary>
+      <div class="example-box">
+        <div class="example-header"><strong>Tracing ε-greedy by hand (3-armed bandit, 5 steps)</strong></div>
         <div class="example-problem">
           Trace the first five steps of ε-greedy ($\varepsilon = 0.1$) on a 3-armed
           bandit. True values: $q_*(1) = 1.0$, $q_*(2) = 1.5$, $q_*(3) = 0.5$.
@@ -513,7 +513,7 @@
             gives no guarantee of visiting every arm within a fixed horizon. This is UCB's advantage.
           </div>
         </div>
-      </details>
+      </div>
 
       <!-- ── Bandit simulator ───────────────────────────────────────── -->
       <div class="section-head" id="simulator">Simulator: live bandit experiment</div>
@@ -700,9 +700,7 @@
             pulling the true best arm. If you ran ε-greedy ($\varepsilon = 0.1$) and UCB-1 side
             by side on the same 5-armed bandit for 1000 steps, which would you expect to accumulate
             more total reward? Why — and does your answer depend on the spread of the true values?
-            <details class="fft-answer">
-              <summary>Answer</summary>
-              <div class="fft-answer-body">
+                          <div class="fft-answer-body">
                 UCB-1 generally accumulates more total reward over 1000 steps because it has
                 $O(\log T)$ regret — regret grows slowly. ε-greedy with fixed $\varepsilon = 0.1$
                 has $O(T)$ (linear) regret in the worst case, since 10% of pulls are always random
@@ -717,15 +715,13 @@
                 large, ε-greedy's undirected exploration wastes many high-cost pulls on clearly
                 inferior arms, while UCB would have confidently stopped pulling those arms early.
               </div>
-            </details>
+            
           </li>
           <li>The gradient bandit increases the selected arm's preference when $R_t > \bar{R}_t$
             and decreases it when $R_t < \bar{R}_t$. The update is doing stochastic gradient ascent
             on expected reward — but the algorithm never explicitly computes a gradient. How is this
             possible? What is the algorithm actually differentiating with respect to?
-            <details class="fft-answer">
-              <summary>Answer</summary>
-              <div class="fft-answer-body">
+                          <div class="fft-answer-body">
                 The algorithm is differentiating the expected reward with respect to the
                 softmax <strong>preference parameters</strong> $H_t(a)$. The key identity is:
 
@@ -740,14 +736,12 @@
                 This is powerful because it works even when you have no model of the reward distribution —
                 just samples. The same idea underlies REINFORCE and actor-critic methods in deep RL.
               </div>
-            </details>
+            
           </li>
           <li>Suppose the true best arm has very high variance: rewards range from $-10$ to $+10$
             with a mean of 1.5, while all other arms give exactly 1.0. How would high variance affect
             UCB compared to ε-greedy? Which converges to the correct answer faster, and why?
-            <details class="fft-answer">
-              <summary>Answer</summary>
-              <div class="fft-answer-body">
+                          <div class="fft-answer-body">
                 High variance hurts UCB more in early exploration, but UCB still wins in the long run.
 
                 <strong>UCB:</strong> The UCB bonus is $\sqrt{2\ln t / n_t(a)}$, which depends only
@@ -766,7 +760,7 @@
                 where UCB is still learning. For very high-variance environments, UCB-variance
                 (which explicitly tracks variance) or Thompson sampling would be more appropriate.
               </div>
-            </details>
+            
           </li>
         </ol>
       </div>

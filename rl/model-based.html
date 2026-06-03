@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Model-Based RL — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="rl-interactive.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$',  right: '$',  display: false}
+        ],
+        throwOnError: false
+      });
+    });
+  </script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Prerequisites</div>
+        <a href="td-learning.html" class="nav-item">7 · TD Learning</a>
+        <a href="function-approx.html" class="nav-item">8 · Function Approximation</a>
+      </div>
+
+      <div id="cluster-nav" data-cluster="rl" data-current="model-based.html"></div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Reinforcement Learning</a>
+        <span class="sep">›</span>
+        <span>Lesson 10</span>
+      </div>
+
+      <div class="lesson-title">10 · Model-Based Reinforcement Learning</div>
+      <div class="lesson-meta">Dyna Architecture · World Models · Planning · Sample Efficiency</div>
+
+      <div class="prose">
+        Every algorithm in Lessons 4–9 learned from experience directly — adjusting value estimates or policy parameters each time a real transition occurred. This works, but it's wasteful: each real interaction with the environment is expensive (time, physical wear, safety risk), yet is used for exactly one update and then discarded. <strong>Model-based RL</strong> asks: what if we also learned a model of the environment, so we could generate additional simulated experience for free? The answer is dramatically better sample efficiency — the same real-world data goes much further when combined with a learned model.
+      </div>
+
+      <div class="callout" style="margin-top:20px;">
+        <strong>Notation recap</strong>
+        <table style="margin-top:10px;border-collapse:collapse;font-size:13.5px;">
+          <tr><td style="padding:3px 10px 3px 0;font-family:'IBM Plex Mono',monospace;">$\hat{p}(s'|s,a)$</td><td>Learned transition model — predicted probability of next state</td></tr>
+          <tr><td style="padding:3px 10px 3px 0;font-family:'IBM Plex Mono',monospace;">$\hat{r}(s,a)$</td><td>Learned reward model — predicted reward</td></tr>
+          <tr><td style="padding:3px 10px 3px 0;font-family:'IBM Plex Mono',monospace;">$n$</td><td>Planning steps per real step in Dyna</td></tr>
+          <tr><td style="padding:3px 10px 3px 0;font-family:'IBM Plex Mono',monospace;">$\mathcal{M}$</td><td>The learned world model $(\hat{p}, \hat{r})$</td></tr>
+        </table>
+      </div>
+
+      <!-- ── The model-free vs model-based distinction ── -->
+      <div class="section-head" id="distinction">Model-free vs model-based</div>
+
+      <div class="prose">
+        <strong>Model-free RL</strong> (Lessons 6–9) learns a value function or policy directly from experience. No model of the environment is ever built — the agent just patterns-matches from $(s, a, r, s')$ tuples to estimates of $v_\pi$ or $q_*$.
+      </div>
+
+      <div class="prose">
+        <strong>Model-based RL</strong> learns an explicit model $\mathcal{M} = (\hat{p}, \hat{r})$ from experience, then uses that model to plan — generating simulated transitions to improve the policy without additional real interaction.
+      </div>
+
+      <div class="prose">
+        The central tradeoff:
+      </div>
+
+      <table style="width:100%;border-collapse:collapse;font-size:13.5px;margin:12px 0 16px 0;">
+        <thead>
+          <tr style="background:#e8f0f5;">
+            <th style="padding:8px 10px;border:1px solid #c8d8e4;text-align:left;"></th>
+            <th style="padding:8px 10px;border:1px solid #c8d8e4;">Model-free</th>
+            <th style="padding:8px 10px;border:1px solid #c8d8e4;">Model-based</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td style="padding:7px 10px;border:1px solid #e0e8ed;font-weight:600;">Sample efficiency</td><td style="padding:7px 10px;border:1px solid #e0e8ed;">Low — each real step used once</td><td style="padding:7px 10px;border:1px solid #e0e8ed;">High — real steps reused via simulation</td></tr>
+          <tr style="background:#f8f9fb;"><td style="padding:7px 10px;border:1px solid #e0e8ed;font-weight:600;">Computation per step</td><td style="padding:7px 10px;border:1px solid #e0e8ed;">Low</td><td style="padding:7px 10px;border:1px solid #e0e8ed;">Higher (model learning + planning)</td></tr>
+          <tr><td style="padding:7px 10px;border:1px solid #e0e8ed;font-weight:600;">Model error</td><td style="padding:7px 10px;border:1px solid #e0e8ed;">None (no model)</td><td style="padding:7px 10px;border:1px solid #e0e8ed;">Compound — errors in $\hat{p}$ compound over planning steps</td></tr>
+          <tr style="background:#f8f9fb;"><td style="padding:7px 10px;border:1px solid #e0e8ed;font-weight:600;">Best for</td><td style="padding:7px 10px;border:1px solid #e0e8ed;">Cheap simulation, video games</td><td style="padding:7px 10px;border:1px solid #e0e8ed;">Real robots, expensive interactions</td></tr>
+        </tbody>
+      </table>
+
+      <!-- ── Dyna architecture ── -->
+      <div class="section-head" id="dyna">The Dyna architecture</div>
+
+      <div class="prose">
+        Dyna (Sutton 1991) is the canonical model-based RL framework. The idea is simple: after each real interaction, do two things — (1) update the model with the new experience, and (2) run $n$ simulated updates using the model to refine the value function. The value function update rule is exactly Q-learning or SARSA — the only difference is whether the $(s, a, r, s')$ tuple came from the real environment or the model.
+      </div>
+
+      <div class="callout">
+        <strong>Dyna-Q algorithm</strong>
+        <ol style="margin:10px 0 0 16px;line-height:2;">
+          <li>Observe $S_t$, choose $A_t$ (ε-greedy from $Q$).</li>
+          <li>Take action, observe $R_{t+1}$, $S_{t+1}$. <em>(real step)</em></li>
+          <li>Q-learning update: $Q(S_t, A_t) \leftarrow Q(S_t, A_t) + \alpha[R_{t+1} + \gamma\max_{a'}Q(S_{t+1},a') - Q(S_t,A_t)]$</li>
+          <li>Model update: store $(S_t, A_t) \to (R_{t+1}, S_{t+1})$ in $\mathcal{M}$.</li>
+          <li><strong>Planning loop ($n$ times):</strong> sample a previously observed $(s, a)$ from memory, query $\mathcal{M}$ for $(\hat{r}, \hat{s}')$, run a Q-learning update on the simulated tuple.</li>
+        </ol>
+      </div>
+
+      <div class="prose">
+        Each real step is worth $n+1$ Q-learning updates: one from reality, $n$ from the model. With a good model, this $n$-fold amplification translates directly into faster learning with fewer real interactions. In Sutton's original maze experiments, Dyna with $n=50$ solved mazes in roughly 1/50th the real interactions of pure Q-learning.
+      </div>
+
+      <div class="prose">
+        <strong>What counts as a "model"?</strong> In simple tabular settings, the model is just a lookup table: every $(s, a)$ seen so far maps to its empirically observed $(r, s')$. For continuous state spaces, the model is a function approximator (neural network, Gaussian process, or linear model) trained to predict $(\hat{r}, \hat{s}')$ from $(s, a)$.
+      </div>
+
+      <!-- ── Planning ── -->
+      <div class="section-head" id="planning">Planning with a learned model</div>
+
+      <div class="prose">
+        <strong>Planning</strong> is the process of using a model to improve a policy without real interaction. The key insight from DP (Lesson 5): once you have a model, you can apply Bellman updates to any state — not just the ones you've recently visited. This is what makes model-based methods so sample-efficient.
+      </div>
+
+      <div class="prose">
+        Several planning strategies are used in practice:
+      </div>
+
+      <ul class="prose" style="padding-left:22px;">
+        <li style="margin-bottom:8px;"><strong>Random sampling (Dyna).</strong> Sample $(s, a)$ uniformly at random from all previously visited pairs, query the model, update $Q$. Simple and effective.</li>
+        <li style="margin-bottom:8px;"><strong>Prioritized sweeping.</strong> Prioritize updates by the magnitude of the expected TD error — states whose values have changed significantly (or are expected to change) get updated first. Propagates value information more efficiently backward from recently discovered rewards.</li>
+        <li style="margin-bottom:8px;"><strong>Trajectory sampling.</strong> Simulate entire rollouts forward from the current state under the current policy. Useful when the value of nearby states is more relevant than random past states.</li>
+        <li><strong>Background planning (MCTS).</strong> Monte Carlo Tree Search builds a search tree by running many short simulations from the current state, choosing which branches to expand based on visit counts and estimated values. Used in AlphaGo/AlphaZero.</li>
+      </ul>
+
+      <!-- ── World models ── -->
+      <div class="section-head" id="world-models">World models</div>
+
+      <div class="prose">
+        In deep RL, the learned model $\mathcal{M}$ is called a <strong>world model</strong>. It typically consists of:
+      </div>
+
+      <ul class="prose" style="padding-left:22px;">
+        <li style="margin-bottom:8px;"><strong>Representation model</strong> — encodes high-dimensional observations (images, sensor arrays) into a compact latent state $z_t$. Often a convolutional encoder.</li>
+        <li style="margin-bottom:8px;"><strong>Transition model</strong> — predicts the next latent state: $\hat{z}_{t+1} = f(z_t, a_t)$. This is where "model rollouts" happen — rolling the transition model forward $k$ steps to simulate future states.</li>
+        <li><strong>Reward model</strong> — predicts reward from latent state and action: $\hat{r}_t = g(z_t, a_t)$.</li>
+      </ul>
+
+      <div class="prose">
+        Planning then happens entirely in the latent space: the policy sees $z_t$ rather than raw observations, and model rollouts generate $(z_t, a_t, \hat{r}_t, z_{t+1})$ tuples in latent space, which are used to update the value function and policy.
+      </div>
+
+      <div class="prose">
+        <strong>Dreamer (Hafner et al. 2019–2023)</strong> is the leading world model architecture. It learns a recurrent world model in latent space and trains the policy entirely on model-imagined trajectories — the policy never sees real environment transitions during policy gradient updates. On continuous control benchmarks, Dreamer achieves with $10\times$–$50\times$ fewer real environment steps than model-free baselines.
+      </div>
+
+      <!-- ── Model error ── -->
+      <div class="section-head" id="model-error">The model error problem</div>
+
+      <div class="prose">
+        The fundamental challenge of model-based RL is <strong>compounding model error</strong>. A model trained on data from the current policy will be accurate near states it has seen, but less accurate in unexplored regions. If the planner rolls out the model for many steps, small per-step errors compound geometrically — by step $k$, the simulated state may have diverged significantly from reality.
+      </div>
+
+      <div class="prose">
+        This creates a <strong>distribution shift</strong> problem: the policy is being trained on simulated data from states that the model misrepresents. A policy trained on wrong model outputs can be worse than no model at all. The failure mode is <em>model exploitation</em>: the planner finds action sequences that look good in the model but fail in reality, because the model has systematic errors in exactly those regions.
+      </div>
+
+      <div class="prose">
+        Mitigation strategies:
+      </div>
+
+      <ul class="prose" style="padding-left:22px;">
+        <li style="margin-bottom:8px;"><strong>Short rollouts.</strong> Limit the planning horizon to $k$ steps (e.g. 1–5). Error compounds less over short horizons. Dyna uses $k=1$: each simulated update is a single one-step model prediction.</li>
+        <li style="margin-bottom:8px;"><strong>Ensemble models.</strong> Train an ensemble of $M$ models; use variance across models to detect high-uncertainty regions and avoid planning there.</li>
+        <li style="margin-bottom:8px;"><strong>Model predictive control (MPC).</strong> Replan at every step: roll the model out $k$ steps to select the best action, take one action, observe the real outcome, replan. Never trust the model for more than one step at a time.</li>
+        <li><strong>Conservative planning.</strong> Penalise the planner for visiting states where the model is uncertain (equivalent to adding a pessimism bonus to the cost function).</li>
+      </ul>
+
+      <!-- ── Sample efficiency comparison ── -->
+      <div class="section-head" id="sample-efficiency">Sample efficiency: model-free vs model-based</div>
+
+      <div class="prose">
+        The sample efficiency gap between model-based and model-free is striking. On continuous control benchmarks (e.g. MuJoCo locomotion tasks):
+      </div>
+
+      <ul class="prose" style="padding-left:22px;">
+        <li style="margin-bottom:8px;"><strong>SAC (model-free):</strong> typically requires ~$10^6$ environment steps to solve a standard locomotion task.</li>
+        <li style="margin-bottom:8px;"><strong>Dreamer (model-based):</strong> achieves comparable performance in ~$10^5$ steps — 10× fewer.</li>
+        <li><strong>MBPO (model-based, short rollouts):</strong> ~$5\times10^4$ steps on some tasks — another 2× improvement.</li>
+      </ul>
+
+      <div class="prose">
+        This gap matters enormously for real-world applications. A physical robot arm executing $10^6$ real-world trials would take months. $10^4$–$10^5$ trials are feasible within hours to days. This is why model-based methods dominate robotics applications.
+      </div>
+
+      <div class="callout">
+        <strong>When not to use a model.</strong> Model-based methods have higher computational overhead and can fail badly when the environment is hard to model (stochastic rewards, partial observability, highly chaotic dynamics). For fast simulators (Atari games, physics engines), model-free methods with enough data often win — the simulation is already the "free" experience source, so sample efficiency doesn't matter.
+      </div>
+
+      <!-- ── Worked examples ── -->
+      <div class="section-head" id="worked-examples">Worked examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Dyna-Q update trace</strong></div>
+        <div class="example-problem">
+          A simple 2-state MDP: states $\{A, B\}$, actions $\{L, R\}$, $\gamma = 0.9$, $\alpha = 0.1$.
+          From state $A$, action $R$ always leads to $B$ with reward $+1$. All other transitions stay in the same state with reward $0$. $Q$ is initialized to 0 everywhere. After two real steps $(A, R, +1, B)$ and $(B, L, 0, B)$, run $n=2$ planning steps. What are $Q(A,R)$ and $Q(B,L)$ after all updates?
+        </div>
+        <div class="example-body">
+          <strong>Real step 1: $(A, R, +1, B)$.</strong>
+          $Q(A,R) \leftarrow 0 + 0.1[1 + 0.9\cdot\max(Q(B,\cdot)) - 0] = 0.1[1 + 0] = 0.1$
+          Model stores: $(A,R) \to (+1, B)$.
+
+          <strong>Real step 2: $(B, L, 0, B)$.</strong>
+          $Q(B,L) \leftarrow 0 + 0.1[0 + 0.9\cdot\max(Q(B,\cdot)) - 0] = 0$
+          Model stores: $(B,L) \to (0, B)$.
+
+          <strong>Planning step 1: sample $(A,R)$ from model.</strong> $\hat{r}=1$, $\hat{s}'=B$.
+          $Q(A,R) \leftarrow 0.1 + 0.1[1 + 0.9\cdot 0 - 0.1] = 0.1 + 0.09 = 0.19$
+
+          <strong>Planning step 2: sample $(B,L)$ from model.</strong> $\hat{r}=0$, $\hat{s}'=B$.
+          $Q(B,L) \leftarrow 0 + 0.1[0 + 0.9\cdot 0 - 0] = 0$ (unchanged).
+
+          Final: $Q(A,R) = 0.19$, $Q(B,L) = 0$. The model amplified the real-step update to $Q(A,R)$ without an additional real interaction.
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Compounding model error</strong></div>
+        <div class="example-problem">
+          A 1D system: $s_{t+1} = s_t + a_t + \varepsilon$ where $\varepsilon \sim \mathcal{N}(0, 0.01)$ is environment noise. The learned model predicts $\hat{s}_{t+1} = s_t + a_t + 0.1$ (systematic bias of $+0.1$). If we plan $k=10$ steps into the future with action $a=0$, what is the expected model prediction error vs reality?
+        </div>
+        <div class="example-body">
+          Under the real environment (no noise): $s_{t+k} = s_t$.
+          Under the model: $\hat{s}_{t+k} = s_t + k \cdot 0.1 = s_t + 1.0$ after 10 steps.
+
+          The per-step bias of $0.1$ compounds linearly over the horizon: <strong>after 10 steps, the simulated state is 1.0 units off from reality</strong> — even though the single-step model error is only $0.1$.
+
+          This illustrates why model rollout lengths are kept short in practice (typically 1–5 steps for continuous control). The usable planning horizon is roughly $1/\varepsilon_{\text{model}}$ steps before error becomes too large.
+        </div>
+      </div>
+
+      <!-- ── Food for thought ── -->
+      <div class="section-head" id="food-for-thought">Food for thought</div>
+
+      <div class="fft-block">
+        <div class="fft-title">Reflection questions</div>
+        <ol>
+          <li class="fft-item">
+            Dyna uses random sampling from the model replay buffer — picking any previously seen $(s,a)$ pair uniformly. Prioritized sweeping instead focuses updates on states with large expected TD errors. In what environment structure would prioritized sweeping dramatically outperform random Dyna? When might random sampling do just as well?
+            <div class="fft-answer">States far from a newly discovered reward signal gain large TD errors first. In a long maze where the reward is at the far end, prioritized sweeping propagates value information backward efficiently — each update triggers a cascade of high-error predecessors. In a small or densely connected MDP where most states are equally likely to be informative, random sampling is fine.</div>
+          </li>
+          <li class="fft-item">
+            A world model trained on data from a random policy will be accurate near random trajectories but unreliable in states a trained policy would visit. Why does this create a "chicken and egg" problem, and how do active learning or exploration bonuses help?
+            <div class="fft-answer">To get a good model, you need good coverage of the state space — but to get good coverage, you need a policy that explores. A random policy covers states randomly (often missing task-relevant states); a trained policy concentrates on states it already knows. Exploration bonuses (e.g. count-based or curiosity-driven exploration) reward visiting novel states, incentivising the policy to collect data in under-explored regions where the model is inaccurate — breaking the cycle.</div>
+          </li>
+          <li class="fft-item">
+            AlphaZero uses MCTS planning with a learned model (the neural network provides prior probabilities and value estimates). What property of board games makes deep planning (many-step lookahead) reliable there, whereas in continuous control it's usually limited to 1–5 steps?
+            <div class="fft-answer">Board games are deterministic and fully observable — the model is exact (the rules of chess are known). There is no model error to compound. Planning 20–30 moves ahead produces perfectly accurate future states. In continuous control, even tiny model errors compound geometrically, making long rollouts unreliable. The useful planning horizon is determined by the per-step model error, not by the algorithm's capacity to plan.</div>
+          </li>
+        </ol>
+      </div>
+
+      <!-- ── Pitfalls ── -->
+      <div class="section-head" id="pitfalls">Common pitfalls</div>
+
+      <div class="pitfalls-block">
+        <div class="pitfalls-title">Mistakes worth knowing about in advance</div>
+        <ul>
+          <li><span class="pitfall-name">Trusting the model for long rollouts.</span> Even a model with 99% per-step accuracy becomes $0.99^{50} \approx 60\%$ accurate after 50 steps. Keep rollout horizons short and compensate with more model updates.</li>
+          <li><span class="pitfall-name">Forgetting to update the model as the policy changes.</span> The model was trained on data from the old policy. As the policy improves and visits new states, the model becomes stale in those regions. Continuously retraining (or using an experience replay buffer with recent samples) is essential.</li>
+          <li><span class="pitfall-name">Using model error as a reward signal (naive curiosity).</span> If you reward the agent for visiting states the model predicts poorly, you incentivise it to seek out physically unrealizable states that confuse the model — the "noisy TV problem." Curiosity-driven exploration requires careful design.</li>
+          <li><span class="pitfall-name">Conflating planning with policy gradient.</span> In model-based policy gradient methods (e.g. MBPO), model rollouts are used to augment the real data buffer. The policy is still updated by SAC or PPO on the augmented buffer — the model generates data, not gradients. Don't confuse this with differentiable model-based methods (e.g. PILCO) where gradients flow back through the model.</li>
+        </ul>
+      </div>
+
+      <!-- ── Connects to ── -->
+      <div class="section-head" id="connects-to">Connects to</div>
+
+      <div class="connects-to">
+        <div class="connects-to-label">Connects to</div>
+        <ul>
+          <li><strong>RL · Dynamic Programming</strong> (Lesson 5) — DP is model-based RL with a perfect model. Dyna bridges DP and model-free RL: perfect model → pure DP; no model → pure Q-learning; learned approximate model → Dyna.</li>
+          <li><strong>RL · Offline RL</strong> (Lesson 11) — offline RL also faces the problem of learning from a fixed dataset. Model-based offline RL (MOPO, MOReL) uses a learned model with uncertainty penalties — a direct synthesis of model-based methods and the distributional shift problem.</li>
+          <li><strong>Control Theory · LQR</strong> (Control Lesson 13) — LQR is model-based optimal control with a known (not learned) model. The Riccati equation is the planning step; the analogy to Dyna is DP value iteration using the known linear dynamics.</li>
+        </ul>
+      </div>
+
+      <!-- ── Prev/Next ── -->
+      <div id="lesson-nav"></div>
+
+    </div><!-- /main -->
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+
+</body>
+</html>

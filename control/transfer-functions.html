@@ -539,8 +539,8 @@
       <!-- ── Worked examples ──────────────────────────────────────── -->
       <div class="section-head" id="examples">Worked examples</div>
 
-      <details class="example-box">
-        <summary><strong>Example 1 — RC circuit: first-order system</strong></summary>
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — RC circuit: first-order system</strong></div>
         <div class="example-problem">
           A series RC circuit with $R = 1\,\text{k}\Omega$, $C = 100\,\mu\text{F}$.
           The voltage across $C$ satisfies $RC\dot{V}_C + V_C = V_\text{in}$.
@@ -557,10 +557,10 @@
               Reaches 63.2% at $t = 0.1$ s, settled (2%) at $t \approx 0.4$ s.</li>
           </ul>
         </div>
-      </details>
+      </div>
 
-      <details class="example-box">
-        <summary><strong>Example 2 — DC motor: Type 1 plant</strong></summary>
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — DC motor: Type 1 plant</strong></div>
         <div class="example-problem">
           A DC motor has velocity transfer function $\omega(s)/V(s) = K_m/(Js+b)$.
           Derive the transfer function for position control (input = voltage, output = angle).
@@ -575,10 +575,10 @@
               integrator ensures this without needing an integral controller term.</li>
           </ul>
         </div>
-      </details>
+      </div>
 
-      <details class="example-box">
-        <summary><strong>Example 3 — Reading poles, zeros, and DC gain</strong></summary>
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Reading poles, zeros, and DC gain</strong></div>
         <div class="example-problem">
           For $G(s) = \dfrac{5(s+2)}{(s+1)(s+4)}$, identify poles, zeros, DC gain, and dominant behavior.
         </div>
@@ -592,7 +592,7 @@
               The $e^{-4t}$ mode settles in $\approx 1$ s and barely affects the overall response.</li>
           </ul>
         </div>
-      </details>
+      </div>
 
       <!-- ── Interactive ────────────────────────────────────────────── -->
       <div class="section-head" id="interactive">Interactive: first-order system explorer</div>
@@ -789,9 +789,7 @@
             $u(t) = A\sin(\omega t)$, what is the steady-state output?
             (Hint: the magnitude is $A|G(j\omega)|$ and the phase shift is $\angle G(j\omega)$.)
             What happens to $|G(j\omega)|$ as $\omega \to \infty$ for the first-order system?
-            <details class="fft-answer">
-              <summary>Answer</summary>
-              <div class="fft-answer-body">
+                          <div class="fft-answer-body">
                 $G(j\omega)$ is the <strong>frequency response</strong> — it describes how the system
                 responds to sinusoidal inputs at frequency $\omega$. For a stable LTI system driven
                 by $u(t) = A\sin(\omega t)$, the steady-state output is:
@@ -803,16 +801,14 @@
                 At $\omega = 1/\tau$ (the corner frequency), the output is $K/\sqrt{2} \approx 0.707K$
                 (−3 dB), and the phase is −45°.
               </div>
-            </details>
+            
           </li>
           <li style="margin-bottom:12px;">Two first-order systems in series:
             $G_1(s) = 1/(\tau_1 s + 1)$ and $G_2(s) = 1/(\tau_2 s + 1)$.
             The combined transfer function is $G_1 G_2 = 1/((\tau_1 s+1)(\tau_2 s+1))$.
             Is this still "first-order"? How does its step response differ from a single
             first-order system with $\tau = \tau_1 + \tau_2$? Does it still have no overshoot?
-            <details class="fft-answer">
-              <summary>Answer</summary>
-              <div class="fft-answer-body">
+                          <div class="fft-answer-body">
                 No, $G_1 G_2$ is <strong>second-order</strong> (denominator degree 2), not first-order.
                 It has two real poles at $-1/\tau_1$ and $-1/\tau_2$.
 
@@ -825,16 +821,14 @@
                 single first-order system with time constant $\tau_1 + \tau_2$: the two-stage system is
                 slower, and the initial slope is zero, not $K/\tau$.
               </div>
-            </details>
+            
           </li>
           <li>The final value theorem says $\lim_{t\to\infty} y(t) = \lim_{s\to 0} s\,Y(s)$
             (when the limit exists). Use this to derive the steady-state error formula
             $e_{ss} = \lim_{s\to 0} s \cdot E(s)$ for the closed-loop system, where
             $E(s) = R(s)/(1+L(s))$. When does the final-value theorem fail to give the
             correct answer?
-            <details class="fft-answer">
-              <summary>Answer</summary>
-              <div class="fft-answer-body">
+                          <div class="fft-answer-body">
                 For a unit step input $r(t) = 1(t)$, $R(s) = 1/s$. The error signal is
                 $E(s) = R(s)/(1+L(s))$. Applying the FVT:
                 $$e_{ss} = \lim_{s\to 0} s \cdot E(s) = \lim_{s\to 0} s \cdot \frac{1/s}{1+L(s)} = \frac{1}{1 + L(0)}$$
@@ -848,7 +842,7 @@
                 (3) the system oscillates at steady state ($y(t)$ doesn't settle to a constant).
                 In all these cases, the formula gives a number that doesn't correspond to any physical limit.
               </div>
-            </details>
+            
           </li>
         </ol>
       </div>

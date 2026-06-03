@@ -476,8 +476,8 @@
       <!-- ── Worked examples ─────────────────────────────────────── -->
       <div class="section-head" id="worked-examples">Worked examples</div>
 
-      <details class="example-box">
-        <summary><strong>Example 1 — Linear FA with state aggregation: three update steps</strong></summary>
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Linear FA with state aggregation: three update steps</strong></div>
         <div class="example-problem">
           1D random walk, states $\{1,\ldots,7\}$, terminals 0 (reward 0) and 8 (reward +1).
           True value: $v_\pi(s) = s/8$. State aggregation: Group A = $\{1,2,3,4\}$, Group B = $\{5,6,7\}$.
@@ -504,10 +504,10 @@
             also improves estimates for states 5 and 6 that haven't been visited yet.
           </div>
         </div>
-      </details>
+      </div>
 
-      <details class="example-box">
-        <summary><strong>Example 2 — Semi-gradient TD vs true gradient descent</strong></summary>
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Semi-gradient TD vs true gradient descent</strong></div>
         <div class="example-problem">
           $\hat{v}(s,w) = w \cdot s$ (linear in one scalar parameter $w$). Transition: $(s=3, R=0, s'=4)$.
           Show what the semi-gradient TD update does to $w$, and contrast with what a full
@@ -530,7 +530,7 @@
             increasing $w$ also increases the target, which semi-gradient ignores.
           </div>
         </div>
-      </details>
+      </div>
 
       <!-- ── Interactive ─────────────────────────────────────────── -->
       <div class="section-head" id="interactive">Interactive: semi-gradient TD on the 1D random walk</div>
@@ -709,9 +709,7 @@
             it turns an online method into something batch-like. What happens if your environment
             changes over time (non-stationarity)? How would you modify the replay buffer to
             handle a slowly drifting environment?
-            <details class="fft-answer">
-              <summary>Answer / hint</summary>
-              <div class="fft-answer-body">
+                          <div class="fft-answer-body">
                 With a fixed-size FIFO buffer, old transitions are evicted as new ones arrive —
                 this naturally handles slow drift, since the buffer always reflects the most
                 recent $N$ transitions. For more control: use a sliding window (small $N$ for
@@ -722,15 +720,13 @@
                 This tension between data efficiency (larger buffer) and adaptability (smaller
                 buffer) is a fundamental trade-off in non-stationary RL.
               </div>
-            </details>
+            
           </li>
           <li>The target network in DQN is updated every $C$ steps. If $C$ is very large,
             the target is very stable but potentially very wrong (stale). If $C = 1$, you're
             back to the unstable semi-gradient TD. How would you choose $C$ in practice?
             Is there a principled argument for a particular value?
-            <details class="fft-answer">
-              <summary>Answer / hint</summary>
-              <div class="fft-answer-body">
+                          <div class="fft-answer-body">
                 Choosing $C$ is largely empirical — the original DQN paper used $C \approx
                 1000$–$10000$ steps, chosen by sweep. A semi-principled heuristic: $C$ should
                 be long enough that $Q$ has made meaningful progress between updates (otherwise
@@ -743,14 +739,12 @@
                 exponentially-weighted blend — more principled and removes the cliff-edge instability
                 at $C=1$. Used in most modern deep RL (SAC, TD3, DDPG).
               </div>
-            </details>
+            
           </li>
           <li>State aggregation groups nearby states and assigns them the same value.
             What implicit assumption does this make about the value function? When does
             this assumption hold, and when does it fail badly?
-            <details class="fft-answer">
-              <summary>Answer / hint</summary>
-              <div class="fft-answer-body">
+                          <div class="fft-answer-body">
                 State aggregation assumes the value function is approximately constant within
                 each group — i.e., the true $v_\pi$ varies slowly relative to the group boundaries.
                 <br><br>
@@ -766,7 +760,7 @@
                 In these cases, the approximation error floor is large no matter how many
                 episodes you run — a representation limitation, not a data limitation.
               </div>
-            </details>
+            
           </li>
         </ol>
       </div>

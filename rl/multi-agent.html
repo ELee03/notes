@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multi-Agent RL — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="rl-interactive.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$',  right: '$',  display: false}
+        ],
+        throwOnError: false
+      });
+    });
+  </script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Prerequisites</div>
+        <a href="value-functions.html" class="nav-item">4 · Value Functions &amp; Bellman</a>
+        <a href="td-learning.html" class="nav-item">7 · TD Learning</a>
+        <a href="policy-gradients.html" class="nav-item">9 · Policy Gradients</a>
+      </div>
+
+      <div id="cluster-nav" data-cluster="rl" data-current="multi-agent.html"></div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Reinforcement Learning</a>
+        <span class="sep">›</span>
+        <span>Lesson 12</span>
+      </div>
+
+      <div class="lesson-title">12 · Multi-Agent Reinforcement Learning</div>
+      <div class="lesson-meta">MARL Formulation · Nash Equilibria · Independent Q-Learning · Cooperative vs Competitive · CTDE</div>
+
+      <div class="prose">
+        Every lesson so far has assumed a single agent making decisions in an environment that doesn't react strategically to the agent's policy. This fails the moment there's more than one decision-maker — a second robot sharing a workspace, an opponent in a game, other drivers on the road, competing bidders in an auction. In these settings, the "environment" includes other agents whose policies change over time, making the world non-stationary from each agent's perspective. <strong>Multi-Agent Reinforcement Learning (MARL)</strong> extends RL to handle $n > 1$ learning agents, each with its own objectives, observations, and actions.
+      </div>
+
+      <div class="callout" style="margin-top:20px;">
+        <strong>Notation recap</strong>
+        <table style="margin-top:10px;border-collapse:collapse;font-size:13.5px;">
+          <tr><td style="padding:3px 10px 3px 0;font-family:'IBM Plex Mono',monospace;">$n$</td><td>Number of agents</td></tr>
+          <tr><td style="padding:3px 10px 3px 0;font-family:'IBM Plex Mono',monospace;">$\mathbf{a} = (a^1, \ldots, a^n)$</td><td>Joint action of all agents</td></tr>
+          <tr><td style="padding:3px 10px 3px 0;font-family:'IBM Plex Mono',monospace;">$r^i(s,\mathbf{a})$</td><td>Reward for agent $i$ (may differ across agents)</td></tr>
+          <tr><td style="padding:3px 10px 3px 0;font-family:'IBM Plex Mono',monospace;">$\pi^i(a^i|o^i)$</td><td>Policy of agent $i$ based on its local observation $o^i$</td></tr>
+          <tr><td style="padding:3px 10px 3px 0;font-family:'IBM Plex Mono',monospace;">$\boldsymbol{\pi} = (\pi^1, \ldots, \pi^n)$</td><td>Joint policy profile</td></tr>
+        </table>
+      </div>
+
+      <!-- ── MARL formulation ── -->
+      <div class="section-head" id="formulation">MARL problem formulation</div>
+
+      <div class="prose">
+        A MARL problem is typically formalised as a <strong>Markov game</strong> (also called a stochastic game):
+        $$\langle \mathcal{S},\, \{\mathcal{A}^i\}_{i=1}^n,\, p(s'|s,\mathbf{a}),\, \{r^i(s,\mathbf{a})\}_{i=1}^n,\, \gamma \rangle$$
+        where the key extension over a single-agent MDP is that the transition $p$ and rewards $r^i$ depend on the <em>joint action</em> $\mathbf{a} \in \mathcal{A}^1 \times \cdots \times \mathcal{A}^n$. Each agent $i$ seeks to maximise its own discounted return $J^i = \mathbb{E}[\sum_t \gamma^t r^i_t]$.
+      </div>
+
+      <div class="prose">
+        The key challenge introduced by multiple agents is <strong>non-stationarity</strong>: from agent $i$'s perspective, the environment is non-stationary because the other agents' policies $\pi^{-i}$ are changing during training. This breaks the Markov property from any single agent's viewpoint — the same state $s$ and action $a^i$ can lead to different outcomes depending on what the other agents currently do.
+      </div>
+
+      <!-- ── Settings ── -->
+      <div class="section-head" id="settings">Cooperative, competitive, and mixed settings</div>
+
+      <div class="prose">
+        MARL problems are categorised by the reward structure:
+      </div>
+
+      <table style="width:100%;border-collapse:collapse;font-size:13.5px;margin:12px 0 16px 0;">
+        <thead>
+          <tr style="background:#e8f0f5;">
+            <th style="padding:8px 10px;border:1px solid #c8d8e4;text-align:left;">Setting</th>
+            <th style="padding:8px 10px;border:1px solid #c8d8e4;">Reward structure</th>
+            <th style="padding:8px 10px;border:1px solid #c8d8e4;">Examples</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td style="padding:7px 10px;border:1px solid #e0e8ed;font-weight:600;">Fully cooperative</td><td style="padding:7px 10px;border:1px solid #e0e8ed;">All agents share $r^i = r$ (same reward)</td><td style="padding:7px 10px;border:1px solid #e0e8ed;">Robot swarms, sensor networks, multi-robot manipulation</td></tr>
+          <tr style="background:#f8f9fb;"><td style="padding:7px 10px;border:1px solid #e0e8ed;font-weight:600;">Zero-sum</td><td style="padding:7px 10px;border:1px solid #e0e8ed;">$\sum_i r^i = 0$ — one agent's gain is another's loss</td><td style="padding:7px 10px;border:1px solid #e0e8ed;">Chess, Go, poker, StarCraft</td></tr>
+          <tr><td style="padding:7px 10px;border:1px solid #e0e8ed;font-weight:600;">Mixed (general-sum)</td><td style="padding:7px 10px;border:1px solid #e0e8ed;">Rewards are arbitrary — partially aligned</td><td style="padding:7px 10px;border:1px solid #e0e8ed;">Traffic, trading, social dilemmas</td></tr>
+        </tbody>
+      </table>
+
+      <!-- ── Nash equilibria ── -->
+      <div class="section-head" id="nash">Nash equilibria in MARL</div>
+
+      <div class="prose">
+        In single-agent RL, the target is the optimal policy $\pi^*$ that maximises $J$. In multi-agent settings, the analogous concept is the <strong>Nash equilibrium</strong>: a joint policy profile $\boldsymbol{\pi}^* = (\pi^{1*}, \ldots, \pi^{n*})$ such that no agent can improve its return by unilaterally changing its policy:
+        $$J^i(\pi^{i*}, \pi^{-i*}) \geq J^i(\pi^i, \pi^{-i*}) \quad \forall\,\pi^i,\;\forall\, i$$
+      </div>
+
+      <div class="prose">
+        <strong>Why Nash equilibrium?</strong> If every agent is at a Nash equilibrium, no agent has an incentive to deviate. It's a fixed point of the mutual best-response process. Nash (1950) proved that every finite game has at least one Nash equilibrium (possibly in mixed strategies).
+      </div>
+
+      <div class="prose">
+        <strong>MARL as Nash finding.</strong> Many MARL algorithms can be interpreted as attempts to converge to a Nash equilibrium:
+        <ul style="margin:8px 0 8px 16px;line-height:1.8;">
+          <li>In zero-sum two-player games: Nash equilibria are minimax solutions; AlphaGo/AlphaZero converge to Nash for perfect-information games via self-play.</li>
+          <li>In cooperative games: Nash equilibrium becomes the team-optimal joint policy.</li>
+          <li>In general-sum games: Nash equilibria may be inefficient (Prisoner's Dilemma — the Nash equilibrium is mutual defection, which is worse than mutual cooperation for both agents).</li>
+        </ul>
+      </div>
+
+      <!-- ── Independent Q-learning ── -->
+      <div class="section-head" id="iql">Independent Q-Learning and its failure modes</div>
+
+      <div class="prose">
+        The simplest MARL approach is <strong>Independent Q-Learning (IQL)</strong>: each agent $i$ runs its own Q-learning algorithm, treating all other agents as part of the environment. From agent $i$'s perspective, this is just a standard Q-learning problem.
+      </div>
+
+      <div class="callout">
+        <strong>IQL algorithm:</strong> For each agent $i$ independently:
+        $$Q^i(s, a^i) \leftarrow Q^i(s,a^i) + \alpha\left[r^i + \gamma\max_{a'^i}Q^i(s', a'^i) - Q^i(s,a^i)\right]$$
+        No communication between agents. No joint Q-function. Each agent has its own $Q^i$.
+      </div>
+
+      <div class="prose">
+        IQL is simple and scalable — the action space each agent must reason about is only $|\mathcal{A}^i|$, not the joint $|\mathcal{A}^1| \times \cdots \times |\mathcal{A}^n|$. In practice it often works well in cooperative settings with small agent counts. But it has fundamental theoretical problems:
+      </div>
+
+      <ul class="prose" style="padding-left:22px;">
+        <li style="margin-bottom:8px;"><strong>Non-stationarity.</strong> As each agent updates its policy, the "environment" (from any single agent's view) is changing. The Markov property is violated. Q-learning's convergence proof requires a stationary environment — IQL provides no convergence guarantees in general.</li>
+        <li style="margin-bottom:8px;"><strong>Relative overgeneralisation.</strong> In cooperative settings, agent $i$ may learn a suboptimal action because it appears good when averaged over the stochastic actions of others, even though the joint optimal policy requires a different action. The agents get "stuck" at a local equilibrium that isn't the team optimum.</li>
+        <li><strong>Credit assignment.</strong> With a shared reward, agent $i$ cannot tell whether its own action or another agent's action caused a good or bad outcome. This is the <em>multi-agent credit assignment problem</em>.</li>
+      </ul>
+
+      <!-- ── CTDE ── -->
+      <div class="section-head" id="ctde">Centralised Training, Decentralised Execution (CTDE)</div>
+
+      <div class="prose">
+        The dominant paradigm for cooperative MARL is <strong>Centralised Training with Decentralised Execution (CTDE)</strong>. The key insight: during training, we can use global information (full state $s$, all agents' actions, all rewards) to learn better — but at deployment, each agent must act based only on its local observation $o^i$ (because agents may not be able to communicate in real time).
+      </div>
+
+      <div class="prose">
+        CTDE decouples the training phase (where we have full information) from the execution phase (where we must be decentralised):
+      </div>
+
+      <ul class="prose" style="padding-left:22px;">
+        <li style="margin-bottom:8px;"><strong>Training:</strong> A centralised critic $Q(s, \mathbf{a})$ (or value function $V(s)$) is trained with access to the full global state and all agents' actions. This critic provides gradient signals that are richer than any individual agent's local perspective.</li>
+        <li><strong>Execution:</strong> Each agent's policy $\pi^i(a^i|o^i)$ is decentralised — it only depends on agent $i$'s local observation. The centralised critic is discarded after training.</li>
+      </ul>
+
+      <div class="prose">
+        <strong>MADDPG (Multi-Agent Deep Deterministic Policy Gradient)</strong> applies this idea to continuous action spaces: each agent has a centralised critic $Q^i(s, a^1, \ldots, a^n)$ that takes all agents' actions as input, but each actor $\pi^i(o^i)$ is trained to produce decentralised actions.
+      </div>
+
+      <div class="prose">
+        <strong>QMIX</strong> addresses cooperative MARL with shared reward by learning a <em>mixing network</em>: each agent has its own Q-function $Q^i(o^i, a^i)$, but the team Q-function $Q_\text{tot}(s, \mathbf{a})$ is a monotone combination of individual Q-functions:
+        $$Q_\text{tot}(s, \mathbf{a}) = f_\text{mix}(Q^1(o^1,a^1), \ldots, Q^n(o^n,a^n); s)$$
+        The monotonicity constraint $\frac{\partial Q_\text{tot}}{\partial Q^i} \geq 0$ ensures that if agent $i$'s individual greedy action maximises $Q^i$, it also contributes positively to $Q_\text{tot}$. This allows decentralised execution (each agent greedily maximises its own $Q^i$) while the centralised $Q_\text{tot}$ remains consistent — a remarkable property called <strong>Individual-Global-Max (IGM)</strong>.
+      </div>
+
+      <!-- ── Self-play ── -->
+      <div class="section-head" id="self-play">Self-play and competitive settings</div>
+
+      <div class="prose">
+        In zero-sum two-player games, the most powerful training technique is <strong>self-play</strong>: the agent plays against a copy of itself. Self-play has two major advantages:
+      </div>
+
+      <ul class="prose" style="padding-left:22px;">
+        <li style="margin-bottom:8px;"><strong>Automatic curriculum.</strong> As the agent improves, so does its opponent (since it's also the agent). The difficulty of the opponent scales automatically with the agent's ability — always providing a meaningful challenge.</li>
+        <li><strong>Convergence to Nash (in two-player zero-sum games).</strong> For perfect-information two-player zero-sum games, Nash equilibrium = minimax solution, which is unique. Self-play with sufficient exploration provably converges to Nash in this case. This is why AlphaZero works: chess and Go are perfect-information zero-sum games.</li>
+      </ul>
+
+      <div class="prose">
+        In general-sum or many-player games, self-play can cycle — the agent oscillates between policies without converging to Nash. More sophisticated methods (fictitious play, policy-space response oracles) are needed.
+      </div>
+
+      <!-- ── Worked examples ── -->
+      <div class="section-head" id="worked-examples">Worked examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Prisoner's Dilemma: Nash vs cooperative outcome</strong></div>
+        <div class="example-problem">
+          Two agents, each choosing Cooperate (C) or Defect (D). Payoff matrix (agent 1, agent 2):
+          <br>
+          $(C,C) \to (3,3)$; $(C,D) \to (0,4)$; $(D,C) \to (4,0)$; $(D,D) \to (1,1)$.
+          <br>
+          Find the Nash equilibrium and the Pareto-optimal outcome. Why is independent Q-learning likely to converge to the Nash equilibrium rather than Pareto-optimal?
+        </div>
+        <div class="example-body">
+          <strong>Nash equilibrium.</strong> For agent 1: if agent 2 plays C, agent 1 gets 3 from C or 4 from D → D is better. If agent 2 plays D, agent 1 gets 0 from C or 1 from D → D is better. D strictly dominates C for agent 1 (and by symmetry, for agent 2). Nash equilibrium: $(D,D)$ with payoff $(1,1)$.
+
+          <strong>Pareto-optimal outcome:</strong> $(C,C)$ with payoff $(3,3)$ — both agents do better than Nash.
+
+          <strong>Why IQL converges to $(D,D)$:</strong> Each agent's Q-function will learn $Q(D) > Q(C)$ for any fixed opponent policy (D always gives more reward). As agents update independently, they both shift toward D. The cooperative $(C,C)$ equilibrium is unstable under independent Q-learning — any agent deviating to D gets a short-term gain, breaking the cooperation. Only coordination mechanisms (communication, commitment, joint training) can sustain $(C,C)$.
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — CTDE advantage over IQL</strong></div>
+        <div class="example-problem">
+          Two cooperative agents in a 2D grid. Agent 1 covers the left half; Agent 2 covers the right half. A target appears in one half; the agent covering that half must touch it (reward $+1$); the other agent does nothing (reward $0$). Agents observe only their own half. Why does IQL fail here, and how does CTDE fix it?
+        </div>
+        <div class="example-body">
+          <strong>IQL failure:</strong> Agent 1 cannot observe the right half. From agent 1's perspective, sometimes it gets reward $+1$ (target in its half) and sometimes $0$ (target in agent 2's half), regardless of its own actions. Agent 1's Q-function is noisy — it cannot distinguish "I missed the target" from "the target was in agent 2's half." Both look identical from agent 1's local observation.
+
+          <strong>CTDE fix:</strong> During training, the centralised critic $Q(s, a^1, a^2)$ has access to the full state (both halves), so it can correctly attribute reward. The critic signals agent 1 to move toward targets in its own half and agent 2 to move toward targets in its own half — the credit assignment problem is solved centrally. At execution, each agent still acts on its own local observation, which works because the policies learned during CTDE training are conditioned correctly.
+        </div>
+      </div>
+
+      <!-- ── Food for thought ── -->
+      <div class="section-head" id="food-for-thought">Food for thought</div>
+
+      <div class="fft-block">
+        <div class="fft-title">Reflection questions</div>
+        <ol>
+          <li class="fft-item">
+            QMIX's IGM property requires that the best joint action can be found by each agent independently maximising its own $Q^i$. This restricts the class of Q-functions that QMIX can represent. What class of cooperative problems is QMIX guaranteed to solve optimally, and what class of problems might it fail on?
+            <div class="fft-answer">QMIX solves problems where the optimal joint action is factorizable — where the global best action can be decomposed into independent per-agent best actions. It fails when there are non-monotone interactions: problems where the optimal action for agent $i$ depends on what agent $j$ does in a non-monotone way (e.g., if agent 1 and agent 2 must coordinate on opposite actions — one goes left, the other goes right — the global Q-function is not monotone in either individual Q). QTRAN and QPLEX extend beyond QMIX's representational class but are harder to scale.</div>
+          </li>
+          <li class="fft-item">
+            In zero-sum games, self-play converges to Nash. In general-sum games, it can cycle. Intuitively, why does the zero-sum structure prevent cycling?
+            <div class="fft-answer">In a two-player zero-sum game, Nash equilibrium = minimax solution, which is unique (by von Neumann's minimax theorem). Any strategy that beats the Nash equilibrium policy is itself beaten by another strategy — there are no cycles in the best-response graph because all paths lead to the unique Nash fixed point. In general-sum games, Nash equilibria can be multiple and unstable; best-response dynamics can cycle between equilibria without converging.</div>
+          </li>
+        </ol>
+      </div>
+
+      <!-- ── Pitfalls ── -->
+      <div class="section-head" id="pitfalls">Common pitfalls</div>
+
+      <div class="pitfalls-block">
+        <div class="pitfalls-title">Mistakes worth knowing about in advance</div>
+        <ul>
+          <li><span class="pitfall-name">Assuming IQL will converge in multi-agent settings.</span> IQL has no convergence guarantees. It works empirically in many cooperative settings but can fail badly in competitive or mixed settings. Use it as a baseline, not as a reliable algorithm.</li>
+          <li><span class="pitfall-name">Conflating Nash equilibrium with optimal play.</span> In general-sum games, Nash equilibria can be highly suboptimal for all agents (Prisoner's Dilemma). Nash equilibrium means "no unilateral deviation improves things" — not "this is the best outcome possible."</li>
+          <li><span class="pitfall-name">Ignoring the joint action space explosion.</span> With $n$ agents each having $k$ actions, the joint action space has $k^n$ elements. A centralised Q-function over joint actions becomes intractable for $n > 4$–$5$ agents. CTDE methods like QMIX avoid this by factorising the joint Q-function.</li>
+          <li><span class="pitfall-name">Using self-play in general-sum games without precautions.</span> Self-play can converge to a local Nash in zero-sum two-player games. In many-player general-sum games it typically doesn't converge — use league training (a diverse pool of opponents) or population-based methods instead.</li>
+        </ul>
+      </div>
+
+      <!-- ── Connects to ── -->
+      <div class="section-head" id="connects-to">Connects to</div>
+
+      <div class="connects-to">
+        <div class="connects-to-label">Connects to</div>
+        <ul>
+          <li><strong>Game Theory &amp; Decision Theory</strong> (planned cluster) — Nash equilibrium, minimax theorem, extensive-form games, and mechanism design are the game-theoretic foundations of MARL. MARL is, in a sense, learning to play a game rather than computing its equilibrium analytically.</li>
+          <li><strong>Complexity &amp; Information Sciences · Complex Systems</strong> — multi-agent systems give rise to emergent behavior (e.g., AlphaZero discovered novel chess strategies that no human had found). The interaction of simple individual policies can produce complex collective dynamics.</li>
+          <li><strong>RL · Offline RL</strong> (Lesson 11) — offline MARL applies the distributional shift problem to multi-agent datasets; centralized offline training can exploit global state information even when agents must execute decentrally.</li>
+        </ul>
+      </div>
+
+      <div id="lesson-nav"></div>
+
+    </div><!-- /main -->
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+
+</body>
+</html>

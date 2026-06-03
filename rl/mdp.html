@@ -459,8 +459,8 @@
       <!-- ── Recycling robot ───────────────────────────────────────── -->
       <div class="section-head" id="recycling-robot">Worked example</div>
 
-      <details class="example-box">
-        <summary><strong>The recycling robot MDP: transition table and expected rewards</strong></summary>
+      <div class="example-box">
+        <div class="example-header"><strong>The recycling robot MDP: transition table and expected rewards</strong></div>
         <div class="example-problem">
           A mobile robot collects empty cans. Battery can be <em>high</em> or <em>low</em>.
           From high: search or wait. From low: search, wait, or recharge.
@@ -508,7 +508,7 @@
           despite $+2$ on success — because the 60% rescue penalty $(-3)$ dominates.
           This asymmetry drives the optimal policy: always search from high, never from low.
         </div>
-      </details>
+      </div>
 
       <!-- ── Dynamics explorer ──────────────────────────────────────── -->
       <div class="section-head" id="dynamics-explorer">Explorer: dynamics parameters</div>
@@ -620,9 +620,7 @@
           <li>In blackjack, the state "my current hand" does not capture which cards have already
             been played. Does this mean blackjack is not an MDP — or is it? How would you augment
             the state so that the game <em>is</em> Markov? Is there always a way to do this?
-            <details class="fft-answer">
-              <summary>Answer</summary>
-              <div class="fft-answer-body">
+                          <div class="fft-answer-body">
                 The game <em>with a single deck</em> is technically not Markov under the "current hand"
                 state: knowing which cards remain in the deck affects the transition probabilities, and
                 that information isn't in the state. However, Sutton &amp; Barto treat blackjack as an MDP
@@ -639,14 +637,12 @@
                 question is whether a compact Markov representation exists — and often the answer is
                 to use a POMDP (partially observable MDP) with a belief state instead.
               </div>
-            </details>
+            
           </li>
           <li>If you doubled all rewards in an MDP, would the optimal policy $\pi^*$ change?
             Would the value functions $v_{\pi^*}(s)$ change? Are these two questions the same
             or different?
-            <details class="fft-answer">
-              <summary>Answer</summary>
-              <div class="fft-answer-body">
+                          <div class="fft-answer-body">
                 <strong>Would $\pi^*$ change?</strong> No. Doubling all rewards multiplies every
                 policy's value function by 2: $v_\pi^\text{new}(s) = 2\, v_\pi(s)$. Since all values
                 scale uniformly, the ordering of policies is preserved — the policy with the highest
@@ -661,15 +657,13 @@
                 This distinction matters in practice: reward scaling affects the learning rate of
                 value-based algorithms, even when the optimal policy is unchanged.
               </div>
-            </details>
+            
           </li>
           <li>The Bellman equation says $v_\pi(s) = \mathbb{E}_\pi[R + \gamma v_\pi(S')]$,
             which defines $v_\pi$ in terms of itself — it looks circular. Why does a unique
             solution exist? What mathematical condition on $\gamma$ makes this work, and what
             goes wrong if that condition fails?
-            <details class="fft-answer">
-              <summary>Answer</summary>
-              <div class="fft-answer-body">
+                          <div class="fft-answer-body">
                 The Bellman equation is a linear system: in matrix form, $v = r + \gamma P v$,
                 where $P$ is the transition probability matrix and $r$ is the expected reward
                 vector. This rearranges to $(I - \gamma P)v = r$. The solution is unique iff
@@ -688,7 +682,7 @@
                 unless rewards sum to zero under the stationary distribution (the "ergodic" case,
                 leading to the average-reward formulation).
               </div>
-            </details>
+            
           </li>
         </ol>
       </div>

@@ -693,8 +693,8 @@
       <!-- ═══ WORKED EXAMPLES ═══ -->
       <div class="section-head" id="worked-examples">Worked examples</div>
 
-      <details class="example-box">
-        <summary><strong>Example 1 — Lead design for a second-order plant</strong></summary>
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Lead design for a second-order plant</strong></div>
         <div class="example-problem">
           Plant: $G(s) = \dfrac{15}{(s+1)(s+5)}$. Required: PM $\geq 50°$. Is a lead compensator needed?
         </div>
@@ -711,10 +711,10 @@
           This example illustrates why you must always compute PM first — adding a lead here would
           only increase bandwidth and HF noise sensitivity with no stability benefit.
         </div>
-      </details>
+      </div>
 
-      <details class="example-box">
-        <summary><strong>Example 2 — Lead design for a type-1 plant</strong></summary>
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Lead design for a type-1 plant</strong></div>
         <div class="example-problem">
           Plant: $G(s) = \dfrac{20}{s(s+2)(s+8)}$. Design a lead compensator to achieve PM $\geq 60°$.
         </div>
@@ -740,10 +740,10 @@
           <strong>Verify:</strong> At $\omega = 1.22$: $\angle C = \arctan(1.28) - \arctan(0.782) = 52° - 38° = 14°$ ✓.
           Compensated PM $\approx 54° + 14° \approx 60°$ ✓ (with slight shift correction).
         </div>
-      </details>
+      </div>
 
-      <details class="example-box">
-        <summary><strong>Example 3 — Lag design to improve velocity constant</strong></summary>
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Lag design to improve velocity constant</strong></div>
         <div class="example-problem">
           Plant: $G(s) = \dfrac{4}{s(s+4)}$. Current $K_v = 1$. Design a lag compensator to achieve
           $K_v \geq 5$ while approximately preserving PM.
@@ -764,7 +764,7 @@
           $\angle C = \arctan(10) - \arctan(50) = 84.3° - 88.9° = -4.6°$.
           New PM $\approx 76.4° - 4.6° = 71.8°$ — well above requirement. $K_v = 5$ ✓.
         </div>
-      </details>
+      </div>
 
       <!-- ═══ FOOD FOR THOUGHT ═══ -->
       <div class="section-head" id="food-for-thought">Food for thought</div>
@@ -774,9 +774,7 @@
           faster, but it also means it responds to high-frequency noise faster. When does
           increasing bandwidth become counterproductive, and how does this shape the practical
           upper limit on $\phi_\text{max}$ (i.e., how small $\alpha$ can be)?
-          <details class="fft-answer">
-            <summary>Answer</summary>
-            <div class="fft-answer-body">
+                      <div class="fft-answer-body">
               Bandwidth becomes counterproductive when it reaches the noise floor of the sensors.
               At frequencies above the signal bandwidth, the output is dominated by measurement
               noise. A high-bandwidth controller faithfully tracks this noise with large, rapid
@@ -792,15 +790,13 @@
               attenuate this noise. Practical designs rarely use $\alpha &lt; 0.1$ ($\phi_\text{max} \approx 55°$)
               without explicitly accounting for noise.
             </div>
-          </details>
+          
         </li>
         <li style="margin-bottom:10px;">
           A lag compensator boosts DC gain by $\beta$ relative to HF gain. Why doesn't this
           simply allow you to substitute it for a gain increase of $\beta$? What does a flat
           gain increase of $\beta$ do that the lag compensator does <em>not</em>?
-          <details class="fft-answer">
-            <summary>Answer</summary>
-            <div class="fft-answer-body">
+                      <div class="fft-answer-body">
               A flat gain increase of $\beta$ multiplies the loop gain at <em>all</em> frequencies by
               $\beta$ — including at the gain crossover frequency $\omega_c$. This shifts $\omega_c$
               up, moving the operating point on the Bode plot to a region of more negative phase.
@@ -815,7 +811,7 @@
               increase would be simpler to implement but risks instability; the lag achieves the
               steady-state goal without destabilizing.
             </div>
-          </details>
+          
         </li>
         <li>
           Consider a plant with a RHP zero (non-minimum phase). The phase of a RHP zero is
@@ -823,9 +819,7 @@
           as frequency increases. How does this constrain the achievable phase margin and
           bandwidth, and why do both lead and lag compensators become much less effective in
           this case?
-          <details class="fft-answer">
-            <summary>Answer</summary>
-            <div class="fft-answer-body">
+                      <div class="fft-answer-body">
               A RHP zero at $s = +z$ contributes a phase lag of $-\arctan(\omega/z)$ that starts at 0°
               and approaches $-90°$ as $\omega \to \infty$. Near and above $\omega = z$, the plant phase
               is severely lagging. If the desired bandwidth exceeds roughly $0.1z$–$0.5z$, the phase
@@ -843,7 +837,7 @@
               help either — they would reduce bandwidth even further (worsening tracking) without
               recovering phase. Non-minimum phase plants fundamentally limit achievable bandwidth.
             </div>
-          </details>
+          
         </li>
       </ol>
 

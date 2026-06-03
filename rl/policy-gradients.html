@@ -224,6 +224,26 @@
         the policy $\pi(a|s,\boldsymbol{\theta})$ itself.
       </div>
 
+      <div class="proof-box">
+        <div class="proof-header">Derivation — Policy Gradient Theorem</div>
+        <div class="proof-body">
+          <p>We derive the episodic case (starting-state objective $J(\theta) = v_\pi(s_0)$). By the Bellman equation for $v_\pi$:
+          $$\nabla_\theta v_\pi(s) = \nabla_\theta \sum_a \pi(a|s,\theta)\,q_\pi(s,a)$$
+          Applying the product rule (note $q_\pi$ depends on $\theta$ through $\pi$ at future states):
+          $$= \sum_a \bigl[\nabla_\theta \pi(a|s,\theta)\,q_\pi(s,a) + \pi(a|s,\theta)\,\nabla_\theta q_\pi(s,a)\bigr]$$</p>
+          <p>Expand $\nabla_\theta q_\pi(s,a) = \nabla_\theta \sum_{s',r} p(s'|s,a)[r + \gamma v_\pi(s')] = \gamma\sum_{s'} p(s'|s,a)\,\nabla_\theta v_\pi(s')$ (the reward is independent of $\theta$). Substituting:
+          $$\nabla_\theta v_\pi(s) = \sum_a \nabla_\theta\pi(a|s,\theta)\,q_\pi(s,a) + \gamma\sum_a\pi(a|s,\theta)\sum_{s'} p(s'|s,a)\,\nabla_\theta v_\pi(s')$$</p>
+          <p>This is a recursion. Unrolling it (applying the same expansion to $\nabla_\theta v_\pi(s')$, etc.) gives a sum over all reachable future states:
+          $$\nabla_\theta v_\pi(s) = \sum_{s'} \sum_{k=0}^\infty \Pr(s \to s', k \text{ steps}, \pi)\sum_a \nabla_\theta\pi(a|s',\theta)\,q_\pi(s',a)$$
+          where $\Pr(s\to s', k, \pi)$ is the probability of reaching $s'$ from $s$ in exactly $k$ steps under $\pi$.</p>
+          <p>Define the on-policy state distribution $d_\pi(s') = \sum_{k=0}^\infty \gamma^k \Pr(s_0 \to s', k, \pi)$ (discounted visitation). Then:
+          $$\nabla_\theta J(\theta) = \nabla_\theta v_\pi(s_0) = \sum_s d_\pi(s) \sum_a \nabla_\theta\pi(a|s,\theta)\,q_\pi(s,a)$$
+          Applying the log-derivative trick $\nabla_\theta\pi = \pi\cdot\nabla_\theta\ln\pi$:
+          $$= \sum_s d_\pi(s) \sum_a \pi(a|s,\theta)\,\nabla_\theta\ln\pi(a|s,\theta)\,q_\pi(s,a) = \mathbb{E}_\pi\bigl[\nabla_\theta\ln\pi(A_t|S_t,\theta)\,q_\pi(S_t,A_t)\bigr] \quad \blacksquare$$</p>
+          <p style="color:#9aabb8;font-size:12px;margin-top:8px;">The key insight: $d_\pi(s)$ appears in the derivation (it comes from unrolling the recursion), but it cancels out of the gradient of $J$ — we never need to differentiate through how $\theta$ changes the state distribution.</p>
+        </div>
+      </div>
+
       <div class="prose">
         Using the log-derivative trick ($\nabla \pi = \pi \cdot \nabla \ln \pi$):
         $$\nabla_{\boldsymbol{\theta}} J(\boldsymbol{\theta}) \propto \mathbb{E}_\pi\bigl[q_\pi(S_t, A_t)\, \nabla_{\boldsymbol{\theta}} \ln \pi(A_t \mid S_t, \boldsymbol{\theta})\bigr]$$
@@ -463,8 +483,8 @@
       <!-- ── Worked examples ─────────────────────────────────────── -->
       <div class="section-head" id="worked-examples">Worked examples</div>
 
-      <details class="example-box">
-        <summary><strong>Example 1 — REINFORCE update on a softmax policy</strong></summary>
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — REINFORCE update on a softmax policy</strong></div>
         <div class="example-problem">
           Two-action problem at state $M$. Softmax preferences: $\theta_1 = h(M,\text{right}) = 0.5$,
           $\theta_2 = h(M,\text{left}) = 0.0$. An episode starts at $M$, takes action right, return
@@ -487,10 +507,10 @@
             action that produced a positive return.
           </div>
         </div>
-      </details>
+      </div>
 
-      <details class="example-box">
-        <summary><strong>Example 2 — Actor-critic update</strong></summary>
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Actor-critic update</strong></div>
         <div class="example-problem">
           $\hat{v}(S_t=3)=2.0$, $\hat{v}(S_{t+1}=7)=3.5$. Observed $R_{t+1}=0$,
           $\gamma=0.9$, $\alpha_\theta=0.05$, $\alpha_w=0.1$. Compute the TD error and
@@ -511,10 +531,10 @@
             pleasant surprise.
           </div>
         </div>
-      </details>
+      </div>
 
-      <details class="example-box">
-        <summary><strong>Example 3 — Why the baseline doesn't introduce bias</strong></summary>
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Why the baseline doesn't introduce bias</strong></div>
         <div class="example-problem">
           Show that $\mathbb{E}_{A\sim\pi}[b(s)\,\nabla_\theta\ln\pi(A|s)] = 0$ for any $b(s)$
           that does not depend on $A$. This is the key identity that makes baselines bias-free.
@@ -533,7 +553,7 @@
             the estimate, which is why the optimal baseline is the one that minimises that variance.
           </div>
         </div>
-      </details>
+      </div>
 
       <!-- ── Interactive ─────────────────────────────────────────── -->
       <div class="section-head" id="interactive">Interactive: REINFORCE with and without baseline</div>
@@ -777,9 +797,7 @@
             $\boldsymbol{\theta}$ clearly changes which states are visited. Intuitively, why
             doesn't this matter? And in what sense does $d_\pi(s)$ "show up" anyway —
             look at how we sample $S_t \sim d_\pi$.
-            <details class="fft-answer">
-              <summary>Answer / hint</summary>
-              <div class="fft-answer-body">
+                          <div class="fft-answer-body">
                 The policy gradient theorem proves mathematically that the gradient of $J$ can be
                 written as $\mathbb{E}_{S\sim d_\pi, A\sim\pi}[G_t\,\nabla_\theta\ln\pi(A|S)]$
                 — a term involving $d_\pi$ appears in the derivation but then cancels with its
@@ -793,7 +811,7 @@
                 So we're estimating the expectation over $d_\pi$ by Monte Carlo, just not
                 differentiating through it.
               </div>
-            </details>
+            
           </li>
           <li>PPO clips the policy ratio $\pi_\text{new}/\pi_\text{old}$ to $[1-\varepsilon, 1+\varepsilon]$.
             Suppose a particular transition had a very large estimated advantage $A_t = 10$.
@@ -801,9 +819,7 @@
             ($\varepsilon = 0.2$), the ratio is capped at 1.2. Trace through what this means
             for the magnitude of the gradient step — and why repeated smaller steps can still
             get to the same place without the instability of a single large step.
-            <details class="fft-answer">
-              <summary>Answer / hint</summary>
-              <div class="fft-answer-body">
+                          <div class="fft-answer-body">
                 Without clipping: objective contribution from this transition is $r_t(\theta) A_t$.
                 Gradient w.r.t. $\theta$ is large — potentially catastrophically so when $A_t = 10$.
                 <br><br>
@@ -818,16 +834,14 @@
                 multiple small moves can achieve the same total policy change as one large step,
                 but each individual step avoids the instability of a large gradient magnitude.
               </div>
-            </details>
+            
           </li>
           <li>Actor-critic uses the TD error $\delta_t$ as the advantage estimate. But the TD
             error is an estimate of the advantage only when the critic is accurate. Early in
             training, the critic is poor, so $\delta_t$ is a noisy and biased signal for the actor.
             How might you handle this? What would happen if you trained the critic for several
             epochs before each actor update?
-            <details class="fft-answer">
-              <summary>Answer / hint</summary>
-              <div class="fft-answer-body">
+                          <div class="fft-answer-body">
                 Training the critic for multiple epochs before each actor update sounds appealing
                 but has a catch: the critic is fitting Bellman targets that depend on the current
                 policy. As long as the actor doesn't move, those targets are stationary and more
@@ -844,7 +858,7 @@
                 estimate — more observed reward steps reduce the reliance on the (inaccurate)
                 critic's value estimate.
               </div>
-            </details>
+            
           </li>
         </ol>
       </div>

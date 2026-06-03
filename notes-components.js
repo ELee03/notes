@@ -40,6 +40,19 @@ document.addEventListener('DOMContentLoaded', function () {
     details.appendChild(body);
   });
 
+  // ── Proof / derivation toggles ───────────────────────────────────────────
+  document.querySelectorAll('.proof-box').forEach(function (box) {
+    var body = box.querySelector('.proof-body');
+    if (!body) return;
+    var details = document.createElement('details');
+    details.className = 'proof-toggle';
+    var summary = document.createElement('summary');
+    summary.textContent = 'Show derivation';
+    details.appendChild(summary);
+    body.parentNode.insertBefore(details, body);
+    details.appendChild(body);
+  });
+
   // ── Food-for-thought answer toggles ──────────────────────────────────────
   document.querySelectorAll('.fft-item').forEach(function (item) {
     var answer = item.querySelector('.fft-answer');

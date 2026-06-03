@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Robust Control — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$',  right: '$',  display: false}
+        ],
+        throwOnError: false
+      });
+    });
+  </script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="control" data-current="robust-control.html"></div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Control Theory</a>
+        <span class="sep">›</span>
+        <span>Lesson 16</span>
+      </div>
+
+      <div class="lesson-title">Introduction to Robust Control</div>
+      <div class="lesson-meta">Plant Uncertainty · H∞ Norm · Small Gain Theorem · Sensitivity Functions · μ-Analysis Preview</div>
+
+      <div class="prose">
+        Every controller in Lessons 1–15 was designed for a specific plant model $G_p(s)$. Real plants are never exactly their model. Parameters drift with temperature. Flexible structures have unmodelled resonances. High-frequency dynamics are truncated in the model. Linearisation throws away nonlinear terms. The question <strong>robust control</strong> asks is: how do you design a controller that guarantees stability and performance not just for the nominal model $G_p(s)$, but for an entire <em>family</em> of plants $G_p(s) + \Delta(s)$ where $\Delta$ represents all possible model errors?
+      </div>
+
+      <div class="callout" style="margin-top:20px;">
+        <strong>Notation recap</strong>
+        <table style="margin-top:10px;border-collapse:collapse;font-size:13.5px;">
+          <tr><td style="padding:3px 10px 3px 0;font-family:'IBM Plex Mono',monospace;">$\|G\|_\infty$</td><td>H∞ norm of $G$: $\sup_\omega \sigma_\text{max}(G(j\omega))$ = peak singular value over all frequencies</td></tr>
+          <tr><td style="padding:3px 10px 3px 0;font-family:'IBM Plex Mono',monospace;">$\Delta$</td><td>Uncertainty: perturbation to the nominal plant $G_p$</td></tr>
+          <tr><td style="padding:3px 10px 3px 0;font-family:'IBM Plex Mono',monospace;">$S(s)$</td><td>Sensitivity function $= (1 + GC)^{-1}$: maps disturbances to output errors</td></tr>
+          <tr><td style="padding:3px 10px 3px 0;font-family:'IBM Plex Mono',monospace;">$T(s)$</td><td>Complementary sensitivity function $= GC(1+GC)^{-1}$: closed-loop transfer function</td></tr>
+          <tr><td style="padding:3px 10px 3px 0;font-family:'IBM Plex Mono',monospace;">$L(s)$</td><td>Loop transfer function $= G(s)C(s)$</td></tr>
+        </table>
+      </div>
+
+      <!-- ── The problem ── -->
+      <div class="section-head" id="problem">Why nominal design is not enough</div>
+
+      <div class="prose">
+        Classical gain and phase margins (Lesson 6) are robustness measures — they quantify how much the loop gain can vary before instability. But they are one-dimensional. A plant with $45°$ phase margin is robust to a phase shift of $45°$ at the gain crossover frequency. It may be fragile to:
+      </div>
+
+      <ul class="prose" style="padding-left:22px;">
+        <li style="margin-bottom:8px;"><strong>High-frequency unmodelled resonances.</strong> The model is valid up to some frequency $\omega_\text{max}$; the real plant has resonances above this that were omitted. If the loop has gain above $\omega_\text{max}$, the real resonance can cause instability.</li>
+        <li style="margin-bottom:8px;"><strong>Parametric variations.</strong> The plant gain changes $\pm 20\%$ with temperature. The mass of a robotic arm changes as it picks up different payloads. The controller must handle all of these.</li>
+        <li><strong>Structured perturbations.</strong> A flexible structure's resonant frequency shifts depending on the load, but the mode shape stays the same. This is structured uncertainty — not all perturbations are equally likely.</li>
+      </ul>
+
+      <div class="prose">
+        Robust control provides a systematic framework for quantifying these uncertainties and designing controllers that are guaranteed to stabilise and achieve performance across the entire uncertainty set.
+      </div>
+
+      <!-- ── H-infinity norm ── -->
+      <div class="section-head" id="hinf-norm">The H∞ norm</div>
+
+      <div class="prose">
+        The <strong>H∞ norm</strong> of a stable transfer matrix $G(s)$ is:
+        $$\|G\|_\infty = \sup_{\omega \in \mathbb{R}} \bar\sigma(G(j\omega))$$
+        where $\bar\sigma$ denotes the largest singular value. For a SISO system, $\bar\sigma(G(j\omega)) = |G(j\omega)|$, so the H∞ norm is simply the peak of the Bode magnitude plot.
+      </div>
+
+      <div class="prose">
+        <strong>Input-output interpretation.</strong> The H∞ norm is the worst-case gain of the system from input to output, over all frequencies and all unit-energy inputs:
+        $$\|G\|_\infty = \sup_{\|u\|_2 = 1} \|Gu\|_2$$
+        where $\|\cdot\|_2$ is the $L^2$ (energy) norm. A small H∞ norm means the system attenuates all inputs; a large H∞ norm means some frequency of sinusoidal input gets amplified.
+      </div>
+
+      <div class="prose">
+        Why is this the right norm for robust control? Because the feedback loop is an interconnection of transfer functions, and the gain of the interconnection is bounded by the product of the gains. If the uncertainty $\Delta$ has small gain and the nominal transfer function seen by $\Delta$ also has small gain, the closed-loop remains stable.
+      </div>
+
+      <!-- ── Sensitivity functions ── -->
+      <div class="section-head" id="sensitivity">Sensitivity and complementary sensitivity</div>
+
+      <div class="prose">
+        For a feedback loop with plant $G$ and controller $C$, two fundamental closed-loop transfer functions capture performance and robustness:
+      </div>
+
+      <div class="prose">
+        <strong>Sensitivity function:</strong>
+        $$S(s) = \frac{1}{1 + L(s)}, \quad L = GC$$
+        $S$ maps reference-to-error and disturbance-to-output. $\|S\|_\infty$ is the peak sensitivity — how much the system amplifies disturbances at the worst-case frequency. Good disturbance rejection requires $|S(j\omega)|$ to be small across the low-frequency control bandwidth.
+      </div>
+
+      <div class="prose">
+        <strong>Complementary sensitivity function:</strong>
+        $$T(s) = \frac{L(s)}{1 + L(s)} = 1 - S(s)$$
+        $T$ is the closed-loop transfer function from reference to output. $\|T\|_\infty$ quantifies how well the output tracks the reference, and how much high-frequency noise is fed through (since large $|T|$ at high frequencies amplifies sensor noise). Sensor noise rejection requires $|T(j\omega)|$ to roll off at high frequencies.
+      </div>
+
+      <div class="callout">
+        <strong>The fundamental trade-off: $S + T = 1$.</strong> Since $S + T = 1$ identically, making $S$ small (good disturbance rejection) and $T$ small (good noise rejection) simultaneously is impossible — they can't both be small at the same frequency. This is the <em>waterbed effect</em>: pushing $|S|$ below 1 in one frequency band raises it above 1 somewhere else (Bode's integral theorem). Any controller has to balance disturbance rejection and noise sensitivity.
+      </div>
+
+      <!-- ── Small gain theorem ── -->
+      <div class="section-head" id="small-gain">The Small Gain Theorem</div>
+
+      <div class="prose">
+        The <strong>Small Gain Theorem</strong> is the central stability theorem of robust control. It gives a sufficient condition for a feedback interconnection to be stable when one of the systems represents uncertainty.
+      </div>
+
+      <div class="callout">
+        <strong>Small Gain Theorem.</strong> Consider a feedback loop with two stable systems $M$ and $\Delta$ in a feedback interconnection. The closed-loop is stable if:
+        $$\|M\|_\infty \cdot \|\Delta\|_\infty < 1$$
+        Equivalently: $\bar\sigma(M(j\omega)) \cdot \bar\sigma(\Delta(j\omega)) < 1$ for all $\omega$.
+      </div>
+
+      <div class="proof-box">
+        <div class="proof-header">Proof sketch — Small Gain Theorem</div>
+        <div class="proof-body">
+          <p>Let the closed-loop signals be $e = d - \Delta Mw$ and $w = Me$. The system is well-posed and stable if the map from disturbance $d$ to internal signals $(e, w)$ is bounded.</p>
+          <p>Taking $L^2$ norms and applying the triangle inequality:
+          $$\|w\|_2 \leq \|M\|_\infty \|e\|_2 \leq \|M\|_\infty(\|d\|_2 + \|\Delta\|_\infty\|w\|_2)$$
+          Rearranging: $\|w\|_2(1 - \|M\|_\infty\|\Delta\|_\infty) \leq \|M\|_\infty\|d\|_2$.
+          If $\|M\|_\infty\|\Delta\|_\infty < 1$, then $(1 - \|M\|_\infty\|\Delta\|_\infty) > 0$, so:
+          $$\|w\|_2 \leq \frac{\|M\|_\infty}{1 - \|M\|_\infty\|\Delta\|_\infty}\|d\|_2$$
+          The map from $d$ to $w$ is bounded — the closed-loop is stable. $\blacksquare$</p>
+        </div>
+      </div>
+
+      <!-- ── Uncertainty representations ── -->
+      <div class="section-head" id="uncertainty">Uncertainty representations</div>
+
+      <div class="prose">
+        Uncertainty can be modelled in different ways depending on what is known about the class of possible perturbations:
+      </div>
+
+      <ul class="prose" style="padding-left:22px;">
+        <li style="margin-bottom:8px;"><strong>Unstructured additive uncertainty:</strong> $G_\text{true} = G + \Delta_A$ where $|\Delta_A(j\omega)| \leq W_A(\omega)$ for a known weighting function $W_A$. Models absolute additive perturbations — e.g. unmodelled high-frequency resonances.</li>
+        <li style="margin-bottom:8px;"><strong>Unstructured multiplicative uncertainty:</strong> $G_\text{true} = G(1 + \Delta_M)$ where $|\Delta_M(j\omega)| \leq W_M(\omega)$. Models relative (percentage) perturbations — e.g. gain variation of $\pm 20\%$.</li>
+        <li><strong>Structured uncertainty:</strong> $\Delta = \text{diag}(\delta_1 I, \delta_2 I, \ldots)$ where each $\delta_i$ is an uncertain real or complex parameter. Models physical parametric uncertainty — e.g. uncertain mass, stiffness, or time constant.</li>
+      </ul>
+
+      <div class="prose">
+        For multiplicative uncertainty, the robust stability condition from the Small Gain Theorem becomes:
+        $$\|W_M T\|_\infty < 1 \quad \Leftrightarrow \quad |T(j\omega)| < \frac{1}{|W_M(j\omega)|} \;\forall\,\omega$$
+        This says: the complementary sensitivity must roll off faster than the uncertainty weight grows. Large uncertainty at high frequency (as is typical for unmodelled resonances) requires $|T|$ to roll off before those frequencies.
+      </div>
+
+      <!-- ── H-infinity design ── -->
+      <div class="section-head" id="hinf-design">H∞ control design (overview)</div>
+
+      <div class="prose">
+        The <strong>H∞ control problem</strong> asks: find the controller $C$ that minimises $\|T_{zw}\|_\infty$, where $T_{zw}$ is the closed-loop transfer function from exogenous inputs $w$ (disturbances, noise, uncertainty) to performance outputs $z$ (errors, actuator signals).
+      </div>
+
+      <div class="prose">
+        The design is set up by choosing weighting functions $W_1$ (on $S$, penalising disturbance rejection) and $W_2$ (on $T$, penalising noise sensitivity and robustness):
+        $$\min_C \left\|\begin{bmatrix}W_1 S \\ W_2 T\end{bmatrix}\right\|_\infty$$
+        A good $H_\infty$ design makes $|W_1 S|$ and $|W_2 T|$ both small over their respective frequency ranges — disturbance rejection in the low-frequency band, noise rejection in the high-frequency band.
+      </div>
+
+      <div class="prose">
+        <strong>Solving H∞ problems.</strong> The H∞ optimal controller is computed by solving two coupled algebraic Riccati equations (similar to the LQR ARE). In MATLAB: <span class="inline-code">hinfsyn(P, nmeas, ncont)</span> where $P$ is the augmented plant (including weights). The solution gives the optimal $\gamma^* = \min_C \|T_{zw}\|_\infty$ and the corresponding controller.
+      </div>
+
+      <!-- ── μ-analysis ── -->
+      <div class="section-head" id="mu">μ-analysis preview</div>
+
+      <div class="prose">
+        The Small Gain Theorem is conservative for structured uncertainty — it treats all $\Delta$ with $\|\Delta\|_\infty \leq 1$ as possible, but structured uncertainty has only certain entries non-zero. <strong>Structured singular value (μ) analysis</strong> tightens the bound by exploiting the structure of $\Delta$.
+      </div>
+
+      <div class="prose">
+        The structured singular value $\mu_\Delta(M)$ is the smallest $\bar\sigma(\Delta)$ that makes the feedback loop singular, given that $\Delta$ must have the prescribed structure. The robust stability condition becomes $\mu_\Delta(M(j\omega)) < 1$ for all $\omega$ — much less conservative than the unstructured small gain bound $\|M\|_\infty < 1/\|\Delta\|_\infty$.
+      </div>
+
+      <div class="prose">
+        Computing $\mu$ exactly is NP-hard for general structures; in practice, upper and lower bounds are computed via convex optimisation (linear matrix inequalities). MATLAB's Robust Control Toolbox implements this via <span class="inline-code">mussv</span>.
+      </div>
+
+      <!-- ── Worked examples ── -->
+      <div class="section-head" id="worked-examples">Worked examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Robust stability with multiplicative uncertainty</strong></div>
+        <div class="example-problem">
+          Plant: $G(s) = \frac{1}{s+1}$. Multiplicative uncertainty: $|\Delta_M(j\omega)| \leq W_M(\omega) = \frac{2\omega}{10}$ (growing linearly with frequency, reaching 1 at $\omega=5$ rad/s). A PI controller gives $T(j\omega)$ with $|T| \approx 1$ for $\omega < 3$ rad/s and $|T| \approx 0.1$ at $\omega = 10$ rad/s. Is the closed loop robustly stable?
+        </div>
+        <div class="example-body">
+          Robust stability requires $|W_M(j\omega)||T(j\omega)| < 1$ for all $\omega$.
+
+          Check at $\omega = 5$ rad/s: $W_M = 2\cdot5/10 = 1$. If $|T(j5)| \approx 0.3$, then $|W_M T| = 0.3 < 1$. ✓
+
+          Check at $\omega = 3$ rad/s: $W_M = 2\cdot3/10 = 0.6$. $|T(j3)| \approx 1$, so $|W_M T| = 0.6 < 1$. ✓
+
+          The robust stability condition is satisfied at the checked frequencies. The binding constraint is near $\omega \approx 3$–$5$ rad/s where both $W_M$ and $|T|$ are significant. To achieve a larger stability margin, we would reduce $|T|$ at these frequencies by reducing the controller bandwidth.
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — The waterbed effect</strong></div>
+        <div class="example-problem">
+          For a minimum-phase stable single-input single-output system, Bode's sensitivity integral states: $\int_0^\infty \ln|S(j\omega)|\,d\omega = 0$ (for a plant with no right-half-plane poles or zeros). If a controller achieves $|S(j\omega)| = 0.1$ ($-20$ dB) for all $\omega \leq 1$ rad/s, what does this imply about $|S|$ at higher frequencies?
+        </div>
+        <div class="example-body">
+          Bode's integral: $\int_0^\infty \ln|S(j\omega)|\,d\omega = 0$.
+
+          The low-frequency contribution: $\int_0^1 \ln(0.1)\,d\omega = 1 \cdot (-2.303) = -2.303$.
+
+          This negative contribution must be compensated by positive values (i.e. $\ln|S| > 0 \Rightarrow |S| > 1$) at higher frequencies. The area under $\ln|S|$ above 1 rad/s must equal $+2.303$.
+
+          If $|S(j\omega)| = 1.5$ ($+3.5$ dB) for $1 \leq \omega \leq 4$ rad/s: $\int_1^4 \ln(1.5)\,d\omega = 3 \times 0.405 = 1.22$. Still $1.08$ short — the sensitivity must exceed 1 even further at higher frequencies.
+
+          The message: pushing $|S|$ below 1 in a band of width $W$ forces $|S| > 1$ elsewhere, with the total "violation" proportional to $W \cdot \ln(1/\min|S|)$.
+        </div>
+      </div>
+
+      <!-- ── Food for thought ── -->
+      <div class="section-head" id="food-for-thought">Food for thought</div>
+
+      <div class="fft-block">
+        <div class="fft-title">Reflection questions</div>
+        <ol>
+          <li class="fft-item">
+            LQR provides guaranteed stability margins (≥60° phase margin, ≥6 dB gain margin) but no robustness guarantees against unstructured uncertainty. H∞ provides guarantees against arbitrary bounded uncertainty. What is the fundamental difference in what these two theories optimise, and why does LQR not directly address unstructured uncertainty?
+            <div class="fft-answer">LQR optimises a quadratic cost function assuming the nominal plant model is exact — it is an optimal nominal controller with good stability margins as a side effect. It does not account for model uncertainty at all. H∞ explicitly minimises the worst-case gain from uncertainty input to performance output — it bakes the uncertainty description into the design objective. LQR's stability margins follow from the Kalman inequality (a property of the ARE solution), not from any explicit robustness optimization. For an uncertain plant, LQR may give poor performance or even instability if the real plant differs significantly from the model; H∞ guarantees stability and performance for all plants within the uncertainty set.</div>
+          </li>
+          <li class="fft-item">
+            The small gain theorem gives a sufficient condition for stability, not a necessary one. Sketch a feedback loop where the small gain condition $\|M\|_\infty\|\Delta\|_\infty < 1$ is violated, yet the loop is stable. What makes this possible?
+            <div class="fft-answer">Suppose $M(j\omega) = 2$ (constant gain of 2) and $\Delta(j\omega) = 0.7e^{j\phi(\omega)}$ — a phase-shifting uncertainty with magnitude 0.7. The small gain product is $2 \times 0.7 = 1.4 > 1$, violating the condition. But if the phase of $\Delta$ is such that $M\Delta$ never encircles $-1$ in the Nyquist plot, the loop can still be stable. The small gain theorem only looks at magnitudes; it ignores the beneficial phase relationships that can keep the Nyquist plot away from $-1$ even when the magnitude product exceeds 1. This is why μ-analysis can be less conservative — it accounts for the structure of $\Delta$ including possible phase constraints.</div>
+          </li>
+        </ol>
+      </div>
+
+      <!-- ── Pitfalls ── -->
+      <div class="section-head" id="pitfalls">Common pitfalls</div>
+
+      <div class="pitfalls-block">
+        <div class="pitfalls-title">Mistakes worth knowing about in advance</div>
+        <ul>
+          <li><span class="pitfall-name">Treating H∞ design as a black box.</span> The H∞ solution depends critically on the choice of weighting functions $W_1$ and $W_2$. Poor weights give a mathematically optimal controller that performs badly in practice. Understanding what each weight penalises (and why) is more important than knowing how to call <code>hinfsyn</code>.</li>
+          <li><span class="pitfall-name">Conflating H∞ norm with H2 norm.</span> The H2 norm ($\|G\|_2 = \sqrt{\frac{1}{2\pi}\int_{-\infty}^\infty \text{tr}[G(j\omega)^*G(j\omega)]\,d\omega}$) is the RMS gain for white noise inputs — it arises in LQG/Kalman filter design. H∞ is the peak gain over all frequencies and sinusoidal inputs. LQG optimises H2; robust control targets H∞.</li>
+          <li><span class="pitfall-name">Using gain/phase margins alone for high-order systems.</span> Gain and phase margins are defined at the single gain crossover frequency. A system can have good classical margins but poor robustness to high-frequency resonances. The H∞ norm of the sensitivity function provides a more complete robustness picture.</li>
+        </ul>
+      </div>
+
+      <!-- ── Connects to ── -->
+      <div class="section-head" id="connects-to">Connects to</div>
+
+      <div class="connects-to">
+        <div class="connects-to-label">Connects to</div>
+        <ul>
+          <li><strong>Control · LQR</strong> (Lesson 13) — LQR is H2-optimal control for a linear system with quadratic cost. H∞ is the complementary framework for worst-case (minimax) optimality. LQG (LQR + Kalman filter) minimises the H2 norm; H∞ design minimises the H∞ norm.</li>
+          <li><strong>Control · Nyquist &amp; Margins</strong> (Lesson 6) — classical gain and phase margins are scalar robustness measures; the H∞ norm of the sensitivity function generalises these to a frequency-resolved picture. $\|S\|_\infty &lt; M_S$ implies phase margin $\geq 2\arcsin(1/2M_S)$ and gain margin $\geq M_S/(M_S-1)$.</li>
+          <li><strong>Adaptive &amp; Robust Control</strong> (planned cluster) — full treatment of H∞ synthesis, μ-synthesis ($DK$-iteration), and the structured singular value. This lesson provides the conceptual foundation; the full cluster develops the computational machinery.</li>
+        </ul>
+      </div>
+
+      <div id="lesson-nav"></div>
+
+    </div><!-- /main -->
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+
+</body>
+</html>

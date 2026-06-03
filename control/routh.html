@@ -406,8 +406,8 @@
       <!-- ── Worked examples ─────────────────────────────────────────── -->
       <div class="section-head" id="examples">Worked examples</div>
 
-      <details class="example-box">
-        <summary><strong>Example 1 — Third-order stable system</strong></summary>
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Third-order stable system</strong></div>
         <div class="example-problem">
           Determine the stability of $\Delta(s) = s^3 + 6s^2 + 11s + 6$ using the Routh array.
         </div>
@@ -425,10 +425,10 @@
           First column: $1, 6, 10, 6$ — all positive, zero sign changes. <strong>Stable.</strong>
           (Roots are $s = -1, -2, -3$.)
         </div>
-      </details>
+      </div>
 
-      <details class="example-box">
-        <summary><strong>Example 2 — Unstable polynomial (fails necessary condition)</strong></summary>
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Unstable polynomial (fails necessary condition)</strong></div>
         <div class="example-problem">
           Is $\Delta(s) = s^3 + 2s^2 - s + 2$ stable?
         </div>
@@ -437,10 +437,10 @@
           fails immediately. <strong>Unstable</strong> — no need to build the array.
           (There must be at least one root in the RHP.)
         </div>
-      </details>
+      </div>
 
-      <details class="example-box">
-        <summary><strong>Example 3 — Stability range of gain $K$ (parametric Routh)</strong></summary>
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Stability range of gain $K$ (parametric Routh)</strong></div>
         <div class="example-problem">
           For the unity-feedback loop with $L(s) = K/[s(s+1)(s+3)]$, find the range of $K > 0$
           for closed-loop stability and the critical oscillation frequency.
@@ -463,10 +463,10 @@
           At $K = K_{cr} = 12$: the $s^1$ row is zero. Auxiliary polynomial from the $s^2$ row:
           $P_\text{aux}(s) = 4s^2 + 12$, giving $\omega_{cr} = \sqrt{3} \approx 1.73$ rad/s.
         </div>
-      </details>
+      </div>
 
-      <details class="example-box">
-        <summary><strong>Example 4 — Zero first-column entry ($\varepsilon$ substitution)</strong></summary>
+      <div class="example-box">
+        <div class="example-header"><strong>Example 4 — Zero first-column entry ($\varepsilon$ substitution)</strong></div>
         <div class="example-problem">
           Determine the stability of $\Delta(s) = s^4 + s^3 + 3s^2 + 3s + 2$.
         </div>
@@ -493,7 +493,7 @@
           As $\varepsilon \to 0^+$: $3 - 2/\varepsilon \to -\infty$. First column signs:
           $+, +, +, -, +$ — <strong>two sign changes</strong>. <strong>Two roots in the RHP. Unstable.</strong>
         </div>
-      </details>
+      </div>
 
       <!-- ── Interactive ──────────────────────────────────────────────── -->
       <div class="section-head" id="interactive">Interactive: Routh array calculator</div>
@@ -692,9 +692,7 @@
             in the RHP but not <em>where</em> they are. How does this compare to the root locus
             (Lesson 5), which shows you exactly where the closed-loop poles move as $K$ varies?
             When would you use Routh-Hurwitz instead of root locus, and vice versa?
-            <details class="fft-answer">
-              <summary>Answer</summary>
-              <div class="fft-answer-body">
+                          <div class="fft-answer-body">
                 <strong>Routh-Hurwitz advantages:</strong> Fast, algebraic, works directly with the
                 characteristic polynomial (no factoring needed). Ideal for: (1) checking if a given
                 set of parameters produces a stable system, (2) finding stability <em>ranges</em> for
@@ -711,15 +709,13 @@
                 Use root locus when you need to understand how closed-loop pole locations change and
                 want to choose design parameters beyond just "stable or not."
               </div>
-            </details>
+            
           </li>
           <li style="margin-bottom:12px;">The critical gain $K_{cr}$ in Example 3 is 12. If
             the plant gain drifts by 20% (a real physical system is not perfectly modeled), by how
             much does the closed-loop gain margin shrink? Express this as a percentage of $K_{cr}$.
             This is the practical meaning of a <em>gain margin</em>.
-            <details class="fft-answer">
-              <summary>Answer</summary>
-              <div class="fft-answer-body">
+                          <div class="fft-answer-body">
                 If the plant gain drifts by $+20\%$, the effective loop gain becomes $1.2K$. For stability we
                 need $1.2K < 12$, i.e., $K < 10$. The stability range shrinks from $K < 12$ to $K < 10$
                 — a reduction of $2/12 \approx 17\%$ of $K_{cr}$.
@@ -733,7 +729,7 @@
                 This is why a nominal GM of $\geq 6$ dB is recommended: it provides buffer against
                 gain variations, parameter uncertainty, and the inevitable mismatch between model and plant.
               </div>
-            </details>
+            
           </li>
           <li>For a first-order system $s + a_0$, the Routh array is trivially two entries:
             $a_1=1$ and $a_0$. Stable iff $a_0 > 0$. For a second-order system
@@ -741,9 +737,7 @@
             match the Routh criterion. Can you derive a general Routh-like condition for
             third-order systems $s^3 + a_2 s^2 + a_1 s + a_0$ directly from the table
             (without looking it up)?
-            <details class="fft-answer">
-              <summary>Answer</summary>
-              <div class="fft-answer-body">
+                          <div class="fft-answer-body">
                 <strong>First order:</strong> $s + a_0$. Routh array: $[1;\; a_0]$. Stable iff $a_0 > 0$. ✓
 
                 <strong>Second order:</strong> $s^2 + a_1 s + a_0$. Routh array:
@@ -760,7 +754,7 @@
                 The last condition is the extra Hurwitz condition for third-order systems — beyond
                 just requiring all coefficients positive.
               </div>
-            </details>
+            
           </li>
         </ol>
       </div>

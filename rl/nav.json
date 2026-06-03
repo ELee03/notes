@@ -23,6 +23,14 @@
         {"href": "function-approx.html",  "text": "8 · Function Approximation",  "topics": "Parametric value functions · semi-gradient TD · the deadly triad · linear function approximation · DQN"},
         {"href": "policy-gradients.html", "text": "9 · Policy Gradient Methods", "topics": "REINFORCE · baseline subtraction · actor-critic · advantage functions · policy gradient theorem"}
       ]
+    },
+    {
+      "label": "Advanced Topics",
+      "items": [
+        {"href": "model-based.html",  "text": "10 · Model-Based RL",              "topics": "Dyna architecture · planning with learned models · world models · compounding model error · sample efficiency"},
+        {"href": "offline-rl.html",   "text": "11 · Offline and Batch RL",        "topics": "Fixed datasets · distributional shift · Q-value overestimation · conservative Q-learning (CQL) · importance sampling"},
+        {"href": "multi-agent.html",  "text": "12 · Multi-Agent RL",              "topics": "Markov games · Nash equilibria · independent Q-learning · cooperative vs competitive · CTDE · QMIX · self-play"}
+      ]
     }
   ]
 }

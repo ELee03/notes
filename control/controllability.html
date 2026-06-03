@@ -209,6 +209,19 @@
         becomes $\det(\mathcal{C}) \neq 0$.
       </div>
 
+      <div class="proof-box">
+        <div class="proof-header">Proof — Controllability rank criterion</div>
+        <div class="proof-body">
+          <p>The state reachable from $x(0)=0$ by input $u$ over $[0,T]$ is:
+          $$x(T) = \int_0^T e^{A(T-\tau)} B\,u(\tau)\,d\tau$$
+          Expanding the matrix exponential $e^{A(T-\tau)} = \sum_{k=0}^\infty \frac{A^k(T-\tau)^k}{k!}$ and pulling $A^k$ outside the integral:
+          $$x(T) = \sum_{k=0}^\infty A^k B \underbrace{\int_0^T \frac{(T-\tau)^k}{k!}u(\tau)\,d\tau}_{c_k \in \mathbb{R}^m}$$
+          So $x(T) \in \text{span}\{B,\,AB,\,A^2B,\,\ldots\}$. By the <strong>Cayley-Hamilton theorem</strong>, $A^n = -\sum_{i=0}^{n-1} p_i A^i$ (where $p_i$ are coefficients of the characteristic polynomial), so $A^k B$ for $k \geq n$ lies in $\text{span}\{B,\,AB,\,\ldots,\,A^{n-1}B\}$. Therefore:
+          $$\mathcal{R} = \text{col}(\mathcal{C}), \quad \mathcal{C} = [B \;\; AB \;\; \cdots \;\; A^{n-1}B]$$
+          The system is controllable iff $\mathcal{R} = \mathbb{R}^n$ iff $\text{rank}(\mathcal{C}) = n$. $\blacksquare$</p>
+        </div>
+      </div>
+
       <div class="prose">
         <strong>Physical interpretation of the columns.</strong> Each column block $A^k B$
         represents the direction the input can influence the state after $k$ "steps" of
@@ -345,6 +358,15 @@
         $$\text{rank}\begin{bmatrix}A - \lambda I & B\end{bmatrix} = n$$
         Equivalently: no left eigenvector $w$ of $A$ is orthogonal to $B$:
         $$w^T A = \lambda w^T \implies w^T B \neq 0$$
+      </div>
+
+      <div class="proof-box">
+        <div class="proof-header">Proof — PBH controllability test</div>
+        <div class="proof-body">
+          <p><strong>($\Rightarrow$) Rank deficiency implies uncontrollability.</strong> Suppose $\text{rank}[A-\lambda I,\, B] < n$ for some eigenvalue $\lambda$. Then there exists a nonzero left null vector $w^T$ such that $w^T[A-\lambda I,\, B] = 0$, i.e. $w^TA = \lambda w^T$ and $w^TB = 0$.</p>
+          <p>Now compute $w^T A^k B$ by induction: $w^T A B = \lambda w^T B = 0$, and $w^T A^k B = \lambda^{k-1} w^T AB = 0$ for all $k$. Therefore $w^T \mathcal{C} = w^T[B,\, AB,\, \ldots,\, A^{n-1}B] = 0$, so $\mathcal{C}$ has a nontrivial left null vector, meaning $\text{rank}(\mathcal{C}) < n$. The system is not controllable.</p>
+          <p><strong>($\Leftarrow$) Full rank at all eigenvalues implies controllability.</strong> Contrapositively, if $\text{rank}(\mathcal{C}) < n$, there exists $w \neq 0$ with $w^T\mathcal{C} = 0$. In particular $w^TB = 0$ and $w^TAB = 0$, which imply (by the $A$-invariance of $\ker \mathcal{C}$) that $w^T$ must be a left eigenvector of $A$: the reachable subspace $\text{col}(\mathcal{C})$ is $A$-invariant, and any $w \perp \text{col}(\mathcal{C})$ satisfies $w^TA \in \text{col}(\mathcal{C})^\perp$, forcing $w^TA = \lambda w^T$ for some eigenvalue $\lambda$. Then $[A-\lambda I,\, B]$ loses rank. $\blacksquare$</p>
+        </div>
       </div>
 
       <div class="prose">
@@ -500,8 +522,8 @@
       <!-- ═══ WORKED EXAMPLES ═══ -->
       <div class="section-head" id="worked-examples">Worked examples</div>
 
-      <details class="example-box">
-        <summary><strong>Example 1 — Controllability check by rank test</strong></summary>
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Controllability check by rank test</strong></div>
         <div class="example-problem">
           Given $A = \begin{bmatrix}1 & 0 \\ 0 & 2\end{bmatrix}$, $B = \begin{bmatrix}1 \\ 3\end{bmatrix}$.
           Is the system $(A, B)$ controllable?
@@ -518,10 +540,10 @@
           controllable, state feedback can assign the closed-loop poles to any desired stable locations.
           This is the standard motivating case for state feedback design.
         </div>
-      </details>
+      </div>
 
-      <details class="example-box">
-        <summary><strong>Example 2 — Uncontrollable mode via PBH test</strong></summary>
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Uncontrollable mode via PBH test</strong></div>
         <div class="example-problem">
           Given $A = \begin{bmatrix}-1 & 0 \\ 1 & -2\end{bmatrix}$, $B = \begin{bmatrix}0 \\ 1\end{bmatrix}$.
           Use the PBH test to determine which eigenvalue (if any) is uncontrollable, then verify with the controllability matrix.
@@ -544,10 +566,10 @@
           $x_1$ is driven only by itself — there is no off-diagonal term $A_{12}$ and no direct input path
           from $u$ to $x_1$. The $e^{-t}$ mode in $x_1$ is completely decoupled from the input.
         </div>
-      </details>
+      </div>
 
-      <details class="example-box">
-        <summary><strong>Example 3 — Non-minimal realization: hidden unobservable mode</strong></summary>
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Non-minimal realization: hidden unobservable mode</strong></div>
         <div class="example-problem">
           The transfer function $G(s) = \dfrac{1}{s+2}$ is realized as:
           $$A = \begin{bmatrix}-2 & 0 \\ 0 & -5\end{bmatrix}, \quad B = \begin{bmatrix}1 \\ 1\end{bmatrix}, \quad C = \begin{bmatrix}1 & 0\end{bmatrix}$$
@@ -570,7 +592,7 @@
           <strong>Minimal realization:</strong> $A = [-2]$, $B = [1]$, $C = [1]$, order 1, matching the
           degree of $G(s)$.
         </div>
-      </details>
+      </div>
 
       <!-- ═══ FOOD FOR THOUGHT ═══ -->
       <div class="section-head" id="food-for-thought">Food for thought</div>
@@ -579,9 +601,7 @@
           An uncontrollable but stable mode will decay on its own regardless of input.
           Is an uncontrollable stable mode a problem in practice? Under what circumstances
           would you accept a design that leaves a stable uncontrollable mode in the system?
-          <details class="fft-answer">
-            <summary>Answer</summary>
-            <div class="fft-answer-body">
+                      <div class="fft-answer-body">
               An uncontrollable stable mode is often <em>acceptable</em> if: (1) it decays fast enough
               that it settles before the controlled dynamics matter — a high-frequency structural mode
               with $\text{Re}(\lambda) \ll -1$ is gone before the output transient begins; (2) it is also
@@ -597,7 +617,7 @@
               cannot remove). In practice, uncontrollable fast well-damped modes are routinely ignored;
               uncontrollable slow or lightly-damped modes demand careful attention.
             </div>
-          </details>
+          
         </li>
         <li style="margin-bottom:10px;">
           The PBH test says that if any left eigenvector of $A$ is orthogonal to $B$, the
@@ -605,9 +625,7 @@
           nonzero projection onto every left eigenvector. What is the geometric interpretation
           of this condition? What does it say about where the actuators (represented by $B$)
           should be placed in a physical system to ensure controllability?
-          <details class="fft-answer">
-            <summary>Answer</summary>
-            <div class="fft-answer-body">
+                      <div class="fft-answer-body">
               Each left eigenvector $w_i$ (satisfying $w_i^T A = \lambda_i w_i^T$) defines a
               co-invariant direction — a direction that is preserved by the adjoint dynamics.
               The PBH condition $w_i^T B \neq 0$ means: the input column $B$ must not be
@@ -625,7 +643,7 @@
               placement is itself an optimization problem involving the Gramian — you want to
               maximize the minimum eigenvalue of $W_c(T)$ so all modes are equally reachable.
             </div>
-          </details>
+          
         </li>
         <li>
           The Kalman decomposition splits the system into CO, C$\bar{\text{O}}$, $\bar{\text{C}}$O,
@@ -633,9 +651,7 @@
           If the $\bar{\text{C}}$O (uncontrollable-observable) part has an unstable eigenvalue,
           the system is "input-output stable" (the TF is stable) but internally unstable. Why
           is this dangerous even if you only care about the output being bounded?
-          <details class="fft-answer">
-            <summary>Answer</summary>
-            <div class="fft-answer-body">
+                      <div class="fft-answer-body">
               Several reasons this is dangerous in practice:
 
               <strong>(1) The state itself diverges.</strong> Even while $y(t)$ appears bounded, $x(t)$ grows
@@ -661,7 +677,7 @@
 
               The lesson: never rely on pole-zero cancellations involving unstable modes.
             </div>
-          </details>
+          
         </li>
       </ol>
 

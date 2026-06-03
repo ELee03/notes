@@ -590,8 +590,8 @@
       <!-- ═══ WORKED EXAMPLES ═══ -->
       <div class="section-head" id="worked-examples">Worked examples</div>
 
-      <details class="example-box">
-        <summary><strong>Example 1 — State-space of a double integrator</strong></summary>
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — State-space of a double integrator</strong></div>
         <div class="example-problem">
           Derive a state-space realization for the double integrator $G(s) = 1/s^2$
           (a point mass $\ddot{q} = u$ with no damping) and verify the transfer function.
@@ -608,10 +608,10 @@
           <strong>Verify:</strong> $(sI-A)^{-1} = \dfrac{1}{s^2}\begin{bmatrix}s & 1 \\ 0 & s\end{bmatrix}$, so
           $G(s) = [1\;0]\cdot\dfrac{1}{s^2}\begin{bmatrix}1 \\ s\end{bmatrix} = \dfrac{1}{s^2}$ ✓
         </div>
-      </details>
+      </div>
 
-      <details class="example-box">
-        <summary><strong>Example 2 — Eigenvalues and transfer function from $(A,B,C)$</strong></summary>
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Eigenvalues and transfer function from $(A,B,C)$</strong></div>
         <div class="example-problem">
           Given $A = \begin{bmatrix}-3 & 1 \\ -2 & 0\end{bmatrix}$, $B = \begin{bmatrix}0 \\ 1\end{bmatrix}$, $C = \begin{bmatrix}1 & 0\end{bmatrix}$.
           Find the eigenvalues and the transfer function.
@@ -627,10 +627,10 @@
 
           Poles at $s = -1, -2$ match the eigenvalues of $A$ — this is a minimal realization ✓.
         </div>
-      </details>
+      </div>
 
-      <details class="example-box">
-        <summary><strong>Example 3 — Minimal vs non-minimal realization</strong></summary>
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Minimal vs non-minimal realization</strong></div>
         <div class="example-problem">
           Show that $A = \begin{bmatrix}-2&0\\0&-5\end{bmatrix}$, $B = \begin{bmatrix}1\\1\end{bmatrix}$, $C = \begin{bmatrix}1&0\end{bmatrix}$
           is a non-minimal realization of $G(s) = \dfrac{1}{s+2}$ and state the minimal realization.
@@ -647,7 +647,7 @@
 
           <strong>Minimal realization:</strong> $A = [-2]$, $B = [1]$, $C = [1]$, order $n = 1$.
         </div>
-      </details>
+      </div>
 
       <!-- ═══ FOOD FOR THOUGHT ═══ -->
       <div class="section-head" id="food-for-thought">Food for thought</div>
@@ -657,9 +657,7 @@
           have the same state-space structure with different parameter names. What does this
           tell you about the relationship between the mathematics of a system and its physical
           implementation? What other systems share this structure?
-          <details class="fft-answer">
-            <summary>Answer</summary>
-            <div class="fft-answer-body">
+                      <div class="fft-answer-body">
               The same differential equation can describe many physically different systems.
               A spring-mass-damper $m\ddot{q} + c\dot{q} + kq = u$ and an RLC circuit
               $L\ddot{q} + R\dot{q} + \frac{1}{C}q = u$ (where $q$ is charge) are governed
@@ -673,7 +671,7 @@
               control theory is so broadly applicable — you design for the abstract $(A,B,C)$ structure,
               and the result applies to any physical realization of that structure.
             </div>
-          </details>
+          
         </li>
         <li style="margin-bottom:10px;">
           The state vector $x$ is not unique — any invertible transformation $z = Tx$ gives
@@ -681,9 +679,7 @@
           Since the transfer function $G(s) = C(sI-A)^{-1}B$ doesn't change under this
           transformation, what properties of the system are "coordinate-invariant" (same
           regardless of which state basis you choose)?
-          <details class="fft-answer">
-            <summary>Answer</summary>
-            <div class="fft-answer-body">
+                      <div class="fft-answer-body">
               Coordinate-invariant properties — sometimes called <em>similarity invariants</em>
               — include: the eigenvalues of $A$ (hence the pole locations and stability), the
               characteristic polynomial of $A$, the transfer function $G(s)$, the rank of the
@@ -697,16 +693,14 @@
               physical evolution). This distinction is important in practice: when comparing two
               realizations of the same system, check eigenvalues and the TF — not the $A$ matrix entries.
             </div>
-          </details>
+          
         </li>
         <li>
           The phase variable realization always produces an $A$ matrix in companion form.
           This is numerically convenient for small systems but problematic for large ones —
           why might the companion matrix have poor numerical conditioning, and how does this
           matter for simulation or control design?
-          <details class="fft-answer">
-            <summary>Answer</summary>
-            <div class="fft-answer-body">
+                      <div class="fft-answer-body">
               The companion matrix has the form with 1s on the superdiagonal and the negated
               polynomial coefficients in the bottom row. Its condition number grows rapidly with
               system order $n$ — the entries $a_0, a_1, \ldots, a_{n-1}$ of the characteristic
@@ -722,7 +716,7 @@
               to a balanced or Schur form before doing numerical work. MATLAB's <code>ss()</code> and
               <code>place()</code> use numerically robust formulations rather than the raw companion form.
             </div>
-          </details>
+          
         </li>
       </ol>
 

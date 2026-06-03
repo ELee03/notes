@@ -467,6 +467,22 @@
         algebra alone.
       </div>
 
+      <div class="proof-box">
+        <div class="proof-header">Proof — Bellman optimality equations have a unique solution (contraction mapping)</div>
+        <div class="proof-body">
+          <p>Define the <strong>Bellman optimality operator</strong> $\mathcal{T}: \mathbb{R}^{|\mathcal{S}|} \to \mathbb{R}^{|\mathcal{S}|}$ by:
+          $$(\mathcal{T}v)(s) = \max_a \sum_{s',r} p(s',r \mid s,a)\bigl[r + \gamma v(s')\bigr]$$
+          We claim $\mathcal{T}$ is a $\gamma$-contraction under the $\sup$-norm $\|v\|_\infty = \max_s |v(s)|$.</p>
+          <p><strong>Contraction.</strong> For any two value functions $u, v$:
+          $$|(\mathcal{T}u)(s) - (\mathcal{T}v)(s)| = \left|\max_a \mathbb{E}[\gamma u(s')] - \max_a \mathbb{E}[\gamma v(s')]\right|$$
+          Using $|\max_a f(a) - \max_a g(a)| \leq \max_a |f(a) - g(a)|$:
+          $$\leq \gamma \max_a \mathbb{E}[|u(s') - v(s')|] \leq \gamma \|u - v\|_\infty$$
+          So $\|\mathcal{T}u - \mathcal{T}v\|_\infty \leq \gamma\|u-v\|_\infty$. Since $\gamma < 1$, $\mathcal{T}$ is a strict contraction.</p>
+          <p><strong>Banach fixed-point theorem.</strong> Any strict contraction on a complete metric space has a <em>unique</em> fixed point, and repeated application $v_{k+1} = \mathcal{T}v_k$ converges to it from any starting $v_0$. The fixed point satisfies $v_* = \mathcal{T}v_*$, which is exactly the Bellman optimality equation. $\blacksquare$</p>
+          <p style="color:#9aabb8;font-size:12px;margin-top:8px;">This also proves that <strong>value iteration converges</strong> (Lesson 5): each application of $\mathcal{T}$ halves the error by $\gamma$, so convergence is geometric.</p>
+        </div>
+      </div>
+
       <div class="callout">
         <strong>Optimal backup diagrams.</strong> The backup diagram for $v_*(s)$ has a
         flat arc (max over actions) instead of the weighted sum over $\pi(a|s)$. This is
@@ -477,8 +493,8 @@
       <!-- ── Worked example ──────────────────────────────────────── -->
       <div class="section-head" id="worked-example">Worked example: value functions for the recycling robot</div>
 
-      <details class="example-box">
-        <summary><strong>Example 1 — Comparing two policies on the recycling robot</strong></summary>
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Comparing two policies on the recycling robot</strong></div>
         <div class="example-problem">
           Using the recycling robot MDP from Lesson 3 ($\alpha = 0.7$, $\beta = 0.4$,
           $r_\text{search} = 2$, $r_\text{wait} = 1$, $r_\text{rescue} = -3$, $\gamma = 0.9$),
@@ -547,7 +563,7 @@
           </div>
 
         </div>
-      </details>
+      </div>
 
       <!-- ── Interactive explorer ────────────────────────────────── -->
       <div class="section-head" id="explorer">Policy value explorer — recycling robot</div>
@@ -730,9 +746,7 @@
             is $v = (I - \gamma P)^{-1} r$. Why is $I - \gamma P$ guaranteed to be invertible
             for $\gamma < 1$? What happens at $\gamma = 1$ for a continuing task with no
             absorbing state?
-            <details class="fft-answer">
-              <summary>Answer / hint</summary>
-              <div class="fft-answer-body">
+                          <div class="fft-answer-body">
                 The stochastic transition matrix $P$ has spectral radius exactly 1 (all eigenvalues
                 satisfy $|\lambda| \leq 1$; the dominant eigenvalue is 1). Scaling by $\gamma < 1$
                 shrinks the spectral radius to $\gamma < 1$. By the Neumann series,
@@ -742,14 +756,12 @@
                 has a zero eigenvalue and is singular. The linear system has no unique solution —
                 undiscounted values diverge for a task that never terminates.
               </div>
-            </details>
+            
           </li>
           <li>An agent knows $v_*(s)$ for every state but does <em>not</em> know $q_*(s,a)$ or
             the dynamics $p(s',r|s,a)$. Can it still recover the optimal policy? If yes, how?
             If no, why not?
-            <details class="fft-answer">
-              <summary>Answer / hint</summary>
-              <div class="fft-answer-body">
+                          <div class="fft-answer-body">
                 No — not without the model. Acting greedily with respect to $v_*$ requires
                 $\arg\max_a \sum_{s',r} p(s',r \mid s,a)[r + \gamma v_*(s')]$, which needs
                 the dynamics $p(s',r \mid s,a)$ to evaluate the one-step lookahead.
@@ -758,15 +770,13 @@
                 model-free RL algorithm, prefer learning $q$ over $v$ — unless you separately
                 learn a model of the environment.
               </div>
-            </details>
+            
           </li>
           <li>Consider an MDP where all reward is received only at terminal states (zero reward
             everywhere else). How does the value function behave as $\gamma \to 0$ vs
             $\gamma \to 1$? What does this tell you about the role of discounting in
             credit assignment?
-            <details class="fft-answer">
-              <summary>Answer / hint</summary>
-              <div class="fft-answer-body">
+                          <div class="fft-answer-body">
                 As $\gamma \to 0$: the agent becomes purely myopic — only the immediate next
                 reward matters. Since all non-terminal rewards are 0, $v_\pi(s) \to 0$ for
                 every non-terminal state regardless of how close $s$ is to the terminal reward.
@@ -779,7 +789,7 @@
                 over arbitrarily long horizons. Sparse-reward tasks (reward only at goal)
                 require $\gamma$ close to 1.
               </div>
-            </details>
+            
           </li>
         </ol>
       </div>

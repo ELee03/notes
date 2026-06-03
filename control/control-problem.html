@@ -663,9 +663,7 @@
             the correct steady state ($y=1$) without any disturbance. But does it track a
             time-varying reference — say, a sinusoidal $r(t) = \sin(t)$? What would you need
             to know about the plant to make open-loop tracking work?
-            <details class="fft-answer">
-              <summary>Answer</summary>
-              <div class="fft-answer-body">
+                          <div class="fft-answer-body">
                 For open-loop tracking of a sinusoidal reference $r(t) = A\sin(\omega t)$, you need
                 to know the plant's frequency response $P(j\omega)$ exactly. The open-loop controller
                 must apply $u(t) = A|P(j\omega)|^{-1}\sin(\omega t - \angle P(j\omega))$ to cancel the
@@ -678,14 +676,12 @@
                 plants with no disturbances. For any dynamic reference or uncertain plant, feedback is
                 necessary to adapt to model errors in real time.
               </div>
-            </details>
+            
           </li>
           <li style="margin-bottom:12px;">Feedback can stabilize an unstable plant. But can
             feedback make a stable plant unstable? Under what conditions would a feedback
             controller make things worse? (Think about high gain and time delays.)
-            <details class="fft-answer">
-              <summary>Answer</summary>
-              <div class="fft-answer-body">
+                          <div class="fft-answer-body">
                 Yes — feedback can absolutely destabilize a stable plant. The closed-loop characteristic
                 equation is $1 + C(s)P(s) = 0$, whose roots depend on both $C$ and $P$. Specific scenarios:
 
@@ -707,14 +703,12 @@
                 The general lesson: feedback helps in the frequency band where the loop gain is large,
                 but at frequencies where the phase lag exceeds $-180°$, feedback actively hurts stability.
               </div>
-            </details>
+            
           </li>
           <li>The closed-loop transfer function is $T(s) = CP/(1+CP)$. What happens to $T(s)$
             when $CP \gg 1$? What does this tell you about what the output does at frequencies
             where the loop gain is large?
-            <details class="fft-answer">
-              <summary>Answer</summary>
-              <div class="fft-answer-body">
+                          <div class="fft-answer-body">
                 When $|C(j\omega)P(j\omega)| \gg 1$:
                 $$T(j\omega) = \frac{C(j\omega)P(j\omega)}{1 + C(j\omega)P(j\omega)} \approx \frac{C(j\omega)P(j\omega)}{C(j\omega)P(j\omega)} = 1$$
                 The closed-loop gain approaches 1 at all frequencies where the loop gain is large.
@@ -730,7 +724,7 @@
                 higher frequencies to preserve stability margins. This is the intuition behind the
                 "loop shaping" approach to control design.
               </div>
-            </details>
+            
           </li>
         </ol>
       </div>

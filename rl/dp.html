@@ -182,6 +182,17 @@
         improvement arguments in RL.
       </div>
 
+      <div class="proof-box">
+        <div class="proof-header">Proof — Policy Improvement Theorem &amp; policy iteration convergence</div>
+        <div class="proof-body">
+          <p><strong>Policy Improvement Theorem.</strong> Let $\pi'(s) = \arg\max_a q_\pi(s,a)$. By the greedy choice: $q_\pi(s,\pi'(s)) \geq q_\pi(s,\pi(s)) = v_\pi(s)$. Now unroll using Bellman:
+          $$v_\pi(s) \leq \mathbb{E}_{\pi'}[R_{t+1} + \gamma v_\pi(S_{t+1}) \mid S_t=s] \leq \mathbb{E}_{\pi'}[R_{t+1} + \gamma q_\pi(S_{t+1},\pi'(S_{t+1})) \mid S_t=s]$$
+          Applying the greedy bound recursively at each future state and using $\gamma < 1$ to ensure convergence of the telescoping sum:
+          $$\leq \mathbb{E}_{\pi'}[R_{t+1} + \gamma R_{t+2} + \gamma^2 R_{t+3} + \cdots \mid S_t=s] = v_{\pi'}(s) \quad \blacksquare$$</p>
+          <p><strong>Policy iteration convergence (finite MDPs).</strong> Each improvement step either strictly increases $v$ in at least one state, or the policy is unchanged. If unchanged, $\pi'=\pi$ implies $v_\pi = \mathcal{T}v_\pi$ (the greedy policy is already greedy with respect to its own value), so $v_\pi = v_*$. Since the number of deterministic policies is $|\mathcal{A}|^{|\mathcal{S}|}$ (finite), and each step either improves strictly or terminates, policy iteration terminates in at most $|\mathcal{A}|^{|\mathcal{S}|}$ steps. $\blacksquare$</p>
+        </div>
+      </div>
+
       <div class="prose">
         If $\pi' = \pi$ (no action changed), then we have hit a fixed point of the
         improvement step: $v_\pi = v_*$, and $\pi$ is already optimal. Policy improvement
@@ -307,8 +318,8 @@
       <!-- ── Worked example ──────────────────────────────────────── -->
       <div class="section-head" id="worked-example">Worked example: two-step policy evaluation</div>
 
-      <details class="example-box">
-        <summary><strong>Example 1 — Policy evaluation on a 3-state chain (γ = 1)</strong></summary>
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Policy evaluation on a 3-state chain (γ = 1)</strong></div>
         <div class="example-problem">
           Consider a 3-state chain MDP: states A → B → C (terminal). Under a deterministic
           policy — from A go right to B; from B go right to C. Reward $-1$ per step, $\gamma = 1$.
@@ -353,7 +364,7 @@
             </div>
           </div>
         </div>
-      </details>
+      </div>
 
       <!-- ── Grid world explorer ────────────────────────────────── -->
       <div class="section-head" id="grid-explorer">Interactive: 4×4 grid world</div>
@@ -618,9 +629,7 @@
             How much work do you think you're wasting, and what would you do differently?
             (This question is essentially asking you to re-invent <em>modified policy
             iteration</em> — look it up after thinking it through.)
-            <details class="fft-answer">
-              <summary>Answer / hint</summary>
-              <div class="fft-answer-body">
+                          <div class="fft-answer-body">
                 Most of the evaluation sweeps are wasted: after the first few sweeps the relative
                 ordering of states has stabilised, and extra sweeps are just refining differences
                 that don't change the greedy action. Modified policy iteration performs exactly $k$
@@ -630,16 +639,14 @@
                 steps. In practice $k = 5$–$20$ sweeps is often enough to get a good approximation
                 while skipping the bulk of the redundant work.
               </div>
-            </details>
+            
           </li>
           <li>In value iteration, a single state can influence all its neighbours in one
             sweep, but those neighbours haven't yet "seen" their new values from other
             directions. How does the information about terminal states propagate outward
             with each sweep? How many sweeps does a state $k$ steps from a terminal need
             before its value first becomes nonzero?
-            <details class="fft-answer">
-              <summary>Answer / hint</summary>
-              <div class="fft-answer-body">
+                          <div class="fft-answer-body">
                 Exactly $k$ sweeps. In sweep 1, only the direct neighbours of terminal states
                 (1 step away) receive nonzero values from the Bellman backup. In sweep 2, states
                 2 steps away receive their first nonzero value via the states that just became
@@ -648,14 +655,12 @@
                 why DP convergence for episodic tasks takes at least as many sweeps as the
                 diameter of the longest path to a terminal state.
               </div>
-            </details>
+            
           </li>
           <li>DP assumes the model is known. But what if you knew the model approximately —
             say, you had samples from $p(s',r|s,a)$ but not the exact distribution? Could you
             still run something like policy evaluation? What would you lose?
-            <details class="fft-answer">
-              <summary>Answer / hint</summary>
-              <div class="fft-answer-body">
+                          <div class="fft-answer-body">
                 Yes — you could use sample means in place of the exact expectation: estimate
                 $r(s,a)$ and $p(s'|s,a)$ from observed transitions and then plug those estimates
                 into the Bellman update. This is called sample-based or approximate DP. What you
@@ -666,7 +671,7 @@
                 bootstraps single-step samples. The core idea — replace an expectation with a
                 sample average — is the bridge from model-based DP to model-free RL.
               </div>
-            </details>
+            
           </li>
         </ol>
       </div>

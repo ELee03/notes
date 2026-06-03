@@ -331,13 +331,18 @@
         right-multiplying by $\varphi_d(A)$ produces the gain vector.
       </div>
 
-      <div class="prose">
-        <strong>Where does this come from?</strong> The derivation transforms the system
-        to <em>controllable canonical form</em>, where the characteristic polynomial
-        coefficients appear explicitly in the last row of $\tilde A$.
-        In that basis, choosing $\tilde K$ to shift those coefficients to the desired
-        values is trivial; the transformation back to the original coordinates yields
-        Ackermann's formula.
+      <div class="proof-box">
+        <div class="proof-header">Derivation — Ackermann's formula</div>
+        <div class="proof-body">
+          <p><strong>Step 1: Controllable canonical form.</strong> For any controllable $(A, B)$, define the change of basis $T = \mathcal{C}\,W$ where $W$ is the companion matrix built from the open-loop characteristic polynomial coefficients $p(\lambda) = \lambda^n + a_{n-1}\lambda^{n-1} + \cdots + a_0$:
+          $$W = \begin{bmatrix} a_1 & a_2 & \cdots & a_{n-1} & 1 \\ a_2 & \cdots & 1 & 0 \\ \vdots & \iddots & & \vdots \\ 1 & 0 & \cdots & 0 \end{bmatrix}$$
+          In the new coordinates $\tilde{x} = T^{-1}x$, the system becomes $\tilde{A} = T^{-1}AT$, $\tilde{B} = T^{-1}B$, which are exactly the controllable canonical form (CCF): $\tilde{B} = e_n$ (last standard basis vector), and $\tilde{A}$ has the open-loop polynomial coefficients $-a_0, \ldots, -a_{n-1}$ in its last row.</p>
+          <p><strong>Step 2: Design in CCF.</strong> The closed-loop matrix is $\tilde{A} - \tilde{B}\tilde{K}$. Since $\tilde{B} = e_n$, subtracting $\tilde{K}$ only modifies the last row of $\tilde{A}$. Choosing $\tilde{K} = [\tilde{k}_1, \ldots, \tilde{k}_n]$ so the last row becomes $[-\alpha_0, \ldots, -\alpha_{n-1}]$ gives the desired characteristic polynomial $\varphi_d$. So $\tilde{K} = e_n^T\,\varphi_d(\tilde{A})$ (the last row of $\varphi_d(\tilde{A})$ extracts exactly the required shifts).</p>
+          <p><strong>Step 3: Transform back.</strong> The original gain is $K = \tilde{K}T^{-1} = e_n^T\,\varphi_d(\tilde{A})\,T^{-1}$. Using $T = \mathcal{C}W$ and the fact that $\varphi_d(\tilde{A}) = T^{-1}\varphi_d(A)T$ (polynomials commute with similarity transforms):
+          $$K = e_n^T\,T^{-1}\varphi_d(A)T\,T^{-1} = e_n^T\,T^{-1}\varphi_d(A) = e_n^T\,W^{-1}\mathcal{C}^{-1}\varphi_d(A)$$
+          Since $e_n^T W^{-1} = e_n^T$ (the last row of $W^{-1}$ is $e_n^T$ by construction of $W$):
+          $$\boxed{K = e_n^T\,\mathcal{C}^{-1}\,\varphi_d(A)}\ \blacksquare$$</p>
+        </div>
       </div>
 
       <div class="prose">
@@ -740,8 +745,8 @@ def ackermann(A, B, poles):
       <div id="worked-examples"></div>
       <div class="section-head">Worked Examples</div>
 
-      <details class="example-box">
-        <summary><strong>Example 1 — Stabilising an unstable inverted pendulum</strong></summary>
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Stabilising an unstable inverted pendulum</strong></div>
         <div class="example-problem">
           The inverted pendulum linearised about the upright position:
           $\dot{x} = \begin{bmatrix}0&1\\6&0\end{bmatrix}x + \begin{bmatrix}0\\1\end{bmatrix}u$.
@@ -763,10 +768,10 @@ def ackermann(A, B, poles):
           <em>Check:</em> Closed-loop poles $s = -3 \pm 3j$ — both in left half-plane. ✓ The feedback
           has overcome the unstable open-loop pole at $+\sqrt{6}$.
         </div>
-      </details>
+      </div>
 
-      <details class="example-box">
-        <summary><strong>Example 2 — Third-order system via Ackermann's formula</strong></summary>
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Third-order system via Ackermann's formula</strong></div>
         <div class="example-problem">
           $$A = \begin{bmatrix}0&1&0\\0&0&1\\-1&-2&-3\end{bmatrix},\quad B = \begin{bmatrix}0\\0\\1\end{bmatrix}$$
           Place poles at $-2,\,-3,\,-4$ using Ackermann's formula.
@@ -787,10 +792,10 @@ def ackermann(A, B, poles):
           <em>Verify:</em> $A-BK$ has last row $[-1-23,\;-2-24,\;-3-6] = [-24,\;-26,\;-9]$,
           giving char poly $s^3 + 9s^2 + 26s + 24$. ✓
         </div>
-      </details>
+      </div>
 
-      <details class="example-box">
-        <summary><strong>Example 3 — Computing $N_r$ for a DC motor</strong></summary>
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Computing $N_r$ for a DC motor</strong></div>
         <div class="example-problem">
           A DC motor position system: $A = \begin{bmatrix}0&1\\0&-5\end{bmatrix}$, $B = \begin{bmatrix}0\\10\end{bmatrix}$,
           $C = [1,\;0]$. State feedback $K = [4,\;1.5]$ has been designed.
@@ -806,7 +811,7 @@ def ackermann(A, B, poles):
           $$N_r = \frac{1}{-(-0.25)} = \boxed{4}$$
           With $u = -Kx + 4r$, a unit step reference produces unit steady-state output position.
         </div>
-      </details>
+      </div>
 
       <!-- ── Food for Thought ──────────────────────────────────── -->
       <div id="food-for-thought"></div>
@@ -816,9 +821,7 @@ def ackermann(A, B, poles):
         <li>
           If a system is controllable, you can place its poles anywhere. Does this mean
           you can make a physical system respond arbitrarily fast? What stops you in practice?
-          <details class="fft-answer">
-            <summary>Answer</summary>
-            <div class="fft-answer-body">
+                      <div class="fft-answer-body">
               Theoretically yes — controllability says you can place eigenvalues arbitrarily far
               left. But poles far left require large gains $K$, which require large control
               signals $u = -Kx$. Real actuators saturate (a motor has a maximum torque; a valve
@@ -828,15 +831,13 @@ def ackermann(A, B, poles):
               model ignores. In practice, achievable bandwidth is limited by actuator authority
               and model validity, not by controllability theory.
             </div>
-          </details>
+          
         </li>
         <li>
           State feedback with $N_r$ eliminates steady-state error only for constant
           references and only if the model is exact. Why does adding an integrator state
           (integral action) fix both limitations?
-          <details class="fft-answer">
-            <summary>Answer</summary>
-            <div class="fft-answer-body">
+                      <div class="fft-answer-body">
               The integrator accumulates tracking error $\dot z = r - y$ over time.
               At steady state $\dot z = 0$ requires $r = y$ exactly — this holds regardless of
               the specific model parameters, because the integrator forces the error to zero by
@@ -847,15 +848,13 @@ def ackermann(A, B, poles):
               $(n+1)$-dimensional pole-placement problem, and the risk of integrator windup under
               actuator saturation (same issue as PID).
             </div>
-          </details>
+          
         </li>
         <li>
           For the double integrator, $K = [\omega_n^2,\; 2\zeta\omega_n]$. The gains grow
           with $\omega_n$. If you want the system to settle 10× faster, how do the gains scale?
           What does this imply for the maximum achievable bandwidth?
-          <details class="fft-answer">
-            <summary>Answer</summary>
-            <div class="fft-answer-body">
+                      <div class="fft-answer-body">
               Scaling $\omega_n \to 10\omega_n$: $k_1 = \omega_n^2 \to 100\omega_n^2$ (scales as $\omega_n^2$),
               $k_2 = 2\zeta\omega_n \to 20\zeta\omega_n$ (scales as $\omega_n$). The position gain grows by 100×, the
               velocity gain by 10×. The control signal at the initial state $x_0 = [1, 0]^T$ is
@@ -864,7 +863,7 @@ def ackermann(A, B, poles):
               $\omega_n \leq \sqrt{u_{\max} / |x_{0,\max}|}$. Beyond this the linear design breaks down,
               and you'd need anti-windup or a nonlinear control strategy to manage saturation.
             </div>
-          </details>
+          
         </li>
       </ul>
 

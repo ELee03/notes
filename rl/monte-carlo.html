@@ -401,8 +401,8 @@
       <!-- ── Worked examples ─────────────────────────────────────── -->
       <div class="section-head" id="worked-examples">Worked examples</div>
 
-      <details class="example-box">
-        <summary><strong>Example 1 — Tracing first-visit MC on the 4×4 grid</strong></summary>
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Tracing first-visit MC on the 4×4 grid</strong></div>
         <div class="example-problem">
           Use the same 4×4 grid world from Lesson 5: states $\{0, 1, \ldots, 15\}$ numbered
           row-major, terminals at 0 (top-left) and 15 (bottom-right), reward $-1$ on all
@@ -488,10 +488,10 @@
           </div>
 
         </div>
-      </details>
+      </div>
 
-      <details class="example-box">
-        <summary><strong>Example 2 — Importance sampling calculation</strong></summary>
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Importance sampling calculation</strong></div>
         <div class="example-problem">
           Suppose you are in a 2-action MDP. The behavior policy is $b(a=\text{left} \mid s) = 0.5$,
           $b(a=\text{right} \mid s) = 0.5$. The target policy is $\pi(a=\text{left} \mid s) = 1.0$
@@ -514,7 +514,7 @@
             path, but $b$ only took it by chance.
           </div>
         </div>
-      </details>
+      </div>
 
       <!-- ── Interactive ─────────────────────────────────────────── -->
       <div class="section-head" id="interactive">Interactive: MC value estimator</div>
@@ -764,9 +764,7 @@
             unbiased in the limit, but subtly biased for finite samples. Why? (Hint: think
             about what happens when a state appears twice in one episode and what the two
             returns represent relative to the definition of $v_\pi(s)$.)
-            <details class="fft-answer">
-              <summary>Answer / hint</summary>
-              <div class="fft-answer-body">
+                          <div class="fft-answer-body">
                 When a state $s$ appears at time $t_1$ and again at $t_2 > t_1$ in the same episode,
                 first-visit MC uses only $G_{t_1}$ — which is the return from the first visit,
                 an unbiased sample of $v_\pi(s)$. Every-visit MC also uses $G_{t_2}$, but this
@@ -778,15 +776,13 @@
                 unbiased — but at finite sample sizes it overweights states that loop back to
                 themselves.
               </div>
-            </details>
+            
           </li>
           <li>In the importance sampling derivation, the ratio $\rho_{t:T-1}$ only involves
             the <em>actions</em> taken ($\pi(A_k|S_k)/b(A_k|S_k)$), not the transition
             probabilities $p(s'|s,a)$. Why does the state transition probability cancel out?
             What assumption about the environment makes this cancellation valid?
-            <details class="fft-answer">
-              <summary>Answer / hint</summary>
-              <div class="fft-answer-body">
+                          <div class="fft-answer-body">
                 The IS ratio is the ratio of trajectory probabilities under $\pi$ vs. $b$:
                 $$\rho = \frac{\prod_k \pi(A_k|S_k)\,p(S_{k+1}|S_k,A_k)}{\prod_k b(A_k|S_k)\,p(S_{k+1}|S_k,A_k)}$$
                 The transition probability $p(S_{k+1}|S_k,A_k)$ appears identically in numerator
@@ -795,14 +791,12 @@
                 This always holds when both policies interact with a fixed MDP: the environment
                 dynamics are independent of the policy.
               </div>
-            </details>
+            
           </li>
           <li>Suppose the environment has very long episodes — thousands of steps to reach
             a terminal. How does this affect the relative performance of MC vs. DP (assuming
             DP had a model)? What about very short episodes of 2–3 steps?
-            <details class="fft-answer">
-              <summary>Answer / hint</summary>
-              <div class="fft-answer-body">
+                          <div class="fft-answer-body">
                 <strong>Long episodes:</strong> MC suffers badly. Each episode is expensive to
                 collect, and the variance of the return (a sum of T random variables) grows with
                 episode length. Off-policy IS ratios become exponentially extreme over long
@@ -816,7 +810,7 @@
                 manageable. For short tasks (e.g., simple bandit-like decision problems), MC can
                 outperform DP in wall-clock time even when the model is known.
               </div>
-            </details>
+            
           </li>
         </ol>
       </div>
