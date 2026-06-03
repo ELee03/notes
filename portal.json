@@ -7,8 +7,13 @@
           "label": "Analysis",
           "children": [
             {
-              "name": "Calculus &amp; Analysis",
-              "desc": "Single and multivariable calculus, then real analysis — epsilon-delta, metric spaces, measure theory — and complex analysis with contour integration and residues.",
+              "name": "Calculus &amp; Real Analysis",
+              "desc": "Single and multivariable calculus through real analysis — epsilon-delta, metric spaces, measure theory, and Lebesgue integration.",
+              "planned": true
+            },
+            {
+              "name": "Complex Analysis",
+              "desc": "The complex plane, holomorphic functions, Cauchy's theorem, contour integration, residues, conformal maps, and analytic continuation.",
               "planned": true
             },
             {
