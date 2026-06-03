@@ -331,26 +331,6 @@
     "title": "Principles of Neural Science",
     "authors": [
       "Eric R. Kandel",
-      "James H. Schwartz",
-      "Thomas M. Jessell",
-      "Steven A. Siegelbaum",
-      "A. J. Hudspeth"
-    ],
-    "edition": "5th",
-    "publisher": "McGraw-Hill",
-    "year": 2013,
-    "clusters": [
-      "neuroscience",
-      "bioelectricity"
-    ],
-    "annotation": "The authoritative neuroscience reference. Comprehensive coverage from ion channels and synaptic transmission to motor systems, cognition, and disorders.",
-    "source": "SchoolStuff:Textbooks/neuroscience/Kandel et al - Principles of Neural Science (5th ed, 2013).pdf"
-  },
-  {
-    "id": "kandel-neuroscience-6th",
-    "title": "Principles of Neural Science",
-    "authors": [
-      "Eric R. Kandel",
       "John D. Koester",
       "Sarah H. Mack",
       "Steven A. Siegelbaum"
@@ -362,7 +342,7 @@
       "neuroscience",
       "bioelectricity"
     ],
-    "annotation": "The 6th edition — updated coverage of neural circuits, synaptic mechanisms, perception, movement, cognition, and neurological disorders. Supersedes the 5th for most purposes; 5th retained for reference.",
+    "annotation": "The authoritative neuroscience reference. Comprehensive coverage from ion channels and synaptic transmission to motor systems, cognition, and neurological disorders.",
     "source": "SchoolStuff:Textbooks/neuroscience/Kandel et al - Principles of Neural Science (6th ed, 2021).pdf"
   },
   {

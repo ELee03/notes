@@ -57,7 +57,7 @@ _For reference: clusters that already have at least one book in `data/books.yaml
 - `nonlinear-control` — Nonlinear Control (`khalil-nonlinear`, `slotine-li-nonlinear`)
 - `signals` — Signals & Systems (`oppenheim-signals`, `lathi-signals`)
 - `circuits` — Circuit Theory (`horowitz-aoe`, `sadiku-circuits`, `sedra-smith`)
-- `bioelectricity` — Bioelectricity (`khoo-physio-control`, `kandel-neuroscience`, `kandel-neuroscience-6th`, `he-neural-engineering`)
+- `bioelectricity` — Bioelectricity (`khoo-physio-control`, `kandel-neuroscience`, `he-neural-engineering`)
 - `analog` — Analog & Semiconductor (`horowitz-aoe`, `sedra-smith`, `carusone-analog-ic`)
 - `embedded` — Embedded Systems (`white-mes`, `yiu-arm`, `barr-massa`, `horowitz-aoe`, `ott-emc`)
 
@@ -74,6 +74,6 @@ _For reference: clusters that already have at least one book in `data/books.yaml
 ### Life Sciences
 - `chemistry` — Chemistry (`mcgee-food`)
 - `biochemistry` — Biochemistry & Molecular Biology (`mcgee-food`)
-- `neuroscience` — Neuroscience (`kandel-neuroscience`, `kandel-neuroscience-6th`, `bear-neuroscience`, `buzsaki-rhythms`)
+- `neuroscience` — Neuroscience (`kandel-neuroscience`, `bear-neuroscience`, `buzsaki-rhythms`)
 - `food-science` — Food Science (`mcgee-food`)
 
