@@ -196,7 +196,7 @@
               "name": "Embedded Systems",
               "href": "embedded/index.html",
               "desc": "MCU architecture, communication protocols (UART, SPI, I2C, CAN), PCB layout, and firmware patterns.",
-              "lessons": 19
+              "lessons": 21
             }
           ]
         },
@@ -354,7 +354,7 @@
               "name": "Neuroscience",
               "href": "neuroscience/index.html",
               "desc": "Neural circuits, synaptic transmission, sensory processing, memory, sleep, and the computational brain — from the action potential to the neural correlates of consciousness.",
-              "lessons": 15
+              "lessons": 18
             },
             {
               "name": "Cognitive Science",

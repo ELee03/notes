@@ -43,6 +43,13 @@
         {"href": "power-thermal.html", "text": "18 · Power &amp; Thermal",    "topics": "Buck/boost hot loop · PDN target impedance · capacitor cascade · thermal resistance model T_J = T_A + P_D × θ_JA · exposed pad via array"},
         {"href": "high-speed-rf.html", "text": "19 · High-Speed &amp; RF",   "topics": "Transmission lines · λ/10 threshold · microstrip/stripline Z₀ · differential pair length matching · USB layout · PCB antenna · matching network"}
       ]
+    },
+    {
+      "label": "Tooling &amp; Deployment",
+      "items": [
+        {"href": "build-systems.html", "text": "20 · Build Systems &amp; Toolchains", "topics": "arm-none-eabi-gcc flags · Makefile anatomy · linker scripts (MEMORY/SECTIONS) · startup file · CMake for embedded · CMSIS structure · objcopy/nm/size · firmware CI"},
+        {"href": "bootloaders.html",   "text": "21 · Bootloaders &amp; Firmware Update", "topics": "Boot sequence · flash partitioning (single-slot / dual-slot A/B) · VTOR relocation · jump-to-app · IAP flash write · OTA update · CRC and ECDSA verification · rollback protection · Gecko Bootloader · secure boot"}
+      ]
     }
   ]
 }

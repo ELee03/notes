@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bootloaders &amp; Firmware Update — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="embedded" data-current="bootloaders.html"></div>
+      <hr class="sidebar-rule">
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#boot-sequence" class="nav-item">Boot sequence</a>
+        <a href="#flash-layout" class="nav-item">Flash layout</a>
+        <a href="#jump-to-app" class="nav-item">Jump to application</a>
+        <a href="#iap" class="nav-item">In-application programming</a>
+        <a href="#ota" class="nav-item">OTA update (BLE/UART)</a>
+        <a href="#verify-secure" class="nav-item">Verification &amp; security</a>
+        <a href="#gecko" class="nav-item">Gecko Bootloader</a>
+        <a href="#examples" class="nav-item">Worked examples</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="breadcrumb-sep">›</span>
+        <a href="index.html">Embedded Systems</a>
+        <span class="breadcrumb-sep">›</span>
+        Lesson 21
+      </div>
+
+      <h1 class="lesson-title">Bootloaders &amp; Firmware Update</h1>
+      <div class="lesson-meta">Boot Sequence · Flash Partitioning · VTOR Relocation · IAP · OTA Update · CRC Verification · Gecko Bootloader · Secure Boot</div>
+
+      <div class="prose">
+        <p>Once a product leaves the factory, you almost always need to update its firmware — to fix bugs, add features, or patch security vulnerabilities. A bootloader is the small piece of code that runs before your application and enables this. Every deployed embedded system that doesn't have a bootloader is either using a vendor ROM bootloader or is permanently fixed at its factory firmware version. This lesson covers how bootloaders work mechanically, how to design flash layouts for reliable updates, and how production-grade bootloaders (like Silicon Labs Gecko) handle security and resilience.</p>
+      </div>
+
+      <!-- === BOOT SEQUENCE === -->
+      <div class="section-head" id="boot-sequence">The Boot Sequence</div>
+
+      <div class="prose">
+        <p>On power-on or hardware reset, a Cortex-M processor does the following:</p>
+        <ol>
+          <li>Fetches the initial stack pointer value from address <code>0x00000000</code> (or wherever the VTOR points — more on this below) and loads it into the MSP register.</li>
+          <li>Fetches the reset handler address from address <code>0x00000004</code>.</li>
+          <li>Branches to that reset handler.</li>
+        </ol>
+
+        <p>The system ROM (masked in silicon, read-only) is present on most MCUs. It contains:</p>
+        <ul>
+          <li><strong>ROM bootloader</strong>: a factory-programmed bootloader that can program flash over UART, USB, or I2C if a specific boot pin is held low at reset. This is the mechanism used for initial factory programming or recovery. It cannot be updated.</li>
+          <li><strong>Chip configuration</strong>: flash read-back protection settings, secure boot configuration (on devices with TrustZone).</li>
+        </ul>
+
+        <p>The typical three-stage sequence in a product with a custom bootloader:</p>
+
+        <div class="callout">
+          <strong>Three-stage boot sequence:</strong>
+          <ol style="margin:8px 0 0 0;">
+            <li><strong>ROM bootloader</strong> (if boot pin triggered): recovers brick condition via serial port; exits automatically if boot pin not held.</li>
+            <li><strong>Application bootloader</strong> (your code, at flash base): validates the application image; decides whether to apply a pending update; jumps to the application.</li>
+            <li><strong>Application</strong>: your main firmware, starting from its offset in flash.</li>
+          </ol>
+        </div>
+
+        <p>In normal operation (no update pending, image valid), the bootloader adds only microseconds to startup — it quickly validates the application CRC and jumps. Only when an update is available does it pause, write the new image, and then jump.</p>
+      </div>
+
+      <!-- === FLASH LAYOUT === -->
+      <div class="section-head" id="flash-layout">Flash Memory Layout</div>
+
+      <div class="prose">
+        <p>The flash is divided into regions. The exact partition depends on the MCU's flash page size (the granularity at which flash can be erased — typically 2–8 KB on modern MCUs) and whether OTA update requires storing two complete images simultaneously.</p>
+
+        <p><strong>Single-slot layout</strong> (simplest; cannot receive OTA while running):</p>
+        <div class="code-block"><pre>
+0x00000000  ┌────────────────────────┐
+            │   Bootloader           │  ~32 KB
+0x00008000  ├────────────────────────┤
+            │   Application          │  e.g. 900 KB
+0x000E8000  ├────────────────────────┤
+            │   Non-volatile storage │  e.g. 64 KB (NVM3/settings)
+0x000F0000  ├────────────────────────┤
+            │   Bootloader token /   │  e.g. 64 KB
+            │   staging slot         │
+0x00100000  └────────────────────────┘  (1 MB total)</pre></div>
+
+        <p>In single-slot, a UART/USB cable downloads a new image to the staging slot. At next reset, the bootloader copies it to the application slot (erasing it first), verifies the CRC, and jumps.</p>
+
+        <p><strong>Dual-slot (A/B) layout</strong> (supports OTA while running; used by Gecko Bootloader, Android, embedded Linux):</p>
+        <div class="code-block"><pre>
+0x00000000  ┌────────────────────────┐
+            │   Bootloader           │  32 KB
+0x00008000  ├────────────────────────┤
+            │   Slot A (active)      │  ~450 KB
+0x00080000  ├────────────────────────┤
+            │   Slot B (update)      │  ~450 KB
+0x000F8000  ├────────────────────────┤
+            │   NVM / tokens         │  32 KB
+0x00100000  └────────────────────────┘</pre></div>
+
+        <p>The running firmware writes the new image to Slot B while operating normally. When the download completes and CRC passes, the application sets a "swap request" flag in a bootloader token area and resets. The bootloader sees the swap request, validates Slot B, and either activates Slot B by updating the active-slot pointer, or physically copies Slot B → Slot A (slower but simpler, no runtime slot selection).</p>
+
+        <p><strong>Erase-before-write</strong>: Flash on Cortex-M MCUs must be erased (set to all 1s) before you can write (clear bits from 1 to 0). Erase is page-granular. You cannot partially overwrite a page — you must erase the whole page and rewrite. This means writing a new image requires erasing each flash page in the target slot before writing. If power is lost mid-write, the page is in an inconsistent state — hence the importance of slot isolation and CRC checking.</p>
+      </div>
+
+      <!-- === JUMP TO APP === -->
+      <div class="section-head" id="jump-to-app">Jumping to the Application</div>
+
+      <div class="prose">
+        <p>The bootloader code to transfer control to the application is architecturally specific. On Cortex-M, the procedure is:</p>
+
+        <div class="code-block"><pre>
+#define APP_START_ADDRESS  0x00008000U   /* Start of application slot in flash */
+
+typedef void (*FuncPtr)(void);
+
+void bootloader_jump_to_app(void)
+{
+    /* 1. Sanity check: verify the SP value looks like a valid SRAM address */
+    uint32_t app_sp  = *(volatile uint32_t *)(APP_START_ADDRESS + 0);
+    uint32_t app_rst = *(volatile uint32_t *)(APP_START_ADDRESS + 4);
+
+    if ((app_sp & 0xFF000000) != 0x20000000)   /* SP must be in SRAM range */
+        return;   /* Don't jump — image looks invalid */
+
+    /* 2. Disable all interrupts and clear pending flags */
+    __disable_irq();
+    for (int i = 0; i &lt; 8; i++) {
+        NVIC->ICER[i] = 0xFFFFFFFF;    /* Disable all external interrupts */
+        NVIC->ICPR[i] = 0xFFFFFFFF;    /* Clear any pending */
+    }
+
+    /* 3. Relocate Vector Table Offset Register to application's vector table */
+    SCB->VTOR = APP_START_ADDRESS;
+    __DSB();   /* Data Synchronization Barrier — ensure VTOR write completes */
+    __ISB();   /* Instruction Synchronization Barrier — flush pipeline */
+
+    /* 4. Set main stack pointer to application's initial SP */
+    __set_MSP(app_sp);
+
+    /* 5. Jump to application's Reset_Handler */
+    FuncPtr reset_handler = (FuncPtr)app_rst;
+    reset_handler();   /* Does not return */
+}</pre></div>
+
+        <p><strong>VTOR (Vector Table Offset Register)</strong> at <code>SCB->VTOR</code> tells the processor where the vector table is in memory. On reset, VTOR = 0x00000000 (bootloader's vector table). Before jumping to the application, the bootloader updates VTOR to the application's flash base. Without this, any interrupt in the application would dispatch to the bootloader's handlers (at the wrong addresses), causing a fault.</p>
+
+        <p>The jump is effectively: set SP, set VTOR, call the application's reset handler. The application's startup code runs normally — it doesn't know a bootloader was involved, because the memory state (SP, VTOR) is correctly configured before the jump.</p>
+
+        <p><strong>Clean peripheral state:</strong> Before jumping, the bootloader should also reset or de-initialize any peripherals it configured (UART, timers, DMA). If the bootloader left UART0 enabled with its baud rate, and the application tries to initialize it differently, there may be a conflict. The safest approach: reinitialize all peripherals in the application's startup rather than relying on bootloader state.</p>
+      </div>
+
+      <!-- === IAP === -->
+      <div class="section-head" id="iap">In-Application Programming</div>
+
+      <div class="prose">
+        <p><strong>In-Application Programming (IAP)</strong> means writing to flash from running application code — necessary for the application to download an OTA image into the update slot, or to write non-volatile configuration data.</p>
+
+        <p>Flash write on the EFR32 (using CMSIS MSC — Memory System Controller):</p>
+
+        <div class="code-block"><pre>
+#include "em_msc.h"   /* Silicon Labs flash driver */
+
+#define STAGING_BASE  0x000F0000U
+#define PAGE_SIZE     2048U           /* EFR32 flash page = 2 KB */
+
+bool flash_write_image(uint32_t dest_addr, const uint8_t *data, uint32_t len)
+{
+    MSC_Init();   /* Enable flash write access, set wait states */
+
+    /* Write must be page-aligned. Erase first, then write. */
+    for (uint32_t offset = 0; offset &lt; len; offset += PAGE_SIZE) {
+        uint32_t page_addr = dest_addr + offset;
+
+        /* Erase page */
+        MSC_Status_TypeDef status = MSC_ErasePage((uint32_t *)page_addr);
+        if (status != mscReturnOk) {
+            MSC_Deinit();
+            return false;
+        }
+
+        /* Write up to PAGE_SIZE bytes */
+        uint32_t write_len = (len - offset > PAGE_SIZE) ? PAGE_SIZE : (len - offset);
+        status = MSC_WriteWord((uint32_t *)page_addr,
+                               data + offset,
+                               write_len);
+        if (status != mscReturnOk) {
+            MSC_Deinit();
+            return false;
+        }
+    }
+
+    MSC_Deinit();
+    return true;
+}
+
+/* CRC-32 check on written data */
+bool flash_verify(uint32_t addr, uint32_t len, uint32_t expected_crc)
+{
+    uint32_t crc = compute_crc32((const uint8_t *)addr, len);
+    return (crc == expected_crc);
+}</pre></div>
+
+        <p>Critical rules for IAP:</p>
+        <ul>
+          <li><strong>Never erase the page you are currently executing from.</strong> If your flash write routine is in the same page as the code being replaced, you will corrupt it. Either: (1) ensure the write routine lives in a separate flash page that is never erased during IAP, or (2) copy the write routine into SRAM and execute from there (<code>__attribute__((section(".ramfunc")))</code>).</li>
+          <li><strong>Disable interrupts during flash erase/write.</strong> Flash operations can have unpredictable latency; interrupt handlers that execute during a flash write may read garbage from the instruction cache. On EFR32, MSC_ErasePage automatically handles this, but on raw CMSIS you must manage it.</li>
+          <li><strong>Always verify after writing.</strong> CRC the written data before setting the "update ready" flag. A power outage during write leaves a corrupt image; the CRC check catches this.</li>
+        </ul>
+      </div>
+
+      <!-- === OTA === -->
+      <div class="section-head" id="ota">Over-the-Air (OTA) Firmware Update</div>
+
+      <div class="prose">
+        <p>OTA update means the firmware image arrives wirelessly — typically over BLE, Wi-Fi, or Zigbee — rather than via a wired programming interface. The application runs the entire time the update is downloading. Key design requirements:</p>
+
+        <ul>
+          <li><strong>Dual-slot storage</strong>: The running application writes incoming image data to a staging slot or Slot B while continuing to operate normally. The active application slot must not be touched until the download completes and is verified.</li>
+          <li><strong>Resumable transfer</strong>: BLE connections drop; devices move out of range. The OTA image transfer protocol must support resumption — track which 4 KB blocks have been received (using a bitmask in SRAM or NVM) and request missing blocks.</li>
+          <li><strong>Cryptographic verification</strong>: Before the bootloader installs an OTA image, it must verify it is authentic and unmodified. Minimum: CRC-32. Better: HMAC-SHA256. Best: ECDSA signature over the SHA-256 hash of the image, verified against a manufacturer's public key stored in the bootloader's read-only flash region. An attacker who can push arbitrary unsigned firmware over BLE owns the device.</li>
+          <li><strong>Rollback protection</strong>: If the new firmware crashes on first boot (fails a "boot ok" health check), the bootloader must revert to the previous image. Implementation: the application sets a "boot confirmed" flag in NVM on first successful startup. If the bootloader doesn't see this flag on the next reset, it rolls back.</li>
+        </ul>
+
+        <p><strong>BLE OTA with Gecko Bootloader:</strong> Silicon Labs EFR32 devices typically use the Application Bootloader + Gecko Bootloader plugin system. The application runs a custom BLE GATT service (Silicon Labs OTA GATT Service) that accepts firmware chunks as GATT write requests. Each chunk is written to the staging slot. When the application signals completion, it resets; Gecko Bootloader takes over and applies the update.</p>
+
+        <p><strong>UART DFU (Device Firmware Update):</strong> For wired update without a debug probe, a UART DFU protocol (typically based on XMODEM or a proprietary protocol) allows a host PC to flash firmware over UART. The bootloader implements the UART receive side; the application triggers entry to DFU mode by checking a magic byte in backup SRAM or a GPIO at boot.</p>
+
+        <p><strong>Entering bootloader mode from application:</strong> The application can request bootloader entry on next reset by writing a magic value to a backup register (BURAM on EFR32) that survives software reset, then calling <code>NVIC_SystemReset()</code>. The bootloader reads this magic value on startup and enters DFU mode instead of jumping to the application.</p>
+
+        <div class="code-block"><pre>
+/* Application: request DFU on next reset */
+#define BOOTLOADER_MAGIC  0xDEADBEEF
+
+void request_firmware_update(void)
+{
+    /* Write magic to backup RAM that survives reset */
+    BURAM->RET[0].REG = BOOTLOADER_MAGIC;
+    NVIC_SystemReset();
+}
+
+/* Bootloader: check magic on startup */
+void bootloader_check_update_request(void)
+{
+    if (BURAM->RET[0].REG == BOOTLOADER_MAGIC) {
+        BURAM->RET[0].REG = 0;       /* Clear so we don't loop */
+        enter_uart_dfu_mode();       /* Stay in bootloader */
+    }
+    /* Otherwise proceed to validate and jump to app */
+}</pre></div>
+      </div>
+
+      <!-- === VERIFICATION AND SECURITY === -->
+      <div class="section-head" id="verify-secure">Image Verification and Security</div>
+
+      <div class="prose">
+        <p>Image verification prevents corrupted firmware from being installed. At minimum, every firmware image should carry a CRC-32 or SHA-256 hash appended to it, verified by the bootloader before installation and on every boot.</p>
+
+        <p>The image header (at the application's flash base, before the vector table or in a reserved header region before it) typically contains:</p>
+
+        <div class="code-block"><pre>
+typedef struct {
+    uint32_t magic;           /* 0xBEEFCAFE — sanity check */
+    uint32_t version;         /* Firmware version (for rollback protection) */
+    uint32_t length;          /* Image length in bytes (not including this header) */
+    uint32_t crc32;           /* CRC-32 of the image data */
+    uint8_t  sha256[32];      /* SHA-256 of image (if signature verification used) */
+    uint8_t  ecdsa_sig[64];   /* ECDSA-P256 signature over sha256 field */
+} FirmwareHeader_t;</pre></div>
+
+        <p><strong>Secure boot</strong> means the bootloader verifies the application was signed by the manufacturer before executing it. Chain of trust:</p>
+        <ol>
+          <li>The silicon vendor programs a <strong>root of trust</strong> into the device at manufacture — typically a hash of the customer's public key, stored in write-once OTP flash.</li>
+          <li>The bootloader binary itself is signed by the customer's signing key. The ROM verifies the bootloader signature before executing it (on TrustZone devices).</li>
+          <li>The bootloader verifies the application signature against the public key (stored in the bootloader or OTP). Only a binary signed with the customer's private key passes.</li>
+        </ol>
+
+        <p>On EFR32xG21+ (Cortex-M33 with TrustZone), this is implemented via the <strong>Secure Element (SE)</strong> — a hardware security module on-chip. The SE manages keys, performs hardware-accelerated cryptography, and enforces the boot chain verification. The SE is separate from the main CPU and cannot be bypassed by software.</p>
+
+        <p><strong>Anti-rollback</strong>: An attacker who can downgrade firmware to a version with a known vulnerability can bypass security patches. Implement monotonic version counters: store the minimum allowed firmware version in OTP or SE; reject any update with a version number lower than the stored minimum. Gecko Bootloader supports this via the SE.</p>
+
+        <p><strong>Flash readback protection</strong>: Debug interfaces (SWD/JTAG) can read flash and extract firmware. On EFR32, set the Debug Lock in the SE to prevent readback and debug access on production devices. This prevents reverse engineering but also means your debugger won't work on production units — manage this with provisioning scripts.</p>
+      </div>
+
+      <!-- === GECKO BOOTLOADER === -->
+      <div class="section-head" id="gecko">Gecko Bootloader</div>
+
+      <div class="prose">
+        <p>Silicon Labs provides the <strong>Gecko Bootloader</strong> (part of GSDK) as a production-ready bootloader framework for EFR32 devices. It handles the full lifecycle: UART/USB/BLE/OTA update, cryptographic verification, dual-slot or single-slot update, and secure boot via the SE.</p>
+
+        <p>Key concepts:</p>
+        <ul>
+          <li><strong>Main bootloader + first-stage bootloader</strong>: The Gecko Bootloader is split into a small first-stage bootloader (at flash base, ~16 KB) and the main bootloader (configurable, ~32 KB). The first stage can recover a bricked main bootloader.</li>
+          <li><strong>Plugin architecture</strong>: Drivers for different update transports (UART XMODEM, BLE OTA, Ethernet) are plugins that you include at compile time. This keeps the bootloader small for the transports you don't use.</li>
+          <li><strong>GBL (Gecko Bootloader) image format</strong>: Update images are packaged as <code>.gbl</code> files (a container with parsed tags: application binary, bootloader binary, SE firmware upgrade, configuration tokens). The Simplicity Commander tool creates <code>.gbl</code> files from <code>.s37</code>/<code>.hex</code> application binaries.</li>
+          <li><strong>AppLoader (for BLE stack)</strong>: Supports upgrading the BLE stack (stored in flash) separately from the application, without replacing the bootloader.</li>
+        </ul>
+
+        <p>Flash layout with Gecko Bootloader (EFR32MG12, 1 MB flash):</p>
+        <div class="code-block"><pre>
+0x00000000  First stage bootloader   (16 KB)
+0x00004000  Main bootloader          (16 KB)
+0x00008000  Application              (~936 KB)
+0x000F0000  Bootloader storage area  (64 KB — staging slot for incoming .gbl)
+0x00100000  End of flash</pre></div>
+
+        <p>Workflow for releasing an OTA update:</p>
+        <ol>
+          <li>Build new application firmware (<code>firmware_v2.hex</code>).</li>
+          <li>Create signed GBL file: <code>commander gbl create firmware_v2.gbl --app firmware_v2.hex --sign signing_key.pem</code></li>
+          <li>Upload <code>firmware_v2.gbl</code> to OTA server or distribute via UART DFU script.</li>
+          <li>Device downloads GBL to storage area, validates signature, signals bootloader.</li>
+          <li>Bootloader installs application from storage area into application slot, verifies CRC, jumps.</li>
+        </ol>
+      </div>
+
+      <!-- === WORKED EXAMPLES === -->
+      <div class="section-head" id="examples">Worked Examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Device boots but application immediately hard-faults after bootloader jump</strong></div>
+        <div class="example-problem">A new bootloader is deployed. After the bootloader jumps to the application, the application immediately enters a HardFault. The same application works when programmed directly (no bootloader) and the debugger confirms the jump is reaching the application's Reset_Handler. What are the most likely causes?</div>
+        <div class="example-body">
+          <p>The most common causes when application works without bootloader but faults with it:</p>
+          <ol>
+            <li><strong>VTOR not updated.</strong> If the bootloader did not update <code>SCB->VTOR</code> to the application's flash base before jumping, then all interrupts (including SysTick, which CMSIS/FreeRTOS enables during startup) will dispatch to the bootloader's vector table — to addresses that may not contain valid handlers. This causes an immediate HardFault on the first interrupt. Fix: set <code>SCB->VTOR = APP_START_ADDRESS</code> in the bootloader before jumping.</li>
+            <li><strong>Peripheral state conflict.</strong> The bootloader enabled UART0 with its own configuration. The application's CMSIS HAL tries to re-initialize UART0 and conflicts. Fix: de-initialize all peripherals in the bootloader before jumping, or reset all peripheral registers explicitly in the application startup.</li>
+            <li><strong>SysTick running.</strong> If the bootloader started SysTick (for a timeout counter), SysTick interrupts will fire after the jump. Until the application updates VTOR, these go to the bootloader's SysTick handler (invalid after jump). Fix: disable SysTick in the bootloader (<code>SysTick->CTRL = 0</code>) before jumping.</li>
+            <li><strong>Clock state mismatch.</strong> The bootloader runs at a different clock configuration than the application expects. If the application assumes 38.4 MHz but the bootloader left the MCU at 19 MHz, peripheral timing calculations are wrong. Fix: call the application's <code>SystemInit()</code> (or run it as the first thing in the app's Reset_Handler, which CMSIS does by default).</li>
+          </ol>
+          <p>Diagnosis: read CFSR/HFSR registers at the fault (see Debugging lesson). A <code>PRECISERR</code> bus fault points to a peripheral access at wrong clock. An <code>INVPC</code> usage fault points to loading an invalid PC value — usually a wrong vector table. An <code>IACCVIOL</code> MPU fault is less likely without MPU configured.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Implementing a reliable "rollback on first-boot-fail" mechanism</strong></div>
+        <div class="example-problem">Design a rollback mechanism where: if the new firmware crashes within 30 seconds of first boot (before the application can confirm it is healthy), the bootloader rolls back to the previous version. The MCU has no hardware watchdog capable of this directly.</div>
+        <div class="example-body">
+          <p>Use a boot counter in non-volatile storage (NVM or a backup register that survives software reset but not power-cycle):</p>
+          <ol>
+            <li><strong>Bootloader side:</strong> Before jumping to the new application for the first time, write <code>boot_attempt_count = 1</code> to NVM. Jump to application.</li>
+            <li><strong>Application side:</strong> At startup, read <code>boot_attempt_count</code>. If it is &gt;0 (meaning we haven't confirmed this boot yet), start a 30-second software timer using SysTick or a hardware timer.</li>
+            <li><strong>Health check:</strong> Once the application has confirmed it is working correctly (all peripherals initialized, communication link up, any required self-test passed), it calls <code>bootloader_confirm_boot()</code> which writes <code>boot_attempt_count = 0</code> to NVM and clears the timer.</li>
+            <li><strong>Crash path:</strong> If the application crashes (hard fault) or the 30-second timer expires without confirmation, the watchdog (or a software reset triggered by the timer callback) resets the MCU.</li>
+            <li><strong>Bootloader on next reset:</strong> Reads <code>boot_attempt_count = 1</code> (it was not cleared). Increments to 2. If count ≥ MAX_BOOT_ATTEMPTS (e.g., 3), the bootloader marks Slot B as invalid and restores Slot A (the previous image).</li>
+          </ol>
+          <p>This requires a software watchdog (timer that resets if not pet) in the application, but not hardware watchdog support in the bootloader. The key invariant: <code>boot_attempt_count &gt; 0</code> in NVM signals an unconfirmed boot; the bootloader acts on this at next reset.</p>
+          <p>Important: the NVM location used for <code>boot_attempt_count</code> must be in a region that is not erased during firmware update — it needs to persist across the update and the first boot of the new firmware. Reserve a dedicated page for bootloader tokens, separate from application NVM.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Flash layout calculation for dual-slot OTA on 512 KB device</strong></div>
+        <div class="example-problem">Design a dual-slot flash layout for an EFR32 device with 512 KB flash and 2 KB page size. The bootloader needs 32 KB. The NVM3 (non-volatile storage) needs 24 KB. The application is expected to fit in 180 KB at current size but leave room to grow. What layout do you propose, and what is the maximum application size the layout supports?</div>
+        <div class="example-body">
+          <p>Total flash: 512 KB = 256 pages × 2 KB.</p>
+          <p>Reserved: bootloader 32 KB (16 pages) + NVM3 24 KB (12 pages) = 56 KB (28 pages).</p>
+          <p>Available for application slots: 512 - 56 = 456 KB = 228 pages.</p>
+          <p>For dual-slot (A and B must be equal size): 456 / 2 = 228 KB each.</p>
+          <p>Proposed layout:</p>
+          <div class="code-block"><pre>
+0x00000000 – 0x00007FFF  Bootloader        (32 KB, 16 pages)
+0x00008000 – 0x0003FFFF  Slot A (active)   (224 KB, 112 pages)
+0x00040000 – 0x00077FFF  Slot B (update)   (224 KB, 112 pages)
+0x00078000 – 0x0007DFFF  NVM3              (24 KB,  12 pages)
+0x0007E000 – 0x0007FFFF  Bootloader tokens (8 KB,   4 pages)
+                          (boot count, update flags, signed key hash)
+0x00080000               End of 512 KB flash</pre></div>
+          <p>Maximum application size = 224 KB. At current 180 KB, there is 44 KB of headroom for growth.</p>
+          <p>NVM3 and bootloader token areas are placed at the top of flash (highest addresses) so that the application slots can be extended downward if NVM needs shrink in future revisions — just update the linker script and rebuild without physically moving the bootloader.</p>
+          <p>Constraints to verify: (1) Application binary + vector table must fit in 224 KB including all future growth. (2) The bootloader must not use NVM3 during an in-progress OTA write (NVM3 internal wear leveling could overwrite OTA buffer data if they shared flash pages). Keeping them in separate page-aligned regions prevents this.</p>
+        </div>
+      </div>
+
+      <!-- === FOOD FOR THOUGHT === -->
+      <div class="section-head" id="fft">Food for Thought</div>
+
+      <ul class="fft-list">
+        <li class="fft-item">
+          In a dual-slot system, Slot A contains the running firmware. A power failure occurs halfway through copying Slot B → Slot A during an update. What is the resulting state, and how should a robust bootloader handle it?
+          <div class="fft-answer">After partial copy, Slot A is partially overwritten with new data and partially contains old data — it is likely invalid (CRC will fail). Slot B still contains the complete new image (it was not erased during copy). On next power-on, the bootloader finds Slot A CRC fails, but Slot B CRC passes and the update flag is still set. It retries the copy from Slot B. This is why Slot B should not be erased until Slot A has been written and verified successfully. An alternative design "swaps by pointer" — stores an active-slot index in NVM rather than physically copying; this eliminates the partial-copy problem at the cost of adding complexity to the application (it must be linked for two possible start addresses, or XIP from the slot without relocation). The physical copy approach is simpler but requires power-fail recovery logic.</div>
+        </li>
+        <li class="fft-item">
+          Why is a CRC-32 check insufficient for security, even though it reliably detects accidental corruption?
+          <div class="fft-answer">CRC-32 detects accidental corruption — random bit errors, transmission glitches, incomplete writes. It does not detect intentional modification by an attacker. Given the CRC-32 polynomial, an attacker can craft a malicious firmware image with an arbitrary CRC-32 (because CRC is linear and its output can be controlled by choosing the last few bytes of the input). Therefore, an adversary who can intercept the OTA transport can replace the firmware with a malicious binary and compute the correct CRC-32 for it. Authentication requires a cryptographic construction that the attacker cannot forge without knowledge of a secret key — either HMAC-SHA256 (symmetric: shared secret key, simpler but key must be in device) or ECDSA (asymmetric: private key stays with manufacturer, public key in device). ECDSA with a hardware-secure key storage (SE on EFR32xG21) means the signing key never leaves the manufacturer's HSM and cannot be extracted from the device.</div>
+        </li>
+        <li class="fft-item">
+          The VTOR register was introduced with Cortex-M3. Original Cortex-M0 cores do not have VTOR — the vector table is always at address 0x00000000. How did systems without VTOR support multiple boot stages?
+          <div class="fft-answer">Without VTOR, the vector table must always be at address 0x00000000. Systems with ROM/flash remapping hardware could remap a different region to 0x00000000 at runtime (the SYSCFG MEMRMP register on STM32F0, for example, remaps flash or SRAM to 0x00000000). The bootloader occupies the real flash 0x00000000 and does not need VTOR. The application is linked to start above the bootloader (e.g., 0x00003000), but the bootloader — before jumping — writes the application's vector table into a RAM shadow at 0x00000000 by temporarily enabling SRAM remapping, or uses a trampolining approach. Alternatively, some M0 designs accept that the interrupt vectors are always in the bootloader region, and the bootloader's vectors forward all interrupts to the application's handlers via a jump table. This is why VTOR support is such a significant quality-of-life improvement in Cortex-M3 and later.</div>
+        </li>
+      </ul>
+
+      <!-- === PITFALLS === -->
+      <div class="section-head" id="pitfalls">Common Pitfalls</div>
+
+      <div class="prose">
+        <ul>
+          <li><strong>Forgetting to update VTOR before jumping.</strong> The single most common bootloader bug. If VTOR is wrong, the first interrupt after the jump causes a fault. Always: set VTOR, DSB, ISB, set MSP, jump — in that order.</li>
+          <li><strong>Erasing the application slot before verifying the update image.</strong> If you erase Slot A and then discover Slot B's CRC is invalid, you have no valid firmware. Always verify the new image first, then erase and write the destination slot.</li>
+          <li><strong>Not isolating the bootloader token region from application NVM.</strong> If the application's NVM wear-leveling algorithm can overwrite the bootloader's boot-count or update-flag data, you get spurious update-apply events or failed rollback. Allocate a dedicated, page-aligned region for bootloader-only data.</li>
+          <li><strong>Using flash size as the image length.</strong> The CRC should be computed over the actual image content (known from the image header), not the entire slot. Otherwise, unwritten portions of the slot (all 0xFF after erase) are included in the CRC, which changes across erase cycles — the CRC will be wrong after any partial write.</li>
+          <li><strong>Shipping debug-unlocked production devices.</strong> Forgetting to set the Debug Lock means any SWD probe can read out your entire firmware. On EFR32 with SE, use Simplicity Commander to provision the Debug Lock at end-of-line. This is a one-way operation per device.</li>
+        </ul>
+      </div>
+
+      <!-- === CONNECTS TO === -->
+      <div class="section-head" id="connects">Connects To</div>
+      <div class="prose">
+        <ul>
+          <li><strong>Build Systems &amp; Toolchains (L20)</strong>: The linker script controls where the bootloader and application slots live in flash, and the <code>APP_START_ADDRESS</code> constant used in the jump-to-app code must match the application's linker script. The two lessons are tightly coupled.</li>
+          <li><strong>Bare-Metal Patterns (L13)</strong>: The startup file (copy .data, zero .bss, call main) runs in both the bootloader and the application. Each has its own startup file linked to its own vector table position. Understanding startup is prerequisite to understanding why VTOR must be set before jumping.</li>
+          <li><strong>Debugging &amp; Test (L15)</strong>: Debug Lock prevents SWD/JTAG access on production devices. If debugging a bootloader issue, use a pre-production device with Debug Lock disabled, or arrange for a provisioned debug certificate if your SE supports it.</li>
+        </ul>
+      </div>
+
+      <div class="lesson-nav">
+        <a class="lesson-nav-btn" href="build-systems.html">← Lesson 20 · Build Systems &amp; Toolchains</a>
+        <span class="lesson-nav-btn disabled">End of cluster</span>
+      </div>
+
+    </div><!-- .main -->
+  </div><!-- .page-body -->
+</div><!-- .site-wrap -->
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+
+</body>
+</html>

@@ -18,7 +18,7 @@
       "items": [
         { "href": "visual-system.html",        "text": "4 · The Visual System",                   "topics": "Retina · phototransduction · center-surround receptive fields · LGN · V1 simple and complex cells · dorsal and ventral streams" },
         { "href": "auditory-somatosensory.html","text": "5 · Auditory &amp; Somatosensory Systems","topics": "Cochlea · tonotopy · hair cells · auditory pathway · sound localization · mechanoreceptors · dorsal column pathway · spinothalamic tract · pain" },
-        { "href": "chemical-senses.html",      "text": "16 · The Chemical Senses",                "planned": true, "topics": "Olfactory receptor neurons · olfactory bulb · glomeruli · odorant receptor genes · taste receptor cells · five basic tastes · gustatory pathway · flavor integration" }
+        { "href": "chemical-senses.html",      "text": "16 · The Chemical Senses",                "topics": "Olfactory receptor neurons · olfactory bulb · glomeruli · odorant receptor genes · taste receptor cells · five basic tastes · gustatory pathway · flavor integration" }
       ]
     },
     {
@@ -54,8 +54,8 @@
         { "href": "reward-neuromodulation.html","text": "13 · Reward &amp; Neuromodulation",       "topics": "Dopamine reward prediction error · Schultz experiments · mesolimbic pathway · nucleus accumbens · serotonin and mood · noradrenergic system · cholinergic attention system · addiction mechanisms" },
         { "href": "emotion-limbic.html",       "text": "14 · Emotion &amp; the Limbic System",    "topics": "Amygdala circuitry (BLA, CeA) · fear conditioning · LeDoux low-road and high-road · HPA axis and stress · prefrontal regulation · emotional memory · mood disorders" },
         { "href": "language-cognition.html",   "text": "15 · Language &amp; Higher Cognition",    "topics": "Broca and Wernicke areas · arcuate fasciculus · split-brain experiments · hemispheric lateralization · prefrontal cortex and executive function · working memory circuits · attention networks" },
-        { "href": "sex-brain.html",            "text": "17 · Sex and the Brain",                  "planned": true, "topics": "Sexual differentiation of the brain · gonadal hormones · hypothalamic sex differences · sexual orientation · sex differences in cognition · puberty and neuroplasticity" },
-        { "href": "mental-illness.html",       "text": "18 · Mental Illness",                     "planned": true, "topics": "Schizophrenia (dopamine hypothesis) · depression and monoamine theory · bipolar disorder · anxiety disorders · OCD · neurodevelopmental disorders (autism, ADHD) · psychopharmacology" }
+        { "href": "sex-brain.html",            "text": "17 · Sex and the Brain",                  "topics": "Sexual differentiation of the brain · gonadal hormones · hypothalamic sex differences · sexual orientation · sex differences in cognition · puberty and neuroplasticity" },
+        { "href": "mental-illness.html",       "text": "18 · Mental Illness",                     "topics": "Schizophrenia (dopamine hypothesis) · depression and monoamine theory · bipolar disorder · anxiety disorders · OCD · neurodevelopmental disorders (autism, ADHD) · psychopharmacology" }
       ]
     }
   ]

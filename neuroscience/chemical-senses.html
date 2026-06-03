@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Chemical Senses · Neuroscience</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="neuroscience" data-current="chemical-senses.html"></div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="breadcrumb-sep">›</span>
+        <a href="index.html">Neuroscience</a>
+        <span class="breadcrumb-sep">›</span>
+        Lesson 16
+      </div>
+
+      <h1 class="lesson-title">The Chemical Senses</h1>
+      <div class="lesson-meta">Olfaction · Odorant Receptors · Olfactory Bulb · Glomeruli · Taste Receptor Cells · Five Basic Tastes · Gustatory Pathway · Flavour Integration</div>
+
+      <div class="prose">
+        <p>Smell and taste are the chemical senses — they detect molecules rather than photons or pressure waves. Together they generate the rich experience of flavour, but they are anatomically and molecularly distinct systems that only merge at a perceptual level. Olfaction directly accesses some of the oldest cortex in the brain, bypassing the thalamus entirely; taste is thalamo-cortical. Both systems solve the same fundamental problem: how to encode a virtually unlimited molecular universe with a finite set of receptors, and how to extract behaviorally relevant information (nutritious? toxic? friend? food?) from chemical signals.</p>
+      </div>
+
+      <!-- ======= OLFACTION ======= -->
+      <div class="section-head" id="olfaction">Olfactory Receptor Neurons</div>
+
+      <div class="prose">
+        <p>The olfactory epithelium lines the roof of the nasal cavity (about 2–5 cm² in humans). It contains three major cell types: <strong>olfactory receptor neurons (ORNs)</strong>, supporting cells, and basal cells (stem cells that replenish ORNs, which turn over every ~60 days — one of the few sites of ongoing adult neurogenesis in the peripheral nervous system).</p>
+
+        <p>Each ORN is a bipolar neuron. Its apical dendrite extends a knob from which 10–30 cilia project into the mucus layer covering the epithelium. Odorant molecules dissolve in the mucus and bind to <strong>odorant receptor (OR) proteins</strong> embedded in the cilia membrane. The axons of ORNs bundle into the olfactory nerve (cranial nerve I) and project through the cribriform plate of the ethmoid bone directly to the olfactory bulb.</p>
+
+        <p><strong>The olfactory receptor gene family</strong> is by far the largest in the mammalian genome. Humans have ~400 functional OR genes (mice have ~1,000). This discovery — by Linda Buck and Richard Axel in 1991, for which they received the 2004 Nobel Prize in Physiology or Medicine — was revolutionary. Each OR is a seven-transmembrane G-protein-coupled receptor (GPCR). The key organizational principle: <strong>each ORN expresses exactly one type of OR gene</strong> (monoallelic, monogenic expression). This means each ORN is molecularly specialized for a particular chemical tuning profile.</p>
+
+        <p>Most ORs are broadly tuned — they respond to many odorant molecules with varying affinity, and most odorants activate multiple OR types. The identity of a smell is therefore encoded combinatorially across the ensemble of active ORNs, not by a single dedicated receptor. This is why the olfactory system can discriminate an enormous number of odorants (estimates range from 10,000 to >1 trillion) with only ~400 receptor types.</p>
+      </div>
+
+      <div class="section-head" id="signal-transduction">Signal Transduction in ORNs</div>
+
+      <div class="prose">
+        <p>The canonical olfactory transduction cascade involves the G-protein Golf (a specialized Gα subunit). When an odorant binds an OR:</p>
+
+        <ol>
+          <li>Golf is activated → stimulates <strong>adenylyl cyclase III (AC3)</strong> → cAMP rises in the cilia.</li>
+          <li>cAMP directly gates <strong>cyclic nucleotide–gated (CNG) channels</strong>, allowing Na⁺ and Ca²⁺ to enter.</li>
+          <li>The Ca²⁺ influx opens <strong>Ca²⁺-activated Cl⁻ channels (TMEM16B/ANO2)</strong>, causing Cl⁻ to flow out — further depolarizing the cell and amplifying the signal ~10-fold.</li>
+          <li>The depolarization propagates to the axon hillock and generates action potentials whose frequency encodes stimulus intensity.</li>
+        </ol>
+
+        <p>Adaptation (reduced response to sustained stimulation) occurs through Ca²⁺-mediated negative feedback: Ca²⁺ binds calmodulin, which reduces CNG channel sensitivity to cAMP, and activates phosphodiesterase to hydrolyze cAMP. This explains why you stop noticing a smell after prolonged exposure — adaptation happens at the receptor cell level.</p>
+
+        <p>Some odorants — particularly large, hydrophilic molecules — are too polar to diffuse through the mucus unaided. <strong>Odorant-binding proteins (OBPs)</strong>, secreted by supporting cells into the mucus, shuttle these molecules to the receptor cilia. OBPs are thought to help concentrate odorants near receptors and may contribute to selectivity.</p>
+      </div>
+
+      <div class="section-head" id="olfactory-bulb">The Olfactory Bulb and Glomerular Logic</div>
+
+      <div class="prose">
+        <p>The olfactory bulb is the first relay. Its most important feature is the <strong>glomerulus</strong> — a spherical neuropil (~100 µm diameter) where ORN axons form synapses with the dendrites of mitral cells and tufted cells (the output neurons of the bulb) and with periglomerular interneurons. The human olfactory bulb contains ~5,000–6,000 glomeruli.</p>
+
+        <p>The organizing principle is <strong>receptor convergence</strong>: all ORNs expressing the same OR gene project their axons to the same one or two glomeruli on each side of the brain. Because there are ~400 OR genes and ~5,500 glomeruli (roughly 2× per gene, one per hemisphere), each glomerulus receives input from ORNs expressing a single OR type. The glomerulus is therefore a labeled-line for that OR's chemical tuning profile.</p>
+
+        <p>This creates a <strong>spatial odour map</strong> across the surface of the olfactory bulb: different odorants activate different combinations of glomeruli in reproducible, overlapping spatial patterns. The position of active glomeruli does not follow an obvious chemical-space topology like the frequency map of the cochlea, but is reproducible across individuals and species.</p>
+
+        <p>Within the bulb, lateral inhibition through <strong>granule cells</strong> (GABAergic interneurons) sharpens contrast between glomeruli, analogous to lateral inhibition in the retina. Granule cells receive input from mitral cells and inhibit neighbouring mitral cells, suppressing responses to weak or spatially overlapping inputs. This recurrent inhibition also shapes temporal firing patterns and may contribute to odour discrimination.</p>
+
+        <p>Mitral and tufted cells send their axons through the <strong>lateral olfactory tract (LOT)</strong> to several higher areas, most importantly:</p>
+        <ul>
+          <li><strong>Piriform cortex</strong> (primary olfactory cortex): a paleocortex (3-layered) in the temporal lobe. Receives dense direct input from the bulb; involved in odour identification and discrimination. Notably, there is no topographic map here — piriform cortex uses a distributed ensemble code, not a spatial one.</li>
+          <li><strong>Entorhinal cortex</strong> → hippocampus: the pathway for olfactory memory (Proust's madeleine).</li>
+          <li><strong>Amygdala</strong>: direct pathway for olfactory emotional and fear associations.</li>
+          <li><strong>Orbitofrontal cortex (OFC)</strong>: where olfactory identity and hedonic value are consciously experienced; also where olfactory and taste inputs converge to generate flavour perception.</li>
+        </ul>
+
+        <p>Crucially, olfaction is the only sense with a <strong>direct cortical projection that bypasses the thalamus</strong>. All other modalities relay through thalamic nuclei. This ancient direct pathway reflects the primordial importance of chemical sensing in vertebrate evolution.</p>
+      </div>
+
+      <div class="section-head" id="taste">Taste Receptor Cells and the Five Basic Tastes</div>
+
+      <div class="prose">
+        <p>Taste (gustation) detects dissolved chemicals in the mouth. The sensory organs are <strong>taste buds</strong> — onion-shaped clusters of ~50–100 <strong>taste receptor cells (TRCs)</strong> embedded in the tongue epithelium (and to a lesser extent, palate, epiglottis, and upper oesophagus). Taste buds sit in papillae: fungiform papillae (scattered across the anterior tongue), foliate papillae (lateral folds), and circumvallate papillae (large bumps at the posterior tongue). Filiform papillae (the rough ones giving the tongue its texture) have no taste function.</p>
+
+        <p>TRCs are not neurons — they are modified epithelial cells. They turn over every ~10 days. Each TRC extends microvilli into the taste pore, where they contact the saliva film. TRCs make synaptic contacts onto afferent nerve fibres (from cranial nerves VII, IX, and X).</p>
+
+        <p>There are five recognized basic tastes, each with a distinct receptor mechanism:</p>
+
+        <div class="callout">
+          <strong>Five basic tastes and their receptor mechanisms:</strong>
+          <table style="width:100%;border-collapse:collapse;margin-top:12px;font-size:0.92em;">
+            <thead>
+              <tr style="border-bottom:2px solid #7ab8d4;">
+                <th style="text-align:left;padding:6px 10px;">Taste</th>
+                <th style="text-align:left;padding:6px 10px;">Stimulus</th>
+                <th style="text-align:left;padding:6px 10px;">Receptor</th>
+                <th style="text-align:left;padding:6px 10px;">Mechanism</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom:1px solid #ddd;">
+                <td style="padding:6px 10px;"><strong>Sweet</strong></td>
+                <td style="padding:6px 10px;">Sugars, saccharin, aspartame</td>
+                <td style="padding:6px 10px;">T1R2 + T1R3 (heterodimer)</td>
+                <td style="padding:6px 10px;">GPCR → cAMP → PKA → TRPM5</td>
+              </tr>
+              <tr style="border-bottom:1px solid #ddd;">
+                <td style="padding:6px 10px;"><strong>Umami</strong></td>
+                <td style="padding:6px 10px;">L-glutamate, IMP, GMP</td>
+                <td style="padding:6px 10px;">T1R1 + T1R3 (heterodimer)</td>
+                <td style="padding:6px 10px;">GPCR → IP3 → Ca²⁺ → TRPM5</td>
+              </tr>
+              <tr style="border-bottom:1px solid #ddd;">
+                <td style="padding:6px 10px;"><strong>Bitter</strong></td>
+                <td style="padding:6px 10px;">Alkaloids, toxins, quinine</td>
+                <td style="padding:6px 10px;">T2R family (~25 GPCRs)</td>
+                <td style="padding:6px 10px;">GPCR (Gα gustducin) → PLC → IP3 → Ca²⁺ → TRPM5</td>
+              </tr>
+              <tr style="border-bottom:1px solid #ddd;">
+                <td style="padding:6px 10px;"><strong>Salty</strong></td>
+                <td style="padding:6px 10px;">NaCl (Na⁺ ions)</td>
+                <td style="padding:6px 10px;">ENaC (epithelial Na⁺ channel)</td>
+                <td style="padding:6px 10px;">Na⁺ flows directly through channel → depolarization</td>
+              </tr>
+              <tr>
+                <td style="padding:6px 10px;"><strong>Sour</strong></td>
+                <td style="padding:6px 10px;">Acids (H⁺ ions)</td>
+                <td style="padding:6px 10px;">OTOP1 (proton channel)</td>
+                <td style="padding:6px 10px;">H⁺ enters directly → depolarization (also inhibits K⁺ channels)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>The <strong>T1R and T2R families</strong> (type II TRCs) signal through a shared cascade: the G-protein alpha subunit gustducin activates phospholipase C (PLCβ2), generating IP3 and diacylglycerol. IP3 releases Ca²⁺ from ER stores, and rising Ca²⁺ (along with membrane depolarization) opens the cation channel <strong>TRPM5</strong>. TRPM5 depolarization triggers ATP release through pannexin 1 hemichannels. This extracellular ATP then activates purinergic P2X receptors on afferent nerve fibres — type II TRCs do not make conventional synapses; they use this paracrine ATP mechanism.</p>
+
+        <p><strong>Type III TRCs</strong> (sour-responsive cells expressing OTOP1) do form conventional synapses with afferent fibres. They also express serotonin, CGRP, and norepinephrine, and may serve as integrators of the taste bud microenvironment.</p>
+
+        <p><strong>Taste cell specificity:</strong> Each TRC expresses receptors for only one taste quality (T1R2+T1R3 for sweet, or T2R family for bitter, etc.). This labelled-line principle at the periphery supports the idea that taste quality is encoded by which cell type is activated, not by patterns across broadly tuned cells — though the downstream coding strategy in the brain remains actively debated (labelled line vs. across-fibre pattern).</p>
+
+        <p>Beyond the canonical five: <strong>fat taste</strong> (oleogustus) is proposed as a sixth basic taste — CD36 and GPR120 respond to free fatty acids. <strong>Starchy/carbohydrate taste</strong> is hypothesized. Neither is yet universally accepted.</p>
+      </div>
+
+      <div class="section-head" id="gustatory-pathway">The Gustatory Pathway</div>
+
+      <div class="prose">
+        <p>Taste information travels via three cranial nerves:</p>
+        <ul>
+          <li><strong>CN VII (facial nerve)</strong> — chorda tympani branch: anterior two-thirds of tongue and palate</li>
+          <li><strong>CN IX (glossopharyngeal)</strong> — posterior one-third of tongue and circumvallate papillae</li>
+          <li><strong>CN X (vagus)</strong> — epiglottis and oesophagus</li>
+        </ul>
+
+        <p>These fibres project to the <strong>rostral nucleus tractus solitarius (NTS)</strong> in the medulla — the first central relay for taste. The NTS sends projections rostrally to the <strong>parabrachial nucleus (PBN)</strong> in the pons (in rodents; this relay may be less prominent in primates). From there, fibres ascend to the <strong>ventral posteromedial nucleus (VPMpc)</strong> of the thalamus — unlike olfaction, taste takes the thalamic route. Thalamocortical projections reach the <strong>primary gustatory cortex</strong> in the anterior insula and adjacent frontal operculum.</p>
+
+        <p>Taste has a topographic organization: different tongue regions project to distinct cortical areas, though this map is crude compared to the tonotopic or retinotopic maps of hearing and vision. The insular cortex processes not just taste but also visceral sensation and interoception broadly — it integrates information about the body's internal state, providing the context (hunger, nausea, disgust) that shapes taste perception.</p>
+
+        <p>Secondary projections from gustatory cortex to the <strong>orbitofrontal cortex (OFC)</strong> create representations of food reward and palatability. The OFC is where taste and smell converge to create the multimodal experience of flavour — single OFC neurons can respond to both olfactory and gustatory inputs representing the same food.</p>
+      </div>
+
+      <div class="section-head" id="flavour">Flavour: The Integration of Chemical Senses</div>
+
+      <div class="prose">
+        <p>Flavour is not the same as taste. <strong>Taste</strong> is the five (or six) basic qualities detected by TRCs in the mouth. <strong>Flavour</strong> is the integrated multisensory percept of food, dominated by <strong>retronasal olfaction</strong> — the olfactory stimulation that occurs when volatile molecules from food travel through the nasopharynx to the olfactory epithelium during chewing and swallowing. When you say a strawberry "tastes" sweet-fruity, the fruity component is entirely olfactory.</p>
+
+        <p>Evidence: pinch your nose while eating. You lose the ability to identify foods by flavour, but can still detect sweet, salty, bitter, etc. Patients with anosmia (loss of smell) typically complain of losing their sense of taste, because they have lost flavour — the five basic tastes are intact.</p>
+
+        <p>Flavour perception also integrates:</p>
+        <ul>
+          <li><strong>Somatosensation</strong>: texture (crispy, creamy), temperature, astringency (tannin-protein interactions causing mouth-drying), and chemesthetic sensations — capsaicin activating TRPV1 (burning), menthol activating TRPM8 (cooling), carbonation activating TRPA1 and CAII (carbon dioxide → carbonic acid → sour + tingling), piperine activating TRPV1/TRPA1.</li>
+          <li><strong>Visual appearance</strong>: colour of food strongly biases perceived flavour (white wine dyed red is perceived as having red wine flavour).</li>
+          <li><strong>Sound</strong>: crispiness perception depends on auditory feedback of chewing sounds.</li>
+          <li><strong>Cognitive/cultural expectations</strong>: top-down signals from memory and expectation powerfully modulate perception in OFC.</li>
+        </ul>
+
+        <p>The <strong>orbitofrontal cortex</strong> is the site of flavour integration. OFC neurons code for flavour identity (what food) and hedonic value (how pleasant). This value signal feeds into reward circuitry (ventral striatum/nucleus accumbens) to drive eating behaviour. Crucially, the OFC representation of flavour is modulated by satiety — the same food neuron that fires strongly when you are hungry fires much less after you have eaten it. This is <strong>sensory-specific satiety</strong>: satiation for one food does not reduce the appeal of a different food, which is why there is always "room for dessert."</p>
+      </div>
+
+      <div class="section-head" id="olfactory-memory">Olfactory Memory and the Proust Effect</div>
+
+      <div class="prose">
+        <p>Odour-evoked memories are often more vivid, emotionally intense, and older than memories evoked by other cues — the <em>Proust phenomenon</em>. The anatomy explains this. Olfactory information reaches the entorhinal cortex and hippocampus via a <strong>short, direct pathway</strong> (olfactory bulb → piriform cortex → entorhinal cortex → hippocampus) that does not pass through the thalamus or sensory neocortex. This means olfactory memories are formed in the hippocampus via a route that is more direct and less processed than, say, visual memories, and they are stored with rich emotional tagging because piriform cortex connects directly to the amygdala.</p>
+
+        <p>Olfactory perception also has interesting plasticity: exposure to new odorant combinations can create new perceptual objects (training on mixtures creates a new "configural" percept rather than just the sum of parts). Expert perfumers and sommeliers develop perceptual categories that novices lack — the olfactory system remains plastic into adulthood in ways that visual cortex does not.</p>
+      </div>
+
+      <!-- ======= WORKED EXAMPLES ======= -->
+      <div class="section-head" id="examples">Worked Examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Why does food taste bland when you have a cold?</strong></div>
+        <div class="example-problem">A person with nasal congestion from rhinovirus infection reports that all food "tastes bland." Their five basic tastes are intact on swab testing. Explain the mechanism.</div>
+        <div class="example-body">
+          <p>The five basic taste qualities (sweet, salty, sour, bitter, umami) are detected by taste receptor cells in the mouth and are unaffected by nasal congestion — hence normal swab testing. However, nasal congestion blocks the nasopharyngeal airway, preventing volatile odorant molecules from reaching the olfactory epithelium during chewing. <strong>Retronasal olfaction is abolished.</strong></p>
+          <p>Since ~80% of the flavour experience is retronasal olfactory (the fruity, savoury, herbaceous, meaty, etc. components), losing it leaves only the five basic tastes — sweet, salt, sour, bitter, umami — which provide far less information about food identity. The person cannot tell chicken from fish by flavour, cannot identify apple from grape, etc. The sensation is correctly described as "bland" because the richness of flavour has been lost even though taste sensu stricto is intact.</p>
+          <p>Recovery upon nasal decongestant use, or simply pinching the nose and then releasing it, confirms retronasal olfaction as the absent component.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Glomerular map and odorant coding</strong></div>
+        <div class="example-problem">A mouse is exposed to amyl acetate (banana odour). Deoxyglucose autoradiography shows increased activity in glomeruli G12, G47, and G203 in the olfactory bulb. When exposed to butyl acetate (similar but different), glomeruli G12, G51, and G203 are active. Interpret this in terms of the combinatorial code.</div>
+        <div class="example-body">
+          <p>Each glomerulus receives convergent input from all ORNs expressing a single OR type. Amyl acetate and butyl acetate are structurally similar (both esters, differing only in alkyl chain length), so they share some receptor-binding affinity: both activate OR types projecting to G12 and G203. They differ at OR types projecting to G47 (amyl only) and G51 (butyl only).</p>
+          <p>The brain distinguishes the two odorants by the <em>pattern</em> of active glomeruli: {G12, G47, G203} vs. {G12, G51, G203}. Both patterns share two components; they differ in one. Perceptually, the odours are similar (both "ester-like, sweet, fruity") but distinguishable. The similarity of the percept corresponds to the overlap in the glomerular pattern. This is combinatorial coding: identity is in the ensemble, not in any individual glomerulus.</p>
+          <p>If lateral inhibition in the bulb is intact, the difference at G47 vs. G51 will be sharpened, making discrimination more reliable even if the receptor-level affinity difference is small. This explains why training can improve olfactory discrimination: the brain can learn to attend to the informative dimensions of the glomerular pattern.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Bitter taste and evolutionary logic</strong></div>
+        <div class="example-problem">Humans have ~25 different T2R bitter receptor genes, compared to 2 sweet (T1R2+T1R3). Why might evolution have produced such a large bitter receptor repertoire?</div>
+        <div class="example-body">
+          <p>Bitter signals toxicity — most plant alkaloids, glycosides, and synthetic poisons are bitter. The evolutionary pressure is asymmetric: <em>missing one toxic compound is potentially lethal; confusing two nutritious sweet compounds is at worst mildly suboptimal</em>. Therefore, the fitness benefit of detecting any new class of toxic molecule is high enough to maintain many distinct bitter receptors through positive selection.</p>
+          <p>Sweet taste, by contrast, signals caloric content (sugars). All nutritious sugars share chemical features (multiple hydroxyl groups, particular steric configuration) that can be detected by a small number of broadly tuned receptors. There is little fitness advantage to having 25 distinct sweet receptors — the T1R2+T1R3 heterodimer is broadly tuned enough to detect all naturally occurring sugars plus many artificial sweeteners.</p>
+          <p>Additionally, bitter receptors are expressed not just in taste buds but throughout the body — respiratory epithelium (ciliated cells that detect bacterial metabolites and initiate mucociliary clearance), smooth muscle (bronchodilator response), gut enteroendocrine cells (nutrient sensing), and cardiac muscle. This systemic expression suggests bitter receptors function as a general molecular-threat detection system, further explaining the evolutionary pressure to maintain a diverse receptor family.</p>
+        </div>
+      </div>
+
+      <!-- ======= FOOD FOR THOUGHT ======= -->
+      <div class="section-head" id="fft">Food for Thought</div>
+
+      <ul class="fft-list">
+        <li class="fft-item">
+          Olfaction projects directly to cortex without a thalamic relay, while taste does not. Does this difference imply that olfactory percepts are more "automatic" or less subject to top-down modulation than taste percepts — or is the thalamic relay not the key variable for conscious modulation?
+          <div class="fft-answer">The thalamic relay is often assumed to support attentional gating and top-down modulation, so bypassing it might suggest olfaction is less modulated. In practice, however, olfactory perception is strongly modulated by attention, expectation, and learning — just via corticofugal projections back to the bulb and piriform cortex rather than thalamocortical loops. The thalamic relay may not be the bottleneck for modulation that was once assumed. Olfaction's "automatic" quality (involuntary emotional reactions to smells) may reflect its direct amygdala connection more than the absence of thalamic gating.</div>
+        </li>
+        <li class="fft-item">
+          The olfactory epithelium continuously turns over ORNs, replacing them from basal stem cells roughly every 60 days. Given that ORNs must correctly project to specific glomeruli in the bulb, how does the nervous system maintain a stable glomerular map despite constant receptor cell replacement?
+          <div class="fft-answer">New ORNs express the same OR gene as the cells they replace (the basal cell retains epigenetic memory of which OR was expressed), and the OR protein itself appears to carry targeting information — its expression in the growth cone guides the axon to the correct glomerulus via homophilic adhesion and guidance cue expression driven by the OR. Mice with the OR gene replaced by a different OR gene have their axons rerouted to a different glomerulus, demonstrating that OR identity directs projection specificity. This remarkable self-organizing precision is necessary to maintain the olfactory map across continuous turnover.</div>
+        </li>
+        <li class="fft-item">
+          Sensory-specific satiety means eating one food to fullness leaves appetite for a different food intact. From a neural circuit perspective, where does this selectivity have to be implemented — at the periphery (taste buds), in sensory cortex, or in reward circuits?
+          <div class="fft-answer">The selectivity must be implemented centrally, in circuits that have representations of food identity. Peripheral taste receptors and even primary gustatory cortex lack specificity for "chicken vs. fish" at the conceptual level — they encode basic taste quality and flavour chemistry. Sensory-specific satiety is implemented in the orbitofrontal cortex: OFC neurons that respond to a specific flavour show adaptation after repeated presentation of that flavour but remain fully responsive to other flavours. Since OFC is where flavour identity and hedonic value are combined, this is the logical site for the selective suppression. The signal that drives this OFC adaptation comes from hypothalamic and gut satiety signals specific to the macronutrient composition of the food just eaten.</div>
+        </li>
+      </ul>
+
+      <!-- ======= COMMON PITFALLS ======= -->
+      <div class="section-head" id="pitfalls">Common Pitfalls</div>
+
+      <div class="prose">
+        <ul>
+          <li><strong>"Taste and flavour are the same thing."</strong> Taste is the five basic qualities detected in the mouth. Flavour is the full multisensory percept dominated by retronasal olfaction. This confusion is near-universal in everyday language but matters for understanding why anosmia presents as "loss of taste."</li>
+          <li><strong>"Different parts of the tongue taste different things."</strong> The tongue map — tip for sweet, back for bitter, sides for sour and salty — is a 19th-century artifact from a misread German study. All taste qualities can be detected across the entire tongue wherever taste buds are present.</li>
+          <li><strong>"Olfactory receptor neurons are unique because they directly contact the brain."</strong> They project to the olfactory bulb, which is a brain structure, but the ORN axon itself is a peripheral neuron, not a central one. What is unusual is that olfactory bulb output then reaches cortex without a thalamic relay — the bulb-to-piriform projection is the unusual step, not ORN-to-bulb.</li>
+          <li><strong>"Bitter means toxic, so it should always be avoided."</strong> Many beneficial compounds are bitter — polyphenols, alkaloids with medicinal value (quinine, caffeine), cruciferous vegetable glucosinolates. Bitterness evolved as a warning signal, not an absolute toxicity indicator. Moreover, T2R bitter receptors expressed in bronchial smooth muscle <em>cause</em> bronchodilation — the same receptor that generates oral rejection in the gut drives a beneficial airway response. "Bitter = toxic = avoid" is a peripheral heuristic, not a universal rule.</li>
+          <li><strong>"Olfactory adaptation means the receptor is desensitized."</strong> There are multiple levels of olfactory adaptation: ORN-level (reduced CNG channel sensitivity), synaptic (reduced mitral cell excitation), and cortical/perceptual (top-down suppression). The rapid initial adaptation (seconds) is largely receptor-level; sustained odour exposure also recruits central mechanisms. The popular explanation "your receptors get used to it" is not wrong but is incomplete.</li>
+        </ul>
+      </div>
+
+      <!-- ======= CONNECTS TO ======= -->
+      <div class="section-head" id="connects">Connects To</div>
+      <div class="prose">
+        <ul>
+          <li><strong>Food Science — Flavour</strong>: The molecular chemistry of odorant compounds (esters, aldehydes, pyrazines, thiols), how cooking generates volatiles via Maillard and lipid oxidation, and how fat solubility affects retronasal delivery of aroma molecules. The Food Science cluster's Flavour Science lesson is a direct extension of this lesson's biology.</li>
+          <li><strong>Reward &amp; Neuromodulation (L13)</strong>: The OFC sends projections to ventral striatum to drive food-seeking behaviour. The dopamine reward system encodes the value of food stimuli partly via the flavour signals processed here. Addiction to palatable food involves the same dopaminergic circuitry that responds to drugs of abuse.</li>
+          <li><strong>Neural Development (L11)</strong>: ORNs are one of the few adult tissues with continuous neurogenesis — they are replaced from basal stem cells every ~60 days. This ongoing adult neurogenesis in the olfactory epithelium (and olfactory bulb in rodents) is a major model system for studying adult stem cell biology and axon guidance.</li>
+        </ul>
+      </div>
+
+      <!-- ======= PREV/NEXT NAV ======= -->
+      <div class="lesson-nav">
+        <a class="lesson-nav-btn" href="language-cognition.html">← Lesson 15 · Language &amp; Higher Cognition</a>
+        <a class="lesson-nav-btn" href="sex-brain.html">Lesson 17 · Sex and the Brain →</a>
+      </div>
+
+    </div><!-- .main -->
+  </div><!-- .page-body -->
+</div><!-- .site-wrap -->
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    renderMathInElement(document.body, {
+      delimiters: [
+        {left: '$$', right: '$$', display: true},
+        {left: '$', right: '$', display: false}
+      ]
+    });
+  });
+</script>
+
+</body>
+</html>

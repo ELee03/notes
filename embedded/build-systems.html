@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Build Systems &amp; Toolchains — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="embedded" data-current="build-systems.html"></div>
+      <hr class="sidebar-rule">
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#toolchain" class="nav-item">GCC ARM toolchain</a>
+        <a href="#makefile" class="nav-item">Makefile anatomy</a>
+        <a href="#linker-script" class="nav-item">Linker scripts</a>
+        <a href="#startup" class="nav-item">Startup file</a>
+        <a href="#cmake" class="nav-item">CMake for embedded</a>
+        <a href="#cmsis-sdk" class="nav-item">CMSIS &amp; vendor SDK</a>
+        <a href="#objtools" class="nav-item">Binary utilities</a>
+        <a href="#ci" class="nav-item">CI for firmware</a>
+        <a href="#examples" class="nav-item">Worked examples</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="breadcrumb-sep">›</span>
+        <a href="index.html">Embedded Systems</a>
+        <span class="breadcrumb-sep">›</span>
+        Lesson 20
+      </div>
+
+      <h1 class="lesson-title">Build Systems &amp; Toolchains</h1>
+      <div class="lesson-meta">GCC arm-none-eabi · Makefiles · Linker Scripts · Startup Code · CMake · CMSIS · Firmware CI</div>
+
+      <div class="prose">
+        <p>Before any of the hardware-interfacing knowledge in this cluster becomes useful, you need a build system: the toolchain that compiles C to machine code, the linker script that maps that code into the right memory regions, and the startup file that initializes the processor state before <code>main()</code> is called. IDEs (Simplicity Studio, STM32CubeIDE, Keil µVision) hide this machinery, but understanding it is essential for debugging strange linker errors, optimizing binary size, understanding the generated assembly, and setting up automated firmware CI pipelines.</p>
+      </div>
+
+      <!-- === GCC ARM TOOLCHAIN === -->
+      <div class="section-head" id="toolchain">The GCC ARM Toolchain</div>
+
+      <div class="prose">
+        <p>The canonical open-source toolchain for ARM Cortex-M is <strong>arm-none-eabi-gcc</strong> — part of the <em>GNU Arm Embedded Toolchain</em> distributed by ARM Ltd. ("none" = bare-metal, no OS; "eabi" = Embedded Application Binary Interface, the ABI for ARM embedded systems).</p>
+
+        <p>The toolchain includes:</p>
+        <ul>
+          <li><code>arm-none-eabi-gcc</code> — C/C++ compiler (compiles + links)</li>
+          <li><code>arm-none-eabi-as</code> — assembler</li>
+          <li><code>arm-none-eabi-ld</code> — linker (usually invoked through gcc)</li>
+          <li><code>arm-none-eabi-objcopy</code> — converts ELF → binary/hex/srec</li>
+          <li><code>arm-none-eabi-objdump</code> — disassembler, section info</li>
+          <li><code>arm-none-eabi-nm</code> — symbol table viewer</li>
+          <li><code>arm-none-eabi-size</code> — section size report (text/data/bss)</li>
+          <li><code>arm-none-eabi-gdb</code> — debugger front-end (connects to OpenOCD)</li>
+        </ul>
+
+        <p><strong>Key compiler flags for Cortex-M:</strong></p>
+
+        <div class="code-block"><pre>
+# Cortex-M4 with FPU (EFR32MG series, STM32F4)
+CFLAGS  = -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard
+# Cortex-M33 (EFR32xG21)
+CFLAGS  = -mcpu=cortex-m33 -mthumb -mfpu=fpv5-sp-d16 -mfloat-abi=hard
+
+# General embedded flags
+CFLAGS += -Os                   # Optimize for size
+CFLAGS += -ffunction-sections   # Place each function in own section → linker can GC unused
+CFLAGS += -fdata-sections       # Same for data
+CFLAGS += -Wall -Wextra         # Warnings
+CFLAGS += -g3                   # Full DWARF debug info (stripped in final binary)
+CFLAGS += -DNDEBUG              # Disable assert() in release
+
+# Linker flags
+LDFLAGS = -Wl,--gc-sections     # Remove unused sections (works with -ffunction/data-sections)
+LDFLAGS += -Wl,-Map=output.map  # Generate linker map (invaluable for debugging)
+LDFLAGS += -Wl,--cref           # Cross-reference table in map
+LDFLAGS += -nostdlib            # Don't link standard C startup/library (we provide our own)
+LDFLAGS += --specs=nano.specs   # Use newlib-nano (smaller C library)</pre></div>
+
+        <p>The <code>-mthumb</code> flag generates Thumb/Thumb-2 instructions. All Cortex-M processors use Thumb-2, never the full 32-bit ARM instruction set. <code>-mfloat-abi=hard</code> uses the hardware FPU with floats passed in FPU registers — faster than <code>soft</code> (all software) or <code>softfp</code> (software ABI, hardware computation).</p>
+
+        <p><strong>Compilation pipeline:</strong></p>
+        <div class="code-block"><pre>
+main.c  →  [gcc -c]  →  main.o  (ELF relocatable object)
+          [nm main.o]           (see symbols: T=text, D=data, B=bss, U=undefined)
+
+main.o + hal_gpio.o + startup.o  →  [ld -T link.ld]  →  firmware.elf
+                                                         (ELF with debug info)
+firmware.elf  →  [objcopy -O ihex]  →  firmware.hex   (program to flash)
+firmware.elf  →  [objcopy -O binary] → firmware.bin   (raw binary)</pre></div>
+      </div>
+
+      <!-- === MAKEFILE === -->
+      <div class="section-head" id="makefile">Makefile Anatomy</div>
+
+      <div class="prose">
+        <p>A Makefile defines rules: <code>target: prerequisites → recipe</code>. Make rebuilds targets whose prerequisites are newer. For firmware, a minimal but complete Makefile structure:</p>
+
+        <div class="code-block"><pre>
+# Toolchain
+CC      = arm-none-eabi-gcc
+OBJCOPY = arm-none-eabi-objcopy
+SIZE    = arm-none-eabi-size
+
+# Project structure
+TARGET  = firmware
+BUILD   = build
+SRC_DIR = src
+INC_DIR = include
+
+# Sources: list all .c files (or use wildcard with care)
+SOURCES = $(SRC_DIR)/main.c \
+          $(SRC_DIR)/hal_gpio.c \
+          $(SRC_DIR)/startup_efr32mg12.s
+
+# Include paths
+INCLUDES = -I$(INC_DIR) -I$(SDK)/CMSIS/Include -I$(SDK)/Device/SiliconLabs/EFR32MG12P/Include
+
+# CPU flags
+CPU     = -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard
+
+CFLAGS  = $(CPU) -Os -ffunction-sections -fdata-sections -Wall $(INCLUDES)
+LDFLAGS = $(CPU) -Wl,--gc-sections -Wl,-Map=$(BUILD)/$(TARGET).map \
+          -T linker/efr32mg12.ld -nostdlib
+
+# Object files (src/main.c → build/main.o)
+OBJECTS = $(patsubst %.c,$(BUILD)/%.o, \
+           $(patsubst %.s,$(BUILD)/%.o, \
+           $(SOURCES)))
+
+# --- Top-level targets ---
+
+all: $(BUILD)/$(TARGET).hex
+
+$(BUILD)/$(TARGET).hex: $(BUILD)/$(TARGET).elf
+	$(OBJCOPY) -O ihex $< $@
+	$(SIZE) $<
+
+$(BUILD)/$(TARGET).elf: $(OBJECTS)
+	$(CC) $(LDFLAGS) -o $@ $^
+
+# Compile C sources
+$(BUILD)/%.o: %.c | $(BUILD)
+	$(CC) $(CFLAGS) -c -o $@ $<
+	# Also generate dependency file so headers are tracked:
+	$(CC) $(CFLAGS) -MM -MT $@ $< > $(BUILD)/$*.d
+
+# Assemble startup
+$(BUILD)/%.o: %.s | $(BUILD)
+	$(CC) $(CPU) -c -o $@ $<
+
+# Create build directory
+$(BUILD):
+	mkdir -p $(BUILD)/$(SRC_DIR)
+
+# Include dependency files (if they exist)
+-include $(OBJECTS:.o=.d)
+
+clean:
+	rm -rf $(BUILD)
+
+flash: $(BUILD)/$(TARGET).hex
+	openocd -f interface/jlink.cfg -f target/efr32.cfg \
+	  -c "program $< verify reset exit"
+
+.PHONY: all clean flash</pre></div>
+
+        <p>Key patterns:</p>
+        <ul>
+          <li><strong>Automatic variables</strong>: <code>$@</code> = target, <code>$&lt;</code> = first prerequisite, <code>$^</code> = all prerequisites.</li>
+          <li><strong>Dependency tracking</strong>: <code>-MM</code> generates <code>.d</code> files listing header dependencies. Without this, changing a header does not trigger recompilation. The <code>-include</code> at the bottom silently skips missing <code>.d</code> files (first build).</li>
+          <li><strong>Order-only prerequisite</strong> <code>| $(BUILD)</code>: create the build directory before compiling, but don't remake objects just because the directory timestamp changed.</li>
+          <li><strong>Linker map file</strong>: always generate one (<code>-Wl,-Map=...</code>). It shows exactly where every symbol lands in memory — essential for debugging flash overflow, unexpected .bss growth, or finding which library is pulling in an unexpected function.</li>
+        </ul>
+      </div>
+
+      <!-- === LINKER SCRIPT === -->
+      <div class="section-head" id="linker-script">Linker Scripts</div>
+
+      <div class="prose">
+        <p>The linker script (<code>.ld</code> file) tells the linker where to place sections in the target's memory map. Without one, the linker has no idea that flash starts at 0x00000000 and SRAM at 0x20000000 on your specific device.</p>
+
+        <div class="code-block"><pre>
+/* EFR32MG12P432F1024GL125 — 1 MB flash, 256 KB RAM */
+
+MEMORY
+{
+  FLASH (rx)  : ORIGIN = 0x00000000, LENGTH = 1024K
+  SRAM  (rwx) : ORIGIN = 0x20000000, LENGTH = 256K
+}
+
+ENTRY(Reset_Handler)   /* Entry point — used by debugger, not hardware */
+
+SECTIONS
+{
+  /* ---- Flash ---- */
+
+  .isr_vector :         /* Vector table MUST be at flash base (0x0) */
+  {
+    KEEP(*(.isr_vector))
+  } > FLASH
+
+  .text :               /* Code and read-only data */
+  {
+    *(.text*)
+    *(.rodata*)
+    . = ALIGN(4);
+    _etext = .;         /* Exported symbol: end of text (used by startup to copy .data) */
+  } > FLASH
+
+  /* ---- Initialized data: lives in flash, copied to SRAM at startup ---- */
+  .data :
+  {
+    _sdata = .;         /* Start of .data in SRAM (copy destination) */
+    *(.data*)
+    . = ALIGN(4);
+    _edata = .;         /* End of .data in SRAM */
+  } > SRAM AT > FLASH   /* AT > FLASH = load address is in flash */
+  _sidata = LOADADDR(.data);  /* Source address in flash (copy source) */
+
+  /* ---- BSS: zero-initialized — NOT stored in flash ---- */
+  .bss :
+  {
+    _sbss = .;
+    *(.bss*)
+    *(COMMON)
+    . = ALIGN(4);
+    _ebss = .;
+  } > SRAM
+
+  /* ---- Stack at top of SRAM ---- */
+  ._stack :
+  {
+    . = ALIGN(8);
+    _stack_end = .;      /* Low address of stack (stack grows down) */
+    . = . + 0x2000;      /* 8 KB stack */
+    . = ALIGN(8);
+    _stack_top = .;      /* Initial SP value — placed in vector table slot 0 */
+  } > SRAM
+
+  /* ---- Heap grows up from after BSS ---- */
+  ._heap :
+  {
+    _heap_start = .;
+    . = . + 0x4000;      /* 16 KB heap (newlib malloc arena) */
+    _heap_end = .;
+  } > SRAM
+}</pre></div>
+
+        <p>The <code>AT &gt; FLASH</code> syntax is critical: it tells the linker to store the <em>initial values</em> of <code>.data</code> variables in flash (load address), but reserve SRAM space for them at runtime (virtual address). The startup code copies them from <code>_sidata</code> (flash) to <code>_sdata</code>–<code>_edata</code> (SRAM) before calling <code>main()</code>.</p>
+
+        <p>The <strong>linker map file</strong> (generated by <code>-Wl,-Map</code>) shows the final layout — each section's VMA (runtime address), LMA (load address in flash), and size. It also shows which object files contribute to each section, and a cross-reference of all symbols. When you hit "binary too large for flash" or "not enough RAM," the map file tells you exactly who is responsible.</p>
+      </div>
+
+      <!-- === STARTUP FILE === -->
+      <div class="section-head" id="startup">The Startup File</div>
+
+      <div class="prose">
+        <p>The startup file (<code>startup_device.s</code> or <code>startup_device.c</code>) does the work between processor reset and <code>main()</code>. It is usually provided by the silicon vendor but understanding it is essential.</p>
+
+        <div class="code-block"><pre>
+/* startup_efr32.s — minimal ARM Cortex-M startup in GNU assembler */
+
+  .syntax unified
+  .thumb
+
+/* === Vector table === */
+  .section .isr_vector, "a", %progbits
+  .word _stack_top         /* 0x00: Initial Stack Pointer */
+  .word Reset_Handler      /* 0x04: Reset */
+  .word NMI_Handler        /* 0x08: NMI */
+  .word HardFault_Handler  /* 0x0C: HardFault */
+  .word MemManage_Handler  /* 0x10: MemManage */
+  .word BusFault_Handler   /* 0x14: BusFault */
+  .word UsageFault_Handler /* 0x18: UsageFault */
+  /* ... 240 IRQ slots follow for external interrupts ... */
+
+/* === Reset handler: runs on every reset/power-on === */
+  .section .text.Reset_Handler
+  .weak Reset_Handler
+  .type Reset_Handler, %function
+Reset_Handler:
+  /* 1. Set stack pointer (already done by hardware reading vector[0], but make explicit) */
+  ldr   r0, =_stack_top
+  msr   msp, r0
+
+  /* 2. Copy .data from flash (LMA) to SRAM (VMA) */
+  ldr   r1, =_sidata    /* source: init values in flash */
+  ldr   r2, =_sdata     /* dest start */
+  ldr   r3, =_edata     /* dest end */
+copy_data:
+  cmp   r2, r3
+  bge   zero_bss
+  ldr   r0, [r1], #4
+  str   r0, [r2], #4
+  b     copy_data
+
+  /* 3. Zero .bss */
+zero_bss:
+  ldr   r2, =_sbss
+  ldr   r3, =_ebss
+  mov   r0, #0
+zero_loop:
+  cmp   r2, r3
+  bge   call_init
+  str   r0, [r2], #4
+  b     zero_loop
+
+  /* 4. Call C++ constructors (__libc_init_array handles init_array section) */
+call_init:
+  bl    __libc_init_array
+
+  /* 5. Jump to main */
+  bl    main
+
+  /* 6. If main() returns (shouldn't), loop forever */
+loop_forever:
+  b     loop_forever</pre></div>
+
+        <p>What the hardware does automatically on reset: loads the initial stack pointer from address 0x00000000 (vector[0]), then branches to the address in 0x00000004 (vector[1] = Reset_Handler). Everything after that is software.</p>
+
+        <p>Common startup extensions (provided by CMSIS/SDK):</p>
+        <ul>
+          <li><strong>System clock initialization</strong>: <code>SystemInit()</code> called before <code>main()</code> — configures PLL, wait states, power supplies to the CPU's operating frequency. If you call hardware too early (before <code>SystemInit()</code>), peripherals may run at the wrong clock.</li>
+          <li><strong>FPU enable</strong>: Cortex-M4/M7 FPU must be enabled in firmware — it is disabled by default after reset (CPACR register). CMSIS <code>SystemInit()</code> usually handles this.</li>
+          <li><strong>Memory protection unit (MPU)</strong>: If used, configured before <code>main()</code>.</li>
+        </ul>
+      </div>
+
+      <!-- === CMAKE === -->
+      <div class="section-head" id="cmake">CMake for Embedded</div>
+
+      <div class="prose">
+        <p>CMake is now the de-facto standard build system for larger embedded projects and is natively supported by VS Code + CMake Tools extension, CLion, and more. The key addition for embedded is a <strong>toolchain file</strong>.</p>
+
+        <div class="code-block"><pre>
+# toolchain-arm-none-eabi.cmake
+set(CMAKE_SYSTEM_NAME       Generic)
+set(CMAKE_SYSTEM_PROCESSOR  arm)
+
+set(CMAKE_C_COMPILER    arm-none-eabi-gcc)
+set(CMAKE_CXX_COMPILER  arm-none-eabi-g++)
+set(CMAKE_ASM_COMPILER  arm-none-eabi-gcc)
+set(CMAKE_OBJCOPY       arm-none-eabi-objcopy)
+set(CMAKE_SIZE          arm-none-eabi-size)
+
+set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)</pre></div>
+
+        <div class="code-block"><pre>
+# CMakeLists.txt
+cmake_minimum_required(VERSION 3.20)
+project(MyFirmware C ASM)
+
+set(CPU_FLAGS "-mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard")
+
+add_executable(firmware
+  src/main.c
+  src/hal_gpio.c
+  startup/startup_efr32mg12.s)
+
+target_compile_options(firmware PRIVATE
+  ${CPU_FLAGS} -Os -ffunction-sections -fdata-sections -Wall)
+
+target_link_options(firmware PRIVATE
+  ${CPU_FLAGS}
+  -Wl,--gc-sections
+  -Wl,-Map=${CMAKE_BINARY_DIR}/firmware.map
+  -T ${CMAKE_SOURCE_DIR}/linker/efr32mg12.ld
+  -nostdlib --specs=nano.specs)
+
+target_include_directories(firmware PRIVATE
+  include
+  ${SDK}/CMSIS/Include
+  ${SDK}/Device/SiliconLabs/EFR32MG12P/Include)
+
+# Post-build: generate .hex and print size
+add_custom_command(TARGET firmware POST_BUILD
+  COMMAND ${CMAKE_OBJCOPY} -O ihex $&lt;TARGET_FILE:firmware&gt; firmware.hex
+  COMMAND ${CMAKE_SIZE} $&lt;TARGET_FILE:firmware&gt;
+  COMMENT "Generating firmware.hex")</pre></div>
+
+        <p>Build:</p>
+        <div class="code-block"><pre>
+cmake -B build -DCMAKE_TOOLCHAIN_FILE=toolchain-arm-none-eabi.cmake
+cmake --build build -j4</pre></div>
+
+        <p>CMake advantages over raw Makefiles: automatic dependency tracking, out-of-source builds, easy library management, IDE integration. Disadvantages: more complex, another layer of abstraction. For small projects (&lt;10 source files), a Makefile is often clearer.</p>
+      </div>
+
+      <!-- === CMSIS & SDK === -->
+      <div class="section-head" id="cmsis-sdk">CMSIS and Vendor SDKs</div>
+
+      <div class="prose">
+        <p><strong>CMSIS</strong> (Cortex Microcontroller Software Interface Standard) is ARM's portable abstraction layer — a set of header files and utility functions that provide a common interface to Cortex-M core features regardless of which vendor's chip you use.</p>
+
+        <p>CMSIS components relevant to firmware development:</p>
+        <ul>
+          <li><strong>CMSIS-Core</strong>: <code>core_cm4.h</code>, <code>core_cm33.h</code>, etc. — portable access to NVIC, SysTick, MPU, SCB, FPU, and system registers. Defines <code>__NVIC_SetPriority()</code>, <code>__get_MSP()</code>, <code>__DSB()</code>, <code>__ISB()</code>, etc.</li>
+          <li><strong>CMSIS-DSP</strong>: Optimized DSP functions using Cortex-M SIMD instructions — FFT, FIR/IIR filters, matrix operations, statistics. Significantly faster than naive C implementations.</li>
+          <li><strong>CMSIS-RTOS2</strong>: Portable RTOS API (thread, mutex, semaphore, message queue) — allows switching between FreeRTOS and other RTOS implementations without code changes.</li>
+        </ul>
+
+        <p>Vendor SDKs (Silicon Labs GSDK, STM32 HAL, NXP SDK) build on top of CMSIS. They add:</p>
+        <ul>
+          <li>Device-specific header files (<code>efr32mg12p432f1024gl125.h</code>) — memory-mapped register definitions as C structs and bitfield unions</li>
+          <li>HAL/LL driver libraries for each peripheral</li>
+          <li>Startup files, linker scripts, system initialization code</li>
+          <li>Middleware (USB stacks, file systems, BLE protocol stacks)</li>
+          <li>Board support packages (BSPs) for evaluation boards</li>
+        </ul>
+
+        <p>Register access pattern (from the device header):</p>
+        <div class="code-block"><pre>
+/* CMSIS-style: access GPIO port A output register */
+GPIO->P[0].DOUT |= (1 << 5);   /* Set PA5 high */
+
+/* Equivalent raw pointer (what the header abstracts): */
+*(volatile uint32_t *)(0x4000A010) |= (1 << 5);  /* GPIOA DOUT register */</pre></div>
+      </div>
+
+      <!-- === BINARY UTILITIES === -->
+      <div class="section-head" id="objtools">Binary Utilities</div>
+
+      <div class="prose">
+        <p>These tools are used constantly when diagnosing build problems:</p>
+
+        <div class="code-block"><pre>
+# Memory layout: text/data/bss sizes
+arm-none-eabi-size firmware.elf
+# Output:
+#    text     data      bss      dec      hex  filename
+#   45312      444     2048    47804     babb  firmware.elf
+# text = flash, data = flash (init values) + RAM, bss = RAM only
+
+# Disassemble a function
+arm-none-eabi-objdump -d -S firmware.elf | grep -A 30 "&lt;main&gt;"
+# -S interleaves C source lines (requires -g debug info)
+
+# List all symbols with addresses
+arm-none-eabi-nm --size-sort firmware.elf | tail -20
+# Shows biggest functions/variables — great for finding flash hogs
+
+# Show all sections with addresses and sizes
+arm-none-eabi-objdump -h firmware.elf
+
+# Convert ELF → raw binary (for bootloader sector writes)
+arm-none-eabi-objcopy -O binary firmware.elf firmware.bin
+
+# Convert ELF → Intel HEX (for OpenOCD/J-Link programming)
+arm-none-eabi-objcopy -O ihex firmware.elf firmware.hex
+
+# Strip debug info from ELF (reduce file size for release)
+arm-none-eabi-objcopy --strip-debug firmware.elf firmware_release.elf</pre></div>
+
+        <p>The linker map file (<code>.map</code>) is the most useful single file for understanding your build. Read it with a text editor. Key sections:</p>
+        <ul>
+          <li><strong>Memory configuration</strong>: shows your MEMORY regions with their sizes and current usage</li>
+          <li><strong>Linker script and input file list</strong>: every <code>.o</code> and <code>.a</code> that was linked</li>
+          <li><strong>Section mapping</strong>: which objects contributed to each output section, at which addresses</li>
+          <li><strong>Cross-reference table</strong> (with <code>--cref</code>): for each symbol, which files define and reference it — invaluable for finding multiple definitions</li>
+        </ul>
+      </div>
+
+      <!-- === CI === -->
+      <div class="section-head" id="ci">CI for Firmware</div>
+
+      <div class="prose">
+        <p>Firmware benefits from the same continuous integration practices as software: every commit triggers a build, and build failure blocks merge. For embedded, CI typically means:</p>
+
+        <ul>
+          <li><strong>Build verification</strong>: compiler errors and linker errors caught on every push, regardless of target hardware. Use a Docker container with the arm-none-eabi toolchain installed.</li>
+          <li><strong>Static analysis</strong>: <code>cppcheck</code> or <code>clang-tidy</code> to catch common C errors (null pointer dereference, buffer overflow, signed/unsigned comparison).</li>
+          <li><strong>Size regression tracking</strong>: fail the build if binary size exceeds a threshold (prevents gradual flash creep). Parse <code>arm-none-eabi-size</code> output and compare against a stored baseline.</li>
+          <li><strong>Unit tests on host</strong>: pure logic functions (protocol parsers, state machines, CRC calculation) can be tested on x86 with a normal GCC and a test framework like Unity or CMock. Abstracts hardware via HAL mocks. Fast feedback without hardware.</li>
+          <li><strong>Hardware-in-the-loop (HIL)</strong>: for critical path testing, a CI runner connected to target hardware flashes the firmware and runs a test script. More infrastructure cost; used in production firmware teams.</li>
+        </ul>
+
+        <p>Minimal GitHub Actions workflow:</p>
+        <div class="code-block"><pre>
+# .github/workflows/build.yml
+name: Firmware Build
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: ubuntu:22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install toolchain
+        run: |
+          apt-get update -q
+          apt-get install -y gcc-arm-none-eabi binutils-arm-none-eabi make
+      - name: Build
+        run: make -C firmware all
+      - name: Check size
+        run: |
+          arm-none-eabi-size firmware/build/firmware.elf
+          # Fail if flash > 900 KB (out of 1 MB, leave 100 KB for bootloader)
+          python3 scripts/check_size.py firmware/build/firmware.elf --flash-limit 921600</pre></div>
+      </div>
+
+      <!-- === WORKED EXAMPLES === -->
+      <div class="section-head" id="examples">Worked Examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Diagnosing a "undefined reference to `__errno'" linker error</strong></div>
+        <div class="example-problem">Adding <code>#include &lt;stdio.h&gt;</code> and calling <code>printf()</code> to an embedded project produces: <code>undefined reference to `_write'</code> and <code>undefined reference to `_sbrk'</code>. Explain what these symbols are and how to resolve them.</div>
+        <div class="example-body">
+          <p>newlib (the C library used by arm-none-eabi) provides <code>printf()</code> but delegates low-level I/O to stub functions you must implement. These are the <em>syscall stubs</em>:</p>
+          <ul>
+            <li><code>_write(int fd, char* buf, int len)</code>: output characters — for printf to produce output, this must be implemented. Typically redirects to UART or ITM.</li>
+            <li><code>_sbrk(ptrdiff_t incr)</code>: heap allocation — <code>malloc()</code> calls this to extend the heap. Must return a pointer to new heap memory, bounded by the heap end symbol from the linker script.</li>
+          </ul>
+          <p>Implement them as:</p>
+          <div class="code-block"><pre>
+#include &lt;sys/stat.h&gt;
+#include "hal_uart.h"
+
+/* Redirect stdout to UART */
+int _write(int fd, char *buf, int len) {
+  for (int i = 0; i &lt; len; i++) HAL_UART_Transmit(buf[i]);
+  return len;
+}
+
+/* Minimal sbrk for newlib heap */
+extern char _heap_start[];   /* from linker script */
+extern char _heap_end[];
+static char *heap_ptr = _heap_start;
+
+void *_sbrk(ptrdiff_t incr) {
+  char *prev = heap_ptr;
+  if (heap_ptr + incr &gt; _heap_end) return (void *)-1;  /* OOM */
+  heap_ptr += incr;
+  return prev;
+}</pre></div>
+          <p>Alternative: link with <code>--specs=nano.specs --specs=nosys.specs</code>. The <code>nosys.specs</code> provides stub implementations that do nothing (writes are discarded, sbrk returns -1). This silences the errors but means printf produces no output and malloc always fails.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Reading the linker map to debug flash overflow</strong></div>
+        <div class="example-problem">Adding a new feature causes "region FLASH overflowed." The linker map shows <code>.rodata</code> grew from 2 KB to 18 KB. Where should you look?</div>
+        <div class="example-body">
+          <p><code>.rodata</code> (read-only data, stored in flash) holds: string literals, constant arrays, lookup tables, and virtual function tables (C++). A jump from 2 KB to 18 KB suggests one of:</p>
+          <ol>
+            <li><strong>A large lookup table or bitmap</strong>: a <code>const uint8_t font_data[8192]</code> or similar. Find it in the map's section listing — the contributing object file will be named.</li>
+            <li><strong>String literals accumulated</strong>: every <code>printf("some message")</code>, error string, or log tag adds to .rodata. Use <code>arm-none-eabi-nm --size-sort firmware.elf | grep " r "</code> to list read-only symbols by size.</li>
+            <li><strong>Floating-point library pulled in</strong>: linking anything that uses <code>printf("%f", ...)</code> or <code>sprintf</code> with floats pulls in the newlib float formatter — 6–10 KB. Use <code>arm-none-eabi-nm firmware.elf | grep printf</code> to check if multiple printf variants are linked.</li>
+          </ol>
+          <p>Mitigations: move constant arrays to external flash if available; replace <code>printf</code> with a stripped-down <code>tiny_printf</code>; use <code>-fno-exceptions</code> and <code>-fno-rtti</code> in C++ to avoid vtable bloat; ensure <code>-ffunction-sections -fdata-sections -Wl,--gc-sections</code> are in use so unused constants are removed.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Why does a variable initialized to 0 work, but one initialized to 42 resets to 0 after a warm reset?</strong></div>
+        <div class="example-problem">A global variable <code>uint32_t counter = 42</code> behaves correctly after cold power-on, but after a software reset (<code>NVIC_SystemReset()</code>) it reads as 0. Explain.</div>
+        <div class="example-body">
+          <p>After power-on, the startup code copies <code>.data</code> initial values from flash (<code>_sidata</code>) to SRAM (<code>_sdata</code>–<code>_edata</code>). So <code>counter</code> gets the value 42 from flash. This is correct.</p>
+          <p>After a software reset (<code>NVIC_SystemReset()</code>), the processor jumps to <code>Reset_Handler</code> again. But SRAM is <em>not</em> cleared by a software reset — only a power-cycle clears SRAM. The startup code then:</p>
+          <ol>
+            <li>Copies <code>.data</code> initial values from flash → SRAM. <code>counter</code> is set to 42 again. ✓</li>
+            <li>Zeroes <code>.bss</code> — but <code>counter</code> is in <code>.data</code>, not <code>.bss</code>, so this doesn't affect it.</li>
+          </ol>
+          <p>If the variable is reading 0 after warm reset despite correct startup code, the likely culprit is <strong>the startup code is not running on warm reset</strong>. This happens when:</p>
+          <ul>
+            <li>A debugger is used that doesn't reset the PC to Reset_Handler on reset (skips startup code)</li>
+            <li>The VTOR register is not pointing to the correct vector table after a bootloader hands off</li>
+            <li>A custom reset sequence jumps directly to <code>main()</code> bypassing startup</li>
+          </ul>
+          <p>If startup code <em>is</em> running but writes the wrong value: check that <code>_sidata</code> in the linker script is correctly defined as <code>LOADADDR(.data)</code> (the flash address of the init values) and that the copy loop uses the correct length (<code>_edata - _sdata</code> bytes, word-aligned).</p>
+        </div>
+      </div>
+
+      <!-- === FOOD FOR THOUGHT === -->
+      <div class="section-head" id="fft">Food for Thought</div>
+
+      <ul class="fft-list">
+        <li class="fft-item">
+          The linker flag <code>-Wl,--gc-sections</code> removes unreferenced sections from the binary. It requires <code>-ffunction-sections</code> and <code>-fdata-sections</code> to be useful. Why can't the linker simply remove unused code and data without those flags?
+          <div class="fft-answer">Without <code>-ffunction-sections</code>, the compiler places multiple functions into the same <code>.text</code> section of an object file. The linker's granularity for dead-code elimination is the section — it can discard an entire section, but not individual functions within a section. If <code>foo()</code> and <code>bar()</code> both live in <code>.text</code>, and <code>foo()</code> is referenced but <code>bar()</code> is not, the linker must keep the entire section (including <code>bar()</code>). With <code>-ffunction-sections</code>, each function gets its own section (<code>.text.foo</code>, <code>.text.bar</code>), so the linker can eliminate <code>.text.bar</code> independently. The same logic applies to data with <code>-fdata-sections</code>. On a typical embedded project this can reduce binary size by 10–40%.</div>
+        </li>
+        <li class="fft-item">
+          CMake generates Makefiles (on Unix) or Ninja build files. If the output of CMake is a Makefile, what is CMake actually adding — why not write the Makefile directly?
+          <div class="fft-answer">CMake handles things that are painful to do in raw Makefiles: automatic dependency tracking (no need to manually write .d file generation), cross-platform builds (the same CMakeLists.txt generates Makefiles on Linux, .vcxproj on Windows, Xcode projects on macOS), IDE integration (VS Code, CLion consume CMake natively), hierarchical project structure with add_subdirectory(), package management (find_package() for locating libraries), and the ability to generate compile_commands.json (consumed by clangd for in-editor autocompletion and navigation). For a simple single-directory project, the raw Makefile is clearer and faster. For anything with multiple libraries, conditional compilation, or multi-developer cross-platform support, CMake pays for its complexity.</div>
+        </li>
+        <li class="fft-item">
+          The startup file zeroes the .bss section on every reset. If SRAM is already zero after a power-cycle (as it is on most MCUs), why bother zeroing it in startup?
+          <div class="fft-answer">SRAM retains its contents across software resets and resets from debugging. If your startup code doesn't zero .bss, a variable declared as <code>static int count;</code> (which the C standard guarantees is initialized to 0) may contain garbage from a previous run after a soft reset. The C standard mandates zero-initialization of static-duration variables with no explicit initializer — the startup code is what implements this guarantee on bare metal. Without it, your code has undefined behaviour in any scenario involving a warm reset, a watchdog reset, or repeated debugging sessions. A power-cycle may happen to zero SRAM on your specific chip, but relying on this is non-portable and masks bugs.</div>
+        </li>
+      </ul>
+
+      <!-- === PITFALLS === -->
+      <div class="section-head" id="pitfalls">Common Pitfalls</div>
+
+      <div class="prose">
+        <ul>
+          <li><strong>Forgetting <code>-ffunction-sections -fdata-sections -Wl,--gc-sections</code>.</strong> These are not defaults — without them, every function and data object from every library you link ends up in the binary even if never called. Can double or triple binary size versus an optimized build.</li>
+          <li><strong>Using <code>float</code> with <code>printf</code> inadvertently.</strong> Linking <code>printf("%f", x)</code> pulls in the full newlib floating-point formatter (~6–10 KB). Use <code>printf("%d", (int)(x*100))</code> for fixed-point display, or link with <code>-u _printf_float</code> only when you genuinely need it and have the flash budget.</li>
+          <li><strong>Putting interrupt handlers in a different file from their declaration without <code>KEEP()</code>.</strong> If <code>--gc-sections</code> is on and the ISR is not referenced from code (it's only called by hardware via the vector table), the linker may garbage-collect it. Ensure the vector table references the ISR by name, or mark the ISR section with <code>KEEP()</code> in the linker script.</li>
+          <li><strong>Stack and heap collision.</strong> If the stack grows down into the heap, you get corruption — classic symptom is malloc returning bad pointers after heavy function call depth. Add a stack canary (fill the stack region with a known value at startup, check it periodically) and monitor <code>_stack_end</code> to see how close you are.</li>
+          <li><strong>Ignoring compiler warnings.</strong> Embedded C has no exceptions. A <code>signed/unsigned comparison</code> warning or <code>implicit function declaration</code> warning will cause real bugs in production. Build with <code>-Wall -Wextra -Werror</code> and fix every warning.</li>
+        </ul>
+      </div>
+
+      <!-- === CONNECTS TO === -->
+      <div class="section-head" id="connects">Connects To</div>
+      <div class="prose">
+        <ul>
+          <li><strong>Bare-Metal Patterns (L13)</strong>: The C startup sequence — copy .data, zero .bss, call init_array, branch to main — was introduced there. This lesson explains the linker script and startup file that implement it at the assembly/link level.</li>
+          <li><strong>Debugging &amp; Test (L15)</strong>: OpenOCD, GDB, and J-Link all work directly with the ELF file produced by the toolchain. The DWARF debug info embedded in the ELF is what allows source-level debugging. Without -g in CFLAGS, you debug raw disassembly.</li>
+          <li><strong>Bootloaders (L21)</strong>: The linker script is the mechanism by which the application binary is placed at the correct flash offset (after the bootloader region). VTOR relocation after a bootloader hands off execution requires understanding of the vector table placement — directly from the linker script discussion here.</li>
+        </ul>
+      </div>
+
+      <div class="lesson-nav">
+        <a class="lesson-nav-btn" href="high-speed-rf.html">← Lesson 19 · High-Speed &amp; RF</a>
+        <a class="lesson-nav-btn" href="bootloaders.html">Lesson 21 · Bootloaders &amp; Firmware Update →</a>
+      </div>
+
+    </div><!-- .main -->
+  </div><!-- .page-body -->
+</div><!-- .site-wrap -->
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+
+</body>
+</html>
