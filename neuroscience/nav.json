@@ -125,9 +125,21 @@
         },
         {
           "href": "mental-illness.html",
-          "text": "Mental Illness",
-          "topics": "Schizophrenia (dopamine hypothesis) · depression and monoamine theory · bipolar disorder · anxiety disorders · OCD · neurodevelopmental disorders (autism, ADHD) · psychopharmacology"
+          "text": "Mental Illness: An Introduction",
+          "topics": "What psychiatry studies · why biological theories are incomplete · reverse-engineered theories · contested models · framing for the condition lessons that follow"
         }
+      ]
+    },
+    {
+      "label": "Psychiatric Conditions",
+      "items": [
+        { "href": "schizophrenia.html",  "text": "Schizophrenia",       "topics": "Positive/negative/cognitive symptoms · dopamine hypothesis · glutamate/NMDA model · neurodevelopmental origins · antipsychotics · myths" },
+        { "href": "depression.html",     "text": "Depression",           "topics": "Anhedonia · beyond the chemical imbalance · neuroplasticity hypothesis · HPA axis · ketamine · psychotherapy · what we don't know" },
+        { "href": "bipolar.html",        "text": "Bipolar Disorder",     "topics": "Mania vs hypomania · circadian disruption · lithium mechanism · mood stabilizers · distinguishing from depression" },
+        { "href": "anxiety-ptsd.html",   "text": "Anxiety &amp; PTSD",   "topics": "Fear vs anxiety · amygdala-PFC circuit · extinction failure · PTSD as memory disorder · treatment" },
+        { "href": "ocd.html",            "text": "OCD",                  "topics": "Ego-dystonic intrusions · not a personality trait · CSTC loop · ERP therapy · SSRIs" },
+        { "href": "autism.html",         "text": "Autism Spectrum",      "topics": "Heterogeneity · neurodiversity framing · executive function · sensory processing · masking · what the biology shows · no vaccine link" },
+        { "href": "adhd.html",           "text": "ADHD",                 "topics": "Attention dysregulation not deficit · three presentations · gender diagnosis gap · executive function model · time blindness · adult ADHD · stimulants" }
       ]
     }
   ]
