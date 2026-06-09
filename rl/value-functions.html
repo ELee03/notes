@@ -1,19 +1,18 @@
 ﻿<!DOCTYPE html>
-
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Value Functions &amp; Bellman Equations — Field Notes</title>
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
-<link href="../style.css" rel="stylesheet"/>
-<link href="rl-interactive.css" rel="stylesheet"/>
-<link href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" rel="stylesheet"/>
-<script defer="" src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
-<script defer="" src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
-<script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Value Functions &amp; Bellman Equations — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="rl-interactive.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script>
     document.addEventListener('DOMContentLoaded', function() {
       renderMathInElement(document.body, {
         delimiters: [
@@ -26,54 +25,64 @@
   </script>
 </head>
 <body>
+
 <div class="topbar">
-<div class="topbar-inner">
-<a class="topbar-brand" href="../index.html">Field <span class="accent">Notes</span></a>
-<span class="topbar-sep">·</span>
-<a class="topbar-link" href="../references.html">Library</a>
-<span class="topbar-sep">·</span>
-<a class="topbar-back" href="https://elee03.github.io">elee03.github.io ↗</a>
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
 </div>
-</div>
+
 <div class="site-wrap">
-<div class="page-body">
-<div class="sidebar">
-<div class="nav-section">
-<div class="nav-label">Prerequisites</div>
-<a class="nav-item" href="mdp.html">3 · Markov Decision Processes</a>
-<span class="nav-item planned">Probability · Conditional expectation</span>
-<span class="nav-item planned">Linear Algebra · Systems of equations</span>
-</div>
-<div data-cluster="rl" data-current="value-functions.html" id="cluster-nav"></div>
-<hr class="sidebar-rule"/>
-<div class="nav-section">
-<div class="nav-label">On this page</div>
-<a class="nav-item" href="#why-value">Why value functions?</a>
-<a class="nav-item" href="#state-value">State-value function</a>
-<a class="nav-item" href="#action-value">Action-value function</a>
-<a class="nav-item" href="#relating">Relating v and q</a>
-<a class="nav-item" href="#bellman">Bellman expectation equation</a>
-<a class="nav-item" href="#backup-diagrams">Backup diagrams</a>
-<a class="nav-item" href="#optimal">Optimal value functions</a>
-<a class="nav-item" href="#bellman-optimality">Bellman optimality equations</a>
-<a class="nav-item" href="#worked-example">Worked example</a>
-<a class="nav-item" href="#explorer">Policy value explorer</a>
-<a class="nav-item" href="#tractability">Why not just solve it?</a>
-<a class="nav-item" href="#food-for-thought">Food for thought</a>
-<a class="nav-item" href="#pitfalls">Common pitfalls</a>
-</div>
-</div>
-<div class="main">
-<div class="breadcrumb">
-<a href="../index.html">Field Notes</a>
-<span class="sep">›</span>
-<a href="index.html">Reinforcement Learning</a>
-<span class="sep">›</span>
-<span>4 · Value Functions &amp; Bellman Equations</span>
-</div>
-<div class="lesson-title">4 · Value Functions &amp; Bellman Equations</div>
-<div class="lesson-meta">V<sub>π</sub> · Q<sub>π</sub> · Bellman Expectation · Optimal Value · Bellman Optimality · Backup Diagrams</div>
-<div class="prose">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Prerequisites</div>
+        <a href="mdp.html" class="nav-item">3 · Markov Decision Processes</a>
+        <span class="nav-item planned">Probability · Conditional expectation</span>
+        <span class="nav-item planned">Linear Algebra · Systems of equations</span>
+      </div>
+
+      <div id="cluster-nav" data-cluster="rl" data-current="value-functions.html"></div>
+
+            <hr class="sidebar-rule">
+
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#why-value" class="nav-item">Why value functions?</a>
+        <a href="#state-value" class="nav-item">State-value function</a>
+        <a href="#action-value" class="nav-item">Action-value function</a>
+        <a href="#relating" class="nav-item">Relating v and q</a>
+        <a href="#bellman" class="nav-item">Bellman expectation equation</a>
+        <a href="#backup-diagrams" class="nav-item">Backup diagrams</a>
+        <a href="#optimal" class="nav-item">Optimal value functions</a>
+        <a href="#bellman-optimality" class="nav-item">Bellman optimality equations</a>
+        <a href="#worked-example" class="nav-item">Worked example</a>
+        <a href="#explorer" class="nav-item">Policy value explorer</a>
+        <a href="#tractability" class="nav-item">Why not just solve it?</a>
+        <a href="#food-for-thought" class="nav-item">Food for thought</a>
+        <a href="#pitfalls" class="nav-item">Common pitfalls</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Reinforcement Learning</a>
+        <span class="sep">›</span>
+        <span>4 · Value Functions &amp; Bellman Equations</span>
+      </div>
+
+      <div class="lesson-title">4 · Value Functions &amp; Bellman Equations</div>
+      <div class="lesson-meta">V<sub>π</sub> · Q<sub>π</sub> · Bellman Expectation · Optimal Value · Bellman Optimality · Backup Diagrams</div>
+
+      <div class="prose">
         Every RL algorithm — whether it solves equations directly, samples trajectories, or
         bootstraps one-step estimates — is ultimately trying to answer one question: <em>how
         good is it to be in this state?</em> Value functions make that question precise.
@@ -81,78 +90,93 @@
         and explains why solving that equation directly is intractable for most real
         problems — which motivates everything in Lessons 5 through 9.
       </div>
-<div class="notation-box">
-<div class="notation-box-title">Notation used in this lesson</div>
-<table class="notation-table">
-<tr><td>$v_\pi(s)$</td><td>State-value function under policy $\pi$ — expected return from state $s$</td></tr>
-<tr><td>$q_\pi(s,a)$</td><td>Action-value function under policy $\pi$ — expected return from taking $a$ in state $s$, then following $\pi$</td></tr>
-<tr><td>$v_*(s)$</td><td>Optimal state-value function — the best achievable expected return from $s$</td></tr>
-<tr><td>$q_*(s,a)$</td><td>Optimal action-value function</td></tr>
-<tr><td>$\mathbb{E}_\pi[\cdot \mid S_t = s]$</td><td>Expected value of a random quantity, given starting state $s$, when following $\pi$</td></tr>
-<tr><td>$\pi(a \mid s)$</td><td>Probability of choosing action $a$ in state $s$ under policy $\pi$</td></tr>
-<tr><td>$p(s',r \mid s,a)$</td><td>Dynamics function — joint probability of next state $s'$ and reward $r$ given $(s,a)$</td></tr>
-<tr><td>$\sum_a, \sum_{s'}, \sum_r$</td><td>Sums over all actions, next states, and possible reward values respectively</td></tr>
-</table>
-</div>
-<!-- ── Why value functions? ──────────────────────────────── -->
-<div class="section-head" id="why-value">Why value functions?</div>
-<div class="prose">
+
+      <div class="notation-box">
+        <div class="notation-box-title">Notation used in this lesson</div>
+        <table class="notation-table">
+          <tr><td>$v_\pi(s)$</td><td>State-value function under policy $\pi$ — expected return from state $s$</td></tr>
+          <tr><td>$q_\pi(s,a)$</td><td>Action-value function under policy $\pi$ — expected return from taking $a$ in state $s$, then following $\pi$</td></tr>
+          <tr><td>$v_*(s)$</td><td>Optimal state-value function — the best achievable expected return from $s$</td></tr>
+          <tr><td>$q_*(s,a)$</td><td>Optimal action-value function</td></tr>
+          <tr><td>$\mathbb{E}_\pi[\cdot \mid S_t = s]$</td><td>Expected value of a random quantity, given starting state $s$, when following $\pi$</td></tr>
+          <tr><td>$\pi(a \mid s)$</td><td>Probability of choosing action $a$ in state $s$ under policy $\pi$</td></tr>
+          <tr><td>$p(s',r \mid s,a)$</td><td>Dynamics function — joint probability of next state $s'$ and reward $r$ given $(s,a)$</td></tr>
+          <tr><td>$\sum_a, \sum_{s'}, \sum_r$</td><td>Sums over all actions, next states, and possible reward values respectively</td></tr>
+        </table>
+      </div>
+
+      <!-- ── Why value functions? ──────────────────────────────── -->
+      <div class="section-head" id="why-value">Why value functions?</div>
+
+      <div class="prose">
         An agent following a policy $\pi$ in a state $s$ will produce a return $G_t$ — but
         $G_t$ is a <em>random variable</em>, not a fixed number. The actual return depends on
         the stochastic transitions of the environment and the stochastic choices of $\pi$ itself.
         Different runs from the same state can yield wildly different totals.
       </div>
-<div class="prose">
+
+      <div class="prose">
         The <strong>value</strong> of a state under policy $\pi$ is the expected return:
         the long-run average over all those possible trajectories. This is a fixed, stable
         number that characterises how good state $s$ is — not for one lucky run, but in a
         statistical sense, across all possible futures. A high value means that policy $\pi$
         reliably generates good long-run reward from $s$; a low value means the opposite.
       </div>
-<div class="prose">
+
+      <div class="prose">
         Value functions are the foundation of policy optimisation. Once you can measure how
         good each state (or state-action pair) is under your current policy, you can improve
         the policy by shifting probability toward better-valued actions. This is the core
         loop of almost every RL algorithm.
       </div>
-<!-- ── State-value function ───────────────────────────────── -->
-<div class="section-head" id="state-value">The state-value function $v_\pi$</div>
-<div class="prose">
+
+      <!-- ── State-value function ───────────────────────────────── -->
+      <div class="section-head" id="state-value">The state-value function $v_\pi$</div>
+
+      <div class="prose">
         The <strong>state-value function</strong> under policy $\pi$ is defined as:
       </div>
-<div class="math-block">
+
+      <div class="math-block">
         $$v_\pi(s) \;=\; \mathbb{E}_\pi\!\left[G_t \;\Big|\; S_t = s\right]
           \;=\; \mathbb{E}_\pi\!\left[\sum_{k=0}^{\infty} \gamma^k R_{t+k+1} \;\Bigg|\; S_t = s\right]$$
       </div>
-<div class="prose">
+
+      <div class="prose">
         Read this as: "starting in state $s$ at time $t$ and following $\pi$ from that point,
         what is the expected total discounted reward?" For episodic tasks, the sum is finite;
         the discounted form applies to both.
       </div>
-<div class="prose">
+
+      <div class="prose">
         By convention, the value of <em>terminal states</em> is always 0 — there is no future
         reward to collect once an episode ends. This boundary condition is what lets
         the Bellman equations produce a consistent solution.
       </div>
-<div class="callout">
-<strong>Intuition for a grid world.</strong> In the 4×4 grid world from Lesson 3,
+
+      <div class="callout">
+        <strong>Intuition for a grid world.</strong> In the 4×4 grid world from Lesson 3,
         the value $v_\pi(s)$ of a cell under the random policy ($\pi = \frac{1}{4}$ in each
         direction) is negative in every non-terminal state — and the magnitude grows with
         the distance to the nearest terminal. A corner far from both terminals has a very
         negative value; a cell adjacent to a terminal is nearly zero. The value function is
         a map of "how far am I from getting out?"
       </div>
-<!-- ── Action-value function ──────────────────────────────── -->
-<div class="section-head" id="action-value">The action-value function $q_\pi$</div>
-<div class="prose">
+
+      <!-- ── Action-value function ──────────────────────────────── -->
+      <div class="section-head" id="action-value">The action-value function $q_\pi$</div>
+
+      <div class="prose">
         The <strong>action-value function</strong> (also called the Q-function) refines
         the question: not just "how good is state $s$?" but "how good is it to take
         action $a$ specifically in state $s$, and then follow $\pi$?"
       </div>
-<div class="math-block">
+
+      <div class="math-block">
         $$q_\pi(s, a) \;=\; \mathbb{E}_\pi\!\left[G_t \;\Big|\; S_t = s,\; A_t = a\right]$$
       </div>
-<div class="prose">
+
+      <div class="prose">
         The distinction matters. Under a random policy, some actions from state $s$ may be
         much better than others. $v_\pi(s)$ averages over all of them according to $\pi$;
         $q_\pi(s, a)$ evaluates a single specific action. This is why $q_\pi$ is more useful
@@ -160,48 +184,59 @@
         by favouring actions with higher $q$ values — without needing a model of the
         environment.
       </div>
-<!-- ── Relating v and q ───────────────────────────────────── -->
-<div class="section-head" id="relating">Relating $v_\pi$ and $q_\pi$</div>
-<div class="prose">
+
+      <!-- ── Relating v and q ───────────────────────────────────── -->
+      <div class="section-head" id="relating">Relating $v_\pi$ and $q_\pi$</div>
+
+      <div class="prose">
         The two functions are two views of the same thing, and each can be expressed in
         terms of the other. Starting from definitions:
       </div>
-<div class="math-block">
+
+      <div class="math-block">
         $$v_\pi(s) = \sum_a \pi(a \mid s)\; q_\pi(s, a)$$
       </div>
-<div class="prose">
+
+      <div class="prose">
         The state-value is the average action-value, weighted by the probability that
         $\pi$ chooses each action. Conversely, the action-value is the expected immediate
         reward plus the discounted state-value of the next state:
       </div>
-<div class="math-block">
+
+      <div class="math-block">
         $$q_\pi(s, a) = \sum_{s',\, r} p(s', r \mid s, a)\;\bigl[r + \gamma\, v_\pi(s')\bigr]$$
       </div>
-<div class="prose">
+
+      <div class="prose">
         Read the second equation as: "take action $a$ in $s$; the environment transitions to
         some $(s', r)$ pair; your value is the immediate reward $r$ plus the discounted value
         of wherever you land." Substituting the second equation into the first produces the
         Bellman equation.
       </div>
-<!-- ── Bellman expectation equation ───────────────────────── -->
-<div class="section-head" id="bellman">The Bellman expectation equation</div>
-<div class="prose">
+
+      <!-- ── Bellman expectation equation ───────────────────────── -->
+      <div class="section-head" id="bellman">The Bellman expectation equation</div>
+
+      <div class="prose">
         The two identities above combine into a single self-consistency condition that
         $v_\pi$ must satisfy. Substituting the $q_\pi$ expression into the $v_\pi$ expression:
       </div>
-<div class="math-block">
+
+      <div class="math-block">
         $$\boxed{v_\pi(s) = \sum_a \pi(a \mid s) \sum_{s',\, r} p(s', r \mid s, a)
           \;\bigl[r + \gamma\, v_\pi(s')\bigr]}$$
       </div>
-<div class="prose">
+
+      <div class="prose">
         This is the <strong>Bellman expectation equation</strong> for $v_\pi$. It says that
         the value of state $s$ equals the expected immediate reward plus the discounted value
         of the successor state — where the expectation is over both the action chosen by $\pi$
         and the transition randomness of the environment. It is a <em>local</em> consistency
         condition: knowing the values of neighbouring states $s'$, you can compute $v_\pi(s)$.
       </div>
-<div class="callout">
-<strong>⟶ Worth deriving this yourself.</strong> The Bellman equation falls out of a
+
+      <div class="callout">
+        <strong>⟶ Worth deriving this yourself.</strong> The Bellman equation falls out of a
         two-step substitution that uses the recursive structure of $G_t$ and the
         tower property of conditional expectation. Start from
         $v_\pi(s) = \mathbb{E}_\pi[R_{t+1} + \gamma G_{t+1} \mid S_t = s]$,
@@ -210,131 +245,156 @@
         Working through this once — with a concrete two-state MDP — gives much more
         intuition than reading the result.
       </div>
-<div class="prose">
+
+      <div class="prose">
         An analogous equation holds for $q_\pi$:
       </div>
-<div class="math-block">
+
+      <div class="math-block">
         $$q_\pi(s, a) = \sum_{s',\, r} p(s', r \mid s, a)\;\Bigl[r + \gamma
           \sum_{a'} \pi(a' \mid s')\; q_\pi(s', a')\Bigr]$$
       </div>
-<div class="prose">
+
+      <div class="prose">
         Together these form a <em>system of linear equations</em> — one equation per state
         (or state-action pair), all coupled through the $v_\pi(s')$ terms on the right.
         For a finite MDP with $|\mathcal{S}|$ states, this is a system of $|\mathcal{S}|$
         linear equations in $|\mathcal{S}|$ unknowns, solvable in principle by Gaussian
         elimination.
       </div>
-<!-- ── Backup diagrams ────────────────────────────────────── -->
-<div class="section-head" id="backup-diagrams">Backup diagrams</div>
-<div class="prose">
+
+      <!-- ── Backup diagrams ────────────────────────────────────── -->
+      <div class="section-head" id="backup-diagrams">Backup diagrams</div>
+
+      <div class="prose">
         A <strong>backup diagram</strong> is a tree diagram that shows which values are
         "backed up" into the equation for $v_\pi(s)$ or $q_\pi(s,a)$. The top of the tree
         is the quantity being computed; the leaves are the values being used to compute it.
       </div>
-<!-- SVG: v_π backup diagram -->
-<svg aria-label="Backup diagram for v_π(s): state node branches to action nodes, each branches to state-prime nodes" role="img" style="width:100%;max-width:600px;display:block;margin:24px auto 8px;" viewbox="0 0 600 320">
-<defs>
-<marker id="arr-bk" markerheight="6" markerwidth="6" orient="auto" refx="5" refy="3">
-<polygon fill="#3a6a8a" points="0 0,6 3,0 6"></polygon>
-</marker>
-</defs>
-<!-- Left panel: v_π backup -->
-<!-- State node s -->
-<circle cx="130" cy="40" fill="#eef4f8" r="18" stroke="#7ab8d4" stroke-width="1.8"></circle>
-<text fill="#1a2840" font-family="IBM Plex Mono,monospace" font-size="11" font-weight="600" text-anchor="middle" x="130" y="45">s</text>
-<!-- Lines to action nodes -->
-<line marker-end="url(#arr-bk)" stroke="#3a6a8a" stroke-width="1.3" x1="130" x2="80" y1="58" y2="118"></line>
-<line marker-end="url(#arr-bk)" stroke="#3a6a8a" stroke-width="1.3" x1="130" x2="180" y1="58" y2="118"></line>
-<!-- π(a|s) labels -->
-<text fill="#3a6a8a" font-family="IBM Plex Mono,monospace" font-size="9.5" x="90" y="92">π(a₁|s)</text>
-<text fill="#3a6a8a" font-family="IBM Plex Mono,monospace" font-size="9.5" x="147" y="92">π(a₂|s)</text>
-<!-- Action nodes -->
-<rect fill="#3a6a8a" height="22" opacity="0.15" rx="4" stroke="#3a6a8a" stroke-width="1.2" width="36" x="62" y="118"></rect>
-<text fill="#1a2840" font-family="IBM Plex Mono,monospace" font-size="10" text-anchor="middle" x="80" y="133">a₁</text>
-<rect fill="#3a6a8a" height="22" opacity="0.15" rx="4" stroke="#3a6a8a" stroke-width="1.2" width="36" x="162" y="118"></rect>
-<text fill="#1a2840" font-family="IBM Plex Mono,monospace" font-size="10" text-anchor="middle" x="180" y="133">a₂</text>
-<!-- Lines from a₁ to s' nodes -->
-<line marker-end="url(#arr-bk)" stroke="#5a8a5a" stroke-width="1.2" x1="72" x2="50" y1="140" y2="200"></line>
-<line marker-end="url(#arr-bk)" stroke="#5a8a5a" stroke-width="1.2" x1="88" x2="110" y1="140" y2="200"></line>
-<!-- p labels -->
-<text fill="#5a8a5a" font-family="IBM Plex Mono,monospace" font-size="8.5" x="44" y="175">p₁</text>
-<text fill="#5a8a5a" font-family="IBM Plex Mono,monospace" font-size="8.5" x="97" y="175">p₂</text>
-<!-- Lines from a₂ to s' nodes -->
-<line marker-end="url(#arr-bk)" stroke="#5a8a5a" stroke-width="1.2" x1="170" x2="150" y1="140" y2="200"></line>
-<line marker-end="url(#arr-bk)" stroke="#5a8a5a" stroke-width="1.2" x1="190" x2="210" y1="140" y2="200"></line>
-<text fill="#5a8a5a" font-family="IBM Plex Mono,monospace" font-size="8.5" x="144" y="175">p₃</text>
-<text fill="#5a8a5a" font-family="IBM Plex Mono,monospace" font-size="8.5" x="197" y="175">p₄</text>
-<!-- s' nodes -->
-<circle cx="50" cy="218" fill="#eef4f8" r="15" stroke="#7ab8d4" stroke-width="1.5"></circle>
-<text fill="#1a2840" font-family="IBM Plex Mono,monospace" font-size="10" text-anchor="middle" x="50" y="223">s'</text>
-<circle cx="110" cy="218" fill="#eef4f8" r="15" stroke="#7ab8d4" stroke-width="1.5"></circle>
-<text fill="#1a2840" font-family="IBM Plex Mono,monospace" font-size="10" text-anchor="middle" x="110" y="223">s'</text>
-<circle cx="150" cy="218" fill="#eef4f8" r="15" stroke="#7ab8d4" stroke-width="1.5"></circle>
-<text fill="#1a2840" font-family="IBM Plex Mono,monospace" font-size="10" text-anchor="middle" x="150" y="223">s'</text>
-<circle cx="210" cy="218" fill="#eef4f8" r="15" stroke="#7ab8d4" stroke-width="1.5"></circle>
-<text fill="#1a2840" font-family="IBM Plex Mono,monospace" font-size="10" text-anchor="middle" x="210" y="223">s'</text>
-<!-- r + γv(s') label -->
-<text fill="#5a6a7a" font-family="IBM Plex Mono,monospace" font-size="8" text-anchor="middle" x="50" y="250">r + γv(s')</text>
-<text fill="#5a6a7a" font-family="IBM Plex Mono,monospace" font-size="8" text-anchor="middle" x="110" y="250">r + γv(s')</text>
-<text fill="#5a6a7a" font-family="IBM Plex Mono,monospace" font-size="8" text-anchor="middle" x="150" y="250">r + γv(s')</text>
-<text fill="#5a6a7a" font-family="IBM Plex Mono,monospace" font-size="8" text-anchor="middle" x="210" y="250">r + γv(s')</text>
-<text fill="#3a6a8a" font-family="IBM Plex Sans,sans-serif" font-size="11" font-weight="600" text-anchor="middle" x="130" y="295">v_π(s) backup</text>
-<!-- Divider -->
-<line stroke="#e0e8ed" stroke-dasharray="4,3" stroke-width="1" x1="265" x2="265" y1="20" y2="280"></line>
-<!-- Right panel: q_π backup -->
-<!-- Action node (s,a) at top -->
-<rect fill="#3a6a8a" height="26" opacity="0.15" rx="4" stroke="#3a6a8a" stroke-width="1.5" width="80" x="350" y="22"></rect>
-<text fill="#1a2840" font-family="IBM Plex Mono,monospace" font-size="11" font-weight="600" text-anchor="middle" x="390" y="39">s, a</text>
-<!-- Lines to s' nodes -->
-<line marker-end="url(#arr-bk)" stroke="#5a8a5a" stroke-width="1.3" x1="370" x2="330" y1="48" y2="118"></line>
-<line marker-end="url(#arr-bk)" stroke="#5a8a5a" stroke-width="1.3" x1="390" x2="390" y1="48" y2="118"></line>
-<line marker-end="url(#arr-bk)" stroke="#5a8a5a" stroke-width="1.3" x1="410" x2="450" y1="48" y2="118"></line>
-<text fill="#5a8a5a" font-family="IBM Plex Mono,monospace" font-size="8.5" x="316" y="87">p₁</text>
-<text fill="#5a8a5a" font-family="IBM Plex Mono,monospace" font-size="8.5" x="393" y="87">p₂</text>
-<text fill="#5a8a5a" font-family="IBM Plex Mono,monospace" font-size="8.5" x="435" y="87">p₃</text>
-<!-- s' nodes at middle level -->
-<circle cx="330" cy="135" fill="#eef4f8" r="15" stroke="#7ab8d4" stroke-width="1.5"></circle>
-<text fill="#1a2840" font-family="IBM Plex Mono,monospace" font-size="10" text-anchor="middle" x="330" y="140">s'</text>
-<circle cx="390" cy="135" fill="#eef4f8" r="15" stroke="#7ab8d4" stroke-width="1.5"></circle>
-<text fill="#1a2840" font-family="IBM Plex Mono,monospace" font-size="10" text-anchor="middle" x="390" y="140">s'</text>
-<circle cx="450" cy="135" fill="#eef4f8" r="15" stroke="#7ab8d4" stroke-width="1.5"></circle>
-<text fill="#1a2840" font-family="IBM Plex Mono,monospace" font-size="10" text-anchor="middle" x="450" y="140">s'</text>
-<!-- Lines to action nodes a' -->
-<line marker-end="url(#arr-bk)" stroke="#3a6a8a" stroke-width="1.2" x1="330" x2="310" y1="150" y2="210"></line>
-<line marker-end="url(#arr-bk)" stroke="#3a6a8a" stroke-width="1.2" x1="330" x2="350" y1="150" y2="210"></line>
-<text fill="#3a6a8a" font-family="IBM Plex Mono,monospace" font-size="8" x="302" y="184">π(a'|s')</text>
-<line marker-end="url(#arr-bk)" stroke="#3a6a8a" stroke-width="1.2" x1="390" x2="390" y1="150" y2="210"></line>
-<line marker-end="url(#arr-bk)" stroke="#3a6a8a" stroke-width="1.2" x1="450" x2="430" y1="150" y2="210"></line>
-<line marker-end="url(#arr-bk)" stroke="#3a6a8a" stroke-width="1.2" x1="450" x2="470" y1="150" y2="210"></line>
-<!-- a' nodes -->
-<rect fill="#3a6a8a" height="18" opacity="0.15" rx="3" stroke="#3a6a8a" stroke-width="1" width="26" x="297" y="210"></rect>
-<text fill="#1a2840" font-family="IBM Plex Mono,monospace" font-size="8.5" text-anchor="middle" x="310" y="223">a'</text>
-<rect fill="#3a6a8a" height="18" opacity="0.15" rx="3" stroke="#3a6a8a" stroke-width="1" width="26" x="337" y="210"></rect>
-<text fill="#1a2840" font-family="IBM Plex Mono,monospace" font-size="8.5" text-anchor="middle" x="350" y="223">a'</text>
-<rect fill="#3a6a8a" height="18" opacity="0.15" rx="3" stroke="#3a6a8a" stroke-width="1" width="26" x="377" y="210"></rect>
-<text fill="#1a2840" font-family="IBM Plex Mono,monospace" font-size="8.5" text-anchor="middle" x="390" y="223">a'</text>
-<rect fill="#3a6a8a" height="18" opacity="0.15" rx="3" stroke="#3a6a8a" stroke-width="1" width="26" x="417" y="210"></rect>
-<text fill="#1a2840" font-family="IBM Plex Mono,monospace" font-size="8.5" text-anchor="middle" x="430" y="223">a'</text>
-<rect fill="#3a6a8a" height="18" opacity="0.15" rx="3" stroke="#3a6a8a" stroke-width="1" width="26" x="457" y="210"></rect>
-<text fill="#1a2840" font-family="IBM Plex Mono,monospace" font-size="8.5" text-anchor="middle" x="470" y="223">a'</text>
-<text fill="#3a6a8a" font-family="IBM Plex Sans,sans-serif" font-size="11" font-weight="600" text-anchor="middle" x="390" y="275">q_π(s,a) backup</text>
-<!-- Legend -->
-<circle cx="290" cy="307" fill="#eef4f8" r="7" stroke="#7ab8d4" stroke-width="1.5"></circle>
-<text fill="#5a6a7a" font-family="IBM Plex Sans,sans-serif" font-size="9.5" x="302" y="311">state node</text>
-<rect fill="#3a6a8a" height="14" opacity="0.15" rx="3" stroke="#3a6a8a" stroke-width="1" width="14" x="370" y="300"></rect>
-<text fill="#5a6a7a" font-family="IBM Plex Sans,sans-serif" font-size="9.5" x="388" y="311">action node</text>
-<line marker-end="url(#arr-bk)" stroke="#3a6a8a" stroke-width="1.3" x1="460" x2="475" y1="307" y2="307"></line>
-<text fill="#5a6a7a" font-family="IBM Plex Sans,sans-serif" font-size="9.5" x="480" y="311">π choice</text>
-<line marker-end="url(#arr-bk)" stroke="#5a8a5a" stroke-width="1.3" x1="530" x2="545" y1="307" y2="307"></line>
-<text fill="#5a6a7a" font-family="IBM Plex Sans,sans-serif" font-size="9.5" x="550" y="311">env</text>
-</svg>
-<div style="text-align:center;font-size:12px;color:#9aabb8;margin-bottom:24px;">
+
+      <!-- SVG: v_π backup diagram -->
+      <svg viewBox="0 0 600 320" style="width:100%;max-width:600px;display:block;margin:24px auto 8px;"
+           role="img" aria-label="Backup diagram for v_π(s): state node branches to action nodes, each branches to state-prime nodes">
+        <defs>
+          <marker id="arr-bk" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <polygon points="0 0,6 3,0 6" fill="#3a6a8a"/>
+          </marker>
+        </defs>
+
+        <!-- Left panel: v_π backup -->
+        <!-- State node s -->
+        <circle cx="130" cy="40" r="18" fill="#eef4f8" stroke="#7ab8d4" stroke-width="1.8"/>
+        <text x="130" y="45" font-family="IBM Plex Mono,monospace" font-size="11" fill="#1a2840" text-anchor="middle" font-weight="600">s</text>
+
+        <!-- Lines to action nodes -->
+        <line x1="130" y1="58" x2="80" y2="118" stroke="#3a6a8a" stroke-width="1.3" marker-end="url(#arr-bk)"/>
+        <line x1="130" y1="58" x2="180" y2="118" stroke="#3a6a8a" stroke-width="1.3" marker-end="url(#arr-bk)"/>
+        <!-- π(a|s) labels -->
+        <text x="90" y="92" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#3a6a8a">π(a₁|s)</text>
+        <text x="147" y="92" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#3a6a8a">π(a₂|s)</text>
+
+        <!-- Action nodes -->
+        <rect x="62" y="118" width="36" height="22" rx="4" fill="#3a6a8a" opacity="0.15" stroke="#3a6a8a" stroke-width="1.2"/>
+        <text x="80" y="133" font-family="IBM Plex Mono,monospace" font-size="10" fill="#1a2840" text-anchor="middle">a₁</text>
+        <rect x="162" y="118" width="36" height="22" rx="4" fill="#3a6a8a" opacity="0.15" stroke="#3a6a8a" stroke-width="1.2"/>
+        <text x="180" y="133" font-family="IBM Plex Mono,monospace" font-size="10" fill="#1a2840" text-anchor="middle">a₂</text>
+
+        <!-- Lines from a₁ to s' nodes -->
+        <line x1="72" y1="140" x2="50" y2="200" stroke="#5a8a5a" stroke-width="1.2" marker-end="url(#arr-bk)"/>
+        <line x1="88" y1="140" x2="110" y2="200" stroke="#5a8a5a" stroke-width="1.2" marker-end="url(#arr-bk)"/>
+        <!-- p labels -->
+        <text x="44" y="175" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#5a8a5a">p₁</text>
+        <text x="97" y="175" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#5a8a5a">p₂</text>
+
+        <!-- Lines from a₂ to s' nodes -->
+        <line x1="170" y1="140" x2="150" y2="200" stroke="#5a8a5a" stroke-width="1.2" marker-end="url(#arr-bk)"/>
+        <line x1="190" y1="140" x2="210" y2="200" stroke="#5a8a5a" stroke-width="1.2" marker-end="url(#arr-bk)"/>
+        <text x="144" y="175" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#5a8a5a">p₃</text>
+        <text x="197" y="175" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#5a8a5a">p₄</text>
+
+        <!-- s' nodes -->
+        <circle cx="50" cy="218" r="15" fill="#eef4f8" stroke="#7ab8d4" stroke-width="1.5"/>
+        <text x="50" y="223" font-family="IBM Plex Mono,monospace" font-size="10" fill="#1a2840" text-anchor="middle">s'</text>
+        <circle cx="110" cy="218" r="15" fill="#eef4f8" stroke="#7ab8d4" stroke-width="1.5"/>
+        <text x="110" y="223" font-family="IBM Plex Mono,monospace" font-size="10" fill="#1a2840" text-anchor="middle">s'</text>
+        <circle cx="150" cy="218" r="15" fill="#eef4f8" stroke="#7ab8d4" stroke-width="1.5"/>
+        <text x="150" y="223" font-family="IBM Plex Mono,monospace" font-size="10" fill="#1a2840" text-anchor="middle">s'</text>
+        <circle cx="210" cy="218" r="15" fill="#eef4f8" stroke="#7ab8d4" stroke-width="1.5"/>
+        <text x="210" y="223" font-family="IBM Plex Mono,monospace" font-size="10" fill="#1a2840" text-anchor="middle">s'</text>
+
+        <!-- r + γv(s') label -->
+        <text x="50" y="250" font-family="IBM Plex Mono,monospace" font-size="8" fill="#5a6a7a" text-anchor="middle">r + γv(s')</text>
+        <text x="110" y="250" font-family="IBM Plex Mono,monospace" font-size="8" fill="#5a6a7a" text-anchor="middle">r + γv(s')</text>
+        <text x="150" y="250" font-family="IBM Plex Mono,monospace" font-size="8" fill="#5a6a7a" text-anchor="middle">r + γv(s')</text>
+        <text x="210" y="250" font-family="IBM Plex Mono,monospace" font-size="8" fill="#5a6a7a" text-anchor="middle">r + γv(s')</text>
+
+        <text x="130" y="295" font-family="IBM Plex Sans,sans-serif" font-size="11" fill="#3a6a8a" text-anchor="middle" font-weight="600">v_π(s) backup</text>
+
+        <!-- Divider -->
+        <line x1="265" y1="20" x2="265" y2="280" stroke="#e0e8ed" stroke-width="1" stroke-dasharray="4,3"/>
+
+        <!-- Right panel: q_π backup -->
+        <!-- Action node (s,a) at top -->
+        <rect x="350" y="22" width="80" height="26" rx="4" fill="#3a6a8a" opacity="0.15" stroke="#3a6a8a" stroke-width="1.5"/>
+        <text x="390" y="39" font-family="IBM Plex Mono,monospace" font-size="11" fill="#1a2840" text-anchor="middle" font-weight="600">s, a</text>
+
+        <!-- Lines to s' nodes -->
+        <line x1="370" y1="48" x2="330" y2="118" stroke="#5a8a5a" stroke-width="1.3" marker-end="url(#arr-bk)"/>
+        <line x1="390" y1="48" x2="390" y2="118" stroke="#5a8a5a" stroke-width="1.3" marker-end="url(#arr-bk)"/>
+        <line x1="410" y1="48" x2="450" y2="118" stroke="#5a8a5a" stroke-width="1.3" marker-end="url(#arr-bk)"/>
+        <text x="316" y="87" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#5a8a5a">p₁</text>
+        <text x="393" y="87" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#5a8a5a">p₂</text>
+        <text x="435" y="87" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#5a8a5a">p₃</text>
+
+        <!-- s' nodes at middle level -->
+        <circle cx="330" cy="135" r="15" fill="#eef4f8" stroke="#7ab8d4" stroke-width="1.5"/>
+        <text x="330" y="140" font-family="IBM Plex Mono,monospace" font-size="10" fill="#1a2840" text-anchor="middle">s'</text>
+        <circle cx="390" cy="135" r="15" fill="#eef4f8" stroke="#7ab8d4" stroke-width="1.5"/>
+        <text x="390" y="140" font-family="IBM Plex Mono,monospace" font-size="10" fill="#1a2840" text-anchor="middle">s'</text>
+        <circle cx="450" cy="135" r="15" fill="#eef4f8" stroke="#7ab8d4" stroke-width="1.5"/>
+        <text x="450" y="140" font-family="IBM Plex Mono,monospace" font-size="10" fill="#1a2840" text-anchor="middle">s'</text>
+
+        <!-- Lines to action nodes a' -->
+        <line x1="330" y1="150" x2="310" y2="210" stroke="#3a6a8a" stroke-width="1.2" marker-end="url(#arr-bk)"/>
+        <line x1="330" y1="150" x2="350" y2="210" stroke="#3a6a8a" stroke-width="1.2" marker-end="url(#arr-bk)"/>
+        <text x="302" y="184" font-family="IBM Plex Mono,monospace" font-size="8" fill="#3a6a8a">π(a'|s')</text>
+
+        <line x1="390" y1="150" x2="390" y2="210" stroke="#3a6a8a" stroke-width="1.2" marker-end="url(#arr-bk)"/>
+        <line x1="450" y1="150" x2="430" y2="210" stroke="#3a6a8a" stroke-width="1.2" marker-end="url(#arr-bk)"/>
+        <line x1="450" y1="150" x2="470" y2="210" stroke="#3a6a8a" stroke-width="1.2" marker-end="url(#arr-bk)"/>
+
+        <!-- a' nodes -->
+        <rect x="297" y="210" width="26" height="18" rx="3" fill="#3a6a8a" opacity="0.15" stroke="#3a6a8a" stroke-width="1"/>
+        <text x="310" y="223" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#1a2840" text-anchor="middle">a'</text>
+        <rect x="337" y="210" width="26" height="18" rx="3" fill="#3a6a8a" opacity="0.15" stroke="#3a6a8a" stroke-width="1"/>
+        <text x="350" y="223" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#1a2840" text-anchor="middle">a'</text>
+        <rect x="377" y="210" width="26" height="18" rx="3" fill="#3a6a8a" opacity="0.15" stroke="#3a6a8a" stroke-width="1"/>
+        <text x="390" y="223" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#1a2840" text-anchor="middle">a'</text>
+        <rect x="417" y="210" width="26" height="18" rx="3" fill="#3a6a8a" opacity="0.15" stroke="#3a6a8a" stroke-width="1"/>
+        <text x="430" y="223" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#1a2840" text-anchor="middle">a'</text>
+        <rect x="457" y="210" width="26" height="18" rx="3" fill="#3a6a8a" opacity="0.15" stroke="#3a6a8a" stroke-width="1"/>
+        <text x="470" y="223" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#1a2840" text-anchor="middle">a'</text>
+
+        <text x="390" y="275" font-family="IBM Plex Sans,sans-serif" font-size="11" fill="#3a6a8a" text-anchor="middle" font-weight="600">q_π(s,a) backup</text>
+
+        <!-- Legend -->
+        <circle cx="290" cy="307" r="7" fill="#eef4f8" stroke="#7ab8d4" stroke-width="1.5"/>
+        <text x="302" y="311" font-family="IBM Plex Sans,sans-serif" font-size="9.5" fill="#5a6a7a">state node</text>
+        <rect x="370" y="300" width="14" height="14" rx="3" fill="#3a6a8a" opacity="0.15" stroke="#3a6a8a" stroke-width="1"/>
+        <text x="388" y="311" font-family="IBM Plex Sans,sans-serif" font-size="9.5" fill="#5a6a7a">action node</text>
+        <line x1="460" y1="307" x2="475" y2="307" stroke="#3a6a8a" stroke-width="1.3" marker-end="url(#arr-bk)"/>
+        <text x="480" y="311" font-family="IBM Plex Sans,sans-serif" font-size="9.5" fill="#5a6a7a">π choice</text>
+        <line x1="530" y1="307" x2="545" y2="307" stroke="#5a8a5a" stroke-width="1.3" marker-end="url(#arr-bk)"/>
+        <text x="550" y="311" font-family="IBM Plex Sans,sans-serif" font-size="9.5" fill="#5a6a7a">env</text>
+      </svg>
+      <div style="text-align:center;font-size:12px;color:#9aabb8;margin-bottom:24px;">
         Left: backup diagram for $v_\pi(s)$ — the policy selects an action (blue edges),
         the environment selects a next state and reward (green edges). Right: backup for
         $q_\pi(s,a)$ — starts with an action choice, then fans out to next states, then
         the policy fans out over next actions.
       </div>
-<div class="prose">
+
+      <div class="prose">
         The diagram makes the Bellman equation visual: to back up a value into $v_\pi(s)$,
         you need one level of policy averaging and one level of environment averaging. The
         leaves of the one-step tree are the $v_\pi(s')$ values — which are themselves backed
@@ -342,200 +402,230 @@
         the consistency condition it expresses is that these definitions must all agree
         simultaneously across all states.
       </div>
-<!-- ── Optimal value functions ───────────────────────────── -->
-<div class="section-head" id="optimal">Optimal value functions</div>
-<div class="prose">
+
+      <!-- ── Optimal value functions ───────────────────────────── -->
+      <div class="section-head" id="optimal">Optimal value functions</div>
+
+      <div class="prose">
         Among all possible policies for a finite MDP, there exists at least one
         <strong>optimal policy</strong> $\pi^*$ that achieves the highest possible expected
         return from every state simultaneously. The value functions under $\pi^*$ are the
         <strong>optimal value functions</strong>:
       </div>
-<div class="math-block">
+
+      <div class="math-block">
         $$v_*(s) = \max_\pi\; v_\pi(s) \qquad \text{for all } s \in \mathcal{S}$$
       </div>
-<div class="math-block">
+
+      <div class="math-block">
         $$q_*(s, a) = \max_\pi\; q_\pi(s, a) \qquad \text{for all } s \in \mathcal{S},\; a \in \mathcal{A}$$
       </div>
-<div class="prose">
+
+      <div class="prose">
         The existence of a single policy that simultaneously maximises value in every state
         is not obvious — it is a theorem. The key is the partial ordering of policies: if
         $v_{\pi'}(s) \geq v_\pi(s)$ for all $s$, then $\pi' \geq \pi$. It can be shown that
         the partial order is always resolvable, so a globally optimal $\pi^*$ always exists.
       </div>
-<div class="prose">
+
+      <div class="prose">
         The relationship between $v_*$ and $q_*$ is the same as before, but the policy
         averaging collapses into a max:
       </div>
-<div class="math-block">
+
+      <div class="math-block">
         $$v_*(s) = \max_a\; q_*(s, a)$$
       </div>
-<div class="prose">
+
+      <div class="prose">
         The optimal state-value is just the highest action-value available from that state.
         An optimal deterministic policy is to act greedily with respect to $q_*$: in every
         state, take the action with the highest $q_*$ value.
       </div>
-<!-- ── Bellman optimality equations ─────────────────────── -->
-<div class="section-head" id="bellman-optimality">Bellman optimality equations</div>
-<div class="prose">
+
+      <!-- ── Bellman optimality equations ─────────────────────── -->
+      <div class="section-head" id="bellman-optimality">Bellman optimality equations</div>
+
+      <div class="prose">
         Substituting the greedy relationship into the backup for $q_*$ gives the
         <strong>Bellman optimality equations</strong>:
       </div>
-<div class="math-block">
+
+      <div class="math-block">
         $$v_*(s) = \max_a \sum_{s',\, r} p(s', r \mid s, a)\;\bigl[r + \gamma\, v_*(s')\bigr]$$
       </div>
-<div class="math-block">
+
+      <div class="math-block">
         $$q_*(s, a) = \sum_{s',\, r} p(s', r \mid s, a)\;\Bigl[r + \gamma\,\max_{a'}\; q_*(s', a')\Bigr]$$
       </div>
-<div class="prose">
+
+      <div class="prose">
         These look similar to the Bellman expectation equations, with one crucial difference:
         the policy averaging $\sum_a \pi(a \mid s)$ has been replaced by $\max_a$. This
         makes the system <em>nonlinear</em> — no longer a simple set of linear equations.
         The max operator couples the equations in a way that cannot be resolved by matrix
         algebra alone.
       </div>
-<div class="proof-box">
-<div class="proof-header">Proof — Bellman optimality equations have a unique solution (contraction mapping)</div>
-<div class="proof-body">
-<p>Define the <strong>Bellman optimality operator</strong> $\mathcal{T}: \mathbb{R}^{|\mathcal{S}|} \to \mathbb{R}^{|\mathcal{S}|}$ by:
+
+      <div class="proof-box">
+        <div class="proof-header">Proof — Bellman optimality equations have a unique solution (contraction mapping)</div>
+        <div class="proof-body">
+          <p>Define the <strong>Bellman optimality operator</strong> $\mathcal{T}: \mathbb{R}^{|\mathcal{S}|} \to \mathbb{R}^{|\mathcal{S}|}$ by:
           $$(\mathcal{T}v)(s) = \max_a \sum_{s',r} p(s',r \mid s,a)\bigl[r + \gamma v(s')\bigr]$$
           We claim $\mathcal{T}$ is a $\gamma$-contraction under the $\sup$-norm $\|v\|_\infty = \max_s |v(s)|$.</p>
-<p><strong>Contraction.</strong> For any two value functions $u, v$:
+          <p><strong>Contraction.</strong> For any two value functions $u, v$:
           $$|(\mathcal{T}u)(s) - (\mathcal{T}v)(s)| = \left|\max_a \mathbb{E}[\gamma u(s')] - \max_a \mathbb{E}[\gamma v(s')]\right|$$
           Using $|\max_a f(a) - \max_a g(a)| \leq \max_a |f(a) - g(a)|$:
           $$\leq \gamma \max_a \mathbb{E}[|u(s') - v(s')|] \leq \gamma \|u - v\|_\infty$$
-          So $\|\mathcal{T}u - \mathcal{T}v\|_\infty \leq \gamma\|u-v\|_\infty$. Since $\gamma &lt; 1$, $\mathcal{T}$ is a strict contraction.</p>
-<p><strong>Banach fixed-point theorem.</strong> Any strict contraction on a complete metric space has a <em>unique</em> fixed point, and repeated application $v_{k+1} = \mathcal{T}v_k$ converges to it from any starting $v_0$. The fixed point satisfies $v_* = \mathcal{T}v_*$, which is exactly the Bellman optimality equation. $\blacksquare$</p>
-<p style="color:#9aabb8;font-size:12px;margin-top:8px;">This also proves that <strong>value iteration converges</strong> (Lesson 5): each application of $\mathcal{T}$ halves the error by $\gamma$, so convergence is geometric.</p>
-</div>
-</div>
-<div class="callout">
-<strong>Optimal backup diagrams.</strong> The backup diagram for $v_*(s)$ has a
+          So $\|\mathcal{T}u - \mathcal{T}v\|_\infty \leq \gamma\|u-v\|_\infty$. Since $\gamma < 1$, $\mathcal{T}$ is a strict contraction.</p>
+          <p><strong>Banach fixed-point theorem.</strong> Any strict contraction on a complete metric space has a <em>unique</em> fixed point, and repeated application $v_{k+1} = \mathcal{T}v_k$ converges to it from any starting $v_0$. The fixed point satisfies $v_* = \mathcal{T}v_*$, which is exactly the Bellman optimality equation. $\blacksquare$</p>
+          <p style="color:#9aabb8;font-size:12px;margin-top:8px;">This also proves that <strong>value iteration converges</strong> (Lesson 5): each application of $\mathcal{T}$ halves the error by $\gamma$, so convergence is geometric.</p>
+        </div>
+      </div>
+
+      <div class="callout">
+        <strong>Optimal backup diagrams.</strong> The backup diagram for $v_*(s)$ has a
         flat arc (max over actions) instead of the weighted sum over $\pi(a|s)$. This is
         the distinguishing visual feature: expectation backups average over actions; optimality
         backups maximise over them.
       </div>
-<!-- ── Worked example ──────────────────────────────────────── -->
-<div class="section-head" id="worked-example">Worked example: value functions for the recycling robot</div>
-<div class="example-box">
-<div class="example-header"><strong>Example 1 — Comparing two policies on the recycling robot</strong></div>
-<div class="example-problem">
+
+      <!-- ── Worked example ──────────────────────────────────────── -->
+      <div class="section-head" id="worked-example">Worked example: value functions for the recycling robot</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Comparing two policies on the recycling robot</strong></div>
+        <div class="example-problem">
           Using the recycling robot MDP from Lesson 3 ($\alpha = 0.7$, $\beta = 0.4$,
           $r_\text{search} = 2$, $r_\text{wait} = 1$, $r_\text{rescue} = -3$, $\gamma = 0.9$),
           compute $v_\pi$ for two specific policies and determine which dominates.
         </div>
-<div class="example-body">
-<div class="prose">
-<strong>Policy A</strong> — always search from high, always recharge from low.
+        <div class="example-body">
+
+          <div class="prose">
+            <strong>Policy A</strong> — always search from high, always recharge from low.
             Under this policy the Bellman equations are:
           </div>
-<div class="example-block">
-<div class="ex-title">Policy A: search/high, recharge/low · γ = 0.9</div>
-<div class="prose" style="margin:0 0 10px;font-size:13.5px;">
+
+          <div class="example-block">
+            <div class="ex-title">Policy A: search/high, recharge/low · γ = 0.9</div>
+            <div class="prose" style="margin:0 0 10px;font-size:13.5px;">
               From <strong>high</strong>, search always: reward is 2 regardless of outcome.
               Transitions: high→high with 0.7, high→low with 0.3.
             </div>
-<div class="math-block" style="margin:8px 0;">$$v_\pi(\text{high}) = 2 + 0.9\bigl[0.7\cdot v_\pi(\text{high}) + 0.3\cdot v_\pi(\text{low})\bigr]$$</div>
-<div class="prose" style="margin:0 0 10px;font-size:13.5px;">
+            <div class="math-block" style="margin:8px 0;">$$v_\pi(\text{high}) = 2 + 0.9\bigl[0.7\cdot v_\pi(\text{high}) + 0.3\cdot v_\pi(\text{low})\bigr]$$</div>
+            <div class="prose" style="margin:0 0 10px;font-size:13.5px;">
               From <strong>low</strong>, recharge always: reward is 0, always→high.
             </div>
-<div class="math-block" style="margin:8px 0;">$$v_\pi(\text{low}) = 0 + 0.9\cdot v_\pi(\text{high})$$</div>
-<div class="prose" style="margin:10px 0 6px;font-size:13.5px;"><strong>Solve:</strong></div>
-<div class="prose" style="font-size:13.5px;color:#3a4a5a;line-height:1.9;font-family:'IBM Plex Mono',monospace;">
-              Substitute $v_\pi(\text{low}) = 0.9\,v_\pi(\text{high})$:<br/>
-              $v_\pi(\text{high}) = 2 + 0.9[0.7 + 0.3 \times 0.9]\,v_\pi(\text{high})$<br/>
-              $v_\pi(\text{high}) = 2 + 0.9 \times 0.97\,v_\pi(\text{high})$<br/>
-              $v_\pi(\text{high})(1 - 0.873) = 2$<br/>
-              $v_\pi(\text{high}) = 2 / 0.127 \approx \mathbf{15.75}$<br/>
+            <div class="math-block" style="margin:8px 0;">$$v_\pi(\text{low}) = 0 + 0.9\cdot v_\pi(\text{high})$$</div>
+            <div class="prose" style="margin:10px 0 6px;font-size:13.5px;"><strong>Solve:</strong></div>
+            <div class="prose" style="font-size:13.5px;color:#3a4a5a;line-height:1.9;font-family:'IBM Plex Mono',monospace;">
+              Substitute $v_\pi(\text{low}) = 0.9\,v_\pi(\text{high})$:<br>
+              $v_\pi(\text{high}) = 2 + 0.9[0.7 + 0.3 \times 0.9]\,v_\pi(\text{high})$<br>
+              $v_\pi(\text{high}) = 2 + 0.9 \times 0.97\,v_\pi(\text{high})$<br>
+              $v_\pi(\text{high})(1 - 0.873) = 2$<br>
+              $v_\pi(\text{high}) = 2 / 0.127 \approx \mathbf{15.75}$<br>
               $v_\pi(\text{low}) = 0.9 \times 15.75 \approx \mathbf{14.17}$
             </div>
-</div>
-<div class="prose">
-<strong>Policy B</strong> — always search from high, always search from low (risky).
+          </div>
+
+          <div class="prose">
+            <strong>Policy B</strong> — always search from high, always search from low (risky).
             Under this policy:
           </div>
-<div class="example-block">
-<div class="ex-title">Policy B: search/high, search/low · γ = 0.9</div>
-<div class="prose" style="font-size:13.5px;margin:0 0 10px;">
+
+          <div class="example-block">
+            <div class="ex-title">Policy B: search/high, search/low · γ = 0.9</div>
+            <div class="prose" style="font-size:13.5px;margin:0 0 10px;">
               From <strong>low</strong>, search: $r(\text{low,search}) = 0.6(-3) + 0.4(2) = -1$.
               Transitions: low→high with 0.6, low→low with 0.4.
             </div>
-<div class="math-block" style="margin:8px 0;">$$v_\pi(\text{high}) = 2 + 0.9[0.7\,v_h + 0.3\,v_l]$$</div>
-<div class="math-block" style="margin:8px 0;">$$v_\pi(\text{low}) = -1 + 0.9[0.6\,v_h + 0.4\,v_l]$$</div>
-<div class="prose" style="margin:10px 0 6px;font-size:13.5px;"><strong>Solve the 2×2 linear system:</strong></div>
-<div class="prose" style="font-size:13.5px;color:#3a4a5a;line-height:1.9;font-family:'IBM Plex Mono',monospace;">
-              $0.37\,v_h - 0.27\,v_l = 2$   ...(1)<br/>
-              $-0.54\,v_h + 0.64\,v_l = -1$  ...(2)<br/><br/>
-              From (2): $v_l = (-1 + 0.54\,v_h)\,/\,0.64$<br/>
-              Sub into (1): $0.37\,v_h - 0.27(-1+0.54\,v_h)/0.64 = 2$<br/>
-              $0.091\,v_h = 1.01$<br/>
-              $v_\pi(\text{high}) \approx \mathbf{11.10}$,   $v_\pi(\text{low}) \approx \mathbf{7.80}$
+            <div class="math-block" style="margin:8px 0;">$$v_\pi(\text{high}) = 2 + 0.9[0.7\,v_h + 0.3\,v_l]$$</div>
+            <div class="math-block" style="margin:8px 0;">$$v_\pi(\text{low}) = -1 + 0.9[0.6\,v_h + 0.4\,v_l]$$</div>
+            <div class="prose" style="margin:10px 0 6px;font-size:13.5px;"><strong>Solve the 2×2 linear system:</strong></div>
+            <div class="prose" style="font-size:13.5px;color:#3a4a5a;line-height:1.9;font-family:'IBM Plex Mono',monospace;">
+              $0.37\,v_h - 0.27\,v_l = 2$ &nbsp;&nbsp;...(1)<br>
+              $-0.54\,v_h + 0.64\,v_l = -1$ &nbsp;...(2)<br><br>
+              From (2): $v_l = (-1 + 0.54\,v_h)\,/\,0.64$<br>
+              Sub into (1): $0.37\,v_h - 0.27(-1+0.54\,v_h)/0.64 = 2$<br>
+              $0.091\,v_h = 1.01$<br>
+              $v_\pi(\text{high}) \approx \mathbf{11.10}$, &nbsp; $v_\pi(\text{low}) \approx \mathbf{7.80}$
             </div>
-</div>
-<div class="callout">
-<strong>Comparison.</strong> Policy A (search/recharge): $v_\pi(\text{high}) = 15.75$,
+          </div>
+
+          <div class="callout">
+            <strong>Comparison.</strong> Policy A (search/recharge): $v_\pi(\text{high}) = 15.75$,
             $v_\pi(\text{low}) = 14.17$. Policy B (search/search): $v_\pi(\text{high}) = 11.10$,
             $v_\pi(\text{low}) = 7.80$. Policy A dominates Policy B in every state — the expected
             penalty of running flat is too high to justify searching from low battery.
             This is exactly the kind of comparison value functions make possible: given two policies,
             compute their values and pick the better one.
           </div>
-</div>
-</div>
-<!-- ── Interactive explorer ────────────────────────────────── -->
-<div class="section-head" id="explorer">Policy value explorer — recycling robot</div>
-<div class="prose">
+
+        </div>
+      </div>
+
+      <!-- ── Interactive explorer ────────────────────────────────── -->
+      <div class="section-head" id="explorer">Policy value explorer — recycling robot</div>
+
+      <div class="prose">
         Adjust the policy (what to do from each battery state) and the discount factor to see
         how $v_\pi(\text{high})$ and $v_\pi(\text{low})$ change. The Bellman equations are
         shown with numbers filled in — verify that the displayed values satisfy them.
       </div>
-<div class="interactive" id="vf-explorer">
-<div class="int-title">Recycling robot — policy value explorer</div>
-<div class="int-controls">
-<span class="int-label"><strong>From high:</strong></span>
-<label style="font-family:'IBM Plex Sans',sans-serif;font-size:12.5px;color:#3a4a5a;display:flex;align-items:center;gap:5px;">
-<input id="ph" max="1" min="0" oninput="vfUpdate()" step="0.05" style="width:110px;" type="range" value="1.00"/>
-<span style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:#1a2840;min-width:5em;">
+
+      <div class="interactive" id="vf-explorer">
+        <div class="int-title">Recycling robot — policy value explorer</div>
+
+        <div class="int-controls">
+          <span class="int-label"><strong>From high:</strong></span>
+          <label style="font-family:'IBM Plex Sans',sans-serif;font-size:12.5px;color:#3a4a5a;display:flex;align-items:center;gap:5px;">
+            <input type="range" id="ph" min="0" max="1" step="0.05" value="1.00" style="width:110px;" oninput="vfUpdate()">
+            <span style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:#1a2840;min-width:5em;">
               p(search)=<span id="ph-val">1.00</span>
-</span>
-</label>
-</div>
-<div class="int-controls">
-<span class="int-label"><strong>From low:</strong></span>
-<label style="font-family:'IBM Plex Sans',sans-serif;font-size:12.5px;color:#3a4a5a;display:flex;align-items:center;gap:5px;">
-<input id="pl" max="1" min="0" oninput="vfUpdate()" step="0.05" style="width:110px;" type="range" value="0.00"/>
-<span style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:#1a2840;min-width:5em;">
+            </span>
+          </label>
+        </div>
+        <div class="int-controls">
+          <span class="int-label"><strong>From low:</strong></span>
+          <label style="font-family:'IBM Plex Sans',sans-serif;font-size:12.5px;color:#3a4a5a;display:flex;align-items:center;gap:5px;">
+            <input type="range" id="pl" min="0" max="1" step="0.05" value="0.00" style="width:110px;" oninput="vfUpdate()">
+            <span style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:#1a2840;min-width:5em;">
               p(search)=<span id="pl-val">0.00</span>
-</span>
-</label>
-</div>
-<div class="int-controls">
-<span class="int-label"><strong>γ =</strong></span>
-<input id="vfgamma" max="0.99" min="0.5" oninput="vfUpdate()" step="0.01" style="width:120px;" type="range" value="0.90"/>
-<span class="int-label" id="vfgamma-val" style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:#1a2840;min-width:3em;">0.90</span>
-</div>
-<table class="int-table" style="margin-top:8px;">
-<thead><tr>
-<th>State</th><th>Bellman equation</th><th style="width:90px;">v_π(s)</th>
-</tr></thead>
-<tbody>
-<tr>
-<td style="text-align:left;font-family:'IBM Plex Sans',sans-serif;">high</td>
-<td id="vf-eq-h" style="text-align:left;font-size:11.5px;">—</td>
-<td id="vf-vh" style="font-weight:600;color:#3a6a8a;">—</td>
-</tr>
-<tr style="background:#f8f9fb;">
-<td style="text-align:left;font-family:'IBM Plex Sans',sans-serif;">low</td>
-<td id="vf-eq-l" style="text-align:left;font-size:11.5px;">—</td>
-<td id="vf-vl" style="font-weight:600;color:#3a6a8a;">—</td>
-</tr>
-</tbody>
-</table>
-<div class="int-stat" style="margin-top:10px;font-size:12px;">
-          Better policy from high: <span id="vf-best-h">—</span>  | 
+            </span>
+          </label>
+        </div>
+        <div class="int-controls">
+          <span class="int-label"><strong>γ =</strong></span>
+          <input type="range" id="vfgamma" min="0.5" max="0.99" step="0.01" value="0.90" style="width:120px;" oninput="vfUpdate()">
+          <span class="int-label" id="vfgamma-val" style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:#1a2840;min-width:3em;">0.90</span>
+        </div>
+
+        <table class="int-table" style="margin-top:8px;">
+          <thead><tr>
+            <th>State</th><th>Bellman equation</th><th style="width:90px;">v_π(s)</th>
+          </tr></thead>
+          <tbody>
+            <tr>
+              <td style="text-align:left;font-family:'IBM Plex Sans',sans-serif;">high</td>
+              <td style="text-align:left;font-size:11.5px;" id="vf-eq-h">—</td>
+              <td id="vf-vh" style="font-weight:600;color:#3a6a8a;">—</td>
+            </tr>
+            <tr style="background:#f8f9fb;">
+              <td style="text-align:left;font-family:'IBM Plex Sans',sans-serif;">low</td>
+              <td style="text-align:left;font-size:11.5px;" id="vf-eq-l">—</td>
+              <td id="vf-vl" style="font-weight:600;color:#3a6a8a;">—</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="int-stat" style="margin-top:10px;font-size:12px;">
+          Better policy from high: <span id="vf-best-h">—</span> &nbsp;|&nbsp;
           Better policy from low: <span id="vf-best-l">—</span>
-</div>
-</div>
-<script>
+        </div>
+      </div>
+
+      <script>
       function vfUpdate() {
         var ph  = parseFloat(document.getElementById('ph').value);
         var pl  = parseFloat(document.getElementById('pl').value);
@@ -607,30 +697,34 @@
       }
       document.addEventListener('DOMContentLoaded', vfUpdate);
       </script>
-<!-- ── Why not just solve this? ──────────────────────────── -->
-<div class="section-head" id="tractability">Why we can't just solve the Bellman equations</div>
-<div class="prose">
+
+      <!-- ── Why not just solve this? ──────────────────────────── -->
+      <div class="section-head" id="tractability">Why we can't just solve the Bellman equations</div>
+
+      <div class="prose">
         For small, fully-known MDPs like the recycling robot, solving the Bellman equations
         as a linear system is perfectly feasible. But for realistic problems, this approach
         breaks down on three fronts:
       </div>
-<ul class="prose" style="padding-left:1.4em;">
-<li style="margin-bottom:10px;"><strong>The model is usually unknown.</strong> The dynamics
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:10px;"><strong>The model is usually unknown.</strong> The dynamics
           function $p(s',r \mid s,a)$ is the complete rulebook of the environment. For a robot
           navigating a physical space, a game with complex rules, or a financial market, no such
           rulebook exists in closed form. We can sample trajectories, but we cannot write down
           $p$.</li>
-<li style="margin-bottom:10px;"><strong>The state space is enormous.</strong> A backgammon
+        <li style="margin-bottom:10px;"><strong>The state space is enormous.</strong> A backgammon
           game has roughly $10^{20}$ states; Go has about $10^{170}$. A linear system with
           $10^{20}$ equations is not just computationally infeasible — it cannot even be stored.
           This is the <em>curse of dimensionality</em>: state spaces grow exponentially with the
           number of variables describing the system.</li>
-<li style="margin-bottom:10px;"><strong>The optimality equations are nonlinear.</strong>
+        <li style="margin-bottom:10px;"><strong>The optimality equations are nonlinear.</strong>
           Even if the model is known and the state space is manageable, the Bellman optimality
           equations involve a $\max_a$ that makes the system nonlinear, ruling out direct
           matrix-based solutions.</li>
-</ul>
-<div class="prose">
+      </ul>
+
+      <div class="prose">
         Each of these obstacles motivates a different class of algorithms. <strong>Lesson 5
         (Dynamic Programming)</strong> assumes the model is known and iteratively solves the
         Bellman equations rather than setting up the full linear system. <strong>Lesson 6
@@ -640,28 +734,31 @@
         updates of DP. <strong>Lesson 8 (Function Approximation)</strong> addresses the
         large-state-space problem by parameterising the value function.
       </div>
-<!-- ── Food for thought ──────────────────────────────────── -->
-<div class="section-head" id="food-for-thought">Food for thought</div>
-<div class="fft-block">
-<div class="fft-title">Reflection questions</div>
-<ol>
-<li class="fft-item">The Bellman equations form a linear system $v = r + \gamma P v$, where $P$ is the
+
+      <!-- ── Food for thought ──────────────────────────────────── -->
+      <div class="section-head" id="food-for-thought">Food for thought</div>
+
+      <div class="fft-block">
+        <div class="fft-title">Reflection questions</div>
+        <ol>
+          <li class="fft-item">The Bellman equations form a linear system $v = r + \gamma P v$, where $P$ is the
             transition matrix under policy $\pi$ and $r$ is the expected reward vector. The solution
             is $v = (I - \gamma P)^{-1} r$. Why is $I - \gamma P$ guaranteed to be invertible
-            for $\gamma &lt; 1$? What happens at $\gamma = 1$ for a continuing task with no
+            for $\gamma < 1$? What happens at $\gamma = 1$ for a continuing task with no
             absorbing state?
                           <div class="fft-answer">
                 The stochastic transition matrix $P$ has spectral radius exactly 1 (all eigenvalues
-                satisfy $|\lambda| \leq 1$; the dominant eigenvalue is 1). Scaling by $\gamma &lt; 1$
-                shrinks the spectral radius to $\gamma &lt; 1$. By the Neumann series,
+                satisfy $|\lambda| \leq 1$; the dominant eigenvalue is 1). Scaling by $\gamma < 1$
+                shrinks the spectral radius to $\gamma < 1$. By the Neumann series,
                 $(I - M)^{-1} = \sum_{k=0}^\infty M^k$ converges whenever the spectral radius of
                 $M$ is less than 1 — so $(I - \gamma P)$ is invertible. At $\gamma = 1$, if $P$ is
                 irreducible (continuing task, no absorbing state), eigenvalue 1 of $P$ means $I - P$
                 has a zero eigenvalue and is singular. The linear system has no unique solution —
                 undiscounted values diverge for a task that never terminates.
               </div>
-</li>
-<li class="fft-item">An agent knows $v_*(s)$ for every state but does <em>not</em> know $q_*(s,a)$ or
+            
+          </li>
+          <li class="fft-item">An agent knows $v_*(s)$ for every state but does <em>not</em> know $q_*(s,a)$ or
             the dynamics $p(s',r|s,a)$. Can it still recover the optimal policy? If yes, how?
             If no, why not?
                           <div class="fft-answer">
@@ -673,8 +770,9 @@
                 model-free RL algorithm, prefer learning $q$ over $v$ — unless you separately
                 learn a model of the environment.
               </div>
-</li>
-<li class="fft-item">Consider an MDP where all reward is received only at terminal states (zero reward
+            
+          </li>
+          <li class="fft-item">Consider an MDP where all reward is received only at terminal states (zero reward
             everywhere else). How does the value function behave as $\gamma \to 0$ vs
             $\gamma \to 1$? What does this tell you about the role of discounting in
             credit assignment?
@@ -691,70 +789,81 @@
                 over arbitrarily long horizons. Sparse-reward tasks (reward only at goal)
                 require $\gamma$ close to 1.
               </div>
-</li>
-</ol>
-</div>
-<!-- ── Common pitfalls ───────────────────────────────────── -->
-<div class="section-head" id="pitfalls">Common pitfalls</div>
-<div class="pitfalls-block">
-<div class="pitfalls-title">Mistakes worth knowing about in advance</div>
-<ul>
-<li><span class="pitfall-name">Confusing $v_\pi$ with $v_*$.</span>
+            
+          </li>
+        </ol>
+      </div>
+
+      <!-- ── Common pitfalls ───────────────────────────────────── -->
+      <div class="section-head" id="pitfalls">Common pitfalls</div>
+
+      <div class="pitfalls-block">
+        <div class="pitfalls-title">Mistakes worth knowing about in advance</div>
+        <ul>
+          <li><span class="pitfall-name">Confusing $v_\pi$ with $v_*$.</span>
             $v_\pi(s)$ is the value of state $s$ under a <em>specific</em> policy $\pi$ —
             it changes if you change $\pi$. $v_*(s)$ is the maximum value achievable from $s$
             across <em>all</em> policies. Most algorithms estimate $v_\pi$ for some $\pi$ and
             then improve $\pi$; don't assume your estimated value function is already optimal.</li>
-<li><span class="pitfall-name">The Bellman equation is a characterisation, not an algorithm.</span>
+          <li><span class="pitfall-name">The Bellman equation is a characterisation, not an algorithm.</span>
             The Bellman expectation equation tells you what $v_\pi$ must look like — it is a
             constraint. It does not tell you how to compute $v_\pi$. The algorithms in
             Lessons 5–7 use the Bellman equation as their update target, but the method of
             computing iterative updates is an additional idea on top.</li>
-<li><span class="pitfall-name">Greedy with respect to $v_\pi \neq$ greedy with respect to $v_*$.</span>
+          <li><span class="pitfall-name">Greedy with respect to $v_\pi \neq$ greedy with respect to $v_*$.</span>
             Acting greedily with respect to the current $v_\pi$ (choosing the action that
             maximises $r + \gamma v_\pi(s')$) improves the policy but does not produce the
             optimal policy in one step. You need to re-evaluate and re-improve repeatedly;
             this is the policy iteration loop of Lesson 5.</li>
-<li><span class="pitfall-name">Assuming the optimal policy is unique.</span>
+          <li><span class="pitfall-name">Assuming the optimal policy is unique.</span>
             Multiple policies can achieve $v_*$ simultaneously — ties in action values are
             common, and any tie-breaking rule yields an optimal policy. The optimal value
             function $v_*$ is unique; the optimal policy is not necessarily.</li>
-</ul>
-</div>
-<!-- ── Connects to ────────────────────────────────────────── -->
-<div class="connects-to">
-<div class="connects-to-label">Connects to</div>
-<ul>
-<li><strong>Probability Theory</strong> — the Bellman equation derivation uses the
+        </ul>
+      </div>
+
+      <!-- ── Connects to ────────────────────────────────────────── -->
+      <div class="connects-to">
+        <div class="connects-to-label">Connects to</div>
+        <ul>
+          <li><strong>Probability Theory</strong> — the Bellman equation derivation uses the
             tower property of conditional expectation: $\mathbb{E}[G_{t+1} \mid S_t = s] =
             \sum_{s'} \Pr\{S_{t+1}=s' \mid S_t=s\}\,\mathbb{E}[G_{t+1} \mid S_{t+1}=s']$.
             Understanding this step requires fluency with conditional expectations.</li>
-<li><strong>Linear Algebra</strong> — the Bellman expectation equations form the
+          <li><strong>Linear Algebra</strong> — the Bellman expectation equations form the
             linear system $v = r + \gamma P v$, where $P$ is the policy-weighted transition
             matrix. The solution $(I - \gamma P)^{-1}r$ exists and is unique because
-            $\|{\gamma P}\| &lt; 1$ when $\gamma &lt; 1$; this is the Neumann series argument.</li>
-<li><strong>Control Theory</strong> — the Bellman optimality equation is the
+            $\|{\gamma P}\| < 1$ when $\gamma < 1$; this is the Neumann series argument.</li>
+          <li><strong>Control Theory</strong> — the Bellman optimality equation is the
             discrete-time analog of the Hamilton-Jacobi-Bellman (HJB) equation in continuous
             optimal control. LQR (Lesson 13 of Control Theory) solves the HJB for linear
             dynamics with quadratic cost — it is RL's Bellman equation made tractable by
             algebraic structure.</li>
-</ul>
-</div>
-<hr class="lesson-rule"/>
-<div class="section-head">References</div>
-<ul class="prose" style="padding-left:1.4em;font-size:13.5px;color:#5a6a7a;">
-<li style="margin-bottom:6px;">R. S. Sutton &amp; A. G. Barto, <em>Reinforcement Learning: An Introduction</em>
+        </ul>
+      </div>
+
+      <hr class="lesson-rule">
+
+      <div class="section-head">References</div>
+      <ul class="prose" style="padding-left:1.4em;font-size:13.5px;color:#5a6a7a;">
+        <li style="margin-bottom:6px;">R. S. Sutton &amp; A. G. Barto, <em>Reinforcement Learning: An Introduction</em>
           (2nd ed.) — Chapter 3, Sections 3.5–3.8: value functions, the Bellman expectation
           equation, optimal value functions, and Bellman optimality. Backup diagrams are introduced
           in Section 3.5. The grid world value function is worked out in Example 3.8.</li>
-</ul>
-<div id="lesson-nav"></div>
-</div><!-- /main -->
-</div><!-- /page-body -->
+      </ul>
+
+      <div id="lesson-nav"></div>
+
+    </div><!-- /main -->
+
+  </div><!-- /page-body -->
 </div><!-- /site-wrap -->
+
 <footer class="site-footer">
-<span>elee03.github.io/notes</span>
-<span>Est. MMXXVI</span>
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
 </footer>
-<script src="../notes-nav.js"></script>
+
+    <script src="../notes-nav.js"></script>
 </body>
 </html>

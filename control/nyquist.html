@@ -1,18 +1,17 @@
 ﻿<!DOCTYPE html>
-
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Nyquist Criterion &amp; Stability Margins — Field Notes</title>
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
-<link href="../style.css" rel="stylesheet"/>
-<link href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" rel="stylesheet"/>
-<script defer="" src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
-<script defer="" src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
-<script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nyquist Criterion &amp; Stability Margins — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script>
     document.addEventListener('DOMContentLoaded', function() {
       renderMathInElement(document.body, {
         delimiters: [
@@ -23,7 +22,7 @@
       });
     });
   </script>
-<style>
+  <style>
     .widget-card {
       background: #f0f4f7;
       border: 1px solid #c0d0dc;
@@ -67,57 +66,65 @@
   </style>
 </head>
 <body>
+
 <div class="topbar">
-<div class="topbar-inner">
-<a class="topbar-brand" href="../index.html">Field <span class="accent">Notes</span></a>
-<span class="topbar-sep">·</span>
-<a class="topbar-link" href="../references.html">Library</a>
-<span class="topbar-sep">·</span>
-<a class="topbar-back" href="https://elee03.github.io">elee03.github.io ↗</a>
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
 </div>
-</div>
+
 <div class="site-wrap">
-<div class="page-body">
-<div class="sidebar">
-<div data-cluster="control" data-current="nyquist.html" id="cluster-nav"></div>
-<hr class="sidebar-rule"/>
-<div class="nav-section">
-<div class="nav-label">On this page</div>
-<a class="nav-item" href="#frequency-response">Frequency response</a>
-<a class="nav-item" href="#nyquist-plot">The Nyquist plot</a>
-<a class="nav-item" href="#encirclement">Encirclement theorem</a>
-<a class="nav-item" href="#margins">Gain &amp; phase margins</a>
-<a class="nav-item" href="#bode-margins">Reading margins from Bode</a>
-<a class="nav-item" href="#examples">Worked examples</a>
-<a class="nav-item" href="#interactive">Interactive</a>
-<a class="nav-item" href="#food-for-thought">Food for thought</a>
-<a class="nav-item" href="#pitfalls">Common pitfalls</a>
-</div>
-</div>
-<div class="main">
-<div class="breadcrumb">
-<a href="../index.html">Field Notes</a>
-<span class="sep">›</span>
-<a href="index.html">Control Theory</a>
-<span class="sep">›</span>
-<span>6 · Nyquist Criterion &amp; Stability Margins</span>
-</div>
-<div class="lesson-title">6 · Nyquist Criterion &amp; Stability Margins</div>
-<div class="lesson-meta">Frequency Response · Nyquist Plot · Encirclement · Gain Margin · Phase Margin</div>
-<div class="notation-box" style="background:#f0f6fa;border-left:3px solid #3a8abf;padding:14px 18px;border-radius:0 4px 4px 0;margin:20px 0 24px;">
-<div style="font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#1a5a8a;margin-bottom:10px;">Notation used in this lesson</div>
-<table style="font-size:13px;border-collapse:collapse;width:100%;">
-<tr><td style="padding:3px 8px 3px 0;color:#3a5a78;font-family:'IBM Plex Mono',monospace;white-space:nowrap;">$L(j\omega)$</td><td style="padding:3px 0;color:#2a3a4a;">Open-loop frequency response: $L(s)$ evaluated on $s=j\omega$</td></tr>
-<tr><td style="padding:3px 8px 3px 0;color:#3a5a78;font-family:'IBM Plex Mono',monospace;white-space:nowrap;">$|L(j\omega)|$</td><td style="padding:3px 0;color:#2a3a4a;">Magnitude (gain) of open-loop at frequency $\omega$</td></tr>
-<tr><td style="padding:3px 8px 3px 0;color:#3a5a78;font-family:'IBM Plex Mono',monospace;white-space:nowrap;">$\angle L(j\omega)$</td><td style="padding:3px 0;color:#2a3a4a;">Phase angle of open-loop at frequency $\omega$</td></tr>
-<tr><td style="padding:3px 8px 3px 0;color:#3a5a78;font-family:'IBM Plex Mono',monospace;white-space:nowrap;">$\omega_c$</td><td style="padding:3px 0;color:#2a3a4a;">Gain crossover frequency: $|L(j\omega_c)| = 1$ (0 dB)</td></tr>
-<tr><td style="padding:3px 8px 3px 0;color:#3a5a78;font-family:'IBM Plex Mono',monospace;white-space:nowrap;">$\omega_\phi$</td><td style="padding:3px 0;color:#2a3a4a;">Phase crossover frequency: $\angle L(j\omega_\phi) = -180°$</td></tr>
-<tr><td style="padding:3px 8px 3rd 0;color:#3a5a78;font-family:'IBM Plex Mono',monospace;white-space:nowrap;">$GM$</td><td style="padding:3px 0;color:#2a3a4a;">Gain margin: $GM = 1/|L(j\omega_\phi)|$ (how much gain increase causes instability)</td></tr>
-<tr><td style="padding:3px 8px 3px 0;color:#3a5a78;font-family:'IBM Plex Mono',monospace;white-space:nowrap;">$PM$</td><td style="padding:3px 0;color:#2a3a4a;">Phase margin: $PM = 180° + \angle L(j\omega_c)$ (how much phase delay causes instability)</td></tr>
-<tr><td style="padding:3px 8px 3px 0;color:#3a5a78;font-family:'IBM Plex Mono',monospace;white-space:nowrap;">$N$</td><td style="padding:3px 0;color:#2a3a4a;">Number of counterclockwise encirclements of $-1$ by the Nyquist plot</td></tr>
-</table>
-</div>
-<div class="prose">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="control" data-current="nyquist.html"></div>
+            <hr class="sidebar-rule">
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#frequency-response" class="nav-item">Frequency response</a>
+        <a href="#nyquist-plot" class="nav-item">The Nyquist plot</a>
+        <a href="#encirclement" class="nav-item">Encirclement theorem</a>
+        <a href="#margins" class="nav-item">Gain &amp; phase margins</a>
+        <a href="#bode-margins" class="nav-item">Reading margins from Bode</a>
+        <a href="#examples" class="nav-item">Worked examples</a>
+        <a href="#interactive" class="nav-item">Interactive</a>
+        <a href="#food-for-thought" class="nav-item">Food for thought</a>
+        <a href="#pitfalls" class="nav-item">Common pitfalls</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Control Theory</a>
+        <span class="sep">›</span>
+        <span>6 · Nyquist Criterion &amp; Stability Margins</span>
+      </div>
+
+      <div class="lesson-title">6 · Nyquist Criterion &amp; Stability Margins</div>
+      <div class="lesson-meta">Frequency Response · Nyquist Plot · Encirclement · Gain Margin · Phase Margin</div>
+
+      <div class="notation-box" style="background:#f0f6fa;border-left:3px solid #3a8abf;padding:14px 18px;border-radius:0 4px 4px 0;margin:20px 0 24px;">
+        <div style="font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#1a5a8a;margin-bottom:10px;">Notation used in this lesson</div>
+        <table style="font-size:13px;border-collapse:collapse;width:100%;">
+          <tr><td style="padding:3px 8px 3px 0;color:#3a5a78;font-family:'IBM Plex Mono',monospace;white-space:nowrap;">$L(j\omega)$</td><td style="padding:3px 0;color:#2a3a4a;">Open-loop frequency response: $L(s)$ evaluated on $s=j\omega$</td></tr>
+          <tr><td style="padding:3px 8px 3px 0;color:#3a5a78;font-family:'IBM Plex Mono',monospace;white-space:nowrap;">$|L(j\omega)|$</td><td style="padding:3px 0;color:#2a3a4a;">Magnitude (gain) of open-loop at frequency $\omega$</td></tr>
+          <tr><td style="padding:3px 8px 3px 0;color:#3a5a78;font-family:'IBM Plex Mono',monospace;white-space:nowrap;">$\angle L(j\omega)$</td><td style="padding:3px 0;color:#2a3a4a;">Phase angle of open-loop at frequency $\omega$</td></tr>
+          <tr><td style="padding:3px 8px 3px 0;color:#3a5a78;font-family:'IBM Plex Mono',monospace;white-space:nowrap;">$\omega_c$</td><td style="padding:3px 0;color:#2a3a4a;">Gain crossover frequency: $|L(j\omega_c)| = 1$ (0 dB)</td></tr>
+          <tr><td style="padding:3px 8px 3px 0;color:#3a5a78;font-family:'IBM Plex Mono',monospace;white-space:nowrap;">$\omega_\phi$</td><td style="padding:3px 0;color:#2a3a4a;">Phase crossover frequency: $\angle L(j\omega_\phi) = -180°$</td></tr>
+          <tr><td style="padding:3px 8px 3rd 0;color:#3a5a78;font-family:'IBM Plex Mono',monospace;white-space:nowrap;">$GM$</td><td style="padding:3px 0;color:#2a3a4a;">Gain margin: $GM = 1/|L(j\omega_\phi)|$ (how much gain increase causes instability)</td></tr>
+          <tr><td style="padding:3px 8px 3px 0;color:#3a5a78;font-family:'IBM Plex Mono',monospace;white-space:nowrap;">$PM$</td><td style="padding:3px 0;color:#2a3a4a;">Phase margin: $PM = 180° + \angle L(j\omega_c)$ (how much phase delay causes instability)</td></tr>
+          <tr><td style="padding:3px 8px 3px 0;color:#3a5a78;font-family:'IBM Plex Mono',monospace;white-space:nowrap;">$N$</td><td style="padding:3px 0;color:#2a3a4a;">Number of counterclockwise encirclements of $-1$ by the Nyquist plot</td></tr>
+        </table>
+      </div>
+
+      <div class="prose">
         Routh-Hurwitz and root locus work from the characteristic polynomial — they require you
         to know $L(s)$ analytically. In practice, you often don't have a perfect plant model;
         you have <em>measured frequency response data</em>: sweep a sine wave through your system
@@ -127,9 +134,11 @@
         margin and phase margin. These are the two most practically important numbers in
         classical control design.
       </div>
-<!-- ── Frequency response ──────────────────────────────────── -->
-<div class="section-head" id="frequency-response">Frequency response</div>
-<div class="prose">
+
+      <!-- ── Frequency response ──────────────────────────────────── -->
+      <div class="section-head" id="frequency-response">Frequency response</div>
+
+      <div class="prose">
         For a stable LTI system $G(s)$, the <strong>frequency response</strong> is the
         steady-state output to a sinusoidal input. If $u(t) = A\sin(\omega t)$, the
         steady-state output is:
@@ -137,100 +146,110 @@
         The output has the same frequency but different amplitude and phase.
         $G(j\omega) = G(s)|_{s=j\omega}$ is a complex number at each frequency $\omega$.
       </div>
-<div class="prose">
+
+      <div class="prose">
         The Bode plot (Lesson 3) is one representation: magnitude $|G(j\omega)|$ in dB
         and phase $\angle G(j\omega)$ in degrees, both plotted vs. $\log_{10}\omega$.
         The Nyquist plot is another: $G(j\omega)$ traced in the complex plane as $\omega$
         goes from $0$ to $\infty$ (or $-\infty$ to $\infty$). Same data, different picture.
       </div>
-<!-- ── The Nyquist plot ──────────────────────────────────────── -->
-<div class="section-head" id="nyquist-plot">The Nyquist plot</div>
-<div class="prose">
+
+      <!-- ── The Nyquist plot ──────────────────────────────────────── -->
+      <div class="section-head" id="nyquist-plot">The Nyquist plot</div>
+
+      <div class="prose">
         The <strong>Nyquist plot</strong> of $L(s)$ is the image of the Nyquist contour
         (the imaginary axis from $-j\infty$ to $+j\infty$, with a small detour around any
         poles on the axis) under the mapping $s \mapsto L(s)$.
         For practical purposes, it's the polar plot of $L(j\omega)$ as $\omega$ goes from
         $0$ to $\infty$ (the upper semicircle), plus its complex conjugate reflection
-        for $\omega &lt; 0$.
+        for $\omega < 0$.
       </div>
-<div class="prose">
+
+      <div class="prose">
         The key feature: the <strong>critical point $-1 + j0$</strong> on the real axis.
         If the Nyquist plot passes through $-1$, then $L(j\omega)=-1$ for some $\omega$,
         meaning $1+L(j\omega)=0$ — the closed-loop system has a pole on the imaginary axis
         (marginally stable). If the plot encircles $-1$, the system is unstable.
       </div>
-<!-- SVG: Nyquist plot for first example -->
-<svg style="width:100%;max-width:520px;display:block;margin:18px auto 8px;font-family:'IBM Plex Sans',sans-serif;" viewbox="0 0 480 300">
-<defs>
-<marker id="nyarr" markerheight="7" markerwidth="7" orient="auto" refx="5" refy="3.5">
-<path d="M0,0 L0,7 L7,3.5 z" fill="#3a6a8a"></path>
-</marker>
-</defs>
-<!-- Axes -->
-<line marker-end="url(#nyarr)" stroke="#6a8a9a" stroke-width="1.5" x1="50" x2="430" y1="150" y2="150"></line>
-<line marker-end="url(#nyarr)" stroke="#6a8a9a" stroke-width="1.5" x1="230" x2="230" y1="20" y2="280"></line>
-<text fill="#5a7a8a" font-size="11" x="424" y="164">Re</text>
-<text fill="#5a7a8a" font-size="11" x="234" y="22">Im</text>
-<!-- Grid at -1 -->
-<line stroke="#6a8a9a" stroke-width="1.5" x1="130" x2="130" y1="144" y2="156"></line>
-<text fill="#7a9aaa" font-size="10" text-anchor="middle" x="130" y="168">-1</text>
-<!-- Critical point -1 -->
-<circle cx="130" cy="150" fill="#c84040" r="5" stroke="#8a1010" stroke-width="1.5"></circle>
-<text fill="#c84040" font-size="10" font-weight="600" x="118" y="140">-1</text>
-<!-- Unit circle reference -->
-<circle cx="230" cy="150" fill="none" r="100" stroke="#e0e8f0" stroke-dasharray="4,4" stroke-width="1"></circle>
-<!-- Nyquist plot for L(s)=1/[s(s+1)(s+3)] with K=6 (stable) -->
-<!-- Upper half (ω: 0→∞): starts at angle -90° going inward as ω increases -->
-<!-- Key points: ω=0: |L|=∞ angle=-90° (start along -jIM), ω=√3: crosses real axis at -1/4 -->
-<!-- At ω=1: L(j) = 1/(j(j+1)(j+3)) = 1/(j(-1+j3+j+1)) hmm let me compute -->
-<!-- L(jω) = 1/(jω(jω+1)(jω+3)) with K=6 so K*L -->
-<!-- Let me just draw a representative stable Nyquist plot schematically -->
-<!-- ω→0: the plot starts from -∞j (Type 1 system: pole at 0 → goes to ∞ at -90°) -->
-<!-- ω=1: the plot curves through lower-left quadrant -->
-<!-- ω crosses phase -180° at some ω, |L|<1 (stable): curve crosses negative real axis inside unit circle -->
-<!-- ω→∞: curve spirals to origin -->
-<!-- Upper half: path from bottom going right, crossing negative real at a point inside unit circle -->
-<path d="M230,260 Q190,240 150,200 Q120,170 125,150 Q128,135 150,120 Q180,100 230,95" fill="none" stroke="#3a6a8a" stroke-width="2.5"></path>
-<!-- Arrow showing ω direction -->
-<path d="M155,200 L148,190" marker-end="url(#nyarr)" stroke="#3a6a8a" stroke-width="2"></path>
-<text fill="#3a6a8a" font-size="10" x="140" y="202">ω↑</text>
-<!-- Lower half (mirror): reflected through real axis -->
-<path d="M230,260 Q270,240 310,200 Q340,170 335,150 Q332,135 310,120 Q280,100 230,95" fill="none" stroke="#3a6a8a" stroke-dasharray="5,3" stroke-width="2.5"></path>
-<!-- GM annotation: distance from crossing point to -1 -->
-<!-- Crossing point at roughly real axis, x≈165 (inside unit circle → stable) -->
-<circle cx="165" cy="150" fill="#3a6a8a" r="3"></circle>
-<text fill="#3a6a8a" font-size="9" text-anchor="middle" x="165" y="140">$L(j\omega_\phi)$</text>
-<!-- GM arrow: from crossing to -1 -->
-<line marker-end="url(#nyarr)" stroke="#c07030" stroke-width="1.5" x1="130" x2="162" y1="145" y2="145"></line>
-<text fill="#c07030" font-size="9" text-anchor="middle" x="146" y="138">GM</text>
-<!-- PM annotation: arc at unit circle -->
-<!-- At the unit circle crossing, angle to -1 direction -->
-<path d="M230,150 L330,150" stroke="#4a9a4a" stroke-dasharray="3,3" stroke-width="1"></path>
-<text fill="#4a9a4a" font-size="9" x="340" y="154">$|L|=1$</text>
-<text fill="#4a9a4a" font-size="10" x="395" y="120">PM = angle from</text>
-<text fill="#4a9a4a" font-size="10" x="395" y="134">-180° to $\angle L(j\omega_c)$</text>
-<!-- ω=∞ label -->
-<text fill="#3a6a8a" font-size="9" x="234" y="91">ω→∞</text>
-<!-- ω=0 label -->
-<text fill="#3a6a8a" font-size="9" x="234" y="270">ω→0⁺</text>
-<!-- Stable label -->
-<text fill="#2a6a2a" font-size="11" font-weight="600" x="55" y="30">Stable:</text>
-<text fill="#2a6a2a" font-size="10" x="55" y="44">no encirclements of -1</text>
-</svg>
-<div style="text-align:center;font-size:11.5px;color:#7a8a9a;margin-top:4px;margin-bottom:20px;">
-        Nyquist plot for a stable Type-1 open-loop. Solid = $\omega &gt; 0$, dashed = $\omega &lt; 0$ (mirror).
+
+      <!-- SVG: Nyquist plot for first example -->
+      <svg viewBox="0 0 480 300" style="width:100%;max-width:520px;display:block;margin:18px auto 8px;font-family:'IBM Plex Sans',sans-serif;">
+        <defs>
+          <marker id="nyarr" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+            <path d="M0,0 L0,7 L7,3.5 z" fill="#3a6a8a"/>
+          </marker>
+        </defs>
+        <!-- Axes -->
+        <line x1="50" y1="150" x2="430" y2="150" stroke="#6a8a9a" stroke-width="1.5" marker-end="url(#nyarr)"/>
+        <line x1="230" y1="20" x2="230" y2="280" stroke="#6a8a9a" stroke-width="1.5" marker-end="url(#nyarr)"/>
+        <text x="424" y="164" font-size="11" fill="#5a7a8a">Re</text>
+        <text x="234" y="22" font-size="11" fill="#5a7a8a">Im</text>
+        <!-- Grid at -1 -->
+        <line x1="130" y1="144" x2="130" y2="156" stroke="#6a8a9a" stroke-width="1.5"/>
+        <text x="130" y="168" text-anchor="middle" font-size="10" fill="#7a9aaa">-1</text>
+        <!-- Critical point -1 -->
+        <circle cx="130" cy="150" r="5" fill="#c84040" stroke="#8a1010" stroke-width="1.5"/>
+        <text x="118" y="140" font-size="10" fill="#c84040" font-weight="600">-1</text>
+        <!-- Unit circle reference -->
+        <circle cx="230" cy="150" r="100" fill="none" stroke="#e0e8f0" stroke-width="1" stroke-dasharray="4,4"/>
+        <!-- Nyquist plot for L(s)=1/[s(s+1)(s+3)] with K=6 (stable) -->
+        <!-- Upper half (ω: 0→∞): starts at angle -90° going inward as ω increases -->
+        <!-- Key points: ω=0: |L|=∞ angle=-90° (start along -jIM), ω=√3: crosses real axis at -1/4 -->
+        <!-- At ω=1: L(j) = 1/(j(j+1)(j+3)) = 1/(j(-1+j3+j+1)) hmm let me compute -->
+        <!-- L(jω) = 1/(jω(jω+1)(jω+3)) with K=6 so K*L -->
+        <!-- Let me just draw a representative stable Nyquist plot schematically -->
+        <!-- ω→0: the plot starts from -∞j (Type 1 system: pole at 0 → goes to ∞ at -90°) -->
+        <!-- ω=1: the plot curves through lower-left quadrant -->
+        <!-- ω crosses phase -180° at some ω, |L|<1 (stable): curve crosses negative real axis inside unit circle -->
+        <!-- ω→∞: curve spirals to origin -->
+        <!-- Upper half: path from bottom going right, crossing negative real at a point inside unit circle -->
+        <path d="M230,260 Q190,240 150,200 Q120,170 125,150 Q128,135 150,120 Q180,100 230,95"
+              stroke="#3a6a8a" stroke-width="2.5" fill="none"/>
+        <!-- Arrow showing ω direction -->
+        <path d="M155,200 L148,190" stroke="#3a6a8a" stroke-width="2" marker-end="url(#nyarr)"/>
+        <text x="140" y="202" font-size="10" fill="#3a6a8a">ω↑</text>
+        <!-- Lower half (mirror): reflected through real axis -->
+        <path d="M230,260 Q270,240 310,200 Q340,170 335,150 Q332,135 310,120 Q280,100 230,95"
+              stroke="#3a6a8a" stroke-width="2.5" fill="none" stroke-dasharray="5,3"/>
+        <!-- GM annotation: distance from crossing point to -1 -->
+        <!-- Crossing point at roughly real axis, x≈165 (inside unit circle → stable) -->
+        <circle cx="165" cy="150" r="3" fill="#3a6a8a"/>
+        <text x="165" y="140" text-anchor="middle" font-size="9" fill="#3a6a8a">$L(j\omega_\phi)$</text>
+        <!-- GM arrow: from crossing to -1 -->
+        <line x1="130" y1="145" x2="162" y2="145" stroke="#c07030" stroke-width="1.5" marker-end="url(#nyarr)"/>
+        <text x="146" y="138" text-anchor="middle" font-size="9" fill="#c07030">GM</text>
+        <!-- PM annotation: arc at unit circle -->
+        <!-- At the unit circle crossing, angle to -1 direction -->
+        <path d="M230,150 L330,150" stroke="#4a9a4a" stroke-width="1" stroke-dasharray="3,3"/>
+        <text x="340" y="154" font-size="9" fill="#4a9a4a">$|L|=1$</text>
+        <text x="395" y="120" font-size="10" fill="#4a9a4a">PM = angle from</text>
+        <text x="395" y="134" font-size="10" fill="#4a9a4a">-180° to $\angle L(j\omega_c)$</text>
+        <!-- ω=∞ label -->
+        <text x="234" y="91" font-size="9" fill="#3a6a8a">ω→∞</text>
+        <!-- ω=0 label -->
+        <text x="234" y="270" font-size="9" fill="#3a6a8a">ω→0⁺</text>
+        <!-- Stable label -->
+        <text x="55" y="30" font-size="11" fill="#2a6a2a" font-weight="600">Stable:</text>
+        <text x="55" y="44" font-size="10" fill="#2a6a2a">no encirclements of -1</text>
+      </svg>
+      <div style="text-align:center;font-size:11.5px;color:#7a8a9a;margin-top:4px;margin-bottom:20px;">
+        Nyquist plot for a stable Type-1 open-loop. Solid = $\omega > 0$, dashed = $\omega < 0$ (mirror).
         The plot does not encircle $-1$.
       </div>
-<!-- ── Encirclement theorem ──────────────────────────────────── -->
-<div class="section-head" id="encirclement">The Nyquist encirclement theorem</div>
-<div class="prose">
-<strong>Cauchy's argument principle</strong> gives the mathematical foundation.
+
+      <!-- ── Encirclement theorem ──────────────────────────────────── -->
+      <div class="section-head" id="encirclement">The Nyquist encirclement theorem</div>
+
+      <div class="prose">
+        <strong>Cauchy's argument principle</strong> gives the mathematical foundation.
         For a contour that encircles no poles of $f(s)$, the number of times $f(s)$
         encircles the origin equals the number of zeros of $f(s)$ inside the contour.
         Applied to $f(s) = 1+L(s)$ with the Nyquist contour:
       </div>
-<div class="callout" style="border-color:#3a8a3a;background:#f4faf4;">
-<strong>Nyquist Stability Criterion.</strong>
+
+      <div class="callout" style="border-color:#3a8a3a;background:#f4faf4;">
+        <strong>Nyquist Stability Criterion.</strong>
         Let $P$ = number of open-loop poles of $L(s)$ in the right half-plane, and
         $N$ = number of counterclockwise (positive) encirclements of the point $-1$
         by the Nyquist plot of $L(s)$.
@@ -238,90 +257,105 @@
         $$Z = P - N$$
         The closed-loop system is stable if and only if $Z = 0$, i.e., $N = P$.
       </div>
-<div class="prose">
+
+      <div class="prose">
         In the most common case ($P = 0$: stable plant, no controller poles in RHP),
         the condition simplifies to: <em>stable iff $N = 0$</em> (no encirclements of $-1$).
       </div>
-<div class="prose">
-<strong>Encirclement direction convention:</strong> As $\omega$ increases from $-\infty$
+
+      <div class="prose">
+        <strong>Encirclement direction convention:</strong> As $\omega$ increases from $-\infty$
         to $+\infty$, a counterclockwise encirclement of $-1$ counts as $+1$; a clockwise
         encirclement counts as $-1$.
       </div>
-<div class="prose">
-<strong>For an open-loop-stable plant ($P=0$):</strong> The Nyquist plot must not
+
+      <div class="prose">
+        <strong>For an open-loop-stable plant ($P=0$):</strong> The Nyquist plot must not
         encircle $-1$ at all for the closed-loop to be stable. Intuitively, if the loop
         gain is exactly $-1$ at some frequency (magnitude = 1, phase = $-180°$), the
         feedback reinforces the signal at that frequency instead of canceling it — positive
         feedback at $\omega$ — and the output grows without bound.
       </div>
-<!-- ── Gain and phase margins ──────────────────────────────── -->
-<div class="section-head" id="margins">Gain margin and phase margin</div>
-<div class="prose">
+
+      <!-- ── Gain and phase margins ──────────────────────────────── -->
+      <div class="section-head" id="margins">Gain margin and phase margin</div>
+
+      <div class="prose">
         The margins quantify <em>how close</em> the Nyquist plot is to encircling $-1$.
         Two independent measures — one for gain uncertainty, one for phase uncertainty:
       </div>
-<div class="prose">
-<strong>Gain margin (GM):</strong> At the <em>phase crossover frequency</em> $\omega_\phi$
+
+      <div class="prose">
+        <strong>Gain margin (GM):</strong> At the <em>phase crossover frequency</em> $\omega_\phi$
         (where $\angle L(j\omega_\phi) = -180°$), how much can the gain increase before the plot
         reaches $-1$?
         $$GM = \frac{1}{|L(j\omega_\phi)|} \quad \text{or in dB:} \quad GM_{dB} = -20\log_{10}|L(j\omega_\phi)|$$
-        For stability: $GM &gt; 1$ ($GM_{dB} &gt; 0$). Typical target: $GM \ge 2$ ($\ge 6$ dB).
+        For stability: $GM > 1$ ($GM_{dB} > 0$). Typical target: $GM \ge 2$ ($\ge 6$ dB).
       </div>
-<div class="prose">
-<strong>Phase margin (PM):</strong> At the <em>gain crossover frequency</em> $\omega_c$
+
+      <div class="prose">
+        <strong>Phase margin (PM):</strong> At the <em>gain crossover frequency</em> $\omega_c$
         (where $|L(j\omega_c)| = 1$, i.e., 0 dB), how much additional phase lag would cause
         instability?
         $$PM = 180° + \angle L(j\omega_c)$$
-        For stability: $PM &gt; 0$. Typical target: $PM \ge 30°$–$45°$.
+        For stability: $PM > 0$. Typical target: $PM \ge 30°$–$45°$.
       </div>
-<div class="prose">
-<strong>Physical meaning of PM:</strong> A pure time delay $e^{-\tau s}$ contributes
+
+      <div class="prose">
+        <strong>Physical meaning of PM:</strong> A pure time delay $e^{-\tau s}$ contributes
         phase lag $-\omega\tau$ at frequency $\omega$. At the gain crossover,
         the phase lag is $-\omega_c \tau$. This equals the phase margin when
         $\omega_c \tau = PM$ in radians, so the maximum allowable delay before instability
         is $\tau_{max} = PM/\omega_c$. Phase margin is the control designer's primary
         robustness metric.
       </div>
-<div class="callout">
-<strong>PM and damping ratio.</strong> For a standard second-order loop with
+
+      <div class="callout">
+        <strong>PM and damping ratio.</strong> For a standard second-order loop with
         $L(s) = \omega_n^2 / [s(s+2\zeta\omega_n)]$, there is an approximate relationship:
         $$PM \approx \arctan\!\left(\frac{2\zeta}{\sqrt{\sqrt{1+4\zeta^4}-2\zeta^2}}\right)
-        \approx 100\zeta \text{ degrees (for } \zeta &lt; 0.7\text{)}$$
+        \approx 100\zeta \text{ degrees (for } \zeta < 0.7\text{)}$$
         So $PM = 30°$ corresponds to roughly $\zeta \approx 0.3$ (oscillatory);
         $PM = 60°$ corresponds to $\zeta \approx 0.6$ (well-damped). Targeting $PM \approx 45°$
         typically gives a well-damped step response with modest overshoot.
       </div>
-<!-- ── Reading margins from Bode ──────────────────────────────── -->
-<div class="section-head" id="bode-margins">Reading margins from the Bode plot</div>
-<div class="prose">
+
+      <!-- ── Reading margins from Bode ──────────────────────────────── -->
+      <div class="section-head" id="bode-margins">Reading margins from the Bode plot</div>
+
+      <div class="prose">
         The Nyquist criterion is best <em>understood</em> from the Nyquist plot, but margins
         are most easily <em>read</em> from the Bode plot:
       </div>
-<ul class="prose" style="padding-left:1.4em;">
-<li style="margin-bottom:8px;"><strong>Find $\omega_c$</strong> (gain crossover):
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:8px;"><strong>Find $\omega_c$</strong> (gain crossover):
           the frequency where the magnitude plot crosses 0 dB.
           <strong>Phase margin</strong> = the phase at $\omega_c$, plus $180°$.
           Positive PM → stable at this gain.</li>
-<li><strong>Find $\omega_\phi$</strong> (phase crossover): the frequency where the
+        <li><strong>Find $\omega_\phi$</strong> (phase crossover): the frequency where the
           phase plot crosses $-180°$.
           <strong>Gain margin</strong> = the negative of the magnitude at $\omega_\phi$,
           in dB. Positive $GM_{dB}$ → stable at this gain.</li>
-</ul>
-<div class="prose">
-        A system with $\omega_c &lt; \omega_\phi$ is typically stable (the gain has dropped below
-        0 dB before the phase reaches $-180°$). If $\omega_c &gt; \omega_\phi$, the gain is still
+      </ul>
+
+      <div class="prose">
+        A system with $\omega_c < \omega_\phi$ is typically stable (the gain has dropped below
+        0 dB before the phase reaches $-180°$). If $\omega_c > \omega_\phi$, the gain is still
         greater than unity when the phase passes through $-180°$ — the Nyquist plot encircles
         $-1$ — system is unstable.
       </div>
-<!-- ── Worked examples ─────────────────────────────────────────── -->
-<div class="section-head" id="examples">Worked examples</div>
-<div class="example-box">
-<div class="example-header"><strong>Example 1 — Gain and phase margins for a Type-1 third-order loop</strong></div>
-<div class="example-problem">
+
+      <!-- ── Worked examples ─────────────────────────────────────────── -->
+      <div class="section-head" id="examples">Worked examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Gain and phase margins for a Type-1 third-order loop</strong></div>
+        <div class="example-problem">
           Compute the gain margin (GM) and phase margin (PM) for $L(s) = \dfrac{3}{s(s+1)(s+3)}$.
         </div>
-<div class="example-body">
-<strong>Phase crossover frequency $\omega_\phi$ (where $\angle L = -180°$):</strong>
+        <div class="example-body">
+          <strong>Phase crossover frequency $\omega_\phi$ (where $\angle L = -180°$):</strong>
           $$-90° - \arctan(\omega) - \arctan(\omega/3) = -180°$$
           $$\arctan(\omega) + \arctan(\omega/3) = 90°$$
           Using $\arctan(a)+\arctan(b) = 90°$ iff $ab = 1$: $\omega \cdot (\omega/3) = 1 \Rightarrow \omega_\phi = \sqrt{3}$ rad/s.
@@ -336,14 +370,15 @@
           $$\text{PM} = 180° - 140.3° = 39.7° \approx 40°$$
           Both margins are acceptable (GM $\geq 6$ dB, PM $\approx 40°$), indicating reasonable robustness.
         </div>
-</div>
-<div class="example-box">
-<div class="example-header"><strong>Example 2 — Delay margin: how much transport delay is tolerable?</strong></div>
-<div class="example-problem">
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Delay margin: how much transport delay is tolerable?</strong></div>
+        <div class="example-problem">
           Using the same loop $L(s) = 3/[s(s+1)(s+3)]$, add a transport delay $e^{-\tau s}$.
           Find the maximum delay $\tau_\text{max}$ before the system becomes unstable.
         </div>
-<div class="example-body">
+        <div class="example-body">
           A pure delay $e^{-\tau s}$ has unit gain at all frequencies ($|e^{-j\omega\tau}| = 1$),
           so it does not change the gain crossover frequency $\omega_c \approx 0.74$ rad/s.
 
@@ -357,39 +392,48 @@
           <strong>delay margin</strong> — a direct measure of how sensitive the system is to communication
           or sensing latency.
         </div>
-</div>
-<!-- ── Interactive ──────────────────────────────────────────────── -->
-<div class="section-head" id="interactive">Interactive: Bode plot with stability margins</div>
-<div class="prose">
+      </div>
+
+      <!-- ── Interactive ──────────────────────────────────────────────── -->
+      <div class="section-head" id="interactive">Interactive: Bode plot with stability margins</div>
+
+      <div class="prose">
         For $L(s) = K/[s(s+1)(s+3)]$, adjust the gain $K$ and observe how the gain and
         phase margins change. The Bode plot shows the gain and phase crossover frequencies,
         and the margin values are highlighted.
       </div>
-<div class="widget-card">
-<div class="widget-title">Bode Plot — Stability Margins for $L(s) = K/[s(s+1)(s+3)]$</div>
-<div style="display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start;margin-bottom:14px;">
-<div style="display:flex;flex-direction:column;gap:4px;">
-<label style="font-size:12.5px;color:#5a6a7a;">
+
+      <div class="widget-card">
+        <div class="widget-title">Bode Plot — Stability Margins for $L(s) = K/[s(s+1)(s+3)]$</div>
+
+        <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start;margin-bottom:14px;">
+          <div style="display:flex;flex-direction:column;gap:4px;">
+            <label style="font-size:12.5px;color:#5a6a7a;">
               Gain $K$:
               <span id="ny-k-val" style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:#1a2840;">3.00</span>
-</label>
-<input id="ny-k" max="20" min="0.1" oninput="document.getElementById('ny-k-val').textContent=parseFloat(this.value).toFixed(2); nyUpdate();" step="0.1" style="width:200px;" type="range" value="3"/>
-</div>
-<div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:4px;font-size:13px;">
-<div>GM: <span class="margin-badge good" id="ny-gm">—</span></div>
-<div>PM: <span class="margin-badge good" id="ny-pm">—</span></div>
-<div id="ny-stability" style="padding:4px 10px;border-radius:4px;font-weight:600;font-size:13px;background:#f0f0f0;">—</div>
-</div>
-</div>
-<svg id="ny-bode-mag" style="width:100%;max-width:540px;display:block;margin-bottom:4px;" viewbox="0 0 480 160"></svg>
-<svg id="ny-bode-phase" style="width:100%;max-width:540px;display:block;" viewbox="0 0 480 140"></svg>
-<div style="display:flex;gap:18px;margin-top:8px;font-size:12px;color:#5a6a7a;flex-wrap:wrap;">
-<span><span style="display:inline-block;width:18px;height:3px;background:#3a6a8a;vertical-align:middle;margin-right:4px;"></span>$|L(j\omega)|$ (dB) / $\angle L(j\omega)$ (deg)</span>
-<span><span style="display:inline-block;width:16px;height:2px;border-top:2px dashed #c07030;vertical-align:middle;margin-right:4px;"></span>Gain crossover ($\omega_c$)</span>
-<span><span style="display:inline-block;width:16px;height:2px;border-top:2px dashed #4a8a4a;vertical-align:middle;margin-right:4px;"></span>Phase crossover ($\omega_\phi$)</span>
-</div>
-</div>
-<script>
+            </label>
+            <input type="range" id="ny-k" min="0.1" max="20" step="0.1" value="3"
+              style="width:200px;"
+              oninput="document.getElementById('ny-k-val').textContent=parseFloat(this.value).toFixed(2); nyUpdate();">
+          </div>
+          <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:4px;font-size:13px;">
+            <div>GM: <span id="ny-gm" class="margin-badge good">—</span></div>
+            <div>PM: <span id="ny-pm" class="margin-badge good">—</span></div>
+            <div id="ny-stability" style="padding:4px 10px;border-radius:4px;font-weight:600;font-size:13px;background:#f0f0f0;">—</div>
+          </div>
+        </div>
+
+        <svg id="ny-bode-mag" viewBox="0 0 480 160" style="width:100%;max-width:540px;display:block;margin-bottom:4px;"></svg>
+        <svg id="ny-bode-phase" viewBox="0 0 480 140" style="width:100%;max-width:540px;display:block;"></svg>
+
+        <div style="display:flex;gap:18px;margin-top:8px;font-size:12px;color:#5a6a7a;flex-wrap:wrap;">
+          <span><span style="display:inline-block;width:18px;height:3px;background:#3a6a8a;vertical-align:middle;margin-right:4px;"></span>$|L(j\omega)|$ (dB) / $\angle L(j\omega)$ (deg)</span>
+          <span><span style="display:inline-block;width:16px;height:2px;border-top:2px dashed #c07030;vertical-align:middle;margin-right:4px;"></span>Gain crossover ($\omega_c$)</span>
+          <span><span style="display:inline-block;width:16px;height:2px;border-top:2px dashed #4a8a4a;vertical-align:middle;margin-right:4px;"></span>Phase crossover ($\omega_\phi$)</span>
+        </div>
+      </div>
+
+      <script>
       (function(){
         var N = 200;
         var W_LO = 0.05, W_HI = 20; // rad/s range
@@ -600,19 +644,22 @@
         nyUpdate();
       })();
       </script>
-<div class="prose" style="margin-top:12px;">
+
+      <div class="prose" style="margin-top:12px;">
         Observe: increasing $K$ shifts the magnitude plot upward (higher gain at all frequencies),
         which moves $\omega_c$ rightward and reduces the phase margin (because more phase lag has
         accumulated at the new crossover frequency). At $K=12$, the PM reaches 0° and GM reaches
         0 dB — the system is at the stability boundary. Beyond $K=12$, the system is unstable.
         This matches the Routh-Hurwitz result $K_{cr}=12$ from Lesson 4 exactly.
       </div>
-<!-- ── Food for thought ──────────────────────────────────────── -->
-<div class="section-head" id="food-for-thought">Food for thought</div>
-<div class="fft-block" style="border-left:3px solid #b89040;background:#faf8f2;padding:14px 18px;border-radius:0 4px 4px 0;margin:20px 0;">
-<div style="font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#8a6010;margin-bottom:10px;">Reflection questions</div>
-<ol style="padding-left:1.4em;color:#2a3a4a;font-size:14px;line-height:1.7;">
-<li class="fft-item" style="margin-bottom:12px;">The Nyquist criterion handles open-loop unstable plants
+
+      <!-- ── Food for thought ──────────────────────────────────────── -->
+      <div class="section-head" id="food-for-thought">Food for thought</div>
+
+      <div class="fft-block" style="border-left:3px solid #b89040;background:#faf8f2;padding:14px 18px;border-radius:0 4px 4px 0;margin:20px 0;">
+        <div style="font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#8a6010;margin-bottom:10px;">Reflection questions</div>
+        <ol style="padding-left:1.4em;color:#2a3a4a;font-size:14px;line-height:1.7;">
+          <li style="margin-bottom:12px;">The Nyquist criterion handles open-loop unstable plants
             by counting encirclements relative to the number of RHP open-loop poles ($Z=P-N$).
             Sketch qualitatively what the Nyquist plot must look like for a closed-loop system
             with one open-loop unstable pole ($P=1$) to be stable. How many counterclockwise
@@ -630,13 +677,14 @@
                 in the loop requires active feedback to stabilize, and the stabilizing feedback produces
                 exactly this wrapping behavior in the Nyquist plot.
               </div>
-</li>
-<li class="fft-item" style="margin-bottom:12px;">The interactive shows that higher $K$ reduces phase
+            
+          </li>
+          <li style="margin-bottom:12px;">The interactive shows that higher $K$ reduces phase
             margin. But what if you could add phase to the loop — a "phase lead" network — at
             the gain crossover frequency? How would this change the Bode phase plot and the PM?
             What does this suggest about what a lead compensator (Lesson 8) would do?
                           <div class="fft-answer">
-                Adding a phase lead network $C(s) = (s+z)/(s+p)$ with $p &gt; z &gt; 0$ inserts
+                Adding a phase lead network $C(s) = (s+z)/(s+p)$ with $p > z > 0$ inserts
                 positive phase around a frequency band centered near $\sqrt{zp}$. On the Bode
                 phase plot, this appears as a "hump" of positive phase centered at the lead
                 frequency. If this hump is placed at the gain crossover frequency $\omega_c$,
@@ -649,13 +697,14 @@
                 the original one. The overall effect is: more phase margin, higher bandwidth, slightly
                 more noise sensitivity.
               </div>
-</li>
-<li class="fft-item">Gain and phase margins are two separate robustness measures. Is it possible to
+            
+          </li>
+          <li class="fft-item">Gain and phase margins are two separate robustness measures. Is it possible to
             have a large GM but a small PM? A large PM but a small GM? What physical scenario
             would produce each? (Think about where on the Nyquist plot the system comes close
             to $-1$ in each case.)
                           <div class="fft-answer">
-<strong>Large GM, small PM:</strong> The Nyquist plot crosses the negative real axis
+                <strong>Large GM, small PM:</strong> The Nyquist plot crosses the negative real axis
                 far from $-1$ (large GM), but passes close to the unit circle at some angle near $-180°$
                 (small PM). This happens when the gain rolls off quickly but the phase stays near
                 $-180°$ for a wide frequency range. Example: a system with a very lightly damped
@@ -673,71 +722,82 @@
                 is a single measure that reflects both simultaneously — it equals the inverse of
                 the minimum distance from the Nyquist plot to the $-1$ point.
               </div>
-</li>
-</ol>
-</div>
-<!-- ── Common pitfalls ─────────────────────────────────────────── -->
-<div class="section-head" id="pitfalls">Common pitfalls</div>
-<div class="pitfalls-block" style="border-left:3px solid #c07070;background:#fdf8f8;padding:14px 18px;border-radius:0 4px 4px 0;margin:20px 0;">
-<div style="font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#8a2020;margin-bottom:10px;">Mistakes worth knowing about in advance</div>
-<ul style="padding-left:1.4em;color:#2a3a4a;font-size:14px;line-height:1.7;">
-<li style="margin-bottom:10px;"><strong>Applying the simplified criterion to unstable plants.</strong>
+            
+          </li>
+        </ol>
+      </div>
+
+      <!-- ── Common pitfalls ─────────────────────────────────────────── -->
+      <div class="section-head" id="pitfalls">Common pitfalls</div>
+
+      <div class="pitfalls-block" style="border-left:3px solid #c07070;background:#fdf8f8;padding:14px 18px;border-radius:0 4px 4px 0;margin:20px 0;">
+        <div style="font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#8a2020;margin-bottom:10px;">Mistakes worth knowing about in advance</div>
+        <ul style="padding-left:1.4em;color:#2a3a4a;font-size:14px;line-height:1.7;">
+          <li style="margin-bottom:10px;"><strong>Applying the simplified criterion to unstable plants.</strong>
             "Stable iff no encirclements" is only valid when $P=0$ (the open-loop is stable).
             If the plant has RHP poles (e.g., an inverted pendulum), you need the full criterion
             $Z = P - N = 0$, meaning you need exactly $P$ counterclockwise encirclements.
             Missing this distinction leads to declaring an unstable closed-loop as "stable."</li>
-<li style="margin-bottom:10px;"><strong>Confusing gain crossover and phase crossover.</strong>
+          <li style="margin-bottom:10px;"><strong>Confusing gain crossover and phase crossover.</strong>
             Gain margin is measured at the <em>phase</em> crossover frequency (where phase $= -180°$),
             not at the gain crossover. Phase margin is measured at the <em>gain</em> crossover
             (where gain $= 0$ dB). The names are confusingly swapped — GM involves the phase
             crossover; PM involves the gain crossover.</li>
-<li style="margin-bottom:10px;"><strong>Treating large margins as always better.</strong>
+          <li style="margin-bottom:10px;"><strong>Treating large margins as always better.</strong>
             Very large gain margin (far from instability) usually means low loop gain at all
             frequencies — the controller is very conservative. This typically means poor
             disturbance rejection and slow tracking. Margins are a robustness measure, not a
             performance measure. Typical good margins: GM $\approx 6$–$12$ dB, PM $\approx 40°$–$60°$.</li>
-<li><strong>Forgetting that the Bode margin reading assumes minimum-phase plants.</strong>
-            The rule "stable iff $\omega_c &lt; \omega_\phi$" (gain crosses 0 dB before phase crosses
+          <li><strong>Forgetting that the Bode margin reading assumes minimum-phase plants.</strong>
+            The rule "stable iff $\omega_c < \omega_\phi$" (gain crosses 0 dB before phase crosses
             $-180°$) applies only to open-loop-stable, minimum-phase systems. For plants with
             right-half-plane zeros (non-minimum phase) or pure time delays, the Bode test can give
             a wrong answer — use the full Nyquist criterion instead.</li>
-</ul>
-</div>
-<div class="connects-to" style="border-left:3px solid #c0d4de;background:#f8fafb;padding:14px 18px;border-radius:0 4px 4px 0;margin:20px 0;">
-<div style="font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;margin-bottom:10px;">Connects to</div>
-<ul style="padding-left:1.4em;color:#2a3a4a;font-size:14px;line-height:1.7;">
-<li style="margin-bottom:8px;"><strong>Lesson 3 (Second-Order Systems / Bode)</strong> — The Bode
+        </ul>
+      </div>
+
+      <div class="connects-to" style="border-left:3px solid #c0d4de;background:#f8fafb;padding:14px 18px;border-radius:0 4px 4px 0;margin:20px 0;">
+        <div style="font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;margin-bottom:10px;">Connects to</div>
+        <ul style="padding-left:1.4em;color:#2a3a4a;font-size:14px;line-height:1.7;">
+          <li style="margin-bottom:8px;"><strong>Lesson 3 (Second-Order Systems / Bode)</strong> — The Bode
             magnitude and phase plots introduced there are the foundation for reading stability margins.
             The $-20$ dB/decade slope and $-90°$/decade phase lag near each pole tells you how quickly
             margins deteriorate as the gain increases.</li>
-<li style="margin-bottom:8px;"><strong>Lesson 8 (Lead-Lag Compensators)</strong> — Lead
+          <li style="margin-bottom:8px;"><strong>Lesson 8 (Lead-Lag Compensators)</strong> — Lead
             compensators are designed specifically to increase phase margin at the gain crossover
             frequency. The design procedure uses the Bode plot: measure how much phase you need to
             add, then design a compensator zero-pole pair that provides it.</li>
-<li><strong>Robust Control (beyond this cluster)</strong> — $H_\infty$ control and the
+          <li><strong>Robust Control (beyond this cluster)</strong> — $H_\infty$ control and the
             small-gain theorem generalize the Nyquist stability margins to structured uncertainty.
             The phase and gain margins of classical control correspond to specific choices of the
             uncertainty model in the $H_\infty$ framework.</li>
-</ul>
-</div>
-<hr class="lesson-rule"/>
-<div class="section-head">References</div>
-<ul class="prose" style="padding-left:1.4em;font-size:13.5px;color:#5a6a7a;">
-<li style="margin-bottom:6px;">G. Franklin, J. Powell &amp; A. Emami-Naeini,
+        </ul>
+      </div>
+
+      <hr class="lesson-rule">
+
+      <div class="section-head">References</div>
+      <ul class="prose" style="padding-left:1.4em;font-size:13.5px;color:#5a6a7a;">
+        <li style="margin-bottom:6px;">G. Franklin, J. Powell &amp; A. Emami-Naeini,
           <em>Feedback Control of Dynamic Systems</em> (8th ed.) — Chapter 6: frequency response
           design; includes Bode and Nyquist plots, stability margins, and the connection to
           the root locus.</li>
-<li>K. Ogata, <em>Modern Control Engineering</em> (5th ed.) — Chapters 7–8: Bode diagrams
+        <li>K. Ogata, <em>Modern Control Engineering</em> (5th ed.) — Chapters 7–8: Bode diagrams
           and frequency-domain analysis; gain and phase margins with worked examples.</li>
-</ul>
-<div id="lesson-nav"></div>
-</div><!-- /main -->
-</div><!-- /page-body -->
+      </ul>
+
+      <div id="lesson-nav"></div>
+
+    </div><!-- /main -->
+
+  </div><!-- /page-body -->
 </div><!-- /site-wrap -->
+
 <footer class="site-footer">
-<span>elee03.github.io/notes</span>
-<span>Est. MMXXVI</span>
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
 </footer>
-<script src="../notes-nav.js"></script>
+
+    <script src="../notes-nav.js"></script>
 </body>
 </html>

@@ -1,18 +1,17 @@
 ﻿<!DOCTYPE html>
-
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>PID Control — Field Notes</title>
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
-<link href="../style.css" rel="stylesheet"/>
-<link href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" rel="stylesheet"/>
-<script defer="" src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
-<script defer="" src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
-<script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PID Control — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script>
     document.addEventListener('DOMContentLoaded', function() {
       renderMathInElement(document.body, {
         delimiters: [
@@ -23,7 +22,7 @@
       });
     });
   </script>
-<style>
+  <style>
     .widget-card {
       background: #f0f4f7; border: 1px solid #c0d0dc;
       border-radius: 6px; padding: 20px 22px; margin: 24px 0;
@@ -54,53 +53,61 @@
   </style>
 </head>
 <body>
+
 <div class="topbar">
-<div class="topbar-inner">
-<a class="topbar-brand" href="../index.html">Field <span class="accent">Notes</span></a>
-<span class="topbar-sep">·</span>
-<a class="topbar-link" href="../references.html">Library</a>
-<span class="topbar-sep">·</span>
-<a class="topbar-back" href="https://elee03.github.io">elee03.github.io ↗</a>
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
 </div>
-</div>
+
 <div class="site-wrap">
-<div class="page-body">
-<div class="sidebar">
-<div data-cluster="control" data-current="pid.html" id="cluster-nav"></div>
-<hr class="sidebar-rule"/>
-<div class="nav-section">
-<div class="nav-label">On this page</div>
-<a class="nav-item" href="#three-actions">The three actions</a>
-<a class="nav-item" href="#transfer-function">PID transfer function</a>
-<a class="nav-item" href="#tuning">Ziegler-Nichols tuning</a>
-<a class="nav-item" href="#practical">Derivative kick &amp; windup</a>
-<a class="nav-item" href="#examples">Worked examples</a>
-<a class="nav-item" href="#interactive">Interactive</a>
-<a class="nav-item" href="#food-for-thought">Food for thought</a>
-<a class="nav-item" href="#pitfalls">Common pitfalls</a>
-</div>
-</div>
-<div class="main">
-<div class="breadcrumb">
-<a href="../index.html">Field Notes</a>
-<span class="sep">›</span>
-<a href="index.html">Control Theory</a>
-<span class="sep">›</span>
-<span>7 · PID Control</span>
-</div>
-<div class="lesson-title">7 · PID Control</div>
-<div class="lesson-meta">Proportional · Integral · Derivative · Tuning · Anti-Windup</div>
-<div class="notation-box" style="background:#f0f6fa;border-left:3px solid #3a8abf;padding:14px 18px;border-radius:0 4px 4px 0;margin:20px 0 24px;">
-<div style="font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#1a5a8a;margin-bottom:10px;">Notation used in this lesson</div>
-<table style="font-size:13px;border-collapse:collapse;width:100%;">
-<tr><td style="padding:3px 8px 3px 0;color:#3a5a78;font-family:'IBM Plex Mono',monospace;white-space:nowrap;">$e(t)$</td><td style="padding:3px 0;color:#2a3a4a;">Error signal: $e(t) = r(t) - y(t)$</td></tr>
-<tr><td style="padding:3px 8px 3px 0;color:#3a5a78;font-family:'IBM Plex Mono',monospace;white-space:nowrap;">$K_p$</td><td style="padding:3px 0;color:#2a3a4a;">Proportional gain</td></tr>
-<tr><td style="padding:3px 8px 3px 0;color:#3a5a78;font-family:'IBM Plex Mono',monospace;white-space:nowrap;">$K_i,\,T_i$</td><td style="padding:3px 0;color:#2a3a4a;">Integral gain $K_i = K_p/T_i$; $T_i$ = integral time constant</td></tr>
-<tr><td style="padding:3px 8px 3px 0;color:#3a5a78;font-family:'IBM Plex Mono',monospace;white-space:nowrap;">$K_d,\,T_d$</td><td style="padding:3px 0;color:#2a3a4a;">Derivative gain $K_d = K_p T_d$; $T_d$ = derivative time constant</td></tr>
-<tr><td style="padding:3px 8px 3px 0;color:#3a5a78;font-family:'IBM Plex Mono',monospace;white-space:nowrap;">$K_{cr},\,T_{cr}$</td><td style="padding:3px 0;color:#2a3a4a;">Ziegler-Nichols: critical gain and period of oscillation</td></tr>
-</table>
-</div>
-<div class="prose">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="control" data-current="pid.html"></div>
+            <hr class="sidebar-rule">
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#three-actions" class="nav-item">The three actions</a>
+        <a href="#transfer-function" class="nav-item">PID transfer function</a>
+        <a href="#tuning" class="nav-item">Ziegler-Nichols tuning</a>
+        <a href="#practical" class="nav-item">Derivative kick &amp; windup</a>
+        <a href="#examples" class="nav-item">Worked examples</a>
+        <a href="#interactive" class="nav-item">Interactive</a>
+        <a href="#food-for-thought" class="nav-item">Food for thought</a>
+        <a href="#pitfalls" class="nav-item">Common pitfalls</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Control Theory</a>
+        <span class="sep">›</span>
+        <span>7 · PID Control</span>
+      </div>
+
+      <div class="lesson-title">7 · PID Control</div>
+      <div class="lesson-meta">Proportional · Integral · Derivative · Tuning · Anti-Windup</div>
+
+      <div class="notation-box" style="background:#f0f6fa;border-left:3px solid #3a8abf;padding:14px 18px;border-radius:0 4px 4px 0;margin:20px 0 24px;">
+        <div style="font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#1a5a8a;margin-bottom:10px;">Notation used in this lesson</div>
+        <table style="font-size:13px;border-collapse:collapse;width:100%;">
+          <tr><td style="padding:3px 8px 3px 0;color:#3a5a78;font-family:'IBM Plex Mono',monospace;white-space:nowrap;">$e(t)$</td><td style="padding:3px 0;color:#2a3a4a;">Error signal: $e(t) = r(t) - y(t)$</td></tr>
+          <tr><td style="padding:3px 8px 3px 0;color:#3a5a78;font-family:'IBM Plex Mono',monospace;white-space:nowrap;">$K_p$</td><td style="padding:3px 0;color:#2a3a4a;">Proportional gain</td></tr>
+          <tr><td style="padding:3px 8px 3px 0;color:#3a5a78;font-family:'IBM Plex Mono',monospace;white-space:nowrap;">$K_i,\,T_i$</td><td style="padding:3px 0;color:#2a3a4a;">Integral gain $K_i = K_p/T_i$; $T_i$ = integral time constant</td></tr>
+          <tr><td style="padding:3px 8px 3px 0;color:#3a5a78;font-family:'IBM Plex Mono',monospace;white-space:nowrap;">$K_d,\,T_d$</td><td style="padding:3px 0;color:#2a3a4a;">Derivative gain $K_d = K_p T_d$; $T_d$ = derivative time constant</td></tr>
+          <tr><td style="padding:3px 8px 3px 0;color:#3a5a78;font-family:'IBM Plex Mono',monospace;white-space:nowrap;">$K_{cr},\,T_{cr}$</td><td style="padding:3px 0;color:#2a3a4a;">Ziegler-Nichols: critical gain and period of oscillation</td></tr>
+        </table>
+      </div>
+
+      <div class="prose">
         Over 90% of industrial control loops are PID controllers. Not because PID is optimal —
         it usually isn't — but because it is simple, intuitive, and works well for a vast range
         of plants. Every chemical plant, refinery, power station, HVAC system, and industrial
@@ -108,32 +115,37 @@
         of deployed control systems in the world. This lesson explains <em>why</em> each term
         works, derives the transfer function, and gives you the tools to tune it.
       </div>
-<!-- ── The three actions ─────────────────────────────────────── -->
-<div class="section-head" id="three-actions">The three actions</div>
-<div class="prose">
+
+      <!-- ── The three actions ─────────────────────────────────────── -->
+      <div class="section-head" id="three-actions">The three actions</div>
+
+      <div class="prose">
         A PID controller computes its output $u(t)$ from the error signal $e(t) = r(t) - y(t)$
         using three independent terms:
         $$u(t) = K_p e(t) + K_i \int_0^t e(\tau)\,d\tau + K_d \frac{de(t)}{dt}$$
       </div>
-<div class="pid-action-card action-p">
-<div class="action-label" style="color:#3a6a8a;">Proportional (P)</div>
-<strong>Action:</strong> $K_p e(t)$ — output proportional to current error.
+
+      <div class="pid-action-card action-p">
+        <div class="action-label" style="color:#3a6a8a;">Proportional (P)</div>
+        <strong>Action:</strong> $K_p e(t)$ — output proportional to current error.
         <strong>Effect:</strong> Faster response, reduced (but nonzero) steady-state error for most plants.
         <strong>Analogy:</strong> You are steering. The larger the deviation from the desired path,
         the harder you turn. The output is always proportional to how far off you are right now.
       </div>
-<div class="pid-action-card action-i">
-<div class="action-label" style="color:#8a4a8a;">Integral (I)</div>
-<strong>Action:</strong> $K_i \int e\,dt$ — output proportional to accumulated past error.
+
+      <div class="pid-action-card action-i">
+        <div class="action-label" style="color:#8a4a8a;">Integral (I)</div>
+        <strong>Action:</strong> $K_i \int e\,dt$ — output proportional to accumulated past error.
         <strong>Effect:</strong> Eliminates steady-state error completely (for step references and
         constant disturbances). Adds a pole at $s=0$ to the loop — Type 1 system.
         <strong>Analogy:</strong> If you've been consistently off course to the right for the past
         minute, you apply extra left correction to account for the accumulated drift. The integral
         "remembers" all past errors.
       </div>
-<div class="pid-action-card action-d">
-<div class="action-label" style="color:#8a6a2a;">Derivative (D)</div>
-<strong>Action:</strong> $K_d \dot{e}(t)$ — output proportional to rate of change of error.
+
+      <div class="pid-action-card action-d">
+        <div class="action-label" style="color:#8a6a2a;">Derivative (D)</div>
+        <strong>Action:</strong> $K_d \dot{e}(t)$ — output proportional to rate of change of error.
         <strong>Effect:</strong> Anticipates future errors; adds damping; allows higher P gain without
         oscillation. Adds a zero to the open-loop transfer function.
         <strong>Analogy:</strong> If the error is currently zero but increasing rapidly, you apply
@@ -141,9 +153,11 @@
         <strong>Problem:</strong> Amplifies high-frequency noise (derivative of noise is large).
         Always used with a low-pass filter in practice.
       </div>
-<!-- ── PID transfer function ─────────────────────────────────── -->
-<div class="section-head" id="transfer-function">PID transfer function and forms</div>
-<div class="prose">
+
+      <!-- ── PID transfer function ─────────────────────────────────── -->
+      <div class="section-head" id="transfer-function">PID transfer function and forms</div>
+
+      <div class="prose">
         Taking the Laplace transform of the PID control law gives the <strong>parallel form</strong>:
       </div>
 
@@ -155,130 +169,149 @@
         This form is physically intuitive: $T_i$ is the time the integrator takes to add a
         contribution equal to the P term, and $T_d$ is the prediction horizon.
       </div>
-<div class="prose">
+
+      <div class="prose">
         The PID transfer function can also be written as a product of factors:
         $$C(s) = \frac{K_p}{T_i s}\,\left(T_i s + 1\right)\!\left(T_d s + 1\right)$$
         (valid when $T_i T_d s^2$ is grouped appropriately — the exact form depends on
         the algebraic grouping used, but the poles and zeros are the same.)
         In either form, the PID controller has:
       </div>
-<ul class="prose" style="padding-left:1.4em;">
-<li style="margin-bottom:6px;"><strong>One pole at $s=0$</strong> (integrator from I action) — gives Type 1 loop.</li>
-<li style="margin-bottom:6px;"><strong>Two zeros</strong> at $s = -1/(2T_d)\pm\sqrt{1/(4T_d^2)-1/(T_d T_i)}$ — these are the PD correction zeros.</li>
-<li>For the open-loop $L(s) = C(s)P(s)$: the integrator in $C(s)$ adds $-90°$ phase lag; the two zeros add phase lead near the crossover frequency — this is how derivative action improves the phase margin.</li>
-</ul>
-<div class="prose">
-<strong>Effect on the Bode plot:</strong> Adding a PID controller to a first-order plant
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:6px;"><strong>One pole at $s=0$</strong> (integrator from I action) — gives Type 1 loop.</li>
+        <li style="margin-bottom:6px;"><strong>Two zeros</strong> at $s = -1/(2T_d)\pm\sqrt{1/(4T_d^2)-1/(T_d T_i)}$ — these are the PD correction zeros.</li>
+        <li>For the open-loop $L(s) = C(s)P(s)$: the integrator in $C(s)$ adds $-90°$ phase lag; the two zeros add phase lead near the crossover frequency — this is how derivative action improves the phase margin.</li>
+      </ul>
+
+      <div class="prose">
+        <strong>Effect on the Bode plot:</strong> Adding a PID controller to a first-order plant
         $P(s)=K/(τs+1)$:
       </div>
-<ul class="prose" style="padding-left:1.4em;">
-<li style="margin-bottom:6px;">P action: scales the whole curve upward → raises $\omega_c$.</li>
-<li style="margin-bottom:6px;">I action: adds $+20$ dB/dec slope at low frequencies (and $-90°$ phase there) → low-frequency gain goes to $\infty$ → zero steady-state error.</li>
-<li>D action: adds $+20$ dB/dec slope at high frequencies (and $+90°$ phase lead there) → compensates the phase lag near crossover → larger phase margin.</li>
-</ul>
-<!-- ── Ziegler-Nichols tuning ─────────────────────────────────── -->
-<div class="section-head" id="tuning">Ziegler-Nichols tuning</div>
-<div class="prose">
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:6px;">P action: scales the whole curve upward → raises $\omega_c$.</li>
+        <li style="margin-bottom:6px;">I action: adds $+20$ dB/dec slope at low frequencies (and $-90°$ phase there) → low-frequency gain goes to $\infty$ → zero steady-state error.</li>
+        <li>D action: adds $+20$ dB/dec slope at high frequencies (and $+90°$ phase lead there) → compensates the phase lag near crossover → larger phase margin.</li>
+      </ul>
+
+      <!-- ── Ziegler-Nichols tuning ─────────────────────────────────── -->
+      <div class="section-head" id="tuning">Ziegler-Nichols tuning</div>
+
+      <div class="prose">
         Ziegler and Nichols (1942) gave two empirical tuning methods that require no plant model —
         just simple experiments. These are not optimal, but they give a useful starting point
         and illustrate the relationship between the PID parameters and the plant's dynamics.
       </div>
-<div class="prose">
-<strong>Method 1: Ultimate Oscillation (closed-loop).</strong>
-</div>
-<ol class="prose" style="padding-left:1.4em;">
-<li style="margin-bottom:6px;">Set $K_i = 0$ and $K_d = 0$ (P-only control).</li>
-<li style="margin-bottom:6px;">Increase $K_p$ from zero until the closed-loop system just
+
+      <div class="prose">
+        <strong>Method 1: Ultimate Oscillation (closed-loop).</strong>
+      </div>
+
+      <ol class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:6px;">Set $K_i = 0$ and $K_d = 0$ (P-only control).</li>
+        <li style="margin-bottom:6px;">Increase $K_p$ from zero until the closed-loop system just
           begins to sustain oscillation. Record this <em>ultimate gain</em> $K_{cr}$.</li>
-<li style="margin-bottom:6px;">Record the period of the sustained oscillation $T_{cr}$.</li>
-<li>Use the Ziegler-Nichols table to set the PID parameters.</li>
-</ol>
-<div style="overflow-x:auto;margin:16px 0 24px;">
-<table style="width:100%;border-collapse:collapse;font-size:13.5px;">
-<thead>
-<tr style="background:#f0f4f7;">
-<th style="padding:8px 14px;text-align:left;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;">Controller</th>
-<th style="padding:8px 14px;text-align:center;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;">$K_p$</th>
-<th style="padding:8px 14px;text-align:center;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;">$T_i$</th>
-<th style="padding:8px 14px;text-align:center;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;">$T_d$</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">P</td>
-<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;text-align:center;font-family:'IBM Plex Mono',monospace;">$0.5\,K_{cr}$</td>
-<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;text-align:center;">—</td>
-<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;text-align:center;">—</td>
-</tr>
-<tr style="background:#f8fafb;">
-<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">PI</td>
-<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;text-align:center;font-family:'IBM Plex Mono',monospace;">$0.45\,K_{cr}$</td>
-<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;text-align:center;font-family:'IBM Plex Mono',monospace;">$T_{cr}/1.2$</td>
-<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;text-align:center;">—</td>
-</tr>
-<tr>
-<td style="padding:8px 14px;">PID</td>
-<td style="padding:8px 14px;text-align:center;font-family:'IBM Plex Mono',monospace;">$0.6\,K_{cr}$</td>
-<td style="padding:8px 14px;text-align:center;font-family:'IBM Plex Mono',monospace;">$T_{cr}/2$</td>
-<td style="padding:8px 14px;text-align:center;font-family:'IBM Plex Mono',monospace;">$T_{cr}/8$</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="prose">
-<strong>Method 2: Step Response (open-loop).</strong> Apply a step input to the plant in
+        <li style="margin-bottom:6px;">Record the period of the sustained oscillation $T_{cr}$.</li>
+        <li>Use the Ziegler-Nichols table to set the PID parameters.</li>
+      </ol>
+
+      <div style="overflow-x:auto;margin:16px 0 24px;">
+        <table style="width:100%;border-collapse:collapse;font-size:13.5px;">
+          <thead>
+            <tr style="background:#f0f4f7;">
+              <th style="padding:8px 14px;text-align:left;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;">Controller</th>
+              <th style="padding:8px 14px;text-align:center;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;">$K_p$</th>
+              <th style="padding:8px 14px;text-align:center;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;">$T_i$</th>
+              <th style="padding:8px 14px;text-align:center;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;">$T_d$</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">P</td>
+              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;text-align:center;font-family:'IBM Plex Mono',monospace;">$0.5\,K_{cr}$</td>
+              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;text-align:center;">—</td>
+              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;text-align:center;">—</td>
+            </tr>
+            <tr style="background:#f8fafb;">
+              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">PI</td>
+              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;text-align:center;font-family:'IBM Plex Mono',monospace;">$0.45\,K_{cr}$</td>
+              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;text-align:center;font-family:'IBM Plex Mono',monospace;">$T_{cr}/1.2$</td>
+              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;text-align:center;">—</td>
+            </tr>
+            <tr>
+              <td style="padding:8px 14px;">PID</td>
+              <td style="padding:8px 14px;text-align:center;font-family:'IBM Plex Mono',monospace;">$0.6\,K_{cr}$</td>
+              <td style="padding:8px 14px;text-align:center;font-family:'IBM Plex Mono',monospace;">$T_{cr}/2$</td>
+              <td style="padding:8px 14px;text-align:center;font-family:'IBM Plex Mono',monospace;">$T_{cr}/8$</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="prose">
+        <strong>Method 2: Step Response (open-loop).</strong> Apply a step input to the plant in
         open-loop. For plants that look like $K e^{-L s}/(Ts+1)$ (common in process control):
         read off the dead time $L$ and time constant $T$ from the S-shaped step response.
         Then $K_p = 1.2T/(KL)$, $T_i = 2L$, $T_d = 0.5L$.
       </div>
-<div class="callout">
-<strong>Z-N gives $PM \approx 30°$</strong> — adequate but not great. Process control
+
+      <div class="callout">
+        <strong>Z-N gives $PM \approx 30°$</strong> — adequate but not great. Process control
         engineers often detune by a factor of 2–3 (lower $K_p$, higher $T_i$) to get more
         robustness. For precision motion control or medical devices, use analytical methods
         (root locus, pole placement) rather than Z-N tuning.
       </div>
-<!-- ── Derivative kick and windup ─────────────────────────────── -->
-<div class="section-head" id="practical">Practical issues: derivative kick and integral windup</div>
-<div class="prose">
-<strong>Derivative kick.</strong> When the reference $r(t)$ changes as a step, the error
+
+      <!-- ── Derivative kick and windup ─────────────────────────────── -->
+      <div class="section-head" id="practical">Practical issues: derivative kick and integral windup</div>
+
+      <div class="prose">
+        <strong>Derivative kick.</strong> When the reference $r(t)$ changes as a step, the error
         $e(t) = r(t) - y(t)$ also jumps. Its derivative is theoretically infinite — the derivative
         term produces an enormous spike in the control output. This is called <em>derivative kick</em>.
       </div>
-<div class="prose">
-<strong>Fix:</strong> Apply the derivative to the <em>measurement only</em>, not the error:
+
+      <div class="prose">
+        <strong>Fix:</strong> Apply the derivative to the <em>measurement only</em>, not the error:
         $$u(t) = K_p e(t) + K_i \int e\,dt - K_d \frac{dy(t)}{dt}$$
         Since $\dot{e} = \dot{r} - \dot{y}$, this removes the contribution from $\dot{r}$.
         A step in $r$ no longer causes a derivative spike.
       </div>
-<div class="prose">
-<strong>Integral windup.</strong> When the actuator saturates (the control output $u$ hits a
+
+      <div class="prose">
+        <strong>Integral windup.</strong> When the actuator saturates (the control output $u$ hits a
         physical limit — valve fully open, motor at max torque), the plant is no longer receiving
         the commanded signal. But the integrator keeps accumulating error, building up an enormous
         integral term ("windup"). When the saturation eventually lifts, the controller has a huge
         integral bias that causes the output to overshoot badly or remain stuck at the limit.
       </div>
-<div class="prose">
-<strong>Anti-windup strategies:</strong>
-</div>
-<ul class="prose" style="padding-left:1.4em;">
-<li style="margin-bottom:6px;"><strong>Clamping:</strong> Stop integrating when the output
-          saturates. $\dot{I} = 0$ whenever $u = u_{max}$ and $e &gt; 0$ (or $u = u_{min}$ and $e &lt; 0$).
+
+      <div class="prose">
+        <strong>Anti-windup strategies:</strong>
+      </div>
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:6px;"><strong>Clamping:</strong> Stop integrating when the output
+          saturates. $\dot{I} = 0$ whenever $u = u_{max}$ and $e > 0$ (or $u = u_{min}$ and $e < 0$).
           Simple to implement.</li>
-<li style="margin-bottom:6px;"><strong>Back-calculation:</strong> Feed back the difference
+        <li style="margin-bottom:6px;"><strong>Back-calculation:</strong> Feed back the difference
           between the commanded and actual (saturated) output to reduce the integrator state.
           More principled and gives smoother recovery.</li>
-<li><strong>Conditional integration:</strong> Only integrate when the error is small enough
+        <li><strong>Conditional integration:</strong> Only integrate when the error is small enough
           that saturation is unlikely. Not recommended — can cause steady-state error.</li>
-</ul>
-<!-- ── Worked examples ─────────────────────────────────────────── -->
-<div class="section-head" id="examples">Worked examples</div>
-<div class="example-box">
-<div class="example-header"><strong>Example 1 — PI control of a first-order plant</strong></div>
-<div class="example-problem">
+      </ul>
+
+      <!-- ── Worked examples ─────────────────────────────────────────── -->
+      <div class="section-head" id="examples">Worked examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — PI control of a first-order plant</strong></div>
+        <div class="example-problem">
           Plant: $P(s) = \dfrac{1}{2s+1}$. Design a PI controller for zero steady-state error
           to a step reference with phase margin $\approx 90°$ and crossover frequency $\omega_c = 1$ rad/s.
         </div>
-<div class="example-body">
+        <div class="example-body">
           PI controller: $C(s) = K_p\!\left(1 + \dfrac{1}{T_i s}\right) = \dfrac{K_p(T_i s + 1)}{T_i s}$.
 
           <strong>Pole-zero cancellation:</strong> Set $T_i = 2$ to cancel the plant pole at $s = -\tfrac{1}{2}$:
@@ -293,15 +326,16 @@
           <strong>Final controller:</strong> $C(s) = 2\!\left(1 + \dfrac{1}{2s}\right) = 2 + \dfrac{1}{s}$.
           Zero steady-state error to steps (integrator), PM = 90°.
         </div>
-</div>
-<div class="example-box">
-<div class="example-header"><strong>Example 2 — Effect of derivative on a second-order plant</strong></div>
-<div class="example-problem">
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Effect of derivative on a second-order plant</strong></div>
+        <div class="example-problem">
           Plant: $P(s) = \dfrac{1}{s(s+1)}$ (Type 1 position servo). Compare proportional control
           ($K_p=1$, $K_d=0$) with PD control ($K_p=1$, $K_d=1$).
         </div>
-<div class="example-body">
-<strong>P only ($K_p=1$):</strong> $1 + L(s) = 1 + \dfrac{1}{s(s+1)} = 0$
+        <div class="example-body">
+          <strong>P only ($K_p=1$):</strong> $1 + L(s) = 1 + \dfrac{1}{s(s+1)} = 0$
           → $s^2 + s + 1 = 0$, $\zeta = 0.5$, $\approx 16\%$ overshoot.
 
           <strong>PD ($K_p=1$, $K_d=1$):</strong> $C(s) = 1 + s$,
@@ -314,56 +348,68 @@
           lightly-damped plant pole — a clean illustration of how derivative action can reshape
           the closed-loop dynamics.
         </div>
-</div>
-<!-- ── Interactive ──────────────────────────────────────────────── -->
-<div class="section-head" id="interactive">Interactive: PID step response simulator</div>
-<div class="prose">
+      </div>
+
+      <!-- ── Interactive ──────────────────────────────────────────────── -->
+      <div class="section-head" id="interactive">Interactive: PID step response simulator</div>
+
+      <div class="prose">
         Simulate a PID controller on a first-order plant $P(s) = 1/(2s+1)$ (time constant 2 s).
         Apply a unit step reference at $t=0$ and optionally a disturbance at $t=10$ s.
         Adjust $K_p$, $K_i$, $K_d$ and observe the response.
       </div>
-<div class="widget-card">
-<div class="widget-title">PID Simulator — Plant: $P(s) = 1/(2s+1)$</div>
-<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:14px;">
-<div style="display:flex;flex-direction:column;gap:4px;">
-<label style="font-size:12px;color:#3a6a8a;font-weight:600;">
+
+      <div class="widget-card">
+        <div class="widget-title">PID Simulator — Plant: $P(s) = 1/(2s+1)$</div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:14px;">
+          <div style="display:flex;flex-direction:column;gap:4px;">
+            <label style="font-size:12px;color:#3a6a8a;font-weight:600;">
               $K_p$: <span id="pid-kp-val" style="font-family:'IBM Plex Mono',monospace;">1.00</span>
-</label>
-<input id="pid-kp" max="10" min="0" oninput="document.getElementById('pid-kp-val').textContent=parseFloat(this.value).toFixed(2);pidUpdate();" step="0.1" type="range" value="1.0"/>
-</div>
-<div style="display:flex;flex-direction:column;gap:4px;">
-<label style="font-size:12px;color:#8a4a8a;font-weight:600;">
+            </label>
+            <input type="range" id="pid-kp" min="0" max="10" step="0.1" value="1.0"
+              oninput="document.getElementById('pid-kp-val').textContent=parseFloat(this.value).toFixed(2);pidUpdate();">
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px;">
+            <label style="font-size:12px;color:#8a4a8a;font-weight:600;">
               $K_i$: <span id="pid-ki-val" style="font-family:'IBM Plex Mono',monospace;">0.00</span>
-</label>
-<input id="pid-ki" max="3" min="0" oninput="document.getElementById('pid-ki-val').textContent=parseFloat(this.value).toFixed(2);pidUpdate();" step="0.05" type="range" value="0"/>
-</div>
-<div style="display:flex;flex-direction:column;gap:4px;">
-<label style="font-size:12px;color:#8a6a2a;font-weight:600;">
+            </label>
+            <input type="range" id="pid-ki" min="0" max="3" step="0.05" value="0"
+              oninput="document.getElementById('pid-ki-val').textContent=parseFloat(this.value).toFixed(2);pidUpdate();">
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px;">
+            <label style="font-size:12px;color:#8a6a2a;font-weight:600;">
               $K_d$: <span id="pid-kd-val" style="font-family:'IBM Plex Mono',monospace;">0.00</span>
-</label>
-<input id="pid-kd" max="5" min="0" oninput="document.getElementById('pid-kd-val').textContent=parseFloat(this.value).toFixed(2);pidUpdate();" step="0.05" type="range" value="0"/>
-</div>
-</div>
-<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
-<button class="sim-btn" onclick="pidToggleRun()">▶ Run</button>
-<button class="sim-btn danger" onclick="pidApplyDist()">Disturbance at t=10s</button>
-<button class="sim-btn secondary" onclick="pidReset()">Reset</button>
-</div>
-<div style="font-size:12px;color:#5a6a7a;margin-bottom:8px;font-family:'IBM Plex Mono',monospace;">
-          t=<span id="pid-t">0.0</span>s  | 
-          y=<span id="pid-y">0.000</span>  | 
-          e=<span id="pid-e">1.000</span>  | 
-          u=<span id="pid-u">0.000</span>  | 
+            </label>
+            <input type="range" id="pid-kd" min="0" max="5" step="0.05" value="0"
+              oninput="document.getElementById('pid-kd-val').textContent=parseFloat(this.value).toFixed(2);pidUpdate();">
+          </div>
+        </div>
+
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+          <button class="sim-btn" onclick="pidToggleRun()">▶ Run</button>
+          <button class="sim-btn danger" onclick="pidApplyDist()">Disturbance at t=10s</button>
+          <button class="sim-btn secondary" onclick="pidReset()">Reset</button>
+        </div>
+
+        <div style="font-size:12px;color:#5a6a7a;margin-bottom:8px;font-family:'IBM Plex Mono',monospace;">
+          t=<span id="pid-t">0.0</span>s &nbsp;|&nbsp;
+          y=<span id="pid-y">0.000</span> &nbsp;|&nbsp;
+          e=<span id="pid-e">1.000</span> &nbsp;|&nbsp;
+          u=<span id="pid-u">0.000</span> &nbsp;|&nbsp;
           ∫e=<span id="pid-int">0.000</span>
-</div>
-<svg id="pid-plot" style="width:100%;max-width:530px;display:block;margin:0 auto;" viewbox="0 0 480 220"></svg>
-<div style="display:flex;gap:16px;margin-top:8px;font-size:12px;color:#5a6a7a;flex-wrap:wrap;">
-<span><span style="display:inline-block;width:16px;height:2px;border-top:2px dashed #b0b0b0;vertical-align:middle;margin-right:4px;"></span>Reference</span>
-<span><span style="display:inline-block;width:16px;height:3px;background:#3a6a8a;vertical-align:middle;margin-right:4px;"></span>Output $y(t)$</span>
-<span><span style="display:inline-block;width:16px;height:3px;background:#c87030;vertical-align:middle;margin-right:4px;"></span>Control $u(t)$</span>
-</div>
-</div>
-<script>
+        </div>
+
+        <svg id="pid-plot" viewBox="0 0 480 220" style="width:100%;max-width:530px;display:block;margin:0 auto;"></svg>
+
+        <div style="display:flex;gap:16px;margin-top:8px;font-size:12px;color:#5a6a7a;flex-wrap:wrap;">
+          <span><span style="display:inline-block;width:16px;height:2px;border-top:2px dashed #b0b0b0;vertical-align:middle;margin-right:4px;"></span>Reference</span>
+          <span><span style="display:inline-block;width:16px;height:3px;background:#3a6a8a;vertical-align:middle;margin-right:4px;"></span>Output $y(t)$</span>
+          <span><span style="display:inline-block;width:16px;height:3px;background:#c87030;vertical-align:middle;margin-right:4px;"></span>Control $u(t)$</span>
+        </div>
+      </div>
+
+      <script>
       (function(){
         var DT = 0.02;
         var T_MAX = 25;
@@ -503,21 +549,24 @@
         renderPlot();
       })();
       </script>
-<div class="prose" style="margin-top:12px;">
+
+      <div class="prose" style="margin-top:12px;">
         Try these experiments:
         <ul style="padding-left:1.4em;margin-top:6px;line-height:1.9;">
-<li><strong>P only ($K_i=K_d=0$, $K_p=2$):</strong> Fast response but non-zero steady-state error. Higher $K_p$ → faster but more oscillatory.</li>
-<li><strong>PI ($K_p=2, K_i=0.5$):</strong> Integrator eliminates steady-state error. Apply the disturbance — notice the system recovers to $y=1$. P-only does not.</li>
-<li><strong>PID ($K_p=4, K_i=1, K_d=2$):</strong> Faster rise, less overshoot than PI alone. The derivative damps the oscillation. Then apply the disturbance.</li>
-<li><strong>High $K_i$ with no $K_d$:</strong> The integrator causes overshoot and oscillation — integral windup effect visible for large $K_i$.</li>
-</ul>
-</div>
-<!-- ── Food for thought ──────────────────────────────────────── -->
-<div class="section-head" id="food-for-thought">Food for thought</div>
-<div class="fft-block" style="border-left:3px solid #b89040;background:#faf8f2;padding:14px 18px;border-radius:0 4px 4px 0;margin:20px 0;">
-<div style="font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#8a6010;margin-bottom:10px;">Reflection questions</div>
-<ol style="padding-left:1.4em;color:#2a3a4a;font-size:14px;line-height:1.7;">
-<li class="fft-item" style="margin-bottom:12px;">The integral action eliminates steady-state error for
+          <li><strong>P only ($K_i=K_d=0$, $K_p=2$):</strong> Fast response but non-zero steady-state error. Higher $K_p$ → faster but more oscillatory.</li>
+          <li><strong>PI ($K_p=2, K_i=0.5$):</strong> Integrator eliminates steady-state error. Apply the disturbance — notice the system recovers to $y=1$. P-only does not.</li>
+          <li><strong>PID ($K_p=4, K_i=1, K_d=2$):</strong> Faster rise, less overshoot than PI alone. The derivative damps the oscillation. Then apply the disturbance.</li>
+          <li><strong>High $K_i$ with no $K_d$:</strong> The integrator causes overshoot and oscillation — integral windup effect visible for large $K_i$.</li>
+        </ul>
+      </div>
+
+      <!-- ── Food for thought ──────────────────────────────────────── -->
+      <div class="section-head" id="food-for-thought">Food for thought</div>
+
+      <div class="fft-block" style="border-left:3px solid #b89040;background:#faf8f2;padding:14px 18px;border-radius:0 4px 4px 0;margin:20px 0;">
+        <div style="font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#8a6010;margin-bottom:10px;">Reflection questions</div>
+        <ol style="padding-left:1.4em;color:#2a3a4a;font-size:14px;line-height:1.7;">
+          <li style="margin-bottom:12px;">The integral action eliminates steady-state error for
             step references. But what happens to the integral term at steady state — what value
             does $\int e\,dt$ converge to, and why does a nonzero integral not cause the output
             to keep drifting past the reference?
@@ -534,8 +583,9 @@
                 because $e = 0$ means the integrator has stopped changing; the integral is frozen at
                 its steady-state value. The "driving force" for drift is gone.
               </div>
-</li>
-<li class="fft-item" style="margin-bottom:12px;">A PID controller has two zeros and one pole (at the
+            
+          </li>
+          <li style="margin-bottom:12px;">A PID controller has two zeros and one pole (at the
             origin). Where are these zeros in terms of $K_p$, $T_i$, $T_d$? Using the root locus,
             sketch qualitatively how the closed-loop poles of a first-order plant $P(s)=1/(s+1)$
             under PID control move as $K_p$ increases from 0 to $\infty$ (with fixed $T_i$, $T_d$).
@@ -553,8 +603,9 @@
                 For small $K_p$ the system is underdamped; near the zeros the poles settle; for large
                 $K_p$ one pole races to $-\infty$ and the closed-loop becomes fast but with large overshoot.
               </div>
-</li>
-<li class="fft-item">Anti-windup clamping stops integration when the output is saturated.
+            
+          </li>
+          <li class="fft-item">Anti-windup clamping stops integration when the output is saturated.
             But this means the integral state $I(t)$ no longer reflects the true $\int e\,dt$.
             When the saturation lifts and the integral resumes, is there any offset or transient
             due to the clamping? How does back-calculation anti-windup avoid this issue?
@@ -574,75 +625,85 @@
                 the integral is already at the "right" value and no transient occurs. The integral
                 actively tracks the achievable control, not the ideal one.
               </div>
-</li>
-</ol>
-</div>
-<!-- ── Common pitfalls ─────────────────────────────────────────── -->
-<div class="section-head" id="pitfalls">Common pitfalls</div>
-<div class="pitfalls-block" style="border-left:3px solid #c07070;background:#fdf8f8;padding:14px 18px;border-radius:0 4px 4px 0;margin:20px 0;">
-<div style="font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#8a2020;margin-bottom:10px;">Mistakes worth knowing about in advance</div>
-<ul style="padding-left:1.4em;color:#2a3a4a;font-size:14px;line-height:1.7;">
-<li style="margin-bottom:10px;"><strong>Applying raw derivative to the error signal.</strong>
+            
+          </li>
+        </ol>
+      </div>
+
+      <!-- ── Common pitfalls ─────────────────────────────────────────── -->
+      <div class="section-head" id="pitfalls">Common pitfalls</div>
+
+      <div class="pitfalls-block" style="border-left:3px solid #c07070;background:#fdf8f8;padding:14px 18px;border-radius:0 4px 4px 0;margin:20px 0;">
+        <div style="font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#8a2020;margin-bottom:10px;">Mistakes worth knowing about in advance</div>
+        <ul style="padding-left:1.4em;color:#2a3a4a;font-size:14px;line-height:1.7;">
+          <li style="margin-bottom:10px;"><strong>Applying raw derivative to the error signal.</strong>
             The classic PID formula differentiates $e(t) = r(t) - y(t)$. When $r(t)$ is a step,
             the derivative term produces an instantaneous infinite spike. Always differentiate only
             the output $y(t)$ in the derivative term (or apply a low-pass filter to $e(t)$).
             This is called "derivative-on-measurement" and is standard practice.</li>
-<li style="margin-bottom:10px;"><strong>Ignoring integral windup in simulation and implementation.</strong>
+          <li style="margin-bottom:10px;"><strong>Ignoring integral windup in simulation and implementation.</strong>
             A PID that works perfectly in simulation may fail catastrophically in hardware because
             the simulation doesn't model the actuator limits. Whenever your actuator has any limit
             (and every real actuator does), you must include anti-windup logic. Test explicitly:
             apply a large step reference that drives the actuator to saturation and verify that the
             recovery is smooth.</li>
-<li style="margin-bottom:10px;"><strong>Thinking more D is always better for damping.</strong>
+          <li style="margin-bottom:10px;"><strong>Thinking more D is always better for damping.</strong>
             Derivative action does add damping — but it amplifies high-frequency noise by $|s K_d|$.
             Unfiltered derivative on a noisy measurement (e.g., a velocity encoder with electrical
             noise) produces violent actuator chatter. Always include a first-order low-pass filter
             on the derivative: replace $K_d s$ with $K_d s/(N^{-1} s + 1)$ where $N \approx 10$–$20$
             limits the high-frequency gain.</li>
-<li><strong>Tuning in the frequency domain and forgetting about actuator constraints.</strong>
+          <li><strong>Tuning in the frequency domain and forgetting about actuator constraints.</strong>
             Frequency-domain design (phase margin, bandwidth) gives the right linear behavior, but
             real systems have nonlinear limits: actuator saturation, rate limits, dead zones.
             A beautifully tuned PID in the linear regime may oscillate badly when the actuator
             saturates. Non-linear phenomena require separate analysis beyond the linear PID design.</li>
-</ul>
-</div>
-<div class="connects-to" style="border-left:3px solid #c0d4de;background:#f8fafb;padding:14px 18px;border-radius:0 4px 4px 0;margin:20px 0;">
-<div style="font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;margin-bottom:10px;">Connects to</div>
-<ul style="padding-left:1.4em;color:#2a3a4a;font-size:14px;line-height:1.7;">
-<li style="margin-bottom:8px;"><strong>Lesson 2 (Transfer Functions / System Type)</strong> — The
+        </ul>
+      </div>
+
+      <div class="connects-to" style="border-left:3px solid #c0d4de;background:#f8fafb;padding:14px 18px;border-radius:0 4px 4px 0;margin:20px 0;">
+        <div style="font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;margin-bottom:10px;">Connects to</div>
+        <ul style="padding-left:1.4em;color:#2a3a4a;font-size:14px;line-height:1.7;">
+          <li style="margin-bottom:8px;"><strong>Lesson 2 (Transfer Functions / System Type)</strong> — The
             integral action in PID adds a pole at $s=0$, making the loop Type 1. This is what
             guarantees zero steady-state error to a step. The system-type analysis from Lesson 2
             predicts exactly what steady-state error to expect from P-only vs PI vs PID for
             different reference signal types (step, ramp, parabola).</li>
-<li style="margin-bottom:8px;"><strong>Lesson 8 (Lead-Lag Compensators)</strong> — PD action
+          <li style="margin-bottom:8px;"><strong>Lesson 8 (Lead-Lag Compensators)</strong> — PD action
             provides phase lead near the gain crossover (the derivative zero adds phase). A lead
             compensator is a more precise way to add phase lead at a specific frequency. Lessons 7
             and 8 together give you both the intuitive (PID) and frequency-domain (lead-lag)
             approaches to the same problem.</li>
-<li><strong>Lesson 13 (LQR)</strong> — LQR is the "optimal" extension of state feedback
+          <li><strong>Lesson 13 (LQR)</strong> — LQR is the "optimal" extension of state feedback
             that PID approximates in a heuristic way. LQR gives you the theoretically optimal gain
             matrix for a given cost function; PID gives you a simple three-parameter implementation
             that is easy to tune in the field. In practice, LQR is derived and then approximated
             by a PID structure for implementation.</li>
-</ul>
-</div>
-<hr class="lesson-rule"/>
-<div class="section-head">References</div>
-<ul class="prose" style="padding-left:1.4em;font-size:13.5px;color:#5a6a7a;">
-<li style="margin-bottom:6px;">G. Franklin, J. Powell &amp; A. Emami-Naeini,
+        </ul>
+      </div>
+
+      <hr class="lesson-rule">
+
+      <div class="section-head">References</div>
+      <ul class="prose" style="padding-left:1.4em;font-size:13.5px;color:#5a6a7a;">
+        <li style="margin-bottom:6px;">G. Franklin, J. Powell &amp; A. Emami-Naeini,
           <em>Feedback Control of Dynamic Systems</em> (8th ed.) — Chapter 4: basic properties
           of feedback; Chapter 5 and 6: PID design and frequency-domain analysis of PID.</li>
-<li>K. Ogata, <em>Modern Control Engineering</em> (5th ed.) — Chapter 8: PID controllers;
+        <li>K. Ogata, <em>Modern Control Engineering</em> (5th ed.) — Chapter 8: PID controllers;
           includes Ziegler-Nichols tuning with worked examples and anti-windup discussion.</li>
-</ul>
-<div id="lesson-nav"></div>
-</div><!-- /main -->
-</div><!-- /page-body -->
+      </ul>
+
+      <div id="lesson-nav"></div>
+
+    </div><!-- /main -->
+  </div><!-- /page-body -->
 </div><!-- /site-wrap -->
+
 <footer class="site-footer">
-<span>elee03.github.io/notes</span>
-<span>Est. MMXXVI</span>
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
 </footer>
-<script src="../notes-nav.js"></script>
+
+    <script src="../notes-nav.js"></script>
 </body>
 </html>

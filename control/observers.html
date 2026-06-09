@@ -1,18 +1,17 @@
 ﻿<!DOCTYPE html>
-
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Observers &amp; Separation Principle — Field Notes</title>
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
-<link href="../style.css" rel="stylesheet"/>
-<link href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" rel="stylesheet"/>
-<script defer="" src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
-<script defer="" src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
-<script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Observers &amp; Separation Principle — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script>
     document.addEventListener('DOMContentLoaded', function() {
       renderMathInElement(document.body, {
         delimiters: [
@@ -24,7 +23,7 @@
       obsInit();
     });
   </script>
-<style>
+  <style>
     .widget-card {
       background: #f0f4f7;
       border: 1px solid #c0d0dc;
@@ -108,48 +107,55 @@
   </style>
 </head>
 <body>
+
 <div class="topbar">
-<div class="topbar-inner">
-<a class="topbar-brand" href="../index.html">Field <span class="accent">Notes</span></a>
-<span class="topbar-sep">·</span>
-<a class="topbar-link" href="../references.html">Library</a>
-<span class="topbar-sep">·</span>
-<a class="topbar-back" href="https://elee03.github.io">elee03.github.io ↗</a>
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
 </div>
-</div>
+
 <div class="site-wrap">
-<div class="page-body">
-<div class="sidebar">
-<div data-cluster="control" data-current="observers.html" id="cluster-nav"></div>
-<hr class="sidebar-rule"/>
-<div class="nav-section">
-<div class="nav-label">On this page</div>
-<a class="nav-item" href="#the-observer-problem">The observer problem</a>
-<a class="nav-item" href="#luenberger">Luenberger observer</a>
-<a class="nav-item" href="#error-dynamics">Error dynamics</a>
-<a class="nav-item" href="#observer-design">Observer gain design</a>
-<a class="nav-item" href="#duality">Duality</a>
-<a class="nav-item" href="#output-feedback">Output feedback</a>
-<a class="nav-item" href="#separation">Separation principle</a>
-<a class="nav-item" href="#kalman">Kalman filter preview</a>
-<a class="nav-item" href="#interactive">Interactive observer</a>
-<a class="nav-item" href="#worked-examples">Worked examples</a>
-<a class="nav-item" href="#food-for-thought">Food for thought</a>
-<a class="nav-item" href="#pitfalls">Common pitfalls</a>
-</div>
-</div><!-- /sidebar -->
-<div class="main">
-<div class="breadcrumb">
-<a href="../index.html">Field Notes</a>
-<span class="sep">›</span>
-<a href="index.html">Control Theory</a>
-<span class="sep">›</span>
-<span>Lesson 14</span>
-</div>
-<div class="lesson-title">Observers &amp; the Separation Principle</div>
-<div class="lesson-meta">Luenberger Observer · Error Dynamics · Duality · Output Feedback · Kalman Filter</div>
-<!-- Hook -->
-<div class="prose">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="control" data-current="observers.html"></div>
+            <hr class="sidebar-rule">
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#the-observer-problem" class="nav-item">The observer problem</a>
+        <a href="#luenberger" class="nav-item">Luenberger observer</a>
+        <a href="#error-dynamics" class="nav-item">Error dynamics</a>
+        <a href="#observer-design" class="nav-item">Observer gain design</a>
+        <a href="#duality" class="nav-item">Duality</a>
+        <a href="#output-feedback" class="nav-item">Output feedback</a>
+        <a href="#separation" class="nav-item">Separation principle</a>
+        <a href="#kalman" class="nav-item">Kalman filter preview</a>
+        <a href="#interactive" class="nav-item">Interactive observer</a>
+        <a href="#worked-examples" class="nav-item">Worked examples</a>
+        <a href="#food-for-thought" class="nav-item">Food for thought</a>
+        <a href="#pitfalls" class="nav-item">Common pitfalls</a>
+      </div>
+    </div><!-- /sidebar -->
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Control Theory</a>
+        <span class="sep">›</span>
+        <span>Lesson 14</span>
+      </div>
+
+      <div class="lesson-title">Observers &amp; the Separation Principle</div>
+      <div class="lesson-meta">Luenberger Observer · Error Dynamics · Duality · Output Feedback · Kalman Filter</div>
+
+      <!-- Hook -->
+      <div class="prose">
         The state-feedback designs of Lessons 12 and 13 require measuring every state
         at every instant. In practice, only a few signals are directly accessible —
         perhaps position but not velocity, voltage but not current. The <em>observer</em>
@@ -159,149 +165,170 @@
         design the state feedback and the observer completely independently, and the
         combined system inherits the eigenvalues of both designs.
       </div>
-<!-- Notation -->
-<div class="callout" style="margin-bottom:24px;">
-<strong>Notation recap</strong>
-<table class="notation-table" style="margin-top:8px;">
-<tr><td>$\hat{x}$</td><td>State estimate (observer's internal state)</td></tr>
-<tr><td>$e = x - \hat{x}$</td><td>Estimation error</td></tr>
-<tr><td>$L$</td><td>Observer gain matrix ($n \times p$ for $p$ outputs)</td></tr>
-<tr><td>$A - LC$</td><td>Observer error dynamics matrix (analogous to $A - BK$)</td></tr>
-<tr><td>$K$</td><td>State-feedback gain (designed as in Lessons 12–13)</td></tr>
-</table>
-</div>
-<!-- ── The Observer Problem ────────────────────────────── -->
-<div id="the-observer-problem"></div>
-<div class="section-head">The Observer Problem</div>
-<div class="prose">
+
+      <!-- Notation -->
+      <div class="callout" style="margin-bottom:24px;">
+        <strong>Notation recap</strong>
+        <table class="notation-table" style="margin-top:8px;">
+          <tr><td>$\hat{x}$</td><td>State estimate (observer's internal state)</td></tr>
+          <tr><td>$e = x - \hat{x}$</td><td>Estimation error</td></tr>
+          <tr><td>$L$</td><td>Observer gain matrix ($n \times p$ for $p$ outputs)</td></tr>
+          <tr><td>$A - LC$</td><td>Observer error dynamics matrix (analogous to $A - BK$)</td></tr>
+          <tr><td>$K$</td><td>State-feedback gain (designed as in Lessons 12–13)</td></tr>
+        </table>
+      </div>
+
+      <!-- ── The Observer Problem ────────────────────────────── -->
+      <div id="the-observer-problem"></div>
+      <div class="section-head">The Observer Problem</div>
+
+      <div class="prose">
         We have a plant whose state evolves according to:
         $$\dot{x} = Ax + Bu, \qquad y = Cx$$
         We know the matrices $A$, $B$, $C$ and we observe $y(t)$ and $u(t)$.
         The state $x(t)$ is not directly available. The question is:
         <em>can we recover $x(t)$ from the history of $y$ and $u$?</em>
-</div>
-<div class="prose">
+      </div>
+
+      <div class="prose">
         The answer is yes — provided the system is <em>observable</em> (Lesson 11).
         Observability guarantees that distinct initial conditions produce distinct output
         trajectories, so the state can in principle be recovered from output measurements.
         But how to do this in real time, continuously updating as new measurements arrive?
       </div>
-<div class="prose">
+
+      <div class="prose">
         A naive approach: simulate the model from a guessed initial condition. But any
         initial error in the guess never corrects itself — the simulated trajectory
         diverges from the true state as model errors accumulate. We need feedback.
       </div>
-<!-- ── Luenberger Observer ─────────────────────────────── -->
-<div id="luenberger"></div>
-<div class="section-head">The Luenberger Observer</div>
-<div class="prose">
+
+      <!-- ── Luenberger Observer ─────────────────────────────── -->
+      <div id="luenberger"></div>
+      <div class="section-head">The Luenberger Observer</div>
+
+      <div class="prose">
         The Luenberger observer is a copy of the plant with a feedback correction term
         proportional to the output error — the difference between what the observer
         predicts the output should be ($C\hat{x}$) and what is actually measured ($y$):
       </div>
-<div class="formula-box">
+
+      <div class="formula-box">
         $$\dot{\hat{x}} = A\hat{x} + Bu + L(y - C\hat{x})$$
       </div>
-<div class="prose">
+
+      <div class="prose">
         Expanding: $\dot{\hat{x}} = (A - LC)\hat{x} + Bu + Ly$.
         The observer takes two inputs: the plant input $u$ (which we know since we
         choose it) and the plant output $y$ (which we measure).
         It produces a running estimate $\hat{x}$ of the true state.
       </div>
-<div class="prose">
+
+      <div class="prose">
         The gain $L$ (an $n \times p$ matrix for a plant with $p$ outputs and $n$ states)
         controls how aggressively the observer corrects its estimate based on the output
         prediction error. The structure is the continuous-time analogue of a feedback
         controller: the output residual $y - C\hat{x}$ is the "error signal" that drives
         the correction.
       </div>
-<svg aria-label="Luenberger observer block diagram" style="width:100%;max-width:600px;display:block;margin:20px auto 8px;font-family:IBM Plex Sans,sans-serif;" viewbox="0 0 520 130">
-<defs>
-<marker id="obs-arrow" markerheight="7" markerwidth="7" orient="auto" refx="6" refy="3.5">
-<polygon fill="#3a6a8a" points="0 0, 7 3.5, 0 7"></polygon>
-</marker>
-</defs>
-<!-- Plant block -->
-<rect fill="#e8f0f5" height="44" rx="4" stroke="#3a6a8a" stroke-width="1.5" width="100" x="60" y="10"></rect>
-<text fill="#1a3050" font-size="11" font-weight="600" text-anchor="middle" x="110" y="29">Plant</text>
-<text fill="#3a6a8a" font-size="10" text-anchor="middle" x="110" y="44">ẋ = Ax + Bu</text>
-<text fill="#7a9ab0" font-size="9.5" text-anchor="middle" x="110" y="57">y = Cx</text>
-<!-- Observer block -->
-<rect fill="#e8f4e8" height="44" rx="4" stroke="#2a8a2a" stroke-width="1.5" width="100" x="60" y="76"></rect>
-<text fill="#1a3820" font-size="11" font-weight="600" text-anchor="middle" x="110" y="95">Observer</text>
-<text fill="#2a6a2a" font-size="9.5" text-anchor="middle" x="110" y="110">x̂̇ = Ax̂+Bu+L(y−Cx̂)</text>
-<!-- u input lines -->
-<line marker-end="url(#obs-arrow)" stroke="#3a6a8a" stroke-width="1.5" x1="0" x2="60" y1="32" y2="32"></line>
-<text fill="#3a6a8a" font-size="10" x="5" y="28">u</text>
-<line stroke="#3a6a8a" stroke-width="1.2" x1="30" x2="30" y1="32" y2="98"></line>
-<line marker-end="url(#obs-arrow)" stroke="#3a6a8a" stroke-width="1.5" x1="30" x2="60" y1="98" y2="98"></line>
-<!-- y from plant -->
-<line marker-end="url(#obs-arrow)" stroke="#3a6a8a" stroke-width="1.5" x1="160" x2="240" y1="32" y2="32"></line>
-<text fill="#3a6a8a" font-size="10" x="185" y="28">y</text>
-<!-- y to observer -->
-<line stroke="#3a6a8a" stroke-width="1.2" x1="220" x2="220" y1="32" y2="98"></line>
-<line stroke="#3a6a8a" stroke-width="1.2" x1="220" x2="200" y1="98" y2="98"></line>
-<line stroke="#3a6a8a" stroke-width="1.2" x1="200" x2="200" y1="98" y2="91"></line>
-<line marker-end="url(#obs-arrow)" stroke="#3a6a8a" stroke-width="1.5" x1="200" x2="160" y1="91" y2="91"></line>
-<!-- x-hat output -->
-<line marker-end="url(#obs-arrow)" stroke="#2a8a2a" stroke-width="1.5" x1="160" x2="240" y1="98" y2="98"></line>
-<text fill="#2a6a2a" font-size="10" x="185" y="94">x̂</text>
-<!-- output box -->
-<rect fill="#f5f5f5" height="22" rx="3" stroke="#9aabb8" stroke-width="1" width="60" x="240" y="20"></rect>
-<text fill="#3a5060" font-size="10" text-anchor="middle" x="270" y="34">y output</text>
-<rect fill="#f5f5f5" height="22" rx="3" stroke="#9aabb8" stroke-width="1" width="60" x="240" y="86"></rect>
-<text fill="#2a5040" font-size="10" text-anchor="middle" x="270" y="100">x̂ estimate</text>
-<!-- L label -->
-<text fill="#2a6a2a" font-size="9.5" font-style="italic" x="175" y="80">correction: L(y−Cx̂)</text>
-</svg>
-<!-- ── Error Dynamics ──────────────────────────────────── -->
-<div id="error-dynamics"></div>
-<div class="section-head">Error Dynamics</div>
-<div class="prose">
+
+      <svg viewBox="0 0 520 130" style="width:100%;max-width:600px;display:block;margin:20px auto 8px;font-family:IBM Plex Sans,sans-serif;" aria-label="Luenberger observer block diagram">
+        <defs>
+          <marker id="obs-arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+            <polygon points="0 0, 7 3.5, 0 7" fill="#3a6a8a"/>
+          </marker>
+        </defs>
+        <!-- Plant block -->
+        <rect x="60" y="10" width="100" height="44" rx="4" fill="#e8f0f5" stroke="#3a6a8a" stroke-width="1.5"/>
+        <text x="110" y="29" text-anchor="middle" font-size="11" fill="#1a3050" font-weight="600">Plant</text>
+        <text x="110" y="44" text-anchor="middle" font-size="10" fill="#3a6a8a">ẋ = Ax + Bu</text>
+        <text x="110" y="57" text-anchor="middle" font-size="9.5" fill="#7a9ab0">y = Cx</text>
+        <!-- Observer block -->
+        <rect x="60" y="76" width="100" height="44" rx="4" fill="#e8f4e8" stroke="#2a8a2a" stroke-width="1.5"/>
+        <text x="110" y="95" text-anchor="middle" font-size="11" fill="#1a3820" font-weight="600">Observer</text>
+        <text x="110" y="110" text-anchor="middle" font-size="9.5" fill="#2a6a2a">x̂̇ = Ax̂+Bu+L(y−Cx̂)</text>
+        <!-- u input lines -->
+        <line x1="0" y1="32" x2="60" y2="32" stroke="#3a6a8a" stroke-width="1.5" marker-end="url(#obs-arrow)"/>
+        <text x="5" y="28" font-size="10" fill="#3a6a8a">u</text>
+        <line x1="30" y1="32" x2="30" y2="98" stroke="#3a6a8a" stroke-width="1.2"/>
+        <line x1="30" y1="98" x2="60" y2="98" stroke="#3a6a8a" stroke-width="1.5" marker-end="url(#obs-arrow)"/>
+        <!-- y from plant -->
+        <line x1="160" y1="32" x2="240" y2="32" stroke="#3a6a8a" stroke-width="1.5" marker-end="url(#obs-arrow)"/>
+        <text x="185" y="28" font-size="10" fill="#3a6a8a">y</text>
+        <!-- y to observer -->
+        <line x1="220" y1="32" x2="220" y2="98" stroke="#3a6a8a" stroke-width="1.2"/>
+        <line x1="220" y1="98" x2="200" y2="98" stroke="#3a6a8a" stroke-width="1.2"/>
+        <line x1="200" y1="98" x2="200" y2="91" stroke="#3a6a8a" stroke-width="1.2"/>
+        <line x1="200" y1="91" x2="160" y2="91" stroke="#3a6a8a" stroke-width="1.5" marker-end="url(#obs-arrow)"/>
+        <!-- x-hat output -->
+        <line x1="160" y1="98" x2="240" y2="98" stroke="#2a8a2a" stroke-width="1.5" marker-end="url(#obs-arrow)"/>
+        <text x="185" y="94" font-size="10" fill="#2a6a2a">x̂</text>
+        <!-- output box -->
+        <rect x="240" y="20" width="60" height="22" rx="3" fill="#f5f5f5" stroke="#9aabb8" stroke-width="1"/>
+        <text x="270" y="34" text-anchor="middle" font-size="10" fill="#3a5060">y output</text>
+        <rect x="240" y="86" width="60" height="22" rx="3" fill="#f5f5f5" stroke="#9aabb8" stroke-width="1"/>
+        <text x="270" y="100" text-anchor="middle" font-size="10" fill="#2a5040">x̂ estimate</text>
+        <!-- L label -->
+        <text x="175" y="80" font-size="9.5" fill="#2a6a2a" font-style="italic">correction: L(y−Cx̂)</text>
+      </svg>
+
+      <!-- ── Error Dynamics ──────────────────────────────────── -->
+      <div id="error-dynamics"></div>
+      <div class="section-head">Error Dynamics</div>
+
+      <div class="prose">
         Define the estimation error $e(t) = x(t) - \hat{x}(t)$.
         Differentiating and substituting:
         $$\dot{e} = \dot{x} - \dot{\hat{x}} = (Ax + Bu) - (A\hat{x} + Bu + L(Cx - C\hat{x}))$$
         $$= A(x - \hat{x}) - LC(x - \hat{x}) = (A - LC)\,e$$
       </div>
-<div class="prose">
+
+      <div class="prose">
         This is a homogeneous linear ODE in the error:
       </div>
-<div class="formula-box">
+
+      <div class="formula-box">
         $$\dot{e} = (A - LC)\,e \qquad \Rightarrow \qquad e(t) = e^{(A-LC)t}\,e(0)$$
       </div>
-<div class="prose">
+
+      <div class="prose">
         The error decays to zero if and only if all eigenvalues of $A - LC$ have negative
         real parts. Since $e(0) = x(0) - \hat{x}(0)$ is the initial estimation error (which
         we can't control — we don't know $x(0)$), the observer must be designed so that
         $A - LC$ is stable regardless of initial conditions.
       </div>
-<div class="callout">
-<strong>The key insight.</strong> The observer error is completely independent of
+
+      <div class="callout">
+        <strong>The key insight.</strong> The observer error is completely independent of
         the control input $u$. The error dynamics $\dot{e} = (A-LC)e$ depend only on the
         observer gain $L$ and the plant matrices $A$, $C$. You can design $L$ purely to
         make the error decay fast, without worrying about the control law at all.
       </div>
-<!-- ── Observer Gain Design ────────────────────────────── -->
-<div id="observer-design"></div>
-<div class="section-head">Observer Gain Design</div>
-<div class="prose">
+
+      <!-- ── Observer Gain Design ────────────────────────────── -->
+      <div id="observer-design"></div>
+      <div class="section-head">Observer Gain Design</div>
+
+      <div class="prose">
         The observer design problem is: choose $L$ such that $A - LC$ has eigenvalues
         at desired locations in the left half-plane. Comparing with Lesson 12:
       </div>
-<div class="duality-grid">
-<div class="duality-cell">
-<strong>State feedback</strong><br/>
-          Choose $K$ so $A - BK$ has desired eigenvalues.<br/>
+
+      <div class="duality-grid">
+        <div class="duality-cell">
+          <strong>State feedback</strong><br>
+          Choose $K$ so $A - BK$ has desired eigenvalues.<br>
           Possible iff $(A,B)$ is controllable.
         </div>
-<div class="duality-arrow">⟷</div>
-<div class="duality-cell">
-<strong>Observer design</strong><br/>
-          Choose $L$ so $A - LC$ has desired eigenvalues.<br/>
+        <div class="duality-arrow">⟷</div>
+        <div class="duality-cell">
+          <strong>Observer design</strong><br>
+          Choose $L$ so $A - LC$ has desired eigenvalues.<br>
           Possible iff $(A,C)$ is observable.
         </div>
-</div>
-<div class="prose">
+      </div>
+
+      <div class="prose">
         The two problems are formally identical after transposing: noting that
         $A - LC = (A^T - C^T L^T)^T$, the eigenvalues of $A-LC$ are the same as those
         of $A^T - C^T L^T$. So the observer gain problem is the pole-placement problem
@@ -310,8 +337,9 @@
         Apply Ackermann's formula to $(A^T, C^T)$ to get $K_{\text{obs}}$, then
         $L = K_{\text{obs}}^T$.
       </div>
-<div class="prose">
-<strong>How fast should the observer poles be?</strong>
+
+      <div class="prose">
+        <strong>How fast should the observer poles be?</strong>
         Observer poles must be stable (in the left half-plane), but their exact placement
         is a design choice. The common rule of thumb: place observer poles roughly $2$–$5\times$
         faster (further left) than the closed-loop poles. This ensures the estimation
@@ -319,93 +347,108 @@
         Going too fast amplifies measurement noise; going too slow leaves large estimation
         errors that corrupt the feedback signal.
       </div>
-<!-- ── Duality Theorem ─────────────────────────────────── -->
-<div id="duality"></div>
-<div class="section-head">Kalman Duality</div>
-<div class="prose">
+
+      <!-- ── Duality Theorem ─────────────────────────────────── -->
+      <div id="duality"></div>
+      <div class="section-head">Kalman Duality</div>
+
+      <div class="prose">
         The symmetry between controllability/observability and between the state-feedback/
         observer problems is not coincidental — it is the <em>Kalman duality principle</em>:
       </div>
-<div class="callout">
-<strong>Duality theorem.</strong>
+
+      <div class="callout">
+        <strong>Duality theorem.</strong>
         The pair $(A, B)$ is controllable if and only if $(A^T, B^T)$ is observable.
         Equivalently, $(A, C)$ is observable if and only if $(A^T, C^T)$ is controllable.
-        <br/><br/>
+        <br><br>
         As a consequence: <strong>every result about controllability and state feedback
         has a dual result about observability and observers.</strong>
         The controllability matrix $\mathcal{C} = [B,\,AB,\ldots,A^{n-1}B]$ dualises to
         the observability matrix $\mathcal{O} = [C^T,\,A^TC^T,\ldots,(A^T)^{n-1}C^T]^T$.
         Ackermann's formula dualises from state feedback to observer gain design.
       </div>
-<div class="prose">
+
+      <div class="prose">
         Duality means you never need separate theory for observers — every observer result
         is a free corollary of the corresponding controllability result, obtained by
         transposing the system. This is one of the most elegant structural observations
         in linear systems theory.
       </div>
-<!-- ── Output Feedback ────────────────────────────────── -->
-<div id="output-feedback"></div>
-<div class="section-head">Output Feedback via Estimated State</div>
-<div class="prose">
+
+      <!-- ── Output Feedback ────────────────────────────────── -->
+      <div id="output-feedback"></div>
+      <div class="section-head">Output Feedback via Estimated State</div>
+
+      <div class="prose">
         We now have:
       </div>
-<ul class="prose" style="margin-top:-8px;padding-left:24px;">
-<li>State feedback gain $K$ designed so $A - BK$ is stable with desired eigenvalues (Lessons 12–13)</li>
-<li>Observer gain $L$ designed so $A - LC$ is stable with desired eigenvalues (this lesson)</li>
-</ul>
-<div class="prose">
+
+      <ul class="prose" style="margin-top:-8px;padding-left:24px;">
+        <li>State feedback gain $K$ designed so $A - BK$ is stable with desired eigenvalues (Lessons 12–13)</li>
+        <li>Observer gain $L$ designed so $A - LC$ is stable with desired eigenvalues (this lesson)</li>
+      </ul>
+
+      <div class="prose">
         The practical control law uses the estimated state instead of the true state:
         $$u = -K\hat{x}$$
         The combined closed-loop system has state $[x,\,e]^T$ where $e = x - \hat{x}$:
         $$\frac{d}{dt}\begin{bmatrix}x \\ e\end{bmatrix}
-          = \underbrace{\begin{bmatrix}A - BK &amp; BK \\ 0 &amp; A - LC\end{bmatrix}}_{A_{cl}}\begin{bmatrix}x \\ e\end{bmatrix}$$
+          = \underbrace{\begin{bmatrix}A - BK & BK \\ 0 & A - LC\end{bmatrix}}_{A_{cl}}\begin{bmatrix}x \\ e\end{bmatrix}$$
       </div>
-<div class="prose">
+
+      <div class="prose">
         The closed-loop matrix $A_{cl}$ is upper-triangular, so its eigenvalues are
         precisely the union of the eigenvalues of $A - BK$ and $A - LC$:
         $$\text{eig}(A_{cl}) = \text{eig}(A - BK) \cup \text{eig}(A - LC)$$
       </div>
-<!-- ── Separation Principle ────────────────────────────── -->
-<div id="separation"></div>
-<div class="section-head">The Separation Principle</div>
-<div class="sep-box">
-<div class="sep-label">Separation Principle</div>
+
+      <!-- ── Separation Principle ────────────────────────────── -->
+      <div id="separation"></div>
+      <div class="section-head">The Separation Principle</div>
+
+      <div class="sep-box">
+        <div class="sep-label">Separation Principle</div>
         For a linear time-invariant system, the output-feedback controller $u = -K\hat{x}$
         (where $\hat{x}$ is produced by a Luenberger observer) has the following property:
-        <br/><br/>
-<strong>The closed-loop eigenvalues are the union of the state-feedback eigenvalues
+        <br><br>
+        <strong>The closed-loop eigenvalues are the union of the state-feedback eigenvalues
         (eigenvalues of $A - BK$) and the observer eigenvalues (eigenvalues of $A - LC$).</strong>
-<br/><br/>
+        <br><br>
         Therefore, $K$ and $L$ can be designed <strong>completely independently</strong>:
         design $K$ to achieve desired state-feedback performance, then design $L$
         to achieve desired observer convergence rate. The combination is always stable
         if both individual designs are stable.
       </div>
-<div class="prose">
+
+      <div class="prose">
         This is profoundly useful in practice. Without the separation principle, designing
         an output-feedback controller would require solving a joint optimisation over $K$
         and $L$ simultaneously — an intractable problem in general. The separation principle
         splits it into two independent, tractable design problems.
       </div>
-<div class="proof-box">
-<div class="proof-header">Proof — Separation principle</div>
-<div class="proof-body">
-<p>Let $e = x - \hat{x}$ be the estimation error. The observer equation gives $\dot{\hat{x}} = A\hat{x} + Bu + L(y - C\hat{x})$. Subtracting from $\dot{x} = Ax + Bu$:
+
+      <div class="proof-box">
+        <div class="proof-header">Proof — Separation principle</div>
+        <div class="proof-body">
+          <p>Let $e = x - \hat{x}$ be the estimation error. The observer equation gives $\dot{\hat{x}} = A\hat{x} + Bu + L(y - C\hat{x})$. Subtracting from $\dot{x} = Ax + Bu$:
           $$\dot{e} = \dot{x} - \dot{\hat{x}} = (A - LC)e$$
           The error dynamics are <em>independent of $u$ and $K$</em> — they depend only on $A$, $C$, and $L$.</p>
-<p>Now substitute $u = -K\hat{x} = -K(x - e)$ into the state equation:
+          <p>Now substitute $u = -K\hat{x} = -K(x - e)$ into the state equation:
           $$\dot{x} = Ax - BK(x - e) = (A - BK)x + BKe$$
           Writing as a joint system in the coordinates $(x, e)$:
-          $$\begin{bmatrix}\dot{x}\\\dot{e}\end{bmatrix} = \underbrace{\begin{bmatrix}A-BK &amp; BK \\ 0 &amp; A-LC\end{bmatrix}}_{A_{cl}}\begin{bmatrix}x\\e\end{bmatrix}$$</p>
-<p>$A_{cl}$ is <strong>block upper-triangular</strong>. The eigenvalues of a block upper-triangular matrix are the union of the eigenvalues of the diagonal blocks:
+          $$\begin{bmatrix}\dot{x}\\\dot{e}\end{bmatrix} = \underbrace{\begin{bmatrix}A-BK & BK \\ 0 & A-LC\end{bmatrix}}_{A_{cl}}\begin{bmatrix}x\\e\end{bmatrix}$$</p>
+          <p>$A_{cl}$ is <strong>block upper-triangular</strong>. The eigenvalues of a block upper-triangular matrix are the union of the eigenvalues of the diagonal blocks:
           $$\text{eig}(A_{cl}) = \text{eig}(A-BK) \cup \text{eig}(A-LC)$$
           Since the error dynamics do not depend on $K$ and the state-feedback block does not affect error convergence, $K$ and $L$ can be designed independently without affecting each other's pole placement. $\blacksquare$</p>
-</div>
-</div>
-<!-- ── Kalman Filter ───────────────────────────────────── -->
-<div id="kalman"></div>
-<div class="section-head">Kalman Filter Preview</div>
-<div class="prose">
+        </div>
+      </div>
+
+      <!-- ── Kalman Filter ───────────────────────────────────── -->
+      <div id="kalman"></div>
+      <div class="section-head">Kalman Filter Preview</div>
+
+      <div class="prose">
         In practice, measurements are noisy and the system is subject to disturbances.
         The <em>Kalman filter</em> is the optimal observer when noise is present:
         $$\dot{x} = Ax + Bu + Gw, \qquad y = Cx + v$$
@@ -413,42 +456,49 @@
         is measurement noise (both zero-mean Gaussian with known covariance matrices $W$
         and $V$).
       </div>
-<div class="prose">
+
+      <div class="prose">
         The Kalman filter has exactly the same form as the Luenberger observer, but the
         gain $L$ is now time-varying (or, at steady state, constant) and determined by
         solving a dual ARE:
       </div>
-<div class="formula-box">
+
+      <div class="formula-box">
         $$\text{(Filter ARE):} \quad A\Sigma + \Sigma A^T - \Sigma C^T V^{-1} C\Sigma + GWG^T = 0$$
         $$L_{\text{KF}} = \Sigma C^T V^{-1}$$
       </div>
-<div class="prose">
+
+      <div class="prose">
         The matrix $\Sigma$ is the steady-state estimation-error covariance.
         Comparing with the LQR Riccati equation $(A^TP + PA - PBR^{-1}B^TP + Q = 0)$:
       </div>
-<div class="callout">
-<strong>Duality of LQR and Kalman filter.</strong>
+
+      <div class="callout">
+        <strong>Duality of LQR and Kalman filter.</strong>
         The Kalman filter ARE is the LQR ARE with the substitution:
         $A \to A^T$, $B \to C^T$, $Q \to GWG^T$, $R \to V$, $P \to \Sigma$.
         The Kalman gain is $L = \Sigma C^T V^{-1}$, dual to the LQR gain $K^* = R^{-1}B^TP$.
-        <br/><br/>
+        <br><br>
         This means: every result about LQR — including the guaranteed stability margins
         and Bryson's tuning rule — has a dual result for the Kalman filter.
         Large $V$ (trust the model more than the measurements) → smaller $L$ → slower
         corrections. Large $W$ (model is unreliable) → larger $\Sigma$ → larger $L$ → faster corrections.
       </div>
-<div class="prose">
-<strong>LQG control.</strong> Combining the LQR state-feedback gain $K^*$ with the
+
+      <div class="prose">
+        <strong>LQG control.</strong> Combining the LQR state-feedback gain $K^*$ with the
         Kalman filter observer $L_{\text{KF}}$ yields the <em>Linear Quadratic Gaussian (LQG)</em>
         controller — the optimal output-feedback controller for linear systems with Gaussian
         noise. The separation principle applies: LQR and Kalman filter are designed
         independently and combined. LQG is the foundation of modern control and the starting
         point for $H_\infty$ and robust control theory.
       </div>
-<!-- ── Interactive ─────────────────────────────────────── -->
-<div id="interactive"></div>
-<div class="section-head">Interactive — Observer Convergence</div>
-<div class="prose">
+
+      <!-- ── Interactive ─────────────────────────────────────── -->
+      <div id="interactive"></div>
+      <div class="section-head">Interactive — Observer Convergence</div>
+
+      <div class="prose">
         The system below is a double integrator ($\ddot{y} = u$) with only position
         $y = x_1$ measured ($C = [1,\,0]$). The state-feedback gain is fixed at
         $K = [1,\,1.73]$ (LQR with $Q=I$, $R=1$). Only the observer poles are varied.
@@ -456,40 +506,45 @@
         $\hat{x}(0) = [0,\,0]^T$ (no initial knowledge of the state).
         Watch how faster observer poles converge more quickly but with larger initial transients.
       </div>
-<div class="widget-card">
-<div class="widget-title">Observer Convergence Demo</div>
-<div class="slider-row">
-<label>Obs. speed</label>
-<input id="obs-speed" max="8" min="1" step="0.25" type="range" value="3"/>
-<span class="sv" id="obs-speed-val">3.0×</span>
-</div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
-<div class="obs-result-box">
-<div class="lbl">Observer gain L</div>
-<div id="obs-L-display" style="font-size:13px;color:#1a3a5a;">[l₁, l₂]ᵀ = ?</div>
-</div>
-<div class="obs-result-box">
-<div class="lbl">Observer poles</div>
-<div id="obs-poles-display" style="font-size:13px;color:#1a3a5a;">?</div>
-</div>
-</div>
-<div class="obs-panels">
-<div>
-<div class="obs-panel-label">Position: true $x_1$ vs estimate $\hat{x}_1$</div>
-<svg id="obs-pos" style="border:1px solid #c8d8e4;border-radius:4px;background:#fff;display:block;" viewbox="0 0 240 180" width="100%"></svg>
-</div>
-<div>
-<div class="obs-panel-label">Velocity: true $x_2$ vs estimate $\hat{x}_2$</div>
-<svg id="obs-vel" style="border:1px solid #c8d8e4;border-radius:4px;background:#fff;display:block;" viewbox="0 0 240 180" width="100%"></svg>
-</div>
-</div>
-<div style="font-size:12px;color:#7a9ab0;margin-top:10px;">
-<span style="color:#2a6a8a;">—</span> True state  · 
-          <span style="color:#2a8a2a;">- -</span> Observer estimate  · 
+
+      <div class="widget-card">
+        <div class="widget-title">Observer Convergence Demo</div>
+
+        <div class="slider-row">
+          <label>Obs. speed</label>
+          <input type="range" id="obs-speed" min="1" max="8" step="0.25" value="3">
+          <span class="sv" id="obs-speed-val">3.0×</span>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+          <div class="obs-result-box">
+            <div class="lbl">Observer gain L</div>
+            <div id="obs-L-display" style="font-size:13px;color:#1a3a5a;">[l₁, l₂]ᵀ = ?</div>
+          </div>
+          <div class="obs-result-box">
+            <div class="lbl">Observer poles</div>
+            <div id="obs-poles-display" style="font-size:13px;color:#1a3a5a;">?</div>
+          </div>
+        </div>
+
+        <div class="obs-panels">
+          <div>
+            <div class="obs-panel-label">Position: true $x_1$ vs estimate $\hat{x}_1$</div>
+            <svg id="obs-pos" width="100%" viewBox="0 0 240 180" style="border:1px solid #c8d8e4;border-radius:4px;background:#fff;display:block;"></svg>
+          </div>
+          <div>
+            <div class="obs-panel-label">Velocity: true $x_2$ vs estimate $\hat{x}_2$</div>
+            <svg id="obs-vel" width="100%" viewBox="0 0 240 180" style="border:1px solid #c8d8e4;border-radius:4px;background:#fff;display:block;"></svg>
+          </div>
+        </div>
+        <div style="font-size:12px;color:#7a9ab0;margin-top:10px;">
+          <span style="color:#2a6a8a;">—</span> True state &nbsp;·&nbsp;
+          <span style="color:#2a8a2a;">- -</span> Observer estimate &nbsp;·&nbsp;
           Closed-loop poles: $-0.866 \pm 0.5j$
         </div>
-</div>
-<script>
+      </div>
+
+      <script>
       function obsInit() {
         document.getElementById('obs-speed').addEventListener('input', obsUpdate);
         obsUpdate();
@@ -601,26 +656,28 @@
         svg.innerHTML = h;
       }
       </script>
-<!-- ── Worked Examples ──────────────────────────────────── -->
-<div id="worked-examples"></div>
-<div class="section-head">Worked Examples</div>
-<div class="example-box">
-<div class="example-header"><strong>Example 1 — Observer design by duality</strong></div>
-<div class="example-problem">
+
+      <!-- ── Worked Examples ──────────────────────────────────── -->
+      <div id="worked-examples"></div>
+      <div class="section-head">Worked Examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Observer design by duality</strong></div>
+        <div class="example-problem">
           Design a Luenberger observer for:
-          $$A = \begin{bmatrix}0&amp;1\\-2&amp;-3\end{bmatrix},\quad C = \begin{bmatrix}1&amp;0\end{bmatrix}$$
+          $$A = \begin{bmatrix}0&1\\-2&-3\end{bmatrix},\quad C = \begin{bmatrix}1&0\end{bmatrix}$$
           with observer poles at $-5 \pm 5j$. Use the duality/pole-placement approach.
         </div>
-<div class="example-body">
-<strong>Step 1 — Check observability.</strong>
-          $\mathcal{O} = \begin{bmatrix}C \\ CA\end{bmatrix} = \begin{bmatrix}1&amp;0\\0&amp;1\end{bmatrix}$, $\det\mathcal{O} = 1 \neq 0$. ✓
-          <br/><br/>
-<strong>Step 2 — Transpose the problem.</strong> Apply pole placement to $(A^T,\, C^T)$
+        <div class="example-body">
+          <strong>Step 1 — Check observability.</strong>
+          $\mathcal{O} = \begin{bmatrix}C \\ CA\end{bmatrix} = \begin{bmatrix}1&0\\0&1\end{bmatrix}$, $\det\mathcal{O} = 1 \neq 0$. ✓
+          <br><br>
+          <strong>Step 2 — Transpose the problem.</strong> Apply pole placement to $(A^T,\, C^T)$
           with gain $\tilde{K} = [\tilde k_1,\, \tilde k_2]$:
-          $$A^T - C^T\tilde{K} = \begin{bmatrix}-\tilde k_1 &amp; -2-\tilde k_2 \\ 1 &amp; -3\end{bmatrix}$$
+          $$A^T - C^T\tilde{K} = \begin{bmatrix}-\tilde k_1 & -2-\tilde k_2 \\ 1 & -3\end{bmatrix}$$
           Characteristic polynomial: $s^2 + (\tilde k_1 + 3)s + (3\tilde k_1 - \tilde k_2 - 2 + 2)$.
-          <br/><br/>
-<strong>Step 3 — Match desired polynomial.</strong> Desired poles $-5 \pm 5j$:
+          <br><br>
+          <strong>Step 3 — Match desired polynomial.</strong> Desired poles $-5 \pm 5j$:
           $(s+5)^2 + 25 = s^2 + 10s + 50$.
           $$\tilde k_1 + 3 = 10 \;\Rightarrow\; \tilde k_1 = 7$$
           $$3(7) - \tilde k_2 = 50 \;\Rightarrow\; \tilde k_2 = 21 - 50 = -29$$
@@ -628,59 +685,63 @@
           For the char poly constant term: $3(7) + 2 + \tilde k_2 = 50 \Rightarrow \tilde k_2 = 27$.
           So $\tilde K = [7,\, 27]$ and the observer gain is:
           $$L = \tilde K^T = \begin{bmatrix}7\\27\end{bmatrix}$$
-          Verify: $A - LC = \begin{bmatrix}0-7&amp;1\\-2-27&amp;-3\end{bmatrix} = \begin{bmatrix}-7&amp;1\\-29&amp;-3\end{bmatrix}$.
+          Verify: $A - LC = \begin{bmatrix}0-7&1\\-2-27&-3\end{bmatrix} = \begin{bmatrix}-7&1\\-29&-3\end{bmatrix}$.
           Char poly: $s^2 + 10s + (21+29) = s^2 + 10s + 50$. ✓
         </div>
-</div>
-<div class="example-box">
-<div class="example-header"><strong>Example 2 — Verifying the separation principle</strong></div>
-<div class="example-problem">
-          For the double integrator ($A = \begin{bmatrix}0&amp;1\\0&amp;0\end{bmatrix}$, $B = \begin{bmatrix}0\\1\end{bmatrix}$, $C=[1,0]$)
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Verifying the separation principle</strong></div>
+        <div class="example-problem">
+          For the double integrator ($A = \begin{bmatrix}0&1\\0&0\end{bmatrix}$, $B = \begin{bmatrix}0\\1\end{bmatrix}$, $C=[1,0]$)
           with state-feedback gain $K = [1,\,\sqrt{3}]$ and observer poles at $-3 \pm 3j$,
           write the combined closed-loop matrix and verify the separation principle by computing its eigenvalues.
         </div>
-<div class="example-body">
-<strong>Step 1 — Find observer gain.</strong> Observer desired poly: $(s+3)^2 + 9 = s^2 + 6s + 18$.
-          $A - LC = \begin{bmatrix}-l_1 &amp; 1 \\ -l_2 &amp; 0\end{bmatrix}$, char poly $s^2 + l_1 s + l_2$.
+        <div class="example-body">
+          <strong>Step 1 — Find observer gain.</strong> Observer desired poly: $(s+3)^2 + 9 = s^2 + 6s + 18$.
+          $A - LC = \begin{bmatrix}-l_1 & 1 \\ -l_2 & 0\end{bmatrix}$, char poly $s^2 + l_1 s + l_2$.
           So $l_1 = 6$, $l_2 = 18$. $L = [6,\, 18]^T$.
-          <br/><br/>
-<strong>Step 2 — Form $A_{cl}$.</strong>
-          $$A_{cl} = \begin{bmatrix}A-BK &amp; BK \\ 0 &amp; A-LC\end{bmatrix}
-            = \begin{bmatrix}0&amp;1&amp;0&amp;0\\-1&amp;-\sqrt{3}&amp;1&amp;\sqrt{3}\\0&amp;0&amp;-6&amp;1\\0&amp;0&amp;-18&amp;0\end{bmatrix}$$
+          <br><br>
+          <strong>Step 2 — Form $A_{cl}$.</strong>
+          $$A_{cl} = \begin{bmatrix}A-BK & BK \\ 0 & A-LC\end{bmatrix}
+            = \begin{bmatrix}0&1&0&0\\-1&-\sqrt{3}&1&\sqrt{3}\\0&0&-6&1\\0&0&-18&0\end{bmatrix}$$
           <strong>Step 3 — Eigenvalues.</strong> Since $A_{cl}$ is block upper-triangular, eigenvalues are
           $\text{eig}(A-BK) \cup \text{eig}(A-LC)$.
           $A-BK$: char poly $s^2 + \sqrt{3}s + 1$, roots $-\sqrt{3}/2 \pm j/2 \approx -0.866 \pm 0.5j$.
           $A-LC$: char poly $s^2 + 6s + 18$, roots $-3 \pm 3j$.
           Combined eigenvalues: $\{-0.866 \pm 0.5j,\ -3 \pm 3j\}$ — the two designs are completely decoupled. ✓
         </div>
-</div>
-<div class="example-box">
-<div class="example-header"><strong>Example 3 — Kalman filter gain for a noisy double integrator</strong></div>
-<div class="example-problem">
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Kalman filter gain for a noisy double integrator</strong></div>
+        <div class="example-problem">
           The double integrator has process noise entering through acceleration ($G = [0;\,1]$, $W = 0.1$)
           and position measurement noise ($V = 0.01$). Describe how the Kalman filter gain is determined
           and what happens at the noise extremes $W \to 0$ and $V \to 0$.
         </div>
-<div class="example-body">
+        <div class="example-body">
           The filter ARE is $A\Sigma + \Sigma A^T - \Sigma C^T V^{-1} C\Sigma + GWG^T = 0$
-          where $GWG^T = \begin{bmatrix}0&amp;0\\0&amp;0.1\end{bmatrix}$ and $C^T V^{-1} C = 100\begin{bmatrix}1&amp;0\\0&amp;0\end{bmatrix}$.
-          <br/><br/>
+          where $GWG^T = \begin{bmatrix}0&0\\0&0.1\end{bmatrix}$ and $C^T V^{-1} C = 100\begin{bmatrix}1&0\\0&0\end{bmatrix}$.
+          <br><br>
           The $(1,1)$ entry of the ARE gives $-100\sigma_{11}^2 = 0 \Rightarrow \sigma_{11} = 0$, meaning the
           steady-state position estimation error covariance vanishes (the position measurement is accurate enough to be trusted exactly). The Kalman gain $L = \Sigma C^T V^{-1}$ concentrates on correcting the velocity estimate from position measurements.
-          <br/><br/>
-<strong>Limiting behaviour:</strong>
-<ul style="margin:8px 0 0 16px;">
-<li>$W \to 0$ (model perfect): $\Sigma \to 0$, $L \to 0$ — trust the model completely, ignore measurements.</li>
-<li>$V \to 0$ (sensor perfect): $\Sigma \to 0$ but $L = \Sigma C^T V^{-1}$ remains finite as the ratio $\Sigma/V$ stays bounded — follow measurements closely.</li>
-<li>$W/V$ large (noisy model, good sensors): large $L$, aggressive correction each measurement step.</li>
-</ul>
-</div>
-</div>
-<!-- ── Food for Thought ──────────────────────────────────── -->
-<div id="food-for-thought"></div>
-<div class="section-head">Food for Thought</div>
-<ul class="prose">
-<li class="fft-item">
+          <br><br>
+          <strong>Limiting behaviour:</strong>
+          <ul style="margin:8px 0 0 16px;">
+            <li>$W \to 0$ (model perfect): $\Sigma \to 0$, $L \to 0$ — trust the model completely, ignore measurements.</li>
+            <li>$V \to 0$ (sensor perfect): $\Sigma \to 0$ but $L = \Sigma C^T V^{-1}$ remains finite as the ratio $\Sigma/V$ stays bounded — follow measurements closely.</li>
+            <li>$W/V$ large (noisy model, good sensors): large $L$, aggressive correction each measurement step.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- ── Food for Thought ──────────────────────────────────── -->
+      <div id="food-for-thought"></div>
+      <div class="section-head">Food for Thought</div>
+
+      <ul class="prose">
+        <li class="fft-item">
           The separation principle says closed-loop eigenvalues are the union of feedback
           and observer eigenvalues. But the LQR guarantee of $\geq 60°$ phase margin does
           not carry over to the combined LQG controller. Why not — what changes when the
@@ -696,8 +757,9 @@
               margins can shrink to near zero even when both $K^*$ and $L$ are individually well-designed.
               This failure mode is known as the "LQG fragility" problem; loop transfer recovery (LTR) is the standard fix.
             </div>
-</li>
-<li class="fft-item">
+          
+        </li>
+        <li class="fft-item">
           In the observer error dynamics $\dot{e} = (A-LC)e$, the input $u$ does not appear.
           Does this mean the control design has no effect on how fast the observer converges?
           What would happen if you used a very bad state-feedback gain $K$?
@@ -711,8 +773,9 @@
               principle guarantees stability only when <em>both</em> $A-BK$ and $A-LC$ are
               independently stable.
             </div>
-</li>
-<li class="fft-item">
+          
+        </li>
+        <li class="fft-item">
           The Kalman filter is optimal for Gaussian noise. If the noise is heavy-tailed
           (occasional large outliers), would a Kalman filter still work well? What might
           you use instead?
@@ -726,51 +789,55 @@
               (3) <em>particle filter</em> — represents the posterior distribution with a set of
               weighted samples, making no Gaussian assumption and handling arbitrary noise distributions.
             </div>
-</li>
-</ul>
-<!-- ── Pitfalls ───────────────────────────────────────────── -->
-<div id="pitfalls"></div>
-<div class="section-head">Common Pitfalls</div>
-<ul class="prose">
-<li>
-<strong>Placing observer poles too slow.</strong>
+          
+        </li>
+      </ul>
+
+      <!-- ── Pitfalls ───────────────────────────────────────────── -->
+      <div id="pitfalls"></div>
+      <div class="section-head">Common Pitfalls</div>
+
+      <ul class="prose">
+        <li>
+          <strong>Placing observer poles too slow.</strong>
           Observer poles slower than or at the same speed as the closed-loop poles means
           the estimation error is still significant when the state reaches steady state.
           This degrades performance — the state feedback is working on a bad estimate.
           A typical guideline: observer poles 2–5× faster (further left) than closed-loop poles.
         </li>
-<li>
-<strong>Placing observer poles too fast.</strong>
+        <li>
+          <strong>Placing observer poles too fast.</strong>
           Very fast observer poles amplify high-frequency measurement noise. In practice,
           the "noise floor" of the sensors determines an upper limit on how fast you can
           place observer poles. This is precisely what the Kalman filter optimises.
         </li>
-<li>
-<strong>Misapplying the separation principle to nonlinear systems.</strong>
+        <li>
+          <strong>Misapplying the separation principle to nonlinear systems.</strong>
           The separation principle is a linear result. For nonlinear systems, combining
           a state feedback designed for the linearisation with a nonlinear observer does
           not in general give a stable closed-loop. Nonlinear observers (extended Kalman
           filter, unscented Kalman filter, particle filter) must account for the coupling.
         </li>
-<li>
-<strong>Forgetting the observer initial condition.</strong>
+        <li>
+          <strong>Forgetting the observer initial condition.</strong>
           The observer starts with an estimate $\hat{x}(0)$ that may be far from the
           true $x(0)$. The initial estimation error $e(0) = x(0) - \hat{x}(0)$ decays
           exponentially, but before it decays, the control signal may be very different
           from what full-state feedback would give. Large initial transients or actuator
           saturation can result.
         </li>
-<li>
-<strong>Using LQG and expecting LQR stability margins.</strong>
+        <li>
+          <strong>Using LQG and expecting LQR stability margins.</strong>
           The LQR state-feedback design has guaranteed $\geq 60°$ phase margin.
           Adding the Kalman filter (to form LQG) removes this guarantee. The LQG loop
           can be arbitrarily close to instability even when LQR and Kalman filter are
           individually well-designed. If robustness is critical, use LQG/LTR (loop
           transfer recovery) or $H_\infty$ methods to restore margins.
         </li>
-</ul>
-<div class="course-block">
-<strong>Connects to:</strong>
+      </ul>
+
+      <div class="course-block">
+        <strong>Connects to:</strong>
         Lesson 11 (Observability — the condition for observer design) ·
         Lesson 12 (State Feedback — combined with observer for output feedback) ·
         Lesson 13 (LQR — the state-feedback half of LQG; the dual Riccati equation
@@ -779,15 +846,20 @@
         the Kalman filter can be seen as a recursive least-squares estimator, closely
         related to TD-learning with linear function approximation)
       </div>
-<!-- Prev/Next nav -->
-<div id="lesson-nav"></div>
-</div><!-- /main -->
-</div><!-- /page-body -->
+
+      <!-- Prev/Next nav -->
+      <div id="lesson-nav"></div>
+
+    </div><!-- /main -->
+
+  </div><!-- /page-body -->
 </div><!-- /site-wrap -->
+
 <footer class="site-footer">
-<span>elee03.github.io/notes</span>
-<span>Est. MMXXVI</span>
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
 </footer>
-<script src="../notes-nav.js"></script>
+
+    <script src="../notes-nav.js"></script>
 </body>
 </html>

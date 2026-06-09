@@ -1,19 +1,18 @@
 ﻿<!DOCTYPE html>
-
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Function Approximation — Field Notes</title>
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
-<link href="../style.css" rel="stylesheet"/>
-<link href="rl-interactive.css" rel="stylesheet"/>
-<link href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" rel="stylesheet"/>
-<script defer="" src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
-<script defer="" src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
-<script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Function Approximation — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="rl-interactive.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script>
     document.addEventListener('DOMContentLoaded', function() {
       renderMathInElement(document.body, {
         delimiters: [
@@ -26,53 +25,63 @@
   </script>
 </head>
 <body>
+
 <div class="topbar">
-<div class="topbar-inner">
-<a class="topbar-brand" href="../index.html">Field <span class="accent">Notes</span></a>
-<span class="topbar-sep">·</span>
-<a class="topbar-link" href="../references.html">Library</a>
-<span class="topbar-sep">·</span>
-<a class="topbar-back" href="https://elee03.github.io">elee03.github.io ↗</a>
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
 </div>
-</div>
+
 <div class="site-wrap">
-<div class="page-body">
-<div class="sidebar">
-<div class="nav-section">
-<div class="nav-label">Prerequisites</div>
-<a class="nav-item" href="td-learning.html">7 · Temporal Difference Learning</a>
-<span class="nav-item planned">Linear Algebra · Gradient &amp; dot product</span>
-</div>
-<div data-cluster="rl" data-current="function-approx.html" id="cluster-nav"></div>
-<hr class="sidebar-rule"/>
-<div class="nav-section">
-<div class="nav-label">On this page</div>
-<a class="nav-item" href="#why-fa">Why function approx?</a>
-<a class="nav-item" href="#parameterized">Parameterized value functions</a>
-<a class="nav-item" href="#vebar">Value error objective</a>
-<a class="nav-item" href="#gradient-descent">Gradient descent on VE</a>
-<a class="nav-item" href="#semi-gradient">Semi-gradient TD</a>
-<a class="nav-item" href="#linear-fa">Linear function approx</a>
-<a class="nav-item" href="#neural-networks">Neural networks</a>
-<a class="nav-item" href="#deadly-triad">The deadly triad</a>
-<a class="nav-item" href="#dqn">DQN</a>
-<a class="nav-item" href="#worked-examples">Worked examples</a>
-<a class="nav-item" href="#interactive">Interactive explorer</a>
-<a class="nav-item" href="#food-for-thought">Food for thought</a>
-<a class="nav-item" href="#pitfalls">Common pitfalls</a>
-</div>
-</div>
-<div class="main">
-<div class="breadcrumb">
-<a href="../index.html">Field Notes</a>
-<span class="sep">›</span>
-<a href="index.html">Reinforcement Learning</a>
-<span class="sep">›</span>
-<span>8 · Function Approximation</span>
-</div>
-<div class="lesson-title">8 · Function Approximation</div>
-<div class="lesson-meta">Parameterized Value Functions · Semi-Gradient TD · Linear Approximation · Neural Networks · Deadly Triad · DQN</div>
-<div class="prose">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Prerequisites</div>
+        <a href="td-learning.html" class="nav-item">7 · Temporal Difference Learning</a>
+        <span class="nav-item planned">Linear Algebra · Gradient &amp; dot product</span>
+      </div>
+
+      <div id="cluster-nav" data-cluster="rl" data-current="function-approx.html"></div>
+
+            <hr class="sidebar-rule">
+
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#why-fa" class="nav-item">Why function approx?</a>
+        <a href="#parameterized" class="nav-item">Parameterized value functions</a>
+        <a href="#vebar" class="nav-item">Value error objective</a>
+        <a href="#gradient-descent" class="nav-item">Gradient descent on VE</a>
+        <a href="#semi-gradient" class="nav-item">Semi-gradient TD</a>
+        <a href="#linear-fa" class="nav-item">Linear function approx</a>
+        <a href="#neural-networks" class="nav-item">Neural networks</a>
+        <a href="#deadly-triad" class="nav-item">The deadly triad</a>
+        <a href="#dqn" class="nav-item">DQN</a>
+        <a href="#worked-examples" class="nav-item">Worked examples</a>
+        <a href="#interactive" class="nav-item">Interactive explorer</a>
+        <a href="#food-for-thought" class="nav-item">Food for thought</a>
+        <a href="#pitfalls" class="nav-item">Common pitfalls</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Reinforcement Learning</a>
+        <span class="sep">›</span>
+        <span>8 · Function Approximation</span>
+      </div>
+
+      <div class="lesson-title">8 · Function Approximation</div>
+      <div class="lesson-meta">Parameterized Value Functions · Semi-Gradient TD · Linear Approximation · Neural Networks · Deadly Triad · DQN</div>
+
+      <div class="prose">
         Everything in Lessons 4–7 stored one number per state — a table. For small, discrete problems
         this works fine. But chess has roughly $10^{44}$ states; continuous robot joint angles have
         infinitely many. You cannot store a separate value for each. Function approximation replaces
@@ -80,146 +89,171 @@
         $\hat{v}(s, \mathbf{w})$ on demand. This is the step that connects classical RL to deep learning —
         and it introduces a new set of challenges that require careful handling.
       </div>
-<!-- ── Notation recap ────────────────────────────────────── -->
-<div class="notation-box">
-<div class="notation-box-title">Notation used in this lesson</div>
-<table class="notation-table">
-<tr>
-<td>$\hat{v}(s, \mathbf{w})$</td>
-<td>Parameterized approximation to $v_\pi(s)$; $\mathbf{w} \in \mathbb{R}^d$ are the weights</td>
-</tr>
-<tr>
-<td>$\mathbf{x}(s)$</td>
-<td>Feature vector of state $s$: $\mathbf{x}(s) \in \mathbb{R}^d$; for linear FA, $\hat{v}(s,\mathbf{w}) = \mathbf{w}^\top\mathbf{x}(s)$</td>
-</tr>
-<tr>
-<td>$\nabla\hat{v}(s,\mathbf{w})$</td>
-<td>Gradient of $\hat{v}$ with respect to $\mathbf{w}$; for linear FA this equals $\mathbf{x}(s)$</td>
-</tr>
-<tr>
-<td>$\overline{VE}(\mathbf{w})$</td>
-<td>Mean Squared Value Error: $\sum_s \mu(s)[v_\pi(s) - \hat{v}(s,\mathbf{w})]^2$</td>
-</tr>
-<tr>
-<td>$\mu(s)$</td>
-<td>On-policy state distribution — how often state $s$ is visited under $\pi$</td>
-</tr>
-<tr>
-<td>$\delta_t$</td>
-<td>TD error (same as Lesson 7): $R_{t+1} + \gamma\hat{v}(S_{t+1},\mathbf{w}) - \hat{v}(S_t,\mathbf{w})$</td>
-</tr>
-</table>
-</div>
-<!-- ── Why FA? ─────────────────────────────────────────────── -->
-<div class="section-head" id="why-fa">Why function approximation?</div>
-<div class="prose">
+
+      <!-- ── Notation recap ────────────────────────────────────── -->
+      <div class="notation-box">
+        <div class="notation-box-title">Notation used in this lesson</div>
+        <table class="notation-table">
+          <tr>
+            <td>$\hat{v}(s, \mathbf{w})$</td>
+            <td>Parameterized approximation to $v_\pi(s)$; $\mathbf{w} \in \mathbb{R}^d$ are the weights</td>
+          </tr>
+          <tr>
+            <td>$\mathbf{x}(s)$</td>
+            <td>Feature vector of state $s$: $\mathbf{x}(s) \in \mathbb{R}^d$; for linear FA, $\hat{v}(s,\mathbf{w}) = \mathbf{w}^\top\mathbf{x}(s)$</td>
+          </tr>
+          <tr>
+            <td>$\nabla\hat{v}(s,\mathbf{w})$</td>
+            <td>Gradient of $\hat{v}$ with respect to $\mathbf{w}$; for linear FA this equals $\mathbf{x}(s)$</td>
+          </tr>
+          <tr>
+            <td>$\overline{VE}(\mathbf{w})$</td>
+            <td>Mean Squared Value Error: $\sum_s \mu(s)[v_\pi(s) - \hat{v}(s,\mathbf{w})]^2$</td>
+          </tr>
+          <tr>
+            <td>$\mu(s)$</td>
+            <td>On-policy state distribution — how often state $s$ is visited under $\pi$</td>
+          </tr>
+          <tr>
+            <td>$\delta_t$</td>
+            <td>TD error (same as Lesson 7): $R_{t+1} + \gamma\hat{v}(S_{t+1},\mathbf{w}) - \hat{v}(S_t,\mathbf{w})$</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- ── Why FA? ─────────────────────────────────────────────── -->
+      <div class="section-head" id="why-fa">Why function approximation?</div>
+
+      <div class="prose">
         The tabular methods in Lessons 4–7 make one strong assumption: you can maintain a separate
         value estimate for each state (and each state-action pair, for $Q$). This breaks down in two ways:
       </div>
-<ul class="prose" style="padding-left:1.4em;">
-<li style="margin-bottom:10px;"><strong>Storage:</strong> Real problems have enormous or continuous
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:10px;"><strong>Storage:</strong> Real problems have enormous or continuous
           state spaces. A robot arm with 6 joints at $10^{-3}$ rad precision has roughly $6000^6 \approx 5\times10^{22}$
           states. Storing one float per state is impossible.</li>
-<li style="margin-bottom:10px;"><strong>Generalization:</strong> Even if you could store $10^{22}$
+        <li style="margin-bottom:10px;"><strong>Generalization:</strong> Even if you could store $10^{22}$
           values, you could never visit all states during training. A tabular agent that visits state $s$
           updates only $V(s)$ — nothing else. A function approximator that visits $s$ can update $\hat{v}$
           in a way that also improves estimates for nearby states that were never visited. This is the
           key benefit: <em>generalization</em>.</li>
-</ul>
-<div class="prose">
+      </ul>
+
+      <div class="prose">
         Function approximation is an instance of supervised learning applied to the RL problem.
         Instead of a fixed dataset, the "training examples" come from interactions with the environment,
         and the "labels" are either true values (if known), Monte Carlo returns, or TD targets.
         The complication — and much of this lesson — is what happens when the labels are themselves
         produced by the function being trained.
       </div>
-<!-- ── Parameterized value functions ──────────────────────── -->
-<div class="section-head" id="parameterized">Parameterized value functions</div>
-<div class="prose">
+
+      <!-- ── Parameterized value functions ──────────────────────── -->
+      <div class="section-head" id="parameterized">Parameterized value functions</div>
+
+      <div class="prose">
         Replace the table $V : \mathcal{S} \to \mathbb{R}$ with a function $\hat{v}(s, \mathbf{w})$
         parameterized by a weight vector $\mathbf{w} \in \mathbb{R}^d$. The function can be:
       </div>
-<ul class="prose" style="padding-left:1.4em;">
-<li style="margin-bottom:8px;"><strong>Linear:</strong> $\hat{v}(s,\mathbf{w}) = \mathbf{w}^\top \mathbf{x}(s)$
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:8px;"><strong>Linear:</strong> $\hat{v}(s,\mathbf{w}) = \mathbf{w}^\top \mathbf{x}(s)$
           where $\mathbf{x}(s)$ is a feature vector. Simple, stable, converges provably — but limited to
           functions expressible as linear combinations of the features.</li>
-<li style="margin-bottom:8px;"><strong>Neural network:</strong> $\hat{v}(s,\mathbf{w})$ is a
+        <li style="margin-bottom:8px;"><strong>Neural network:</strong> $\hat{v}(s,\mathbf{w})$ is a
           multi-layer network with weights $\mathbf{w}$. Universal approximation — can represent any
           continuous function — but non-convex optimization and stability issues arise.</li>
-<li style="margin-bottom:8px;"><strong>Decision trees, radial basis functions, etc.:</strong>
+        <li style="margin-bottom:8px;"><strong>Decision trees, radial basis functions, etc.:</strong>
           Other function classes are possible; the gradient-descent framework below applies whenever
           the function is differentiable w.r.t. $\mathbf{w}$.</li>
-</ul>
-<div class="prose">
+      </ul>
+
+      <div class="prose">
         The key change in the math: instead of looking up $V(s)$ in a table, you compute
         $\hat{v}(s,\mathbf{w})$ by evaluating the function. Instead of updating $V(s)$, you
         update $\mathbf{w}$ via gradient descent. The single weight vector $\mathbf{w}$ encodes
         value estimates for all states simultaneously.
       </div>
-<!-- ── VE objective ───────────────────────────────────────── -->
-<div class="section-head" id="vebar">The value error objective</div>
-<div class="prose">
+
+      <!-- ── VE objective ───────────────────────────────────────── -->
+      <div class="section-head" id="vebar">The value error objective</div>
+
+      <div class="prose">
         What are we trying to minimize? The most natural objective is the Mean Squared Value
         Error (VE), weighted by the state distribution under the target policy:
       </div>
-<div class="math-block">
+
+      <div class="math-block">
         $$\overline{VE}(\mathbf{w}) = \sum_{s \in \mathcal{S}} \mu(s)\bigl[v_\pi(s) - \hat{v}(s, \mathbf{w})\bigr]^2$$
       </div>
-<div class="prose">
+
+      <div class="prose">
         The weighting $\mu(s)$ matters: we care more about getting accurate values in states we
         actually visit. Under on-policy training, $\mu(s)$ is the stationary distribution of
         the Markov chain induced by $\pi$ — states visited most often are weighted most heavily.
         This is exactly the right thing to optimize when the goal is good performance under $\pi$.
       </div>
-<div class="prose">
+
+      <div class="prose">
         Note: $v_\pi(s)$ is the true value we're approximating. In practice we don't know it —
         we have to substitute a target. This substitution is where MC, TD, and DP diverge.
       </div>
-<!-- ── Gradient descent ───────────────────────────────────── -->
-<div class="section-head" id="gradient-descent">Gradient descent on value error</div>
-<div class="prose">
+
+      <!-- ── Gradient descent ───────────────────────────────────── -->
+      <div class="section-head" id="gradient-descent">Gradient descent on value error</div>
+
+      <div class="prose">
         The gradient of $\overline{VE}$ with respect to $\mathbf{w}$ is:
         $$\nabla_\mathbf{w}\overline{VE} = -2\sum_s \mu(s)\bigl[v_\pi(s) - \hat{v}(s,\mathbf{w})\bigr]\nabla_\mathbf{w}\hat{v}(s,\mathbf{w})$$
         Stochastic gradient descent (SGD) samples a single state $S_t \sim \mu$ and uses its
         gradient as an unbiased estimate of the full gradient:
       </div>
-<div class="math-block">
+
+      <div class="math-block">
         $$\mathbf{w}_{t+1} = \mathbf{w}_t + \alpha\bigl[v_\pi(S_t) - \hat{v}(S_t, \mathbf{w}_t)\bigr]\nabla_\mathbf{w}\hat{v}(S_t, \mathbf{w}_t)$$
       </div>
-<div class="prose">
-        With a suitable step size schedule ($\sum_t \alpha_t = \infty$, $\sum_t \alpha_t^2 &lt; \infty$),
+
+      <div class="prose">
+        With a suitable step size schedule ($\sum_t \alpha_t = \infty$, $\sum_t \alpha_t^2 < \infty$),
         this converges to a local minimum of $\overline{VE}$ (global minimum for linear FA, since VE
         is convex in $\mathbf{w}$ for linear approximators).
       </div>
-<div class="prose">
+
+      <div class="prose">
         The challenge: $v_\pi(S_t)$ is unknown. We substitute a target $U_t \approx v_\pi(S_t)$:
       </div>
-<ul class="prose" style="padding-left:1.4em;">
-<li style="margin-bottom:8px;"><strong>MC target:</strong> $U_t = G_t$ (actual return). Unbiased.
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:8px;"><strong>MC target:</strong> $U_t = G_t$ (actual return). Unbiased.
           SGD with MC targets converges to the VE minimum.</li>
-<li style="margin-bottom:8px;"><strong>DP target:</strong>
+        <li style="margin-bottom:8px;"><strong>DP target:</strong>
           $U_t = \sum_a \pi(a|S_t) \sum_{s',r} p(s',r|S_t,a)[r + \gamma\hat{v}(s',\mathbf{w})]$.
           Requires a model; not truly SGD.</li>
-<li style="margin-bottom:8px;"><strong>TD target:</strong> $U_t = R_{t+1} + \gamma\hat{v}(S_{t+1},\mathbf{w})$.
+        <li style="margin-bottom:8px;"><strong>TD target:</strong> $U_t = R_{t+1} + \gamma\hat{v}(S_{t+1},\mathbf{w})$.
           Model-free and online — but biased, because $U_t$ depends on $\mathbf{w}$.</li>
-</ul>
-<!-- ── Semi-gradient TD ───────────────────────────────────── -->
-<div class="section-head" id="semi-gradient">Semi-gradient TD</div>
-<div class="prose">
+      </ul>
+
+      <!-- ── Semi-gradient TD ───────────────────────────────────── -->
+      <div class="section-head" id="semi-gradient">Semi-gradient TD</div>
+
+      <div class="prose">
         Substituting the TD target $U_t = R_{t+1} + \gamma\hat{v}(S_{t+1}, \mathbf{w}_t)$ into the
         gradient update gives the <strong>semi-gradient TD</strong> rule:
       </div>
-<div class="math-block">
+
+      <div class="math-block">
         $$\mathbf{w}_{t+1} = \mathbf{w}_t + \alpha\underbrace{\bigl[R_{t+1} + \gamma\hat{v}(S_{t+1},\mathbf{w}_t) - \hat{v}(S_t,\mathbf{w}_t)\bigr]}_{\delta_t} \nabla_\mathbf{w}\hat{v}(S_t, \mathbf{w}_t)$$
       </div>
-<div class="prose">
+
+      <div class="prose">
         The "semi" in semi-gradient refers to the fact that we differentiate only
         $\hat{v}(S_t, \mathbf{w})$ — we treat the target $R_{t+1} + \gamma\hat{v}(S_{t+1},\mathbf{w}_t)$
         as a fixed constant for the purpose of differentiation, even though it also depends on
         $\mathbf{w}_t$. A true gradient step would require differentiating through the target too,
         yielding the "residual gradient" algorithm — which is unbiased but slower in practice.
       </div>
-<div class="prose">
+
+      <div class="prose">
         Semi-gradient TD is <em>not</em> following the gradient of any fixed objective, which
         means standard convergence guarantees for SGD don't apply. For <strong>linear function
         approximation with on-policy data</strong>, convergence can be proved independently —
@@ -227,8 +261,9 @@
         <em>TD fixed point</em>. For nonlinear approximators or off-policy data, convergence
         is not guaranteed (see: Deadly Triad).
       </div>
-<div class="callout">
-<strong>⟶ Worth seeing explicitly:</strong> The semi-gradient TD update looks like a
+
+      <div class="callout">
+        <strong>⟶ Worth seeing explicitly:</strong> The semi-gradient TD update looks like a
         supervised learning gradient step with "label" = TD target. But the label changes every
         time $\mathbf{w}$ changes (because the target includes $\hat{v}(S_{t+1}, \mathbf{w})$).
         This is the moving-target problem: you are chasing a moving bullseye. For linear FA
@@ -236,158 +271,181 @@
         For neural networks off-policy, the bullseye can move faster than you can follow — leading
         to oscillation or divergence. DQN fixes this with a frozen target network (see later).
       </div>
-<!-- ── Linear FA ──────────────────────────────────────────── -->
-<div class="section-head" id="linear-fa">Linear function approximation</div>
-<div class="prose">
+
+      <!-- ── Linear FA ──────────────────────────────────────────── -->
+      <div class="section-head" id="linear-fa">Linear function approximation</div>
+
+      <div class="prose">
         Linear FA is the most theoretically well-understood case. Represent value as a dot product:
         $$\hat{v}(s,\mathbf{w}) = \mathbf{w}^\top \mathbf{x}(s) = \sum_{i=1}^d w_i x_i(s)$$
         The gradient is simply $\nabla_\mathbf{w}\hat{v}(s,\mathbf{w}) = \mathbf{x}(s)$.
         The semi-gradient TD update becomes:
       </div>
-<div class="math-block">
+
+      <div class="math-block">
         $$\mathbf{w}_{t+1} = \mathbf{w}_t + \alpha \delta_t\, \mathbf{x}(S_t)$$
       </div>
-<div class="prose">
+
+      <div class="prose">
         Very simple — the weight update is the TD error times the feature vector. The key design
         question is how to construct $\mathbf{x}(s)$:
       </div>
-<div class="prose">
-<strong>State aggregation</strong> (coarsest): divide the state space into groups. $x_i(s) = 1$
+
+      <div class="prose">
+        <strong>State aggregation</strong> (coarsest): divide the state space into groups. $x_i(s) = 1$
         if $s$ belongs to group $i$, else 0. All states in the same group share a single value estimate.
         Easy to implement; poor resolution.
       </div>
-<div class="prose">
-<strong>Tile coding</strong> (more powerful): use multiple overlapping grids ("tilings"),
+
+      <div class="prose">
+        <strong>Tile coding</strong> (more powerful): use multiple overlapping grids ("tilings"),
         each offset from the others. State $s$ activates one tile in each tiling; the feature vector
         is the union of active tiles (a sparse binary vector). Tile coding provides local generalization
         with well-controlled resolution and is widely used in classical RL (e.g. mountain car).
       </div>
-<div class="prose">
-<strong>Radial basis functions:</strong> $x_i(s) = \exp(-\|s - c_i\|^2 / 2\sigma^2)$
+
+      <div class="prose">
+        <strong>Radial basis functions:</strong> $x_i(s) = \exp(-\|s - c_i\|^2 / 2\sigma^2)$
         for center $c_i$. Smooth generalization over continuous state spaces.
       </div>
-<div class="prose">
-<strong>Polynomial/Fourier basis:</strong> $x_k(s) = s^k$ or $x_k(s) = \cos(k\pi s)$.
+
+      <div class="prose">
+        <strong>Polynomial/Fourier basis:</strong> $x_k(s) = s^k$ or $x_k(s) = \cos(k\pi s)$.
         Useful for smooth value functions over low-dimensional continuous spaces.
       </div>
-<div class="callout">
-<strong>Generalization is a double-edged sword.</strong> When you update $\mathbf{w}$ from
+
+      <div class="callout">
+        <strong>Generalization is a double-edged sword.</strong> When you update $\mathbf{w}$ from
         state $s$, the values of all states that share features with $s$ also change. This is
         what enables learning from fewer samples — but it also means an update for $s$ can hurt
         the estimate for an unrelated state $s'$ if they happen to share features. Feature design
         is the art of ensuring that states which share features <em>deserve</em> similar values.
       </div>
-<!-- ── Neural networks ────────────────────────────────────── -->
-<div class="section-head" id="neural-networks">Neural networks as value function approximators</div>
-<div class="prose">
+
+      <!-- ── Neural networks ────────────────────────────────────── -->
+      <div class="section-head" id="neural-networks">Neural networks as value function approximators</div>
+
+      <div class="prose">
         A neural network $\hat{v}(s,\mathbf{w})$ can, in principle, represent any continuous
         function (universal approximation theorem). The state $s$ — which might be a raw image,
         a vector of sensor readings, or any structured observation — is fed into the network,
         and a scalar value is produced.
       </div>
-<div class="prose">
+
+      <div class="prose">
         The semi-gradient TD update still applies: $\mathbf{w} \leftarrow \mathbf{w} + \alpha\delta_t\nabla_\mathbf{w}\hat{v}(S_t,\mathbf{w})$.
         The gradient $\nabla_\mathbf{w}\hat{v}$ is now computed via backpropagation through the
         network layers. Conceptually, nothing changes — we're still doing gradient steps with
         the TD error as the learning signal.
       </div>
-<div class="prose">
+
+      <div class="prose">
         In practice, neural networks introduce several new challenges:
       </div>
-<ul class="prose" style="padding-left:1.4em;">
-<li style="margin-bottom:8px;"><strong>Non-convex loss landscape.</strong> VE is not convex in
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:8px;"><strong>Non-convex loss landscape.</strong> VE is not convex in
           $\mathbf{w}$ for nonlinear networks, so gradient descent may get stuck in local minima or
           saddle points.</li>
-<li style="margin-bottom:8px;"><strong>Catastrophic interference.</strong> Updating $\mathbf{w}$
+        <li style="margin-bottom:8px;"><strong>Catastrophic interference.</strong> Updating $\mathbf{w}$
           for one state can severely degrade estimates for other states — unlike tabular updates which
           are local.</li>
-<li style="margin-bottom:8px;"><strong>Correlated updates.</strong> Sequential RL data is highly
+        <li style="margin-bottom:8px;"><strong>Correlated updates.</strong> Sequential RL data is highly
           correlated (consecutive states share most features). SGD assumes i.i.d. data; correlated updates
           cause oscillation and slow convergence.</li>
-<li style="margin-bottom:8px;"><strong>The deadly triad (see next section).</strong> Off-policy
+        <li style="margin-bottom:8px;"><strong>The deadly triad (see next section).</strong> Off-policy
           training + bootstrapping + function approximation can diverge.</li>
-</ul>
-<!-- ── Deadly triad ───────────────────────────────────────── -->
-<div class="section-head" id="deadly-triad">The deadly triad</div>
-<div class="prose">
+      </ul>
+
+      <!-- ── Deadly triad ───────────────────────────────────────── -->
+      <div class="section-head" id="deadly-triad">The deadly triad</div>
+
+      <div class="prose">
         Sutton &amp; Barto identify three ingredients that, when combined, lead to instability
         or divergence. Each alone, or in pairs, is manageable. All three together create fundamental problems:
       </div>
-<div style="overflow-x:auto;margin:16px 0 24px;">
-<table style="width:100%;border-collapse:collapse;font-size:13.5px;">
-<thead>
-<tr style="background:#f0f4f7;">
-<th style="padding:8px 14px;text-align:left;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;">Function Approx</th>
-<th style="padding:8px 14px;text-align:left;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;">Bootstrapping</th>
-<th style="padding:8px 14px;text-align:left;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;">Off-Policy</th>
-<th style="padding:8px 14px;text-align:left;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;">Result</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Tabular</td>
-<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Yes (TD)</td>
-<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Yes</td>
-<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;color:#2a7a2a;">✓ Converges</td>
-</tr>
-<tr style="background:#f8fafb;">
-<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Linear</td>
-<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Yes (TD)</td>
-<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">No (on-policy)</td>
-<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;color:#2a7a2a;">✓ Converges to TD fixed point</td>
-</tr>
-<tr>
-<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Any</td>
-<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">No (MC)</td>
-<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Yes</td>
-<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;color:#2a7a2a;">✓ Converges (true gradient on VE)</td>
-</tr>
-<tr style="background:#f8fafb;">
-<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Linear</td>
-<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Yes (TD)</td>
-<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Yes</td>
-<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;color:#b05000;">⚠ May diverge (Baird counterexample)</td>
-</tr>
-<tr>
-<td style="padding:8px 14px;font-weight:600;">Nonlinear (e.g. NN)</td>
-<td style="padding:8px 14px;font-weight:600;">Yes (TD)</td>
-<td style="padding:8px 14px;font-weight:600;">Yes</td>
-<td style="padding:8px 14px;color:#8a2020;font-weight:600;">✗ Diverges easily; DQN tricks needed</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="prose">
+
+      <div style="overflow-x:auto;margin:16px 0 24px;">
+        <table style="width:100%;border-collapse:collapse;font-size:13.5px;">
+          <thead>
+            <tr style="background:#f0f4f7;">
+              <th style="padding:8px 14px;text-align:left;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;">Function Approx</th>
+              <th style="padding:8px 14px;text-align:left;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;">Bootstrapping</th>
+              <th style="padding:8px 14px;text-align:left;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;">Off-Policy</th>
+              <th style="padding:8px 14px;text-align:left;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;">Result</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Tabular</td>
+              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Yes (TD)</td>
+              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Yes</td>
+              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;color:#2a7a2a;">✓ Converges</td>
+            </tr>
+            <tr style="background:#f8fafb;">
+              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Linear</td>
+              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Yes (TD)</td>
+              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">No (on-policy)</td>
+              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;color:#2a7a2a;">✓ Converges to TD fixed point</td>
+            </tr>
+            <tr>
+              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Any</td>
+              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">No (MC)</td>
+              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Yes</td>
+              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;color:#2a7a2a;">✓ Converges (true gradient on VE)</td>
+            </tr>
+            <tr style="background:#f8fafb;">
+              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Linear</td>
+              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Yes (TD)</td>
+              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Yes</td>
+              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;color:#b05000;">⚠ May diverge (Baird counterexample)</td>
+            </tr>
+            <tr>
+              <td style="padding:8px 14px;font-weight:600;">Nonlinear (e.g. NN)</td>
+              <td style="padding:8px 14px;font-weight:600;">Yes (TD)</td>
+              <td style="padding:8px 14px;font-weight:600;">Yes</td>
+              <td style="padding:8px 14px;color:#8a2020;font-weight:600;">✗ Diverges easily; DQN tricks needed</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="prose">
         The key insight from the table: removing <em>any one</em> of the three ingredients
         restores convergence. In practice, all three are often needed. DQN addresses the problem
         with engineering tricks rather than removing an ingredient.
       </div>
-<div class="prose">
-<strong>The Baird counterexample</strong> is the canonical demonstration of divergence.
+
+      <div class="prose">
+        <strong>The Baird counterexample</strong> is the canonical demonstration of divergence.
         It constructs a linear FA + TD + off-policy combination where the weight vector $\mathbf{w}$
         grows without bound — even with a linear approximator, which is normally well-behaved.
         The key is that off-policy updates sample states according to a distribution $\mu$ that
         differs from the one the convergence proof requires. Reading the counterexample in S&amp;B
         (Section 11.2) is the clearest way to understand why this happens.
       </div>
-<!-- ── DQN ─────────────────────────────────────────────────── -->
-<div class="section-head" id="dqn">Deep Q-Networks (DQN)</div>
-<div class="prose">
+
+      <!-- ── DQN ─────────────────────────────────────────────────── -->
+      <div class="section-head" id="dqn">Deep Q-Networks (DQN)</div>
+
+      <div class="prose">
         In 2015, DeepMind published a Q-learning algorithm that achieved human-level performance on
         49 Atari games using raw pixel input — without any game-specific engineering. The key insight
         was not the neural network itself (neural nets had been tried in RL before), but two practical
         tricks that tame the deadly triad:
       </div>
-<div class="prose">
-<strong>1. Experience replay.</strong> Instead of updating $\mathbf{w}$ from the most recent
+
+      <div class="prose">
+        <strong>1. Experience replay.</strong> Instead of updating $\mathbf{w}$ from the most recent
         transition $(S_t, A_t, R_{t+1}, S_{t+1})$ immediately, store transitions in a large replay
         buffer (typically $10^6$ entries). At each training step, sample a random mini-batch from
         the buffer. This breaks temporal correlations (nearby transitions are highly correlated) and
         ensures that each transition is used for multiple gradient updates. Off-policy training is
         a requirement for replay — the stored transitions were collected by past policies.
       </div>
-<div class="prose">
-<strong>2. Target network.</strong> Instead of computing the TD target
+
+      <div class="prose">
+        <strong>2. Target network.</strong> Instead of computing the TD target
         $R_{t+1} + \gamma\max_{a'}Q(S_{t+1}, a'; \mathbf{w})$ using the current weights,
         use a separate "target network" with weights $\mathbf{w}^-$:
         $$\text{TD target} = R_{t+1} + \gamma \max_{a'} Q(S_{t+1}, a'; \mathbf{w}^-)$$
@@ -395,121 +453,137 @@
         $C = 1000$). This makes the target stable during those $C$ steps, preventing the
         oscillation caused by chasing a moving bullseye.
       </div>
-<div class="prose">
+
+      <div class="prose">
         Together, these two tricks transform the notoriously unstable combination of deep RL
         into something that trains reliably. DQN is Q-learning with:
       </div>
-<ul class="prose" style="padding-left:1.4em;">
-<li>A convolutional neural network for $Q(s, a; \mathbf{w})$ (raw pixel input)</li>
-<li>Experience replay buffer to break correlations</li>
-<li>A frozen target network for stable TD targets</li>
-<li>Standard SGD (RMSProp) to minimize the squared TD error</li>
-</ul>
-<div class="prose">
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li>A convolutional neural network for $Q(s, a; \mathbf{w})$ (raw pixel input)</li>
+        <li>Experience replay buffer to break correlations</li>
+        <li>A frozen target network for stable TD targets</li>
+        <li>Standard SGD (RMSProp) to minimize the squared TD error</li>
+      </ul>
+
+      <div class="prose">
         DQN does not "solve" the deadly triad — all three ingredients are still present. It works
         empirically because the tricks make the instability manageable in practice, and because
         neural networks are surprisingly robust to mild violations of convergence conditions. More
         theoretically principled alternatives (LSTD, GTD) exist but are less widely used.
       </div>
-<!-- ── Worked examples ─────────────────────────────────────── -->
-<div class="section-head" id="worked-examples">Worked examples</div>
-<div class="example-box">
-<div class="example-header"><strong>Example 1 — Linear FA with state aggregation: three update steps</strong></div>
-<div class="example-problem">
+
+      <!-- ── Worked examples ─────────────────────────────────────── -->
+      <div class="section-head" id="worked-examples">Worked examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Linear FA with state aggregation: three update steps</strong></div>
+        <div class="example-problem">
           1D random walk, states $\{1,\ldots,7\}$, terminals 0 (reward 0) and 8 (reward +1).
           True value: $v_\pi(s) = s/8$. State aggregation: Group A = $\{1,2,3,4\}$, Group B = $\{5,6,7\}$.
           Features: $\mathbf{x}(s)=[1,0]^\top$ for A, $[0,1]^\top$ for B. Initialize $\mathbf{w}=[0,0]^\top$,
           $\alpha=0.1$, $\gamma=1$. Walk through three transitions and determine which produce updates.
         </div>
-<div class="example-body">
-<div class="prose">
-<strong>Step 1:</strong> Agent at $s=2$ (Group A). Goes right to $s=3$ (Group A), $R=0$.
+        <div class="example-body">
+          <div class="prose">
+            <strong>Step 1:</strong> Agent at $s=2$ (Group A). Goes right to $s=3$ (Group A), $R=0$.
             TD error: $\delta = 0 + w_A - w_A = 0$. No update — same group, same estimate, no information gained.
           </div>
-<div class="prose">
-<strong>Step 2:</strong> Agent at $s=4$ (Group A). Goes right to $s=5$ (Group B), $R=0$.
+          <div class="prose">
+            <strong>Step 2:</strong> Agent at $s=4$ (Group A). Goes right to $s=5$ (Group B), $R=0$.
             TD error: $\delta = 0 + w_B - w_A = 0 - 0 = 0$. Still no update — both weights at 0.
           </div>
-<div class="prose">
-<strong>Step 3:</strong> Agent at $s=7$ (Group B). Goes right to terminal $s=8$, $R=+1$.
+          <div class="prose">
+            <strong>Step 3:</strong> Agent at $s=7$ (Group B). Goes right to terminal $s=8$, $R=+1$.
             TD target: $1 + 0 = 1$. TD error: $\delta = 1 - w_B = 1$.
             Update: $\mathbf{w} \leftarrow [0,0] + 0.1 \times 1 \times [0,1]^\top = [0,\; 0.1]$.
           </div>
-<div class="prose">
+          <div class="prose">
             After Step 3, $\hat{v}(5) = \hat{v}(6) = \hat{v}(7) = 0.1$ — all Group B states immediately
             benefit from the single observation at $s=7$. This is generalization: updating $\hat{v}(7)$
             also improves estimates for states 5 and 6 that haven't been visited yet.
           </div>
-</div>
-</div>
-<div class="example-box">
-<div class="example-header"><strong>Example 2 — Semi-gradient TD vs true gradient descent</strong></div>
-<div class="example-problem">
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Semi-gradient TD vs true gradient descent</strong></div>
+        <div class="example-problem">
           $\hat{v}(s,w) = w \cdot s$ (linear in one scalar parameter $w$). Transition: $(s=3, R=0, s'=4)$.
           Show what the semi-gradient TD update does to $w$, and contrast with what a full
           gradient step would do. Explain why they differ.
         </div>
-<div class="example-body">
-<div class="prose">
+        <div class="example-body">
+          <div class="prose">
             TD target: $0 + 1 \cdot w \cdot 4 = 4w$. TD error: $\delta = 4w - 3w = w$.
           </div>
-<div class="prose">
-<strong>Semi-gradient:</strong> treat $4w$ as a constant. Gradient of $\hat{v}(3,w) = 3w$
+          <div class="prose">
+            <strong>Semi-gradient:</strong> treat $4w$ as a constant. Gradient of $\hat{v}(3,w) = 3w$
             w.r.t. $w$ is 3. Update: $w \leftarrow w + \alpha \cdot w \cdot 3 = w(1 + 3\alpha)$.
-            If $\alpha &gt; 0$, $w$ grows on every step — <em>diverges</em>. (This $\hat{v} = ws$ is
+            If $\alpha > 0$, $w$ grows on every step — <em>diverges</em>. (This $\hat{v} = ws$ is
             a pathological FA; standard linear FA with proper feature vectors converges on-policy.)
           </div>
-<div class="prose">
-<strong>True gradient:</strong> differentiate through the target too.
+          <div class="prose">
+            <strong>True gradient:</strong> differentiate through the target too.
             $\nabla_w[\hat{v}(3,w) - (R + \hat{v}(4,w))]^2 = 2(3w - 4w)(-3 + 4) = 2(-w)(1) = -2w$.
             This pushes $w$ toward zero — stable. The full gradient corrects for the fact that
             increasing $w$ also increases the target, which semi-gradient ignores.
           </div>
-</div>
-</div>
-<!-- ── Interactive ─────────────────────────────────────────── -->
-<div class="section-head" id="interactive">Interactive: semi-gradient TD on the 1D random walk</div>
-<div class="prose">
+        </div>
+      </div>
+
+      <!-- ── Interactive ─────────────────────────────────────────── -->
+      <div class="section-head" id="interactive">Interactive: semi-gradient TD on the 1D random walk</div>
+
+      <div class="prose">
         The environment: 19 states $\{1, \ldots, 19\}$, with terminals 0 (reward 0) and 20
         (reward +1). True value under random walk: $v_\pi(s) = s/20$ — a straight line.
         The approximator uses <strong>state aggregation</strong> with 5 equal groups (states 1–4,
         5–8, 9–12, 13–16, 17–19). Each group shares one weight $w_k$. Watch how the step
         function approximation converges toward the diagonal as episodes accumulate.
       </div>
-<div class="interactive" style="margin:24px 0;">
-<div class="int-title">Semi-Gradient TD — 1D Random Walk</div>
-<div style="display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start;margin-bottom:16px;">
-<div style="display:flex;flex-direction:column;gap:6px;">
-<label style="font-size:12.5px;color:#5a6a7a;">
+
+      <div class="interactive" style="margin:24px 0;">
+        <div class="int-title">Semi-Gradient TD — 1D Random Walk</div>
+
+        <div style="display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start;margin-bottom:16px;">
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <label style="font-size:12.5px;color:#5a6a7a;">
               Step size $\alpha$:
               <span id="sg-alpha-val" style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:#1a2840;">0.10</span>
-</label>
-<input id="sg-alpha" max="0.5" min="0.01" oninput="document.getElementById('sg-alpha-val').textContent=parseFloat(this.value).toFixed(2);" step="0.01" style="width:180px;" type="range" value="0.1"/>
-</div>
-<div style="display:flex;flex-direction:column;gap:6px;">
-<span style="font-size:12.5px;color:#5a6a7a;">Episodes: <span id="sg-ep-count" style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:#1a2840;">0</span></span>
-</div>
-</div>
-<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;">
-<button onclick="sgRun(1)" style="padding:7px 14px;background:#3a6a8a;color:white;border:none;border-radius:4px;font-family:'IBM Plex Sans',sans-serif;font-size:13px;cursor:pointer;">1 episode</button>
-<button onclick="sgRun(10)" style="padding:7px 14px;background:#3a6a8a;color:white;border:none;border-radius:4px;font-family:'IBM Plex Sans',sans-serif;font-size:13px;cursor:pointer;">10</button>
-<button onclick="sgRun(100)" style="padding:7px 14px;background:#3a6a8a;color:white;border:none;border-radius:4px;font-family:'IBM Plex Sans',sans-serif;font-size:13px;cursor:pointer;">100</button>
-<button onclick="sgRun(1000)" style="padding:7px 14px;background:#3a6a8a;color:white;border:none;border-radius:4px;font-family:'IBM Plex Sans',sans-serif;font-size:13px;cursor:pointer;">1 000</button>
-<button onclick="sgReset()" style="padding:7px 14px;background:#e8eef2;color:#2a3a4a;border:none;border-radius:4px;font-family:'IBM Plex Sans',sans-serif;font-size:13px;cursor:pointer;">Reset</button>
-</div>
-<!-- Chart: SVG line chart -->
-<svg id="sg-chart" style="width:100%;max-width:520px;display:block;margin:0 auto;" viewbox="0 0 480 240">
-<!-- Axes drawn by JS; content drawn by sgRender() -->
-</svg>
-<div style="display:flex;gap:20px;justify-content:center;margin-top:8px;font-size:12px;color:#5a6a7a;">
-<span><span style="display:inline-block;width:24px;height:3px;background:#c0c0c0;vertical-align:middle;margin-right:4px;"></span>True value $v_\pi(s) = s/20$</span>
-<span><span style="display:inline-block;width:24px;height:3px;background:#3a6a8a;vertical-align:middle;margin-right:4px;"></span>Approximation $\hat{v}(s,\mathbf{w})$</span>
-</div>
-<div style="margin-top:10px;font-size:12px;font-family:'IBM Plex Mono',monospace;color:#5a6a7a;">
+            </label>
+            <input type="range" id="sg-alpha" min="0.01" max="0.5" step="0.01" value="0.1"
+              style="width:180px;" oninput="document.getElementById('sg-alpha-val').textContent=parseFloat(this.value).toFixed(2);">
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <span style="font-size:12.5px;color:#5a6a7a;">Episodes: <span id="sg-ep-count" style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:#1a2840;">0</span></span>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;">
+          <button onclick="sgRun(1)" style="padding:7px 14px;background:#3a6a8a;color:white;border:none;border-radius:4px;font-family:'IBM Plex Sans',sans-serif;font-size:13px;cursor:pointer;">1 episode</button>
+          <button onclick="sgRun(10)" style="padding:7px 14px;background:#3a6a8a;color:white;border:none;border-radius:4px;font-family:'IBM Plex Sans',sans-serif;font-size:13px;cursor:pointer;">10</button>
+          <button onclick="sgRun(100)" style="padding:7px 14px;background:#3a6a8a;color:white;border:none;border-radius:4px;font-family:'IBM Plex Sans',sans-serif;font-size:13px;cursor:pointer;">100</button>
+          <button onclick="sgRun(1000)" style="padding:7px 14px;background:#3a6a8a;color:white;border:none;border-radius:4px;font-family:'IBM Plex Sans',sans-serif;font-size:13px;cursor:pointer;">1 000</button>
+          <button onclick="sgReset()" style="padding:7px 14px;background:#e8eef2;color:#2a3a4a;border:none;border-radius:4px;font-family:'IBM Plex Sans',sans-serif;font-size:13px;cursor:pointer;">Reset</button>
+        </div>
+
+        <!-- Chart: SVG line chart -->
+        <svg id="sg-chart" viewBox="0 0 480 240" style="width:100%;max-width:520px;display:block;margin:0 auto;">
+          <!-- Axes drawn by JS; content drawn by sgRender() -->
+        </svg>
+
+        <div style="display:flex;gap:20px;justify-content:center;margin-top:8px;font-size:12px;color:#5a6a7a;">
+          <span><span style="display:inline-block;width:24px;height:3px;background:#c0c0c0;vertical-align:middle;margin-right:4px;"></span>True value $v_\pi(s) = s/20$</span>
+          <span><span style="display:inline-block;width:24px;height:3px;background:#3a6a8a;vertical-align:middle;margin-right:4px;"></span>Approximation $\hat{v}(s,\mathbf{w})$</span>
+        </div>
+
+        <div style="margin-top:10px;font-size:12px;font-family:'IBM Plex Mono',monospace;color:#5a6a7a;">
           Weights: <span id="sg-weights">w = [0.00, 0.00, 0.00, 0.00, 0.00]</span>
-</div>
-</div>
-<script>
+        </div>
+      </div>
+
+      <script>
       (function() {
         const N = 19; // states 1..19
         const N_GROUPS = 5;
@@ -624,12 +698,14 @@
         sgRenderFn();
       })();
       </script>
-<!-- ── Food for thought ────────────────────────────────────── -->
-<div class="section-head" id="food-for-thought">Food for thought</div>
-<div class="fft-block">
-<div class="fft-title">Reflection questions</div>
-<ol>
-<li class="fft-item">Experience replay requires storing transitions and sampling them randomly —
+
+      <!-- ── Food for thought ────────────────────────────────────── -->
+      <div class="section-head" id="food-for-thought">Food for thought</div>
+
+      <div class="fft-block">
+        <div class="fft-title">Reflection questions</div>
+        <ol>
+          <li class="fft-item">Experience replay requires storing transitions and sampling them randomly —
             it turns an online method into something batch-like. What happens if your environment
             changes over time (non-stationarity)? How would you modify the replay buffer to
             handle a slowly drifting environment?
@@ -644,8 +720,9 @@
                 This tension between data efficiency (larger buffer) and adaptability (smaller
                 buffer) is a fundamental trade-off in non-stationary RL.
               </div>
-</li>
-<li class="fft-item">The target network in DQN is updated every $C$ steps. If $C$ is very large,
+            
+          </li>
+          <li class="fft-item">The target network in DQN is updated every $C$ steps. If $C$ is very large,
             the target is very stable but potentially very wrong (stale). If $C = 1$, you're
             back to the unstable semi-gradient TD. How would you choose $C$ in practice?
             Is there a principled argument for a particular value?
@@ -655,26 +732,27 @@
                 be long enough that $Q$ has made meaningful progress between updates (otherwise
                 the target network provides no additional stability), but short enough that the
                 target hasn't drifted so far from truth that updates correct in the wrong direction.
-                <br/><br/>
+                <br><br>
                 An alternative that sidesteps the discrete choice: <em>Polyak (soft) target updates</em>
                 $\mathbf{w}_\text{target} \leftarrow \tau\,\mathbf{w} + (1-\tau)\,\mathbf{w}_\text{target}$
                 applied every step with $\tau \approx 0.005$. This is equivalent to a continuous,
                 exponentially-weighted blend — more principled and removes the cliff-edge instability
                 at $C=1$. Used in most modern deep RL (SAC, TD3, DDPG).
               </div>
-</li>
-<li class="fft-item">State aggregation groups nearby states and assigns them the same value.
+            
+          </li>
+          <li class="fft-item">State aggregation groups nearby states and assigns them the same value.
             What implicit assumption does this make about the value function? When does
             this assumption hold, and when does it fail badly?
                           <div class="fft-answer">
                 State aggregation assumes the value function is approximately constant within
                 each group — i.e., the true $v_\pi$ varies slowly relative to the group boundaries.
-                <br/><br/>
-<strong>Holds well:</strong> tasks with smooth, monotone value functions (e.g.,
+                <br><br>
+                <strong>Holds well:</strong> tasks with smooth, monotone value functions (e.g.,
                 1D random walk, where value increases linearly from left to right). Nearby states
                 really do have similar values.
-                <br/><br/>
-<strong>Fails badly:</strong> (a) when the optimal policy changes action at a
+                <br><br>
+                <strong>Fails badly:</strong> (a) when the optimal policy changes action at a
                 boundary that falls inside a group — the two halves of the group need different
                 values but share one; (b) when the environment has irregular geometry, so
                 "nearby by index" ≠ "nearby by dynamics"; (c) in high-dimensional spaces where
@@ -682,75 +760,86 @@
                 In these cases, the approximation error floor is large no matter how many
                 episodes you run — a representation limitation, not a data limitation.
               </div>
-</li>
-</ol>
-</div>
-<!-- ── Common pitfalls ─────────────────────────────────────── -->
-<div class="section-head" id="pitfalls">Common pitfalls</div>
-<div class="pitfalls-block">
-<div class="pitfalls-title">Mistakes worth knowing about in advance</div>
-<ul>
-<li><span class="pitfall-name">Treating semi-gradient TD like supervised learning.</span>
+            
+          </li>
+        </ol>
+      </div>
+
+      <!-- ── Common pitfalls ─────────────────────────────────────── -->
+      <div class="section-head" id="pitfalls">Common pitfalls</div>
+
+      <div class="pitfalls-block">
+        <div class="pitfalls-title">Mistakes worth knowing about in advance</div>
+        <ul>
+          <li><span class="pitfall-name">Treating semi-gradient TD like supervised learning.</span>
             In supervised learning, the labels are fixed. In semi-gradient TD, the TD target
             $R + \gamma\hat{v}(S',\mathbf{w})$ changes every time $\mathbf{w}$ changes — it is a
             moving target. This is not a minor detail: it fundamentally changes convergence behavior.
             Don't reason about stability using supervised learning intuitions.</li>
-<li><span class="pitfall-name">Thinking function approximation always generalizes correctly.</span>
+          <li><span class="pitfall-name">Thinking function approximation always generalizes correctly.</span>
             FA generalizes from visited to unvisited states based on shared features. If your
             feature design groups states that deserve different values into the same group,
             the approximation will be systematically wrong for some states no matter how much
             data you collect. Feature design (or representation learning) is often the bottleneck
             in practical RL systems.</li>
-<li><span class="pitfall-name">Forgetting that VE is weighted by the state distribution.</span>
+          <li><span class="pitfall-name">Forgetting that VE is weighted by the state distribution.</span>
             Minimizing $\overline{VE}(\mathbf{w})$ gives you the best approximation on average,
             weighted by how often states are visited. If the policy changes dramatically, the
             distribution $\mu$ changes, and a previously good $\mathbf{w}$ may become poor.
             This is why on-policy training and off-policy training produce different approximations.</li>
-<li><span class="pitfall-name">Assuming DQN is theoretically principled.</span>
+          <li><span class="pitfall-name">Assuming DQN is theoretically principled.</span>
             Experience replay and target networks are engineering heuristics that work empirically.
             They do not restore the theoretical convergence guarantees of tabular Q-learning.
             DQN can and does diverge on some problems — it is not a general solution to the
             deadly triad, just a practical mitigation.</li>
-</ul>
-</div>
-<!-- ── Connects to ──────────────────────────────────────────── -->
-<div class="connects-to">
-<div class="connects-to-label">Connects to</div>
-<ul>
-<li><strong>Deep Learning · Neural Networks</strong> — DQN uses standard deep learning
+        </ul>
+      </div>
+
+      <!-- ── Connects to ──────────────────────────────────────────── -->
+      <div class="connects-to">
+        <div class="connects-to-label">Connects to</div>
+        <ul>
+          <li><strong>Deep Learning · Neural Networks</strong> — DQN uses standard deep learning
             components (convolutional layers for pixel input, batch updates via SGD/RMSProp,
             experience replay as a form of data shuffling). Understanding backpropagation, batch
             normalization, and optimizer choices is directly applicable here.</li>
-<li><strong>Optimization · Gradient Descent</strong> — Semi-gradient TD is a
+          <li><strong>Optimization · Gradient Descent</strong> — Semi-gradient TD is a
             variant of SGD with a moving target. Understanding why SGD convergence requires
             Lipschitz gradients and convexity helps clarify why semi-gradient methods are
             so much harder to analyze than supervised learning optimization.</li>
-<li><strong>RL · Policy Gradient Methods</strong> (Lesson 9) — Policy gradients take
+          <li><strong>RL · Policy Gradient Methods</strong> (Lesson 9) — Policy gradients take
             a different approach: instead of approximating the value function and deriving a policy,
             directly parameterize and optimize the policy. Actor-critic methods combine both:
             a parameterized value function (critic) and a parameterized policy (actor), with the
             semi-gradient TD error used to update both.</li>
-</ul>
-</div>
-<hr class="lesson-rule"/>
-<div class="section-head">References</div>
-<ul class="prose" style="padding-left:1.4em;font-size:13.5px;color:#5a6a7a;">
-<li style="margin-bottom:6px;">R. S. Sutton &amp; A. G. Barto, <em>Reinforcement Learning: An Introduction</em>
+        </ul>
+      </div>
+
+      <hr class="lesson-rule">
+
+      <div class="section-head">References</div>
+      <ul class="prose" style="padding-left:1.4em;font-size:13.5px;color:#5a6a7a;">
+        <li style="margin-bottom:6px;">R. S. Sutton &amp; A. G. Barto, <em>Reinforcement Learning: An Introduction</em>
           (2nd ed.) — Chapter 9: semi-gradient TD (9.4), linear FA (9.5), feature construction (9.5.4);
           Chapter 11: the deadly triad (11.3), Baird counterexample (11.2). Chapter 9.5 on tile coding
           is excellent for the intuition behind good feature design.</li>
-<li style="margin-bottom:6px;">V. Mnih et al. (2015), "Human-level control through deep reinforcement
+        <li style="margin-bottom:6px;">V. Mnih et al. (2015), "Human-level control through deep reinforcement
           learning," <em>Nature</em> 518 — the original DQN paper. The methods section clearly describes
           experience replay and target network in about one page.</li>
-</ul>
-<div id="lesson-nav"></div>
-</div><!-- /main -->
-</div><!-- /page-body -->
+      </ul>
+
+      <div id="lesson-nav"></div>
+
+    </div><!-- /main -->
+
+  </div><!-- /page-body -->
 </div><!-- /site-wrap -->
+
 <footer class="site-footer">
-<span>elee03.github.io/notes</span>
-<span>Est. MMXXVI</span>
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
 </footer>
-<script src="../notes-nav.js"></script>
+
+    <script src="../notes-nav.js"></script>
 </body>
 </html>

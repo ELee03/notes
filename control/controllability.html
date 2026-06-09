@@ -1,18 +1,17 @@
 ﻿<!DOCTYPE html>
-
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Controllability &amp; Observability — Field Notes</title>
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
-<link href="../style.css" rel="stylesheet"/>
-<link href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" rel="stylesheet"/>
-<script defer="" src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
-<script defer="" src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
-<script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Controllability &amp; Observability — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script>
     document.addEventListener('DOMContentLoaded', function() {
       renderMathInElement(document.body, {
         delimiters: [
@@ -24,7 +23,7 @@
       coInit();
     });
   </script>
-<style>
+  <style>
     .widget-card {
       background: #f0f4f7;
       border: 1px solid #c0d0dc;
@@ -88,218 +87,254 @@
   </style>
 </head>
 <body>
+
 <div class="topbar">
-<div class="topbar-inner">
-<a class="topbar-brand" href="../index.html">Field <span class="accent">Notes</span></a>
-<span class="topbar-sep">·</span>
-<a class="topbar-link" href="../references.html">Library</a>
-<span class="topbar-sep">·</span>
-<a class="topbar-back" href="https://elee03.github.io">elee03.github.io ↗</a>
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
 </div>
-</div>
+
 <div class="site-wrap">
-<div class="page-body">
-<div class="sidebar">
-<div data-cluster="control" data-current="controllability.html" id="cluster-nav"></div>
-<hr class="sidebar-rule"/>
-<div class="nav-section">
-<div class="nav-label">On this page</div>
-<a class="nav-item" href="#reachability">The reachability question</a>
-<a class="nav-item" href="#controllability">Controllability</a>
-<a class="nav-item" href="#ctrlb-gramian">Controllability Gramian</a>
-<a class="nav-item" href="#observability">Observability</a>
-<a class="nav-item" href="#duality">Duality</a>
-<a class="nav-item" href="#pbh">PBH test</a>
-<a class="nav-item" href="#kalman">Kalman decomposition</a>
-<a class="nav-item" href="#minimal">Minimal realization</a>
-<a class="nav-item" href="#interactive">Interactive</a>
-<a class="nav-item" href="#worked-examples">Worked examples</a>
-<a class="nav-item" href="#food-for-thought">Food for thought</a>
-<a class="nav-item" href="#pitfalls">Common pitfalls</a>
-</div>
-</div><!-- /sidebar -->
-<div class="main">
-<div class="breadcrumb">
-<a href="../index.html">Field Notes</a>
-<span class="sep">›</span>
-<a href="index.html">Control Theory</a>
-<span class="sep">›</span>
-<span>Lesson 11</span>
-</div>
-<div class="lesson-title">Controllability &amp; Observability</div>
-<div class="lesson-meta">Controllability Matrix · Observability Matrix · Gramians · PBH Test · Kalman Decomposition · Minimal Realization</div>
-<div class="callout" style="margin-top:20px;">
-<strong>Notation</strong>
-<table class="notation-table" style="margin-top:10px; border-collapse:collapse;">
-<tr><td>$\mathcal{C}$</td><td>Controllability matrix $[B,\,AB,\,A^2B,\,\ldots,\,A^{n-1}B]$, size $n \times nm$</td></tr>
-<tr><td>$\mathcal{O}$</td><td>Observability matrix $[C;\,CA;\,CA^2;\,\ldots;\,CA^{n-1}]$, size $np \times n$</td></tr>
-<tr><td>$W_c, W_o$</td><td>Controllability and observability Gramians ($n\times n$ symmetric PSD matrices)</td></tr>
-<tr><td>$\text{rank}(\cdot)$</td><td>Dimension of column space (number of linearly independent columns)</td></tr>
-<tr><td>CO, $\overline{\text{C}}$O, C$\overline{\text{O}}$, $\overline{\text{C}}\overline{\text{O}}$</td><td>Controllable-observable, uncontrollable-observable, controllable-unobservable, both</td></tr>
-</table>
-</div>
-<!-- ═══ THE REACHABILITY QUESTION ═══ -->
-<div class="section-head" id="reachability">The reachability question</div>
-<div class="prose">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="control" data-current="controllability.html"></div>
+            <hr class="sidebar-rule">
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#reachability" class="nav-item">The reachability question</a>
+        <a href="#controllability" class="nav-item">Controllability</a>
+        <a href="#ctrlb-gramian" class="nav-item">Controllability Gramian</a>
+        <a href="#observability" class="nav-item">Observability</a>
+        <a href="#duality" class="nav-item">Duality</a>
+        <a href="#pbh" class="nav-item">PBH test</a>
+        <a href="#kalman" class="nav-item">Kalman decomposition</a>
+        <a href="#minimal" class="nav-item">Minimal realization</a>
+        <a href="#interactive" class="nav-item">Interactive</a>
+        <a href="#worked-examples" class="nav-item">Worked examples</a>
+        <a href="#food-for-thought" class="nav-item">Food for thought</a>
+        <a href="#pitfalls" class="nav-item">Common pitfalls</a>
+      </div>
+    </div><!-- /sidebar -->
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Control Theory</a>
+        <span class="sep">›</span>
+        <span>Lesson 11</span>
+      </div>
+
+      <div class="lesson-title">Controllability &amp; Observability</div>
+      <div class="lesson-meta">Controllability Matrix · Observability Matrix · Gramians · PBH Test · Kalman Decomposition · Minimal Realization</div>
+
+      <div class="callout" style="margin-top:20px;">
+        <strong>Notation</strong>
+        <table class="notation-table" style="margin-top:10px; border-collapse:collapse;">
+          <tr><td>$\mathcal{C}$</td><td>Controllability matrix $[B,\,AB,\,A^2B,\,\ldots,\,A^{n-1}B]$, size $n \times nm$</td></tr>
+          <tr><td>$\mathcal{O}$</td><td>Observability matrix $[C;\,CA;\,CA^2;\,\ldots;\,CA^{n-1}]$, size $np \times n$</td></tr>
+          <tr><td>$W_c, W_o$</td><td>Controllability and observability Gramians ($n\times n$ symmetric PSD matrices)</td></tr>
+          <tr><td>$\text{rank}(\cdot)$</td><td>Dimension of column space (number of linearly independent columns)</td></tr>
+          <tr><td>CO, $\overline{\text{C}}$O, C$\overline{\text{O}}$, $\overline{\text{C}}\overline{\text{O}}$</td><td>Controllable-observable, uncontrollable-observable, controllable-unobservable, both</td></tr>
+        </table>
+      </div>
+
+      <!-- ═══ THE REACHABILITY QUESTION ═══ -->
+      <div class="section-head" id="reachability">The reachability question</div>
+
+      <div class="prose">
         You've built the state-space model $\dot{x} = Ax + Bu$, $y = Cx$. You want to design
         state feedback (Lesson 12) to place the closed-loop poles wherever you want, and an
         observer (Lesson 14) to estimate states you can't directly measure. But before either
         design is possible, two structural questions must be answered:
       </div>
-<ul class="prose" style="padding-left:22px; margin-top:0;">
-<li style="margin-bottom:6px;"><strong>Controllability:</strong> Can the input $u(t)$
+      <ul class="prose" style="padding-left:22px; margin-top:0;">
+        <li style="margin-bottom:6px;"><strong>Controllability:</strong> Can the input $u(t)$
           reach every state in $\mathbb{R}^n$? If some states are unreachable by $u$, no
           controller — however clever — can move them. State feedback cannot assign those
           modes.</li>
-<li><strong>Observability:</strong> Does the output $y(t)$ carry enough information
+        <li><strong>Observability:</strong> Does the output $y(t)$ carry enough information
           to reconstruct $x(t)$? If some states are invisible to $y$, no observer can
           estimate them. You cannot feed back what you cannot observe.</li>
-</ul>
-<div class="prose">
+      </ul>
+      <div class="prose">
         These aren't design choices — they are properties of the plant $(A, B, C)$ itself.
         If the plant is not controllable or not observable, no amount of control design
         can compensate. The system's internal structure has fundamental limitations.
       </div>
-<!-- ═══ CONTROLLABILITY ═══ -->
-<div class="section-head" id="controllability">Controllability</div>
-<div class="prose">
+
+      <!-- ═══ CONTROLLABILITY ═══ -->
+      <div class="section-head" id="controllability">Controllability</div>
+
+      <div class="prose">
         A system $(A, B)$ is <strong>controllable</strong> if, for any initial state $x_0$
         and any target state $x_f$, there exists a finite time $T$ and an input $u(t)$ defined
         on $[0, T]$ such that $x(0) = x_0$ and $x(T) = x_f$.
       </div>
-<div class="prose">
+      <div class="prose">
         In other words: starting from anywhere, the input can drive the state to anywhere.
         This is a strong statement — it doesn't just ask "can we stabilize?" but "can we
         reach any target?"
       </div>
-<div class="prose">
-<strong>Intuition via the state response.</strong>
+
+      <div class="prose">
+        <strong>Intuition via the state response.</strong>
         From Lesson 10, the state at time $T$ is:
         $$x(T) = e^{AT}x_0 + \int_0^T e^{A(T-\tau)}Bu(\tau)\,d\tau$$
         The reachable set from $x_0 = 0$ is:
         $$\mathcal{R}(T) = \left\{\int_0^T e^{A(T-\tau)}Bu(\tau)\,d\tau \,:\, u \in L^2[0,T]\right\}$$
-        The system is controllable iff $\mathcal{R}(T) = \mathbb{R}^n$ for some $T &gt; 0$.
+        The system is controllable iff $\mathcal{R}(T) = \mathbb{R}^n$ for some $T > 0$.
         The columns of $e^{A\tau}B$ (as $\tau$ varies) span the reachable directions.
         Expanding $e^{A\tau} = I + A\tau + A^2\tau^2/2! + \cdots$, the reachable directions
         are spanned by $\{B,\, AB,\, A^2B,\, \ldots\}$. By Cayley-Hamilton, higher powers
         of $A$ are redundant beyond $A^{n-1}$. So the reachable set is spanned by the columns of:
       </div>
-<div class="math-block">
-        $$\mathcal{C} = \begin{bmatrix}B &amp; AB &amp; A^2B &amp; \cdots &amp; A^{n-1}B\end{bmatrix}$$
+
+      <div class="math-block">
+        $$\mathcal{C} = \begin{bmatrix}B & AB & A^2B & \cdots & A^{n-1}B\end{bmatrix}$$
       </div>
-<div class="callout">
-<strong>Controllability matrix test.</strong>
+
+      <div class="callout">
+        <strong>Controllability matrix test.</strong>
         The system $(A, B)$ is controllable if and only if:
         $$\text{rank}(\mathcal{C}) = n$$
         where $\mathcal{C} \in \mathbb{R}^{n \times nm}$ is the controllability matrix.
         For a SISO system ($m=1$), $\mathcal{C}$ is square ($n \times n$) and the condition
         becomes $\det(\mathcal{C}) \neq 0$.
       </div>
-<div class="proof-box">
-<div class="proof-header">Proof — Controllability rank criterion</div>
-<div class="proof-body">
-<p>The state reachable from $x(0)=0$ by input $u$ over $[0,T]$ is:
+
+      <div class="proof-box">
+        <div class="proof-header">Proof — Controllability rank criterion</div>
+        <div class="proof-body">
+          <p>The state reachable from $x(0)=0$ by input $u$ over $[0,T]$ is:
           $$x(T) = \int_0^T e^{A(T-\tau)} B\,u(\tau)\,d\tau$$
           Expanding the matrix exponential $e^{A(T-\tau)} = \sum_{k=0}^\infty \frac{A^k(T-\tau)^k}{k!}$ and pulling $A^k$ outside the integral:
           $$x(T) = \sum_{k=0}^\infty A^k B \underbrace{\int_0^T \frac{(T-\tau)^k}{k!}u(\tau)\,d\tau}_{c_k \in \mathbb{R}^m}$$
           So $x(T) \in \text{span}\{B,\,AB,\,A^2B,\,\ldots\}$. By the <strong>Cayley-Hamilton theorem</strong>, $A^n = -\sum_{i=0}^{n-1} p_i A^i$ (where $p_i$ are coefficients of the characteristic polynomial), so $A^k B$ for $k \geq n$ lies in $\text{span}\{B,\,AB,\,\ldots,\,A^{n-1}B\}$. Therefore:
           $$\mathcal{R} = \text{col}(\mathcal{C}), \quad \mathcal{C} = [B \;\; AB \;\; \cdots \;\; A^{n-1}B]$$
           The system is controllable iff $\mathcal{R} = \mathbb{R}^n$ iff $\text{rank}(\mathcal{C}) = n$. $\blacksquare$</p>
-</div>
-</div>
-<div class="prose">
-<strong>Physical interpretation of the columns.</strong> Each column block $A^k B$
+        </div>
+      </div>
+
+      <div class="prose">
+        <strong>Physical interpretation of the columns.</strong> Each column block $A^k B$
         represents the direction the input can influence the state after $k$ "steps" of
         dynamics have propagated it. $B$ is the direction the input acts on directly.
         $AB$ is that direction propagated through one application of $A$ (one time step into
         the future). $A^2B$ is two time steps, and so on. Controllability requires all $n$
         state dimensions to be reachable via some combination of these propagated input directions.
       </div>
-<div class="prose">
-<strong>Simple uncontrollable example.</strong> Let $A$ be block-diagonal with two
+
+      <div class="prose">
+        <strong>Simple uncontrollable example.</strong> Let $A$ be block-diagonal with two
         subsystems, and $B$ drive only the first:
-        $$A = \begin{bmatrix}-1 &amp; 0 \\ 0 &amp; -2\end{bmatrix}, \quad B = \begin{bmatrix}1 \\ 0\end{bmatrix}$$
-        Then $AB = \begin{bmatrix}-1\\0\end{bmatrix}$, so $\mathcal{C} = \begin{bmatrix}1 &amp; -1 \\ 0 &amp; 0\end{bmatrix}$.
+        $$A = \begin{bmatrix}-1 & 0 \\ 0 & -2\end{bmatrix}, \quad B = \begin{bmatrix}1 \\ 0\end{bmatrix}$$
+        Then $AB = \begin{bmatrix}-1\\0\end{bmatrix}$, so $\mathcal{C} = \begin{bmatrix}1 & -1 \\ 0 & 0\end{bmatrix}$.
         The second row is all zeros: $\text{rank}(\mathcal{C}) = 1 \neq 2$. The state $x_2$
         (the second subsystem) can never be influenced by $u$. It evolves freely as $x_2(t) = e^{-2t}x_2(0)$ regardless of input.
       </div>
-<!-- ═══ CONTROLLABILITY GRAMIAN ═══ -->
-<div class="section-head" id="ctrlb-gramian">Controllability Gramian</div>
-<div class="prose">
+
+      <!-- ═══ CONTROLLABILITY GRAMIAN ═══ -->
+      <div class="section-head" id="ctrlb-gramian">Controllability Gramian</div>
+
+      <div class="prose">
         The <strong>controllability Gramian</strong> over horizon $[0,T]$ is:
       </div>
-<div class="math-block">
+
+      <div class="math-block">
         $$W_c(T) = \int_0^T e^{A\tau}BB^Te^{A^T\tau}\,d\tau$$
       </div>
-<div class="prose">
+
+      <div class="prose">
         It is always symmetric positive semi-definite (PSD). The system is controllable if
-        and only if $W_c(T)$ is positive definite for some (and then any) $T &gt; 0$.
+        and only if $W_c(T)$ is positive definite for some (and then any) $T > 0$.
       </div>
-<div class="prose">
+
+      <div class="prose">
         The Gramian has a beautiful energy interpretation. The minimum-energy input to
         drive the state from $x(0) = x_0$ to $x(T) = 0$ is:
       </div>
-<div class="math-block">
+
+      <div class="math-block">
         $$u^*(t) = -B^T e^{A^T(T-t)} W_c(T)^{-1} e^{AT} x_0$$
       </div>
-<div class="prose">
+
+      <div class="prose">
         and the minimum energy required is:
       </div>
-<div class="math-block">
+
+      <div class="math-block">
         $$\|u^*\|^2 = x_0^T e^{A^TT} W_c(T)^{-1} e^{AT} x_0$$
       </div>
-<div class="prose">
+
+      <div class="prose">
         The set of states reachable from $x_0 = 0$ with unit input energy is the ellipsoid
         $\{x_f \,:\, x_f^T W_c(T)^{-1} x_f \leq 1\}$. The eigenvectors of $W_c(T)$ define
         the principal axes of this ellipsoid — directions that are easy to reach (large
         eigenvalues) and hard to reach (small eigenvalues). A nearly rank-deficient Gramian
         means some directions are practically unreachable.
       </div>
-<!-- ═══ OBSERVABILITY ═══ -->
-<div class="section-head" id="observability">Observability</div>
-<div class="prose">
+
+      <!-- ═══ OBSERVABILITY ═══ -->
+      <div class="section-head" id="observability">Observability</div>
+
+      <div class="prose">
         A system $(C, A)$ is <strong>observable</strong> if, for any initial state $x_0$,
         the state can be uniquely determined from the output $y(t)$ on $[0, T]$ for some finite $T$,
         assuming $u(t) = 0$ (or $u$ is known).
       </div>
-<div class="prose">
+      <div class="prose">
         The output is $y(t) = Ce^{At}x_0$ (for $u=0$). Expanding: $y(t) = C\bigl(I + At + A^2t^2/2! + \cdots\bigr)x_0$.
         At $t=0$: $y(0) = Cx_0$. Differentiating: $\dot{y}(0) = CAx_0$, $\ddot{y}(0) = CA^2x_0$, etc.
         So observing $y$ and its derivatives gives the equations $[C;\, CA;\, CA^2;\, \ldots]x_0 = [\ldots]$.
         We can uniquely solve for $x_0$ iff the matrix on the left has full column rank:
       </div>
-<div class="math-block">
+
+      <div class="math-block">
         $$\mathcal{O} = \begin{bmatrix}C \\ CA \\ CA^2 \\ \vdots \\ CA^{n-1}\end{bmatrix}$$
       </div>
-<div class="callout">
-<strong>Observability matrix test.</strong>
+
+      <div class="callout">
+        <strong>Observability matrix test.</strong>
         The system $(C, A)$ is observable if and only if:
         $$\text{rank}(\mathcal{O}) = n$$
         where $\mathcal{O} \in \mathbb{R}^{np \times n}$ is the observability matrix.
         For SISO, $\mathcal{O}$ is square and the condition is $\det(\mathcal{O}) \neq 0$.
       </div>
-<div class="prose">
-<strong>Simple unobservable example.</strong> Let the system have two modes with the same
+
+      <div class="prose">
+        <strong>Simple unobservable example.</strong> Let the system have two modes with the same
         natural frequencies but connected so the output only sees their difference:
-        $$A = \begin{bmatrix}-1 &amp; 0 \\ 0 &amp; -1\end{bmatrix}, \quad C = \begin{bmatrix}1 &amp; -1\end{bmatrix}$$
-        $\mathcal{O} = \begin{bmatrix}1 &amp; -1 \\ -1 &amp; 1\end{bmatrix}$. This is rank 1: the common
+        $$A = \begin{bmatrix}-1 & 0 \\ 0 & -1\end{bmatrix}, \quad C = \begin{bmatrix}1 & -1\end{bmatrix}$$
+        $\mathcal{O} = \begin{bmatrix}1 & -1 \\ -1 & 1\end{bmatrix}$. This is rank 1: the common
         mode $x_1 = x_2$ is invisible to $y = x_1 - x_2 = 0$. Even though both states evolve
         at $e^{-t}$, the output is always zero when they start equal — no way to distinguish the
         common mode from the initial condition.
       </div>
-<!-- ═══ DUALITY ═══ -->
-<div class="section-head" id="duality">Duality principle</div>
-<div class="prose">
+
+      <!-- ═══ DUALITY ═══ -->
+      <div class="section-head" id="duality">Duality principle</div>
+
+      <div class="prose">
         Controllability and observability are <strong>dual</strong> to each other:
       </div>
-<div class="math-block">
+
+      <div class="math-block">
         $$(A, B) \text{ controllable} \iff (A^T, B^T) \text{ observable}$$
         $$(C, A) \text{ observable} \iff (C^T, A^T) \text{ controllable}$$
       </div>
-<div class="prose">
+
+      <div class="prose">
         Proof: $\text{rank}(\mathcal{C}) = \text{rank}([B,AB,\ldots,A^{n-1}B]) = \text{rank}([B^T; B^TA^T; \ldots; B^T(A^T)^{n-1}]^T) = \text{rank}(\mathcal{O}^T\text{ for dual system})$.
       </div>
-<div class="prose">
+
+      <div class="prose">
         This duality is not just a mathematical coincidence — it has deep physical meaning.
         The dual system $(A^T, C^T, B^T)$ has inputs where the original system had outputs,
         and outputs where it had inputs. A controllability proof in one system translates
@@ -307,172 +342,197 @@
         (which requires observability) will follow directly from the state-feedback design
         (which requires controllability) via this duality.
       </div>
-<!-- ═══ PBH TEST ═══ -->
-<div class="section-head" id="pbh">PBH test</div>
-<div class="prose">
+
+      <!-- ═══ PBH TEST ═══ -->
+      <div class="section-head" id="pbh">PBH test</div>
+
+      <div class="prose">
         The Popov-Belevitch-Hautus (PBH) test offers an eigenvalue-based perspective on
         controllability. It's often more informative than the rank test because it identifies
         <em>which modes</em> are uncontrollable.
       </div>
-<div class="callout">
-<strong>PBH controllability test.</strong>
+
+      <div class="callout">
+        <strong>PBH controllability test.</strong>
         $(A, B)$ is controllable if and only if for every eigenvalue $\lambda$ of $A$:
-        $$\text{rank}\begin{bmatrix}A - \lambda I &amp; B\end{bmatrix} = n$$
+        $$\text{rank}\begin{bmatrix}A - \lambda I & B\end{bmatrix} = n$$
         Equivalently: no left eigenvector $w$ of $A$ is orthogonal to $B$:
         $$w^T A = \lambda w^T \implies w^T B \neq 0$$
       </div>
-<div class="proof-box">
-<div class="proof-header">Proof — PBH controllability test</div>
-<div class="proof-body">
-<p><strong>($\Rightarrow$) Rank deficiency implies uncontrollability.</strong> Suppose $\text{rank}[A-\lambda I,\, B] &lt; n$ for some eigenvalue $\lambda$. Then there exists a nonzero left null vector $w^T$ such that $w^T[A-\lambda I,\, B] = 0$, i.e. $w^TA = \lambda w^T$ and $w^TB = 0$.</p>
-<p>Now compute $w^T A^k B$ by induction: $w^T A B = \lambda w^T B = 0$, and $w^T A^k B = \lambda^{k-1} w^T AB = 0$ for all $k$. Therefore $w^T \mathcal{C} = w^T[B,\, AB,\, \ldots,\, A^{n-1}B] = 0$, so $\mathcal{C}$ has a nontrivial left null vector, meaning $\text{rank}(\mathcal{C}) &lt; n$. The system is not controllable.</p>
-<p><strong>($\Leftarrow$) Full rank at all eigenvalues implies controllability.</strong> Contrapositively, if $\text{rank}(\mathcal{C}) &lt; n$, there exists $w \neq 0$ with $w^T\mathcal{C} = 0$. In particular $w^TB = 0$ and $w^TAB = 0$, which imply (by the $A$-invariance of $\ker \mathcal{C}$) that $w^T$ must be a left eigenvector of $A$: the reachable subspace $\text{col}(\mathcal{C})$ is $A$-invariant, and any $w \perp \text{col}(\mathcal{C})$ satisfies $w^TA \in \text{col}(\mathcal{C})^\perp$, forcing $w^TA = \lambda w^T$ for some eigenvalue $\lambda$. Then $[A-\lambda I,\, B]$ loses rank. $\blacksquare$</p>
-</div>
-</div>
-<div class="prose">
-<strong>Why this works.</strong> If $w^TB = 0$ for some left eigenvector $w$, then
+
+      <div class="proof-box">
+        <div class="proof-header">Proof — PBH controllability test</div>
+        <div class="proof-body">
+          <p><strong>($\Rightarrow$) Rank deficiency implies uncontrollability.</strong> Suppose $\text{rank}[A-\lambda I,\, B] < n$ for some eigenvalue $\lambda$. Then there exists a nonzero left null vector $w^T$ such that $w^T[A-\lambda I,\, B] = 0$, i.e. $w^TA = \lambda w^T$ and $w^TB = 0$.</p>
+          <p>Now compute $w^T A^k B$ by induction: $w^T A B = \lambda w^T B = 0$, and $w^T A^k B = \lambda^{k-1} w^T AB = 0$ for all $k$. Therefore $w^T \mathcal{C} = w^T[B,\, AB,\, \ldots,\, A^{n-1}B] = 0$, so $\mathcal{C}$ has a nontrivial left null vector, meaning $\text{rank}(\mathcal{C}) < n$. The system is not controllable.</p>
+          <p><strong>($\Leftarrow$) Full rank at all eigenvalues implies controllability.</strong> Contrapositively, if $\text{rank}(\mathcal{C}) < n$, there exists $w \neq 0$ with $w^T\mathcal{C} = 0$. In particular $w^TB = 0$ and $w^TAB = 0$, which imply (by the $A$-invariance of $\ker \mathcal{C}$) that $w^T$ must be a left eigenvector of $A$: the reachable subspace $\text{col}(\mathcal{C})$ is $A$-invariant, and any $w \perp \text{col}(\mathcal{C})$ satisfies $w^TA \in \text{col}(\mathcal{C})^\perp$, forcing $w^TA = \lambda w^T$ for some eigenvalue $\lambda$. Then $[A-\lambda I,\, B]$ loses rank. $\blacksquare$</p>
+        </div>
+      </div>
+
+      <div class="prose">
+        <strong>Why this works.</strong> If $w^TB = 0$ for some left eigenvector $w$, then
         differentiating $w^Tx(t)$:
         $\frac{d}{dt}(w^Tx) = w^T\dot{x} = w^T(Ax + Bu) = \lambda(w^Tx) + (w^TB)u = \lambda(w^Tx)$
         since $w^TB = 0$. So $w^Tx(t) = e^{\lambda t}w^Tx_0$ — the projection of the state
         onto $w$ evolves with no influence from $u$. This is an uncontrollable mode.
       </div>
-<div class="callout">
-<strong>PBH observability test.</strong>
+
+      <div class="callout">
+        <strong>PBH observability test.</strong>
         $(C, A)$ is observable if and only if for every eigenvalue $\lambda$ of $A$:
         $$\text{rank}\begin{bmatrix}A - \lambda I \\ C\end{bmatrix} = n$$
         Equivalently: no right eigenvector $v$ of $A$ is in the null space of $C$:
         $$Av = \lambda v \implies Cv \neq 0$$
       </div>
-<div class="prose">
-<strong>Why this works.</strong> If $Cv = 0$, then the mode $e^{\lambda t}v$ contributes
+
+      <div class="prose">
+        <strong>Why this works.</strong> If $Cv = 0$, then the mode $e^{\lambda t}v$ contributes
         nothing to the output: $y(t) = Ce^{At}x_0 = C(\cdots e^{\lambda t}v v^T x_0/\|v\|^2 + \cdots)$.
         The $v$-component of $x_0$ is invisible in $y(t)$ — it's an unobservable mode.
       </div>
-<!-- ═══ KALMAN DECOMPOSITION ═══ -->
-<div class="section-head" id="kalman">Kalman decomposition</div>
-<div class="prose">
+
+      <!-- ═══ KALMAN DECOMPOSITION ═══ -->
+      <div class="section-head" id="kalman">Kalman decomposition</div>
+
+      <div class="prose">
         Every LTI system can be decomposed (by a state transformation) into four decoupled
         subsystems according to their controllability and observability:
       </div>
-<div class="kalman-grid">
-<div class="kalman-cell co">
-<div class="kalman-head">CO — Controllable &amp; Observable</div>
+
+      <div class="kalman-grid">
+        <div class="kalman-cell co">
+          <div class="kalman-head">CO — Controllable &amp; Observable</div>
           These states are driven by the input <em>and</em> visible in the output. They appear in the transfer function. State feedback can assign their eigenvalues; an observer can estimate them.
         </div>
-<div class="kalman-cell co_bar">
-<div class="kalman-head">C$\bar{\text{O}}$ — Controllable, Not Observable</div>
+        <div class="kalman-cell co_bar">
+          <div class="kalman-head">C$\bar{\text{O}}$ — Controllable, Not Observable</div>
           The input can reach these states, but the output can't see them. They don't appear in the TF (pole-zero cancellation). Pole placement can move them, but they can't be estimated.
         </div>
-<div class="kalman-cell cbar_o">
-<div class="kalman-head">$\bar{\text{C}}$O — Not Controllable, Observable</div>
+        <div class="kalman-cell cbar_o">
+          <div class="kalman-head">$\bar{\text{C}}$O — Not Controllable, Observable</div>
           These states are visible in the output, but the input can't reach them. They appear in the TF (contribute to poles) but can't be controlled. If unstable, they cause internal instability even if the TF looks stable.
         </div>
-<div class="kalman-cell cbar_o_bar">
-<div class="kalman-head">$\bar{\text{C}}\bar{\text{O}}$ — Neither</div>
+        <div class="kalman-cell cbar_o_bar">
+          <div class="kalman-head">$\bar{\text{C}}\bar{\text{O}}$ — Neither</div>
           Completely decoupled — neither the input reaches them nor the output sees them. They're invisible to any control design and any measurement.
         </div>
-</div>
-<div class="prose">
+      </div>
+
+      <div class="prose">
         The transfer function $G(s) = C(sI-A)^{-1}B$ only reflects the <strong>CO subsystem</strong>.
         The other three subsystems are hidden modes — their eigenvalues don't appear in $G(s)$ as poles.
         This is the source of pole-zero cancellations and the reason for non-minimal realizations.
       </div>
-<!-- ═══ MINIMAL REALIZATION ═══ -->
-<div class="section-head" id="minimal">Minimal realization</div>
-<div class="prose">
+
+      <!-- ═══ MINIMAL REALIZATION ═══ -->
+      <div class="section-head" id="minimal">Minimal realization</div>
+
+      <div class="prose">
         A state-space realization $(A, B, C, D)$ of a transfer function $G(s)$ is
         <strong>minimal</strong> if and only if it is both controllable and observable.
         A minimal realization has the smallest possible number of states — the order of
         the realization equals the degree of the minimal polynomial of the transfer function.
       </div>
-<div class="prose">
+
+      <div class="prose">
         Any two minimal realizations of the same transfer function are related by an
         invertible state transformation $T$: if $(A_1, B_1, C_1, D)$ and $(A_2, B_2, C_2, D)$
         are both minimal, then $A_2 = TA_1T^{-1}$, $B_2 = TB_1$, $C_2 = C_1T^{-1}$.
         They describe the same dynamics in different coordinates.
       </div>
-<div class="callout">
-<strong>Pole-zero cancellations and minimality.</strong>
+
+      <div class="callout">
+        <strong>Pole-zero cancellations and minimality.</strong>
         A non-minimal realization has one or more of:
         <ul style="margin:8px 0 0; padding-left:18px;">
-<li>Uncontrollable modes: eigenvalues of $A$ that are zeros of $C(sI-A)^{-1}$ (output can't see them) but poles of $\det(sI-A)$.</li>
-<li>Unobservable modes: eigenvalues of $A$ where $B$ has no projection into the corresponding eigenspace.</li>
-</ul>
+          <li>Uncontrollable modes: eigenvalues of $A$ that are zeros of $C(sI-A)^{-1}$ (output can't see them) but poles of $\det(sI-A)$.</li>
+          <li>Unobservable modes: eigenvalues of $A$ where $B$ has no projection into the corresponding eigenspace.</li>
+        </ul>
         In transfer function form, these appear as exact pole-zero cancellations. The
         cancelled pole is a hidden mode — present in the state, absent from the TF.
         If that hidden mode is unstable, the system is internally unstable even if the
         TF looks stable. This is a genuine danger in control design — cancelling an
         unstable pole in the TF does not mean the system is stable!
       </div>
-<!-- ═══ INTERACTIVE ═══ -->
-<div class="section-head" id="interactive">Interactive: controllability explorer</div>
-<div class="prose">
-        For the fixed plant $A = \begin{bmatrix}0 &amp; 1 \\ -2 &amp; -3\end{bmatrix}$ (stable,
+
+      <!-- ═══ INTERACTIVE ═══ -->
+      <div class="section-head" id="interactive">Interactive: controllability explorer</div>
+
+      <div class="prose">
+        For the fixed plant $A = \begin{bmatrix}0 & 1 \\ -2 & -3\end{bmatrix}$ (stable,
         with eigenvalues at $-1$ and $-2$), adjust the input matrix $B = [b_1;\, b_2]^T$
         and observe: (1) whether the controllability matrix has rank 2, (2) the shape of
         the reachable set (unit-energy ellipsoid from the Gramian), and (3) which eigenmodes
         are reachable. When $b_1 = 0$ and $b_2 = 0$ the system is clearly uncontrollable;
         try to find other $B$ vectors that cause rank deficiency.
       </div>
-<div class="widget-card">
-<div class="widget-title">Controllability Explorer</div>
-<div style="display:grid; grid-template-columns:240px 1fr; gap:18px; align-items:start;">
-<!-- Controls -->
-<div>
-<div style="font-size:12px; color:#7a9ab0; margin-bottom:8px;">Fixed: $A = \begin{bmatrix}0&amp;1\\-2&amp;-3\end{bmatrix}$</div>
-<div class="slider-row">
-<label>$b_1$:</label>
-<input id="co-b1" max="3" min="-3" oninput="coUpdate()" step="0.1" type="range" value="1"/>
-<span class="sv" id="co-b1-v">1.0</span>
-</div>
-<div class="slider-row">
-<label>$b_2$:</label>
-<input id="co-b2" max="3" min="-3" oninput="coUpdate()" step="0.1" type="range" value="0"/>
-<span class="sv" id="co-b2-v">0.0</span>
-</div>
-<div style="margin-top:10px; font-size:12px; color:#7a9ab0; margin-bottom:6px;">Quick tests:</div>
-<div style="display:flex; flex-wrap:wrap; gap:5px;">
-<button onclick="coSet(1,0)" style="padding:4px 8px; background:#e8eef2; border:1px solid #c0d0dc; border-radius:3px; font-size:11.5px; cursor:pointer;">b=[1;0]</button>
-<button onclick="coSet(0,1)" style="padding:4px 8px; background:#e8eef2; border:1px solid #c0d0dc; border-radius:3px; font-size:11.5px; cursor:pointer;">b=[0;1]</button>
-<button onclick="coSet(1,1)" style="padding:4px 8px; background:#e8eef2; border:1px solid #c0d0dc; border-radius:3px; font-size:11.5px; cursor:pointer;">b=[1;1]</button>
-<button onclick="coSet(-2,1)" style="padding:4px 8px; background:#e8eef2; border:1px solid #c0d0dc; border-radius:3px; font-size:11.5px; cursor:pointer;">b=[-2;1]</button>
-<button onclick="coSet(0,0)" style="padding:4px 8px; background:#f8d8d8; border:1px solid #d0a0a0; border-radius:3px; font-size:11.5px; cursor:pointer;">b=[0;0]</button>
-<button onclick="coSet(2,-1)" style="padding:4px 8px; background:#f8d8d8; border:1px solid #d0a0a0; border-radius:3px; font-size:11.5px; cursor:pointer;">b=[2;-1] (rank 1?)</button>
-</div>
-<!-- Controllability matrix display -->
-<div style="margin-top:14px; background:#fff; border:1px solid #c8d8e4; border-radius:5px; padding:10px 12px;">
-<div style="font-size:11px; color:#7a9ab0; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:6px;">Controllability matrix $\mathcal{C} = [B\;|\;AB]$</div>
-<div id="co-C-display" style="font-family:'IBM Plex Mono',monospace; font-size:12.5px; line-height:1.7;"></div>
-<div style="margin-top:8px;">
-<span style="font-size:12.5px; color:#7a9ab0;">rank = </span>
-<span class="rank-badge rank-full" id="co-rank-badge">2 (controllable)</span>
-</div>
-<div style="margin-top:6px; font-size:12px; color:#7a9ab0;">det(𝒞) = <span id="co-det" style="font-family:'IBM Plex Mono',monospace; color:#2a3a4a;">—</span></div>
-</div>
-</div>
-<!-- Phase plane with reachable set -->
-<div>
-<div style="font-size:11px; color:#7a9ab0; text-align:center; margin-bottom:6px; text-transform:uppercase; letter-spacing:0.05em;">Reachable set from $x_0=0$ (unit energy, $T=3$)</div>
-<svg id="co-phase-svg" style="display:block; background:#fff; border:1px solid #d0dce6; border-radius:4px;" viewbox="0 0 320 300" width="100%"></svg>
-<div style="font-size:11.5px; color:#9aabb8; margin-top:6px; text-align:center;">
+
+      <div class="widget-card">
+        <div class="widget-title">Controllability Explorer</div>
+        <div style="display:grid; grid-template-columns:240px 1fr; gap:18px; align-items:start;">
+          <!-- Controls -->
+          <div>
+            <div style="font-size:12px; color:#7a9ab0; margin-bottom:8px;">Fixed: $A = \begin{bmatrix}0&1\\-2&-3\end{bmatrix}$</div>
+
+            <div class="slider-row">
+              <label>$b_1$:</label>
+              <input type="range" id="co-b1" min="-3" max="3" step="0.1" value="1" oninput="coUpdate()">
+              <span class="sv" id="co-b1-v">1.0</span>
+            </div>
+            <div class="slider-row">
+              <label>$b_2$:</label>
+              <input type="range" id="co-b2" min="-3" max="3" step="0.1" value="0" oninput="coUpdate()">
+              <span class="sv" id="co-b2-v">0.0</span>
+            </div>
+
+            <div style="margin-top:10px; font-size:12px; color:#7a9ab0; margin-bottom:6px;">Quick tests:</div>
+            <div style="display:flex; flex-wrap:wrap; gap:5px;">
+              <button style="padding:4px 8px; background:#e8eef2; border:1px solid #c0d0dc; border-radius:3px; font-size:11.5px; cursor:pointer;" onclick="coSet(1,0)">b=[1;0]</button>
+              <button style="padding:4px 8px; background:#e8eef2; border:1px solid #c0d0dc; border-radius:3px; font-size:11.5px; cursor:pointer;" onclick="coSet(0,1)">b=[0;1]</button>
+              <button style="padding:4px 8px; background:#e8eef2; border:1px solid #c0d0dc; border-radius:3px; font-size:11.5px; cursor:pointer;" onclick="coSet(1,1)">b=[1;1]</button>
+              <button style="padding:4px 8px; background:#e8eef2; border:1px solid #c0d0dc; border-radius:3px; font-size:11.5px; cursor:pointer;" onclick="coSet(-2,1)">b=[-2;1]</button>
+              <button style="padding:4px 8px; background:#f8d8d8; border:1px solid #d0a0a0; border-radius:3px; font-size:11.5px; cursor:pointer;" onclick="coSet(0,0)">b=[0;0]</button>
+              <button style="padding:4px 8px; background:#f8d8d8; border:1px solid #d0a0a0; border-radius:3px; font-size:11.5px; cursor:pointer;" onclick="coSet(2,-1)">b=[2;-1] (rank 1?)</button>
+            </div>
+
+            <!-- Controllability matrix display -->
+            <div style="margin-top:14px; background:#fff; border:1px solid #c8d8e4; border-radius:5px; padding:10px 12px;">
+              <div style="font-size:11px; color:#7a9ab0; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:6px;">Controllability matrix $\mathcal{C} = [B\;|\;AB]$</div>
+              <div id="co-C-display" style="font-family:'IBM Plex Mono',monospace; font-size:12.5px; line-height:1.7;"></div>
+              <div style="margin-top:8px;">
+                <span style="font-size:12.5px; color:#7a9ab0;">rank = </span>
+                <span id="co-rank-badge" class="rank-badge rank-full">2 (controllable)</span>
+              </div>
+              <div style="margin-top:6px; font-size:12px; color:#7a9ab0;">det(𝒞) = <span id="co-det" style="font-family:'IBM Plex Mono',monospace; color:#2a3a4a;">—</span></div>
+            </div>
+          </div>
+
+          <!-- Phase plane with reachable set -->
+          <div>
+            <div style="font-size:11px; color:#7a9ab0; text-align:center; margin-bottom:6px; text-transform:uppercase; letter-spacing:0.05em;">Reachable set from $x_0=0$ (unit energy, $T=3$)</div>
+            <svg id="co-phase-svg" width="100%" viewBox="0 0 320 300"
+                 style="display:block; background:#fff; border:1px solid #d0dce6; border-radius:4px;"></svg>
+            <div style="font-size:11.5px; color:#9aabb8; margin-top:6px; text-align:center;">
               Blue ellipse = states reachable with $\|u\| \leq 1$. Arrow = input direction $B$. Degenerate ellipse → uncontrollable direction.
             </div>
-</div>
-</div>
-</div><!-- /widget -->
-<!-- ═══ WORKED EXAMPLES ═══ -->
-<div class="section-head" id="worked-examples">Worked examples</div>
-<div class="example-box">
-<div class="example-header"><strong>Example 1 — Controllability check by rank test</strong></div>
-<div class="example-problem">
-          Given $A = \begin{bmatrix}1 &amp; 0 \\ 0 &amp; 2\end{bmatrix}$, $B = \begin{bmatrix}1 \\ 3\end{bmatrix}$.
+          </div>
+        </div>
+      </div><!-- /widget -->
+
+      <!-- ═══ WORKED EXAMPLES ═══ -->
+      <div class="section-head" id="worked-examples">Worked examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Controllability check by rank test</strong></div>
+        <div class="example-problem">
+          Given $A = \begin{bmatrix}1 & 0 \\ 0 & 2\end{bmatrix}$, $B = \begin{bmatrix}1 \\ 3\end{bmatrix}$.
           Is the system $(A, B)$ controllable?
         </div>
-<div class="example-body">
+        <div class="example-body">
           Compute $AB$:
-          $$AB = \begin{bmatrix}1&amp;0\\0&amp;2\end{bmatrix}\begin{bmatrix}1\\3\end{bmatrix} = \begin{bmatrix}1\\6\end{bmatrix}$$
+          $$AB = \begin{bmatrix}1&0\\0&2\end{bmatrix}\begin{bmatrix}1\\3\end{bmatrix} = \begin{bmatrix}1\\6\end{bmatrix}$$
           Form the controllability matrix:
-          $$\mathcal{C} = [B \;|\; AB] = \begin{bmatrix}1 &amp; 1 \\ 3 &amp; 6\end{bmatrix}$$
+          $$\mathcal{C} = [B \;|\; AB] = \begin{bmatrix}1 & 1 \\ 3 & 6\end{bmatrix}$$
           $\det(\mathcal{C}) = 6 - 3 = 3 \neq 0$, so $\text{rank}(\mathcal{C}) = 2 = n$. <strong>The system is controllable.</strong>
 
           Both modes ($\lambda = 1$ and $\lambda = 2$) are reachable from the input. Both eigenvalues
@@ -480,47 +540,50 @@
           controllable, state feedback can assign the closed-loop poles to any desired stable locations.
           This is the standard motivating case for state feedback design.
         </div>
-</div>
-<div class="example-box">
-<div class="example-header"><strong>Example 2 — Uncontrollable mode via PBH test</strong></div>
-<div class="example-problem">
-          Given $A = \begin{bmatrix}-1 &amp; 0 \\ 1 &amp; -2\end{bmatrix}$, $B = \begin{bmatrix}0 \\ 1\end{bmatrix}$.
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Uncontrollable mode via PBH test</strong></div>
+        <div class="example-problem">
+          Given $A = \begin{bmatrix}-1 & 0 \\ 1 & -2\end{bmatrix}$, $B = \begin{bmatrix}0 \\ 1\end{bmatrix}$.
           Use the PBH test to determine which eigenvalue (if any) is uncontrollable, then verify with the controllability matrix.
         </div>
-<div class="example-body">
+        <div class="example-body">
           Eigenvalues of $A$: $\lambda_1 = -1$, $\lambda_2 = -2$.
 
           <strong>PBH test for $\lambda_1 = -1$:</strong>
-          $$\begin{bmatrix}A - \lambda_1 I &amp; B\end{bmatrix} = \begin{bmatrix}A + I &amp; B\end{bmatrix} = \begin{bmatrix}0 &amp; 0 &amp; 0 \\ 1 &amp; -1 &amp; 1\end{bmatrix}$$
-          Rank = 1 (first row is all zeros) $&lt; n = 2$. The mode at $\lambda_1 = -1$ is <strong>uncontrollable</strong>.
+          $$\begin{bmatrix}A - \lambda_1 I & B\end{bmatrix} = \begin{bmatrix}A + I & B\end{bmatrix} = \begin{bmatrix}0 & 0 & 0 \\ 1 & -1 & 1\end{bmatrix}$$
+          Rank = 1 (first row is all zeros) $< n = 2$. The mode at $\lambda_1 = -1$ is <strong>uncontrollable</strong>.
 
           <strong>PBH test for $\lambda_2 = -2$:</strong>
-          $$\begin{bmatrix}A + 2I &amp; B\end{bmatrix} = \begin{bmatrix}1 &amp; 0 &amp; 0 \\ 1 &amp; 0 &amp; 1\end{bmatrix}$$
+          $$\begin{bmatrix}A + 2I & B\end{bmatrix} = \begin{bmatrix}1 & 0 & 0 \\ 1 & 0 & 1\end{bmatrix}$$
           Rank = 2. The mode at $\lambda_2 = -2$ is controllable.
 
           <strong>Verification via $\mathcal{C}$:</strong> $AB = \begin{bmatrix}0\\-2\end{bmatrix}$, so
-          $\mathcal{C} = \begin{bmatrix}0 &amp; 0 \\ 1 &amp; -2\end{bmatrix}$, $\det(\mathcal{C}) = 0$. ✓ Not controllable.
+          $\mathcal{C} = \begin{bmatrix}0 & 0 \\ 1 & -2\end{bmatrix}$, $\det(\mathcal{C}) = 0$. ✓ Not controllable.
 
           <strong>Physical picture:</strong> $B = [0;\,1]$ drives $x_2$ only. The entry $A_{11} = -1$ means
           $x_1$ is driven only by itself — there is no off-diagonal term $A_{12}$ and no direct input path
           from $u$ to $x_1$. The $e^{-t}$ mode in $x_1$ is completely decoupled from the input.
         </div>
-</div>
-<div class="example-box">
-<div class="example-header"><strong>Example 3 — Non-minimal realization: hidden unobservable mode</strong></div>
-<div class="example-problem">
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Non-minimal realization: hidden unobservable mode</strong></div>
+        <div class="example-problem">
           The transfer function $G(s) = \dfrac{1}{s+2}$ is realized as:
-          $$A = \begin{bmatrix}-2 &amp; 0 \\ 0 &amp; -5\end{bmatrix}, \quad B = \begin{bmatrix}1 \\ 1\end{bmatrix}, \quad C = \begin{bmatrix}1 &amp; 0\end{bmatrix}$$
+          $$A = \begin{bmatrix}-2 & 0 \\ 0 & -5\end{bmatrix}, \quad B = \begin{bmatrix}1 \\ 1\end{bmatrix}, \quad C = \begin{bmatrix}1 & 0\end{bmatrix}$$
           Classify the realization (controllable? observable?) and find the minimal realization.
         </div>
-<div class="example-body">
-<strong>Verify the TF:</strong> Since $A$ is diagonal,
+        <div class="example-body">
+          <strong>Verify the TF:</strong> Since $A$ is diagonal,
           $G(s) = \dfrac{C_1 B_1}{s+2} + \dfrac{C_2 B_2}{s+5} = \dfrac{1 \cdot 1}{s+2} + \dfrac{0 \cdot 1}{s+5} = \dfrac{1}{s+2}$. ✓
 
           <strong>Controllability:</strong> $AB = [-2;\;-5]$, so
-          $\mathcal{C} = \begin{bmatrix}1&amp;-2\\1&amp;-5\end{bmatrix}$, $\det(\mathcal{C}) = -3 \neq 0$. <strong>Controllable.</strong>
-<strong>Observability:</strong> $CA = [-2,\;0]$, so
-          $\mathcal{O} = \begin{bmatrix}1&amp;0\\-2&amp;0\end{bmatrix}$, $\det(\mathcal{O}) = 0$. <strong>Not observable.</strong>
+          $\mathcal{C} = \begin{bmatrix}1&-2\\1&-5\end{bmatrix}$, $\det(\mathcal{C}) = -3 \neq 0$. <strong>Controllable.</strong>
+
+          <strong>Observability:</strong> $CA = [-2,\;0]$, so
+          $\mathcal{O} = \begin{bmatrix}1&0\\-2&0\end{bmatrix}$, $\det(\mathcal{O}) = 0$. <strong>Not observable.</strong>
 
           The mode $e^{-5t}$ lies in the C$\bar{\text{O}}$ class: the input excites it ($B_2 = 1$) but
           $C = [1\;0]$ is blind to $x_2$, so the output cannot see it. The realization is non-minimal —
@@ -529,11 +592,12 @@
           <strong>Minimal realization:</strong> $A = [-2]$, $B = [1]$, $C = [1]$, order 1, matching the
           degree of $G(s)$.
         </div>
-</div>
-<!-- ═══ FOOD FOR THOUGHT ═══ -->
-<div class="section-head" id="food-for-thought">Food for thought</div>
-<ol class="prose" style="padding-left:22px;">
-<li class="fft-item" style="margin-bottom:10px;">
+      </div>
+
+      <!-- ═══ FOOD FOR THOUGHT ═══ -->
+      <div class="section-head" id="food-for-thought">Food for thought</div>
+      <ol class="prose" style="padding-left:22px;">
+        <li style="margin-bottom:10px;">
           An uncontrollable but stable mode will decay on its own regardless of input.
           Is an uncontrollable stable mode a problem in practice? Under what circumstances
           would you accept a design that leaves a stable uncontrollable mode in the system?
@@ -553,8 +617,9 @@
               cannot remove). In practice, uncontrollable fast well-damped modes are routinely ignored;
               uncontrollable slow or lightly-damped modes demand careful attention.
             </div>
-</li>
-<li class="fft-item" style="margin-bottom:10px;">
+          
+        </li>
+        <li style="margin-bottom:10px;">
           The PBH test says that if any left eigenvector of $A$ is orthogonal to $B$, the
           system is uncontrollable. This means every single column of $B$ must have a
           nonzero projection onto every left eigenvector. What is the geometric interpretation
@@ -578,8 +643,9 @@
               placement is itself an optimization problem involving the Gramian — you want to
               maximize the minimum eigenvalue of $W_c(T)$ so all modes are equally reachable.
             </div>
-</li>
-<li class="fft-item">
+          
+        </li>
+        <li class="fft-item">
           The Kalman decomposition splits the system into CO, C$\bar{\text{O}}$, $\bar{\text{C}}$O,
           and $\bar{\text{C}}\bar{\text{O}}$ parts. The transfer function only shows the CO part.
           If the $\bar{\text{C}}$O (uncontrollable-observable) part has an unstable eigenvalue,
@@ -611,45 +677,48 @@
 
               The lesson: never rely on pole-zero cancellations involving unstable modes.
             </div>
-</li>
-</ol>
-<!-- ═══ COMMON PITFALLS ═══ -->
-<div class="section-head" id="pitfalls">Common pitfalls</div>
-<ul class="prose" style="padding-left:22px;">
-<li style="margin-bottom:8px;">
-<strong>"Controllable" ≠ "stabilizable."</strong>
+          
+        </li>
+      </ol>
+
+      <!-- ═══ COMMON PITFALLS ═══ -->
+      <div class="section-head" id="pitfalls">Common pitfalls</div>
+      <ul class="prose" style="padding-left:22px;">
+        <li style="margin-bottom:8px;">
+          <strong>"Controllable" ≠ "stabilizable."</strong>
           A controllable system can reach any state — including states far from the origin.
           Stabilizability is weaker: only requires that unstable modes be controllable.
           A system can be stabilizable but not fully controllable (if its uncontrollable
           modes are stable). For pole placement, you need full controllability; for
           stability, stabilizability suffices.
         </li>
-<li style="margin-bottom:8px;">
-<strong>Cancelling an unstable pole-zero pair does not stabilize the system.</strong>
+        <li style="margin-bottom:8px;">
+          <strong>Cancelling an unstable pole-zero pair does not stabilize the system.</strong>
           If an unstable mode is unobservable (cancels in the TF), the closed-loop TF may
           look stable, but the state $x(t)$ still has an unstable component that grows without
           bound. This can cause actuator saturation, physical damage, and eventual output divergence.
           Never cancel unstable poles.
         </li>
-<li style="margin-bottom:8px;">
-<strong>Near-rank-deficiency is as bad as rank deficiency.</strong>
+        <li style="margin-bottom:8px;">
+          <strong>Near-rank-deficiency is as bad as rank deficiency.</strong>
           A nearly-uncontrollable system (very small $\det(\mathcal{C})$) requires enormous
           input energy to reach poorly-controlled directions. The Gramian eigenvalue
           corresponding to that direction is very small, meaning the required input grows
           without bound as you try to reach it.
         </li>
-<li>
-<strong>The controllability matrix rank test is numerically sensitive.</strong>
+        <li>
+          <strong>The controllability matrix rank test is numerically sensitive.</strong>
           For high-order systems, the controllability matrix $[B, AB, \ldots, A^{n-1}B]$
           can be ill-conditioned even for controllable systems, because $A^k$ may involve
           very large or very small numbers. In practice, use the Gramian eigenvalue test or
           the SVD of $\mathcal{C}$ rather than $\det(\mathcal{C})$ to assess controllability.
         </li>
-</ul>
-<!-- ═══ CONNECTS TO ═══ -->
-<div class="section-head">Connects to</div>
-<div class="prose">
-<a href="state-space.html">Lesson 9 (State-Space)</a> — the $(A,B,C)$ model
+      </ul>
+
+      <!-- ═══ CONNECTS TO ═══ -->
+      <div class="section-head">Connects to</div>
+      <div class="prose">
+        <a href="state-space.html">Lesson 9 (State-Space)</a> — the $(A,B,C)$ model
         on which controllability and observability are defined; non-minimal realizations arise
         from the lack of one or both properties.
         ·
@@ -665,15 +734,19 @@
         cancellations are the TF signature of non-minimal realizations; the hidden modes
         do not appear in the TF but are present in the state.
       </div>
-<!-- ═══ NAV ═══ -->
-<div id="lesson-nav"></div>
-</div><!-- /main -->
-</div><!-- /page-body -->
+
+      <!-- ═══ NAV ═══ -->
+      <div id="lesson-nav"></div>
+
+    </div><!-- /main -->
+  </div><!-- /page-body -->
 </div><!-- /site-wrap -->
+
 <footer class="site-footer">
-<span>elee03.github.io/notes</span>
-<span>Est. MMXXVI</span>
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
 </footer>
+
 <script>
 // ─── Controllability Explorer ───────────────────────────────────────────────
 
@@ -831,6 +904,7 @@ function coRenderPhase(b1, b2, W, rank) {
   svg.innerHTML = defs + content;
 }
 </script>
-<script src="../notes-nav.js"></script>
+
+    <script src="../notes-nav.js"></script>
 </body>
 </html>

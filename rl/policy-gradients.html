@@ -1,19 +1,18 @@
 ﻿<!DOCTYPE html>
-
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Policy Gradient Methods — Field Notes</title>
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
-<link href="../style.css" rel="stylesheet"/>
-<link href="rl-interactive.css" rel="stylesheet"/>
-<link href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" rel="stylesheet"/>
-<script defer="" src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
-<script defer="" src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
-<script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Policy Gradient Methods — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="rl-interactive.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script>
     document.addEventListener('DOMContentLoaded', function() {
       renderMathInElement(document.body, {
         delimiters: [
@@ -26,54 +25,64 @@
   </script>
 </head>
 <body>
+
 <div class="topbar">
-<div class="topbar-inner">
-<a class="topbar-brand" href="../index.html">Field <span class="accent">Notes</span></a>
-<span class="topbar-sep">·</span>
-<a class="topbar-link" href="../references.html">Library</a>
-<span class="topbar-sep">·</span>
-<a class="topbar-back" href="https://elee03.github.io">elee03.github.io ↗</a>
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
 </div>
-</div>
+
 <div class="site-wrap">
-<div class="page-body">
-<div class="sidebar">
-<div class="nav-section">
-<div class="nav-label">Prerequisites</div>
-<a class="nav-item" href="function-approx.html">8 · Function Approximation</a>
-<span class="nav-item planned">Calculus · Gradient &amp; chain rule</span>
-<span class="nav-item planned">Probability · Expectation &amp; log-derivative</span>
-</div>
-<div data-cluster="rl" data-current="policy-gradients.html" id="cluster-nav"></div>
-<hr class="sidebar-rule"/>
-<div class="nav-section">
-<div class="nav-label">On this page</div>
-<a class="nav-item" href="#why-policy-gradient">Why policy gradients?</a>
-<a class="nav-item" href="#parameterization">Policy parameterization</a>
-<a class="nav-item" href="#objective">The objective J(θ)</a>
-<a class="nav-item" href="#pg-theorem">Policy gradient theorem</a>
-<a class="nav-item" href="#reinforce">REINFORCE</a>
-<a class="nav-item" href="#baseline">Baseline subtraction</a>
-<a class="nav-item" href="#actor-critic">Actor-critic</a>
-<a class="nav-item" href="#advantage">Advantage functions</a>
-<a class="nav-item" href="#modern">Modern extensions</a>
-<a class="nav-item" href="#worked-examples">Worked examples</a>
-<a class="nav-item" href="#interactive">Interactive explorer</a>
-<a class="nav-item" href="#food-for-thought">Food for thought</a>
-<a class="nav-item" href="#pitfalls">Common pitfalls</a>
-</div>
-</div>
-<div class="main">
-<div class="breadcrumb">
-<a href="../index.html">Field Notes</a>
-<span class="sep">›</span>
-<a href="index.html">Reinforcement Learning</a>
-<span class="sep">›</span>
-<span>9 · Policy Gradient Methods</span>
-</div>
-<div class="lesson-title">9 · Policy Gradient Methods</div>
-<div class="lesson-meta">Policy Parameterization · Policy Gradient Theorem · REINFORCE · Baseline Subtraction · Actor-Critic · Advantage Functions</div>
-<div class="prose">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Prerequisites</div>
+        <a href="function-approx.html" class="nav-item">8 · Function Approximation</a>
+        <span class="nav-item planned">Calculus · Gradient &amp; chain rule</span>
+        <span class="nav-item planned">Probability · Expectation &amp; log-derivative</span>
+      </div>
+
+      <div id="cluster-nav" data-cluster="rl" data-current="policy-gradients.html"></div>
+
+            <hr class="sidebar-rule">
+
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#why-policy-gradient" class="nav-item">Why policy gradients?</a>
+        <a href="#parameterization" class="nav-item">Policy parameterization</a>
+        <a href="#objective" class="nav-item">The objective J(θ)</a>
+        <a href="#pg-theorem" class="nav-item">Policy gradient theorem</a>
+        <a href="#reinforce" class="nav-item">REINFORCE</a>
+        <a href="#baseline" class="nav-item">Baseline subtraction</a>
+        <a href="#actor-critic" class="nav-item">Actor-critic</a>
+        <a href="#advantage" class="nav-item">Advantage functions</a>
+        <a href="#modern" class="nav-item">Modern extensions</a>
+        <a href="#worked-examples" class="nav-item">Worked examples</a>
+        <a href="#interactive" class="nav-item">Interactive explorer</a>
+        <a href="#food-for-thought" class="nav-item">Food for thought</a>
+        <a href="#pitfalls" class="nav-item">Common pitfalls</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Reinforcement Learning</a>
+        <span class="sep">›</span>
+        <span>9 · Policy Gradient Methods</span>
+      </div>
+
+      <div class="lesson-title">9 · Policy Gradient Methods</div>
+      <div class="lesson-meta">Policy Parameterization · Policy Gradient Theorem · REINFORCE · Baseline Subtraction · Actor-Critic · Advantage Functions</div>
+
+      <div class="prose">
         Every method in Lessons 4–8 learned a value function and derived a policy from it — either
         by looking up the best action, or by acting greedily w.r.t. $Q(s,a)$. Policy gradient
         methods take a different route: skip the value function and directly optimize a parameterized
@@ -82,71 +91,78 @@
         naturally with continuous action spaces, can learn stochastic policies, and form the
         foundation of nearly every modern deep RL system.
       </div>
-<!-- ── Notation recap ────────────────────────────────────── -->
-<div class="notation-box">
-<div class="notation-box-title">Notation used in this lesson</div>
-<table class="notation-table">
-<tr>
-<td>$\boldsymbol{\theta}$</td>
-<td>Policy parameter vector; $\pi(a|s,\boldsymbol{\theta})$ is the parameterized policy</td>
-</tr>
-<tr>
-<td>$J(\boldsymbol{\theta})$</td>
-<td>Performance objective: expected return under $\pi_{\boldsymbol{\theta}}$</td>
-</tr>
-<tr>
-<td>$\nabla_{\boldsymbol{\theta}} \ln \pi(a|s,\boldsymbol{\theta})$</td>
-<td>Score function or log-gradient: direction in $\boldsymbol{\theta}$-space that increases the probability of action $a$ in state $s$</td>
-</tr>
-<tr>
-<td>$b(s)$</td>
-<td>Baseline function — subtracted from the return to reduce variance without biasing the gradient estimate</td>
-</tr>
-<tr>
-<td>$A_t$</td>
-<td>Advantage estimate at time $t$: how much better action $A_t$ was than average from state $S_t$</td>
-</tr>
-<tr>
-<td>$h(s,a,\boldsymbol{\theta})$</td>
-<td>Action "preference" (unnormalized logit) used to define a softmax policy</td>
-</tr>
-</table>
-</div>
-<!-- ── Why policy gradients? ──────────────────────────────── -->
-<div class="section-head" id="why-policy-gradient">Why policy gradients?</div>
-<div class="prose">
+
+      <!-- ── Notation recap ────────────────────────────────────── -->
+      <div class="notation-box">
+        <div class="notation-box-title">Notation used in this lesson</div>
+        <table class="notation-table">
+          <tr>
+            <td>$\boldsymbol{\theta}$</td>
+            <td>Policy parameter vector; $\pi(a|s,\boldsymbol{\theta})$ is the parameterized policy</td>
+          </tr>
+          <tr>
+            <td>$J(\boldsymbol{\theta})$</td>
+            <td>Performance objective: expected return under $\pi_{\boldsymbol{\theta}}$</td>
+          </tr>
+          <tr>
+            <td>$\nabla_{\boldsymbol{\theta}} \ln \pi(a|s,\boldsymbol{\theta})$</td>
+            <td>Score function or log-gradient: direction in $\boldsymbol{\theta}$-space that increases the probability of action $a$ in state $s$</td>
+          </tr>
+          <tr>
+            <td>$b(s)$</td>
+            <td>Baseline function — subtracted from the return to reduce variance without biasing the gradient estimate</td>
+          </tr>
+          <tr>
+            <td>$A_t$</td>
+            <td>Advantage estimate at time $t$: how much better action $A_t$ was than average from state $S_t$</td>
+          </tr>
+          <tr>
+            <td>$h(s,a,\boldsymbol{\theta})$</td>
+            <td>Action "preference" (unnormalized logit) used to define a softmax policy</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- ── Why policy gradients? ──────────────────────────────── -->
+      <div class="section-head" id="why-policy-gradient">Why policy gradients?</div>
+
+      <div class="prose">
         Value-based methods work by finding the optimal $Q^*(s,a)$ and then acting greedily:
         $\pi(s) = \arg\max_a Q(s,a)$. This is effective for many problems, but fails in several
         important cases:
       </div>
-<ul class="prose" style="padding-left:1.4em;">
-<li style="margin-bottom:8px;"><strong>Continuous action spaces.</strong>
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:8px;"><strong>Continuous action spaces.</strong>
           If actions are real-valued (robot joint torques, steering angles), $\arg\max_a Q(s,a)$
           requires solving an optimization problem at every decision — expensive or intractable
           for high-dimensional actions. Policy gradient methods parameterize the action
           distribution directly (e.g. as a Gaussian), and sample from it.</li>
-<li style="margin-bottom:8px;"><strong>Stochastic optimal policies.</strong>
+        <li style="margin-bottom:8px;"><strong>Stochastic optimal policies.</strong>
           In partially observable environments or adversarial games, the optimal policy is
           stochastic. Q-learning always produces a deterministic policy. Policy gradients can
           represent and learn genuinely stochastic policies.</li>
-<li style="margin-bottom:8px;"><strong>Policy may be simpler than the value function.</strong>
+        <li style="margin-bottom:8px;"><strong>Policy may be simpler than the value function.</strong>
           For some problems, a good policy has a simple structure (e.g. "rotate left when
           the obstacle is close") even if the value function is complex. Parameterizing the
           policy directly exploits this.</li>
-<li style="margin-bottom:8px;"><strong>Convergence.</strong>
+        <li style="margin-bottom:8px;"><strong>Convergence.</strong>
           Policy gradient methods have smoother optimization landscapes in some settings,
           and their convergence proofs (for appropriate step sizes) are more
           straightforward than those of Q-learning with function approximation.</li>
-</ul>
-<!-- ── Policy parameterization ───────────────────────────── -->
-<div class="section-head" id="parameterization">Policy parameterization</div>
-<div class="prose">
+      </ul>
+
+      <!-- ── Policy parameterization ───────────────────────────── -->
+      <div class="section-head" id="parameterization">Policy parameterization</div>
+
+      <div class="prose">
         A parameterized policy $\pi(a \mid s, \boldsymbol{\theta})$ maps states to distributions
         over actions, indexed by a parameter vector $\boldsymbol{\theta} \in \mathbb{R}^d$.
         Any differentiable function family can work; two common choices:
       </div>
-<div class="prose">
-<strong>Softmax for discrete actions:</strong> Define an action preference
+
+      <div class="prose">
+        <strong>Softmax for discrete actions:</strong> Define an action preference
         $h(s, a, \boldsymbol{\theta})$ — a scalar score for each $(s,a)$ pair
         (could be a linear combination of features or a neural network output). The policy is:
         $$\pi(a \mid s, \boldsymbol{\theta}) = \frac{\exp(h(s,a,\boldsymbol{\theta}))}{\sum_{a'} \exp(h(s,a',\boldsymbol{\theta}))}$$
@@ -155,24 +171,28 @@
         mass shifts smoothly between actions — unlike the argmax policy which can flip
         discontinuously.
       </div>
-<div class="prose">
-<strong>Gaussian for continuous actions:</strong> Parameterize the mean and (optionally)
+
+      <div class="prose">
+        <strong>Gaussian for continuous actions:</strong> Parameterize the mean and (optionally)
         variance of a Gaussian:
         $$\pi(a \mid s, \boldsymbol{\theta}) = \mathcal{N}(\mu_{\boldsymbol{\theta}}(s),\, \sigma^2_{\boldsymbol{\theta}}(s))$$
         Action $a$ is sampled from this distribution at each step. The mean $\mu$ is
         what the policy "wants" to do; $\sigma$ controls exploration — larger $\sigma$
         means more varied behavior. Both can be outputs of a neural network.
       </div>
-<div class="callout">
-<strong>Softmax policies never go fully greedy.</strong> No matter how extreme the
+
+      <div class="callout">
+        <strong>Softmax policies never go fully greedy.</strong> No matter how extreme the
         preferences $h(s,a,\boldsymbol{\theta})$ become, every action retains some nonzero
         probability (unlike ε-greedy, where with $\varepsilon \to 0$ the non-greedy actions
         can be completely ignored). This means the policy always explores slightly — a
         built-in exploration mechanism that often works better than separate ε schedules.
       </div>
-<!-- ── The objective ──────────────────────────────────────── -->
-<div class="section-head" id="objective">The objective $J(\boldsymbol{\theta})$</div>
-<div class="prose">
+
+      <!-- ── The objective ──────────────────────────────────────── -->
+      <div class="section-head" id="objective">The objective $J(\boldsymbol{\theta})$</div>
+
+      <div class="prose">
         We want to find $\boldsymbol{\theta}$ that maximizes the expected return under $\pi_{\boldsymbol{\theta}}$.
         For episodic tasks, the natural objective is:
         $$J(\boldsymbol{\theta}) = v_{\pi_{\boldsymbol{\theta}}}(s_0) = \mathbb{E}_{\pi_{\boldsymbol{\theta}}}\left[G_0\right]$$
@@ -184,41 +204,47 @@
         trajectories — including which states are visited and how frequently. It's not obvious
         how to differentiate through a distribution over trajectories.
       </div>
-<!-- ── Policy Gradient Theorem ────────────────────────────── -->
-<div class="section-head" id="pg-theorem">The policy gradient theorem</div>
-<div class="prose">
+
+      <!-- ── Policy Gradient Theorem ────────────────────────────── -->
+      <div class="section-head" id="pg-theorem">The policy gradient theorem</div>
+
+      <div class="prose">
         The policy gradient theorem gives a tractable expression for $\nabla_{\boldsymbol{\theta}} J$:
       </div>
-<div class="math-block" style="padding:14px 20px;">
+
+      <div class="math-block" style="padding:14px 20px;">
         $$\nabla_{\boldsymbol{\theta}} J(\boldsymbol{\theta}) \propto \sum_s d_{\pi}(s) \sum_a q_\pi(s,a)\, \nabla_{\boldsymbol{\theta}} \pi(a \mid s, \boldsymbol{\theta})$$
       </div>
-<div class="prose">
+
+      <div class="prose">
         where $d_\pi(s)$ is the on-policy state distribution under $\pi_{\boldsymbol{\theta}}$.
         Crucially, this expression does <em>not</em> require differentiating through $d_\pi(s)$
         — the derivative of the state distribution with respect to $\boldsymbol{\theta}$ does
         not appear. This is what makes the theorem powerful: we only need to differentiate
         the policy $\pi(a|s,\boldsymbol{\theta})$ itself.
       </div>
-<div class="proof-box">
-<div class="proof-header">Derivation — Policy Gradient Theorem</div>
-<div class="proof-body">
-<p>We derive the episodic case (starting-state objective $J(\theta) = v_\pi(s_0)$). By the Bellman equation for $v_\pi$:
+
+      <div class="proof-box">
+        <div class="proof-header">Derivation — Policy Gradient Theorem</div>
+        <div class="proof-body">
+          <p>We derive the episodic case (starting-state objective $J(\theta) = v_\pi(s_0)$). By the Bellman equation for $v_\pi$:
           $$\nabla_\theta v_\pi(s) = \nabla_\theta \sum_a \pi(a|s,\theta)\,q_\pi(s,a)$$
           Applying the product rule (note $q_\pi$ depends on $\theta$ through $\pi$ at future states):
           $$= \sum_a \bigl[\nabla_\theta \pi(a|s,\theta)\,q_\pi(s,a) + \pi(a|s,\theta)\,\nabla_\theta q_\pi(s,a)\bigr]$$</p>
-<p>Expand $\nabla_\theta q_\pi(s,a) = \nabla_\theta \sum_{s',r} p(s'|s,a)[r + \gamma v_\pi(s')] = \gamma\sum_{s'} p(s'|s,a)\,\nabla_\theta v_\pi(s')$ (the reward is independent of $\theta$). Substituting:
+          <p>Expand $\nabla_\theta q_\pi(s,a) = \nabla_\theta \sum_{s',r} p(s'|s,a)[r + \gamma v_\pi(s')] = \gamma\sum_{s'} p(s'|s,a)\,\nabla_\theta v_\pi(s')$ (the reward is independent of $\theta$). Substituting:
           $$\nabla_\theta v_\pi(s) = \sum_a \nabla_\theta\pi(a|s,\theta)\,q_\pi(s,a) + \gamma\sum_a\pi(a|s,\theta)\sum_{s'} p(s'|s,a)\,\nabla_\theta v_\pi(s')$$</p>
-<p>This is a recursion. Unrolling it (applying the same expansion to $\nabla_\theta v_\pi(s')$, etc.) gives a sum over all reachable future states:
+          <p>This is a recursion. Unrolling it (applying the same expansion to $\nabla_\theta v_\pi(s')$, etc.) gives a sum over all reachable future states:
           $$\nabla_\theta v_\pi(s) = \sum_{s'} \sum_{k=0}^\infty \Pr(s \to s', k \text{ steps}, \pi)\sum_a \nabla_\theta\pi(a|s',\theta)\,q_\pi(s',a)$$
           where $\Pr(s\to s', k, \pi)$ is the probability of reaching $s'$ from $s$ in exactly $k$ steps under $\pi$.</p>
-<p>Define the on-policy state distribution $d_\pi(s') = \sum_{k=0}^\infty \gamma^k \Pr(s_0 \to s', k, \pi)$ (discounted visitation). Then:
+          <p>Define the on-policy state distribution $d_\pi(s') = \sum_{k=0}^\infty \gamma^k \Pr(s_0 \to s', k, \pi)$ (discounted visitation). Then:
           $$\nabla_\theta J(\theta) = \nabla_\theta v_\pi(s_0) = \sum_s d_\pi(s) \sum_a \nabla_\theta\pi(a|s,\theta)\,q_\pi(s,a)$$
           Applying the log-derivative trick $\nabla_\theta\pi = \pi\cdot\nabla_\theta\ln\pi$:
           $$= \sum_s d_\pi(s) \sum_a \pi(a|s,\theta)\,\nabla_\theta\ln\pi(a|s,\theta)\,q_\pi(s,a) = \mathbb{E}_\pi\bigl[\nabla_\theta\ln\pi(A_t|S_t,\theta)\,q_\pi(S_t,A_t)\bigr] \quad \blacksquare$$</p>
-<p style="color:#9aabb8;font-size:12px;margin-top:8px;">The key insight: $d_\pi(s)$ appears in the derivation (it comes from unrolling the recursion), but it cancels out of the gradient of $J$ — we never need to differentiate through how $\theta$ changes the state distribution.</p>
-</div>
-</div>
-<div class="prose">
+          <p style="color:#9aabb8;font-size:12px;margin-top:8px;">The key insight: $d_\pi(s)$ appears in the derivation (it comes from unrolling the recursion), but it cancels out of the gradient of $J$ — we never need to differentiate through how $\theta$ changes the state distribution.</p>
+        </div>
+      </div>
+
+      <div class="prose">
         Using the log-derivative trick ($\nabla \pi = \pi \cdot \nabla \ln \pi$):
         $$\nabla_{\boldsymbol{\theta}} J(\boldsymbol{\theta}) \propto \mathbb{E}_\pi\bigl[q_\pi(S_t, A_t)\, \nabla_{\boldsymbol{\theta}} \ln \pi(A_t \mid S_t, \boldsymbol{\theta})\bigr]$$
         This is an expectation we can estimate by sampling: run episodes under $\pi$, collect
@@ -226,8 +252,9 @@
         $G_t \nabla_{\boldsymbol{\theta}} \ln \pi(A_t|S_t,\boldsymbol{\theta})$ as an unbiased
         estimate of the gradient.
       </div>
-<div class="callout">
-<strong>⟶ Worth understanding: the log-derivative trick.</strong>
+
+      <div class="callout">
+        <strong>⟶ Worth understanding: the log-derivative trick.</strong>
         The identity $\nabla_\theta \pi(a|s,\theta) = \pi(a|s,\theta) \cdot \nabla_\theta \ln \pi(a|s,\theta)$
         converts the gradient of a probability into an expectation. Write it as:
         $$\sum_a \nabla\pi(a|s,\theta) q(s,a) = \sum_a \pi(a|s,\theta) \nabla\ln\pi(a|s,\theta) \cdot q(s,a)$$
@@ -235,50 +262,61 @@
         This is now an expectation under $\pi$ — something we can estimate by sampling.
         Work through the one-line derivation: it is the core algebraic step of all policy gradient methods.
       </div>
-<!-- ── REINFORCE ──────────────────────────────────────────── -->
-<div class="section-head" id="reinforce">REINFORCE</div>
-<div class="prose">
+
+      <!-- ── REINFORCE ──────────────────────────────────────────── -->
+      <div class="section-head" id="reinforce">REINFORCE</div>
+
+      <div class="prose">
         REINFORCE is the Monte Carlo policy gradient algorithm. It substitutes the return $G_t$
         for the unknown $q_\pi(S_t, A_t)$:
       </div>
-<div class="math-block">
+
+      <div class="math-block">
         $$\boldsymbol{\theta}_{t+1} = \boldsymbol{\theta}_t + \alpha G_t\, \nabla_{\boldsymbol{\theta}} \ln \pi(A_t \mid S_t, \boldsymbol{\theta}_t)$$
       </div>
-<div class="prose">
+
+      <div class="prose">
         The algorithm:
       </div>
-<ol class="prose" style="padding-left:1.4em;">
-<li style="margin-bottom:8px;">Initialize $\boldsymbol{\theta}$ arbitrarily.</li>
-<li style="margin-bottom:8px;">Generate an episode: $S_0, A_0, R_1, S_1, A_1, R_2, \ldots, S_{T-1}, A_{T-1}, R_T$.</li>
-<li style="margin-bottom:8px;">For each step $t = 0, 1, \ldots, T-1$: compute $G_t = \sum_{k=t}^{T-1}\gamma^{k-t}R_{k+1}$.</li>
-<li style="margin-bottom:8px;">Update: $\boldsymbol{\theta} \leftarrow \boldsymbol{\theta} + \alpha G_t \nabla_{\boldsymbol{\theta}} \ln \pi(A_t|S_t,\boldsymbol{\theta})$.</li>
-<li>Repeat.</li>
-</ol>
-<div class="prose">
+
+      <ol class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:8px;">Initialize $\boldsymbol{\theta}$ arbitrarily.</li>
+        <li style="margin-bottom:8px;">Generate an episode: $S_0, A_0, R_1, S_1, A_1, R_2, \ldots, S_{T-1}, A_{T-1}, R_T$.</li>
+        <li style="margin-bottom:8px;">For each step $t = 0, 1, \ldots, T-1$: compute $G_t = \sum_{k=t}^{T-1}\gamma^{k-t}R_{k+1}$.</li>
+        <li style="margin-bottom:8px;">Update: $\boldsymbol{\theta} \leftarrow \boldsymbol{\theta} + \alpha G_t \nabla_{\boldsymbol{\theta}} \ln \pi(A_t|S_t,\boldsymbol{\theta})$.</li>
+        <li>Repeat.</li>
+      </ol>
+
+      <div class="prose">
         The update has a beautiful intuition. $\nabla_{\boldsymbol{\theta}} \ln \pi(A_t|S_t,\boldsymbol{\theta})$
         points in the direction that increases the probability of action $A_t$ in state $S_t$.
         Multiplying by $G_t$:
       </div>
-<ul class="prose" style="padding-left:1.4em;">
-<li style="margin-bottom:6px;">If $G_t &gt; 0$ (the episode went well from here): move $\boldsymbol{\theta}$ to
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:6px;">If $G_t > 0$ (the episode went well from here): move $\boldsymbol{\theta}$ to
           make actions like $A_t$ more likely in states like $S_t$.</li>
-<li style="margin-bottom:6px;">If $G_t &lt; 0$ (the episode went badly): move $\boldsymbol{\theta}$ to make
+        <li style="margin-bottom:6px;">If $G_t < 0$ (the episode went badly): move $\boldsymbol{\theta}$ to make
           those actions less likely.</li>
-</ul>
-<div class="prose">
+      </ul>
+
+      <div class="prose">
         This is "reinforce what works, suppress what doesn't" — exactly the intuition behind
         reinforcement learning. REINFORCE is unbiased (it uses true Monte Carlo returns) but
         has high variance. The variance comes from the stochasticity of $G_t$: the same action
         from the same state can have very different returns depending on what happens later in the episode.
       </div>
-<!-- ── Baseline subtraction ───────────────────────────────── -->
-<div class="section-head" id="baseline">Baseline subtraction</div>
-<div class="prose">
+
+      <!-- ── Baseline subtraction ───────────────────────────────── -->
+      <div class="section-head" id="baseline">Baseline subtraction</div>
+
+      <div class="prose">
         The variance of the REINFORCE estimate can be dramatically reduced by subtracting a baseline
         $b(s)$ from the return:
         $$\boldsymbol{\theta}_{t+1} = \boldsymbol{\theta}_t + \alpha (G_t - b(S_t))\, \nabla_{\boldsymbol{\theta}} \ln \pi(A_t \mid S_t, \boldsymbol{\theta}_t)$$
       </div>
-<div class="prose">
+
+      <div class="prose">
         As long as $b(s)$ does not depend on the action $A_t$, subtracting it does not change
         the expected value of the gradient estimate — it is unbiased. To see why:
         $$\mathbb{E}\bigl[b(S_t)\nabla_{\boldsymbol{\theta}} \ln\pi(A_t|S_t)\bigr]
@@ -288,92 +326,111 @@
         But it reduces variance by making the "how good was this?" signal relative rather
         than absolute.
       </div>
-<div class="prose">
+
+      <div class="prose">
         The most common baseline is the current value estimate $b(S_t) = \hat{v}(S_t, \mathbf{w})$.
         The difference $G_t - \hat{v}(S_t, \mathbf{w})$ is an estimate of the <em>advantage</em>:
         how much better was this particular trajectory than the expected value from $S_t$?
       </div>
-<div class="prose">
+
+      <div class="prose">
         With a baseline, the REINFORCE algorithm requires a separate value function $\hat{v}(s,\mathbf{w})$
         that is trained alongside the policy. The value function parameters $\mathbf{w}$ are updated
         by minimizing $(G_t - \hat{v}(S_t, \mathbf{w}))^2$ — this is standard supervised regression
         on MC returns.
       </div>
-<!-- ── Actor-Critic ───────────────────────────────────────── -->
-<div class="section-head" id="actor-critic">Actor-critic methods</div>
-<div class="prose">
+
+      <!-- ── Actor-Critic ───────────────────────────────────────── -->
+      <div class="section-head" id="actor-critic">Actor-critic methods</div>
+
+      <div class="prose">
         REINFORCE with baseline is still a Monte Carlo method — it waits for the full episode
         before updating. Actor-critic methods apply the same idea but use a TD estimate
         instead of $G_t$, enabling online (per-step) updates.
       </div>
-<div class="prose">
+
+      <div class="prose">
         The architecture has two components running in parallel:
       </div>
-<ul class="prose" style="padding-left:1.4em;">
-<li style="margin-bottom:8px;"><strong>Actor</strong> ($\boldsymbol{\theta}$): the policy $\pi(a|s,\boldsymbol{\theta})$.
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:8px;"><strong>Actor</strong> ($\boldsymbol{\theta}$): the policy $\pi(a|s,\boldsymbol{\theta})$.
           Takes actions in the environment. Updated to increase the probability of actions that lead to good outcomes.</li>
-<li style="margin-bottom:8px;"><strong>Critic</strong> ($\mathbf{w}$): the value function $\hat{v}(s, \mathbf{w})$.
+        <li style="margin-bottom:8px;"><strong>Critic</strong> ($\mathbf{w}$): the value function $\hat{v}(s, \mathbf{w})$.
           Evaluates how good the current state is. Updated via semi-gradient TD to improve its
           accuracy as a state-value estimator.</li>
-</ul>
-<div class="prose">
+      </ul>
+
+      <div class="prose">
         The TD error from the critic,
         $\delta_t = R_{t+1} + \gamma\hat{v}(S_{t+1},\mathbf{w}) - \hat{v}(S_t,\mathbf{w})$,
         serves as the advantage estimate for the actor update:
       </div>
-<div class="math-block">
+
+      <div class="math-block">
         $$\boldsymbol{\theta} \leftarrow \boldsymbol{\theta} + \alpha_\theta\, \delta_t\, \nabla_{\boldsymbol{\theta}} \ln\pi(A_t \mid S_t, \boldsymbol{\theta})$$
         $$\mathbf{w} \leftarrow \mathbf{w} + \alpha_w\, \delta_t\, \nabla_{\mathbf{w}} \hat{v}(S_t, \mathbf{w})$$
       </div>
-<div class="prose">
+
+      <div class="prose">
         Both updates happen at every time step (no need to wait for episode completion). The TD
         error $\delta_t$ simultaneously: (a) tells the actor whether this action was better or
         worse than the critic's prediction, and (b) is the error signal used to improve the critic.
         This feedback loop is the core of actor-critic algorithms.
       </div>
-<!-- SVG: Actor-critic diagram -->
-<svg style="width:100%;max-width:540px;display:block;margin:18px auto 20px;font-family:'IBM Plex Sans',sans-serif;" viewbox="0 0 520 200">
-<defs>
-<marker id="acarr" markerheight="8" markerwidth="8" orient="auto" refx="6" refy="3">
-<path d="M0,0 L0,6 L8,3 z" fill="#3a6a8a"></path>
-</marker>
-</defs>
-<!-- Environment box -->
-<rect fill="#e8f4e8" height="60" rx="6" stroke="#6aa06a" stroke-width="1.5" width="120" x="200" y="20"></rect>
-<text fill="#2a4a2a" font-size="13" font-weight="600" text-anchor="middle" x="260" y="56">Environment</text>
-<!-- Actor box -->
-<rect fill="#e8f0f5" height="60" rx="6" stroke="#7ab8d4" stroke-width="1.5" width="120" x="20" y="120"></rect>
-<text fill="#1a2840" font-size="13" font-weight="600" text-anchor="middle" x="80" y="154">Actor</text>
-<text fill="#3a5a78" font-size="10" text-anchor="middle" x="80" y="168">π(a|s, θ)</text>
-<!-- Critic box -->
-<rect fill="#f0e8f5" height="60" rx="6" stroke="#a87ab8" stroke-width="1.5" width="120" x="380" y="120"></rect>
-<text fill="#2a1a40" font-size="13" font-weight="600" text-anchor="middle" x="440" y="154">Critic</text>
-<text fill="#5a3a78" font-size="10" text-anchor="middle" x="440" y="168">V̂(s, w)</text>
-<!-- State: env → actor and critic -->
-<line marker-end="url(#acarr)" stroke="#3a6a8a" stroke-width="1.5" x1="200" x2="90" y1="50" y2="120"></line>
-<text fill="#3a6a8a" font-size="10" x="130" y="85">S_t</text>
-<line marker-end="url(#acarr)" stroke="#a87ab8" stroke-width="1.5" x1="320" x2="430" y1="50" y2="120"></line>
-<text fill="#a87ab8" font-size="10" x="375" y="85">S_t, S_{t+1}</text>
-<!-- Action: actor → env -->
-<line marker-end="url(#acarr)" stroke="#3a6a8a" stroke-width="1.5" x1="140" x2="200" y1="140" y2="60"></line>
-<text fill="#3a6a8a" font-size="10" x="145" y="106">A_t</text>
-<!-- TD error: critic → actor -->
-<line marker-end="url(#acarr)" stroke="#c08030" stroke-dasharray="5,3" stroke-width="2" x1="380" x2="140" y1="160" y2="160"></line>
-<text fill="#c08030" font-size="10" text-anchor="middle" x="260" y="178">δ_t (TD error) — used to update both</text>
-<!-- Reward: env → critic -->
-<line marker-end="url(#acarr)" stroke="#a87ab8" stroke-width="1.5" x1="320" x2="380" y1="65" y2="128"></line>
-<text fill="#a87ab8" font-size="10" x="360" y="92">R_{t+1}</text>
-</svg>
-<!-- ── Advantage functions ─────────────────────────────────── -->
-<div class="section-head" id="advantage">Advantage functions</div>
-<div class="prose">
+
+      <!-- SVG: Actor-critic diagram -->
+      <svg viewBox="0 0 520 200" style="width:100%;max-width:540px;display:block;margin:18px auto 20px;font-family:'IBM Plex Sans',sans-serif;">
+        <defs>
+          <marker id="acarr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#3a6a8a"/>
+          </marker>
+        </defs>
+        <!-- Environment box -->
+        <rect x="200" y="20" width="120" height="60" rx="6" fill="#e8f4e8" stroke="#6aa06a" stroke-width="1.5"/>
+        <text x="260" y="56" text-anchor="middle" font-size="13" font-weight="600" fill="#2a4a2a">Environment</text>
+
+        <!-- Actor box -->
+        <rect x="20" y="120" width="120" height="60" rx="6" fill="#e8f0f5" stroke="#7ab8d4" stroke-width="1.5"/>
+        <text x="80" y="154" text-anchor="middle" font-size="13" font-weight="600" fill="#1a2840">Actor</text>
+        <text x="80" y="168" text-anchor="middle" font-size="10" fill="#3a5a78">π(a|s, θ)</text>
+
+        <!-- Critic box -->
+        <rect x="380" y="120" width="120" height="60" rx="6" fill="#f0e8f5" stroke="#a87ab8" stroke-width="1.5"/>
+        <text x="440" y="154" text-anchor="middle" font-size="13" font-weight="600" fill="#2a1a40">Critic</text>
+        <text x="440" y="168" text-anchor="middle" font-size="10" fill="#5a3a78">V̂(s, w)</text>
+
+        <!-- State: env → actor and critic -->
+        <line x1="200" y1="50" x2="90" y2="120" stroke="#3a6a8a" stroke-width="1.5" marker-end="url(#acarr)"/>
+        <text x="130" y="85" font-size="10" fill="#3a6a8a">S_t</text>
+        <line x1="320" y1="50" x2="430" y2="120" stroke="#a87ab8" stroke-width="1.5" marker-end="url(#acarr)"/>
+        <text x="375" y="85" font-size="10" fill="#a87ab8">S_t, S_{t+1}</text>
+
+        <!-- Action: actor → env -->
+        <line x1="140" y1="140" x2="200" y2="60" stroke="#3a6a8a" stroke-width="1.5" marker-end="url(#acarr)"/>
+        <text x="145" y="106" font-size="10" fill="#3a6a8a">A_t</text>
+
+        <!-- TD error: critic → actor -->
+        <line x1="380" y1="160" x2="140" y2="160" stroke="#c08030" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#acarr)"/>
+        <text x="260" y="178" text-anchor="middle" font-size="10" fill="#c08030">δ_t (TD error) — used to update both</text>
+
+        <!-- Reward: env → critic -->
+        <line x1="320" y1="65" x2="380" y2="128" stroke="#a87ab8" stroke-width="1.5" marker-end="url(#acarr)"/>
+        <text x="360" y="92" font-size="10" fill="#a87ab8">R_{t+1}</text>
+      </svg>
+
+      <!-- ── Advantage functions ─────────────────────────────────── -->
+      <div class="section-head" id="advantage">Advantage functions</div>
+
+      <div class="prose">
         The <strong>advantage function</strong> is defined as:
         $$A_\pi(s, a) = q_\pi(s, a) - v_\pi(s)$$
         It measures how much better (or worse) taking action $a$ in state $s$ is compared to
-        the average action under $\pi$. If $A_\pi(s,a) &gt; 0$, action $a$ is above average from $s$;
-        if $A_\pi(s,a) &lt; 0$, it is below average.
+        the average action under $\pi$. If $A_\pi(s,a) > 0$, action $a$ is above average from $s$;
+        if $A_\pi(s,a) < 0$, it is below average.
       </div>
-<div class="prose">
+
+      <div class="prose">
         Using the advantage as the weight in the policy gradient update gives an estimator with
         zero expected return for any constant baseline, and with the minimum possible variance
         for the state-dependent baseline $b(s) = v_\pi(s)$:
@@ -381,28 +438,33 @@
         The advantage tells the actor exactly the right signal: increase the probability of actions
         that beat the expected value, decrease those that fall below it.
       </div>
-<div class="prose">
+
+      <div class="prose">
         In actor-critic, the TD error $\delta_t = R_{t+1} + \gamma V(S_{t+1}) - V(S_t)$ is a
         one-step estimate of the advantage. If the critic is accurate, $\delta_t \approx A_\pi(S_t, A_t)$.
         More accurate advantage estimates can be computed using $n$-step returns or
         Generalized Advantage Estimation (GAE), which averages over all $n$-step TD errors.
       </div>
-<!-- ── Modern extensions ──────────────────────────────────── -->
-<div class="section-head" id="modern">Modern extensions</div>
-<div class="prose">
+
+      <!-- ── Modern extensions ──────────────────────────────────── -->
+      <div class="section-head" id="modern">Modern extensions</div>
+
+      <div class="prose">
         The algorithms described above are the foundation. Modern deep RL builds on them with
         practical improvements:
       </div>
-<div class="prose">
-<strong>A2C / A3C (Advantage Actor-Critic).</strong> Runs multiple actor threads in
+
+      <div class="prose">
+        <strong>A2C / A3C (Advantage Actor-Critic).</strong> Runs multiple actor threads in
         parallel, each collecting experience and computing gradients. A central learner aggregates
         the gradients. This reduces correlation between updates and improves sample efficiency.
         A2C is the synchronous version (wait for all workers); A3C is asynchronous (workers
         update as soon as ready). Both use the advantage (TD error with $n$-step returns) as the
         policy gradient signal.
       </div>
-<div class="prose">
-<strong>PPO (Proximal Policy Optimization).</strong> A common practical algorithm that
+
+      <div class="prose">
+        <strong>PPO (Proximal Policy Optimization).</strong> A common practical algorithm that
         constrains each gradient update to not change the policy too much. Without this constraint,
         a single large gradient step can move the policy to a bad region of $\boldsymbol{\theta}$-space,
         after which recovery is slow. PPO clips the gradient objective so that the policy ratio
@@ -410,86 +472,93 @@
         This is simple to implement and works reliably across a wide range of tasks — it is
         arguably the most widely used RL algorithm today.
       </div>
-<div class="prose">
-<strong>SAC (Soft Actor-Critic).</strong> For continuous control tasks (robotics), SAC
+
+      <div class="prose">
+        <strong>SAC (Soft Actor-Critic).</strong> For continuous control tasks (robotics), SAC
         adds an entropy bonus to the reward, encouraging the policy to remain as random as possible
         while still performing well. This maximum-entropy objective improves exploration and
         robustness. SAC is currently state-of-the-art on many continuous control benchmarks.
       </div>
-<!-- ── Worked examples ─────────────────────────────────────── -->
-<div class="section-head" id="worked-examples">Worked examples</div>
-<div class="example-box">
-<div class="example-header"><strong>Example 1 — REINFORCE update on a softmax policy</strong></div>
-<div class="example-problem">
+
+      <!-- ── Worked examples ─────────────────────────────────────── -->
+      <div class="section-head" id="worked-examples">Worked examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — REINFORCE update on a softmax policy</strong></div>
+        <div class="example-problem">
           Two-action problem at state $M$. Softmax preferences: $\theta_1 = h(M,\text{right}) = 0.5$,
           $\theta_2 = h(M,\text{left}) = 0.0$. An episode starts at $M$, takes action right, return
           $G_0 = +2$. Use $\alpha = 0.1$. Compute the update to $\theta_1$ and the new $\pi(\text{right}|M)$.
         </div>
-<div class="example-body">
-<div class="prose">
+        <div class="example-body">
+          <div class="prose">
             Current policy: $\pi(\text{right}|M) = e^{0.5}/(e^{0.5}+e^0) = 1.649/2.649 \approx 0.622$.
           </div>
-<div class="prose">
+          <div class="prose">
             Log-gradient: $\nabla_{\theta_1}\ln\pi(\text{right}|M) = 1 - \pi(\text{right}|M) = 0.378$.
             (Softmax log-gradient w.r.t. the logit of the chosen action equals $1 - \pi(a|s)$.)
           </div>
-<div class="prose">
+          <div class="prose">
             Update: $\theta_1 \leftarrow 0.5 + 0.1 \times 2 \times 0.378 = 0.5 + 0.076 = \mathbf{0.576}$.
           </div>
-<div class="prose">
+          <div class="prose">
             New policy: $\pi(\text{right}|M) = e^{0.576}/(e^{0.576}+e^0) \approx \mathbf{0.640}$.
             The probability of "right" increased by ~2% — the policy was nudged toward the
             action that produced a positive return.
           </div>
-</div>
-</div>
-<div class="example-box">
-<div class="example-header"><strong>Example 2 — Actor-critic update</strong></div>
-<div class="example-problem">
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Actor-critic update</strong></div>
+        <div class="example-problem">
           $\hat{v}(S_t=3)=2.0$, $\hat{v}(S_{t+1}=7)=3.5$. Observed $R_{t+1}=0$,
           $\gamma=0.9$, $\alpha_\theta=0.05$, $\alpha_w=0.1$. Compute the TD error and
           write out the critic and actor update directions.
         </div>
-<div class="example-body">
-<div class="prose">
+        <div class="example-body">
+          <div class="prose">
             TD error: $\delta_t = 0 + 0.9 \times 3.5 - 2.0 = 3.15 - 2.0 = \mathbf{1.15}$
           </div>
-<div class="prose">
+          <div class="prose">
             Critic update: $\mathbf{w} \leftarrow \mathbf{w} + 0.1 \times 1.15 \times \nabla_\mathbf{w}\hat{v}(3,\mathbf{w})$.
             For linear FA, $\nabla\hat{v}(3,\mathbf{w}) = \mathbf{x}(3)$ (feature vector of state 3).
           </div>
-<div class="prose">
+          <div class="prose">
             Actor update: $\boldsymbol{\theta} \leftarrow \boldsymbol{\theta} + 0.05 \times 1.15 \times \nabla_{\boldsymbol{\theta}}\ln\pi(A_t|3,\boldsymbol{\theta})$.
-            The positive TD error ($\delta_t = 1.15 &gt; 0$) means the next state was better than
+            The positive TD error ($\delta_t = 1.15 > 0$) means the next state was better than
             the critic predicted — the actor is nudged toward action $A_t$ because it led to a
             pleasant surprise.
           </div>
-</div>
-</div>
-<div class="example-box">
-<div class="example-header"><strong>Example 3 — Why the baseline doesn't introduce bias</strong></div>
-<div class="example-problem">
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Why the baseline doesn't introduce bias</strong></div>
+        <div class="example-problem">
           Show that $\mathbb{E}_{A\sim\pi}[b(s)\,\nabla_\theta\ln\pi(A|s)] = 0$ for any $b(s)$
           that does not depend on $A$. This is the key identity that makes baselines bias-free.
         </div>
-<div class="example-body">
-<div class="prose">
+        <div class="example-body">
+          <div class="prose">
             $$\sum_a \pi(a|s)\,b(s)\,\nabla_\theta\ln\pi(a|s)
               = b(s)\sum_a \pi(a|s)\frac{\nabla_\theta\pi(a|s)}{\pi(a|s)}
               = b(s)\sum_a\nabla_\theta\pi(a|s)
               = b(s)\,\nabla_\theta\underbrace{\sum_a\pi(a|s)}_{=1}
               = b(s)\,\nabla_\theta(1) = 0$$
           </div>
-<div class="prose">
+          <div class="prose">
             The probabilities always sum to 1, so their gradient (w.r.t. $\theta$) is zero — the
             baseline contributes nothing to the expected gradient. It affects only the variance of
             the estimate, which is why the optimal baseline is the one that minimises that variance.
           </div>
-</div>
-</div>
-<!-- ── Interactive ─────────────────────────────────────────── -->
-<div class="section-head" id="interactive">Interactive: REINFORCE with and without baseline</div>
-<div class="prose">
+        </div>
+      </div>
+
+      <!-- ── Interactive ─────────────────────────────────────────── -->
+      <div class="section-head" id="interactive">Interactive: REINFORCE with and without baseline</div>
+
+      <div class="prose">
         A 7-state chain: states $\{1, \ldots, 7\}$ with terminals 0 (reward 0) and 8 (reward +1).
         Policy: softmax over {left, right} at each state, parameterized by a single preference
         $\theta_s$ for "right" at each state $s$. Two agents run in parallel:
@@ -497,45 +566,53 @@
         estimate). Watch how the baseline reduces variance and speeds convergence. Both should
         eventually converge to "go right" everywhere, but the baseline version is more consistent.
       </div>
-<div class="interactive" style="margin:24px 0;">
-<div class="int-title">REINFORCE vs REINFORCE + Baseline — 7-State Chain</div>
-<div style="display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start;margin-bottom:16px;">
-<div style="display:flex;flex-direction:column;gap:6px;">
-<label style="font-size:12.5px;color:#5a6a7a;">
+
+      <div class="interactive" style="margin:24px 0;">
+        <div class="int-title">REINFORCE vs REINFORCE + Baseline — 7-State Chain</div>
+
+        <div style="display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start;margin-bottom:16px;">
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <label style="font-size:12.5px;color:#5a6a7a;">
               Step size $\alpha$:
               <span id="pg-alpha-val" style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:#1a2840;">0.05</span>
-</label>
-<input id="pg-alpha" max="0.3" min="0.01" oninput="document.getElementById('pg-alpha-val').textContent=parseFloat(this.value).toFixed(2);" step="0.01" style="width:180px;" type="range" value="0.05"/>
-</div>
-<div style="display:flex;flex-direction:column;gap:6px;">
-<span style="font-size:12.5px;color:#5a6a7a;">Episodes: <span id="pg-ep-count" style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:#1a2840;">0</span></span>
-</div>
-</div>
-<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;">
-<button onclick="pgRun(1)" style="padding:7px 14px;background:#3a6a8a;color:white;border:none;border-radius:4px;font-family:'IBM Plex Sans',sans-serif;font-size:13px;cursor:pointer;">1 episode</button>
-<button onclick="pgRun(10)" style="padding:7px 14px;background:#3a6a8a;color:white;border:none;border-radius:4px;font-family:'IBM Plex Sans',sans-serif;font-size:13px;cursor:pointer;">10</button>
-<button onclick="pgRun(100)" style="padding:7px 14px;background:#3a6a8a;color:white;border:none;border-radius:4px;font-family:'IBM Plex Sans',sans-serif;font-size:13px;cursor:pointer;">100</button>
-<button onclick="pgRun(500)" style="padding:7px 14px;background:#3a6a8a;color:white;border:none;border-radius:4px;font-family:'IBM Plex Sans',sans-serif;font-size:13px;cursor:pointer;">500</button>
-<button onclick="pgResetAll()" style="padding:7px 14px;background:#e8eef2;color:#2a3a4a;border:none;border-radius:4px;font-family:'IBM Plex Sans',sans-serif;font-size:13px;cursor:pointer;">Reset</button>
-</div>
-<!-- Policy visualization -->
-<div style="margin-bottom:16px;">
-<div style="font-size:12.5px;color:#5a6a7a;margin-bottom:8px;">
+            </label>
+            <input type="range" id="pg-alpha" min="0.01" max="0.3" step="0.01" value="0.05"
+              style="width:180px;" oninput="document.getElementById('pg-alpha-val').textContent=parseFloat(this.value).toFixed(2);">
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <span style="font-size:12.5px;color:#5a6a7a;">Episodes: <span id="pg-ep-count" style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:#1a2840;">0</span></span>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;">
+          <button onclick="pgRun(1)" style="padding:7px 14px;background:#3a6a8a;color:white;border:none;border-radius:4px;font-family:'IBM Plex Sans',sans-serif;font-size:13px;cursor:pointer;">1 episode</button>
+          <button onclick="pgRun(10)" style="padding:7px 14px;background:#3a6a8a;color:white;border:none;border-radius:4px;font-family:'IBM Plex Sans',sans-serif;font-size:13px;cursor:pointer;">10</button>
+          <button onclick="pgRun(100)" style="padding:7px 14px;background:#3a6a8a;color:white;border:none;border-radius:4px;font-family:'IBM Plex Sans',sans-serif;font-size:13px;cursor:pointer;">100</button>
+          <button onclick="pgRun(500)" style="padding:7px 14px;background:#3a6a8a;color:white;border:none;border-radius:4px;font-family:'IBM Plex Sans',sans-serif;font-size:13px;cursor:pointer;">500</button>
+          <button onclick="pgResetAll()" style="padding:7px 14px;background:#e8eef2;color:#2a3a4a;border:none;border-radius:4px;font-family:'IBM Plex Sans',sans-serif;font-size:13px;cursor:pointer;">Reset</button>
+        </div>
+
+        <!-- Policy visualization -->
+        <div style="margin-bottom:16px;">
+          <div style="font-size:12.5px;color:#5a6a7a;margin-bottom:8px;">
             Policy at each state: probability of "right" (larger bar = higher chance of moving right)
           </div>
-<svg id="pg-policy" style="width:100%;max-width:520px;display:block;margin:0 auto;" viewbox="0 0 480 120"></svg>
-</div>
-<!-- Learning curves -->
-<div style="font-size:12.5px;color:#5a6a7a;margin-bottom:6px;">
+          <svg id="pg-policy" viewBox="0 0 480 120" style="width:100%;max-width:520px;display:block;margin:0 auto;"></svg>
+        </div>
+
+        <!-- Learning curves -->
+        <div style="font-size:12.5px;color:#5a6a7a;margin-bottom:6px;">
           Average episode return (trailing 50 episodes):
         </div>
-<svg id="pg-curves" style="width:100%;max-width:520px;display:block;margin:0 auto;" viewbox="0 0 480 160"></svg>
-<div style="display:flex;gap:24px;justify-content:center;margin-top:8px;font-size:12px;color:#5a6a7a;">
-<span><span style="display:inline-block;width:20px;height:3px;background:#3a6a8a;vertical-align:middle;margin-right:4px;"></span>No baseline</span>
-<span><span style="display:inline-block;width:20px;height:3px;background:#c84040;vertical-align:middle;margin-right:4px;"></span>With baseline</span>
-</div>
-</div>
-<script>
+        <svg id="pg-curves" viewBox="0 0 480 160" style="width:100%;max-width:520px;display:block;margin:0 auto;"></svg>
+
+        <div style="display:flex;gap:24px;justify-content:center;margin-top:8px;font-size:12px;color:#5a6a7a;">
+          <span><span style="display:inline-block;width:20px;height:3px;background:#3a6a8a;vertical-align:middle;margin-right:4px;"></span>No baseline</span>
+          <span><span style="display:inline-block;width:20px;height:3px;background:#c84040;vertical-align:middle;margin-right:4px;"></span>With baseline</span>
+        </div>
+      </div>
+
+      <script>
       (function() {
         const N = 7; // states 1..7
         const gamma = 1.0;
@@ -708,12 +785,14 @@
         pgRenderFn();
       })();
       </script>
-<!-- ── Food for thought ────────────────────────────────────── -->
-<div class="section-head" id="food-for-thought">Food for thought</div>
-<div class="fft-block">
-<div class="fft-title">Reflection questions</div>
-<ol>
-<li class="fft-item">The policy gradient theorem says we can estimate $\nabla J(\boldsymbol{\theta})$
+
+      <!-- ── Food for thought ────────────────────────────────────── -->
+      <div class="section-head" id="food-for-thought">Food for thought</div>
+
+      <div class="fft-block">
+        <div class="fft-title">Reflection questions</div>
+        <ol>
+          <li class="fft-item">The policy gradient theorem says we can estimate $\nabla J(\boldsymbol{\theta})$
             without differentiating through the state distribution $d_\pi(s)$. But changing
             $\boldsymbol{\theta}$ clearly changes which states are visited. Intuitively, why
             doesn't this matter? And in what sense does $d_\pi(s)$ "show up" anyway —
@@ -726,14 +805,15 @@
                 that $d_\pi$ changes with $\theta$ produces a second-order effect; the dominant
                 (first-order) effect comes from changing how likely each action is, not from
                 changing which states are visited.
-                <br/><br/>
+                <br><br>
                 $d_\pi$ "shows up" as the sampling distribution: when we run the agent and collect
                 trajectories, the states we visit are automatically distributed according to $d_\pi$.
                 So we're estimating the expectation over $d_\pi$ by Monte Carlo, just not
                 differentiating through it.
               </div>
-</li>
-<li class="fft-item">PPO clips the policy ratio $\pi_\text{new}/\pi_\text{old}$ to $[1-\varepsilon, 1+\varepsilon]$.
+            
+          </li>
+          <li class="fft-item">PPO clips the policy ratio $\pi_\text{new}/\pi_\text{old}$ to $[1-\varepsilon, 1+\varepsilon]$.
             Suppose a particular transition had a very large estimated advantage $A_t = 10$.
             Without clipping, the update would be large and might overshoot. With clipping
             ($\varepsilon = 0.2$), the ratio is capped at 1.2. Trace through what this means
@@ -742,20 +822,21 @@
                           <div class="fft-answer">
                 Without clipping: objective contribution from this transition is $r_t(\theta) A_t$.
                 Gradient w.r.t. $\theta$ is large — potentially catastrophically so when $A_t = 10$.
-                <br/><br/>
-                With clipping: when $r_t &gt; 1.2$ (policy already moved in the right direction),
+                <br><br>
+                With clipping: when $r_t > 1.2$ (policy already moved in the right direction),
                 the gradient of the clipped objective is zero — further increasing the probability
                 of $A_t$ brings no additional gradient signal. This prevents the single step from
                 overshooting to near-deterministic policies.
-                <br/><br/>
+                <br><br>
                 Repeated steps: PPO runs multiple gradient steps on the same batch of data. Each
                 step is limited to a ratio in $[0.8, 1.2]$. After a step, the ratio is recalculated
                 from the new $\theta$ — so the constraint applies fresh each time. Accumulating
                 multiple small moves can achieve the same total policy change as one large step,
                 but each individual step avoids the instability of a large gradient magnitude.
               </div>
-</li>
-<li class="fft-item">Actor-critic uses the TD error $\delta_t$ as the advantage estimate. But the TD
+            
+          </li>
+          <li class="fft-item">Actor-critic uses the TD error $\delta_t$ as the advantage estimate. But the TD
             error is an estimate of the advantage only when the critic is accurate. Early in
             training, the critic is poor, so $\delta_t$ is a noisy and biased signal for the actor.
             How might you handle this? What would happen if you trained the critic for several
@@ -766,94 +847,105 @@
                 policy. As long as the actor doesn't move, those targets are stationary and more
                 epochs improve the critic. But if the actor then makes a large update, the critic's
                 learned values are immediately stale — no longer accurate for the new policy.
-                <br/><br/>
+                <br><br>
                 PPO's approach: collect data, run multiple (3–10) gradient steps on both critic
                 and actor from the same batch, but constrain the actor to stay close to the data
                 collection policy (via clipping). The constraint prevents the "stale critic" problem
                 by limiting how far the actor moves per batch.
-                <br/><br/>
+                <br><br>
                 More generally: the critic bootstrapping bias problem is fundamental to AC methods.
                 One practical mitigation is to use a larger $n$-step return for the advantage
                 estimate — more observed reward steps reduce the reliance on the (inaccurate)
                 critic's value estimate.
               </div>
-</li>
-</ol>
-</div>
-<!-- ── Common pitfalls ─────────────────────────────────────── -->
-<div class="section-head" id="pitfalls">Common pitfalls</div>
-<div class="pitfalls-block">
-<div class="pitfalls-title">Mistakes worth knowing about in advance</div>
-<ul>
-<li><span class="pitfall-name">Using reward directly instead of return.</span>
+            
+          </li>
+        </ol>
+      </div>
+
+      <!-- ── Common pitfalls ─────────────────────────────────────── -->
+      <div class="section-head" id="pitfalls">Common pitfalls</div>
+
+      <div class="pitfalls-block">
+        <div class="pitfalls-title">Mistakes worth knowing about in advance</div>
+        <ul>
+          <li><span class="pitfall-name">Using reward directly instead of return.</span>
             The REINFORCE update uses $G_t$ (the discounted return from $t$ onward), not just $R_{t+1}$.
             Using only the immediate reward as the gradient weight produces a biased estimate —
             it ignores the long-term consequences of the action at time $t$.
             Compute returns backward from the end of the episode.</li>
-<li><span class="pitfall-name">Normalizing returns incorrectly.</span>
+          <li><span class="pitfall-name">Normalizing returns incorrectly.</span>
             A common trick is to normalize returns within a batch: subtract the mean and divide
             by the standard deviation. This is a form of adaptive baseline and helps with training
             stability. However, normalizing across different episodes (rather than within a batch)
             can introduce bias — be careful about exactly what is being normalized.</li>
-<li><span class="pitfall-name">Expecting policy gradients to work without a baseline in deep RL.</span>
+          <li><span class="pitfall-name">Expecting policy gradients to work without a baseline in deep RL.</span>
             The return $G_t$ for a neural network policy on a real task might be in the range
             $[0, 1000]$, all positive. Every gradient step would increase the probability of
             whatever actions happened to be taken, regardless of whether they were above or below
             average. This leads to slow learning and instability. A baseline (or normalized returns)
             is essentially mandatory for practical policy gradient training.</li>
-<li><span class="pitfall-name">Confusing on-policy and off-policy in policy gradient context.</span>
+          <li><span class="pitfall-name">Confusing on-policy and off-policy in policy gradient context.</span>
             REINFORCE and actor-critic (in their basic forms) are on-policy: data must be collected
             under the current policy $\pi_{\boldsymbol{\theta}}$. Old data cannot be reused without
             importance sampling corrections. Experience replay (as used in DQN) does not straightforwardly
             apply to policy gradient methods — this is why REINFORCE can be much less sample-efficient
             than Q-learning. PPO and off-policy actor-critic variants address this limitation.</li>
-</ul>
-</div>
-<!-- ── Connects to ──────────────────────────────────────────── -->
-<div class="connects-to">
-<div class="connects-to-label">Connects to</div>
-<ul>
-<li><strong>Probability Theory · Expectation &amp; log-derivative</strong> — The core algebraic
+        </ul>
+      </div>
+
+      <!-- ── Connects to ──────────────────────────────────────────── -->
+      <div class="connects-to">
+        <div class="connects-to-label">Connects to</div>
+        <ul>
+          <li><strong>Probability Theory · Expectation &amp; log-derivative</strong> — The core algebraic
             trick in the policy gradient theorem — the identity $\nabla\pi = \pi\cdot\nabla\ln\pi$
             — is an instance of the REINFORCE/score function estimator from statistics. It appears
             in variational inference, likelihood-ratio methods, and the theory of stochastic gradient
             estimators. Understanding it from the probability side gives a unified view of why
             this trick works so broadly.</li>
-<li><strong>Optimization · First-order methods</strong> — Policy gradient methods are
+          <li><strong>Optimization · First-order methods</strong> — Policy gradient methods are
             gradient ascent in a high-dimensional, non-convex landscape. PPO's clipping is related
             to trust-region methods (TRPO); natural policy gradients use the Fisher information
             matrix as a preconditioner, turning gradient ascent into natural gradient ascent on the
             policy manifold. These connections make RL optimization a rich specialization of
             general optimization theory.</li>
-<li><strong>RL · Bandits</strong> (Lesson 2) — The gradient bandit algorithm covered
+          <li><strong>RL · Bandits</strong> (Lesson 2) — The gradient bandit algorithm covered
             in Lesson 2 is exactly REINFORCE applied to the single-state case. Every concept here
             — softmax policy, preference update, baseline subtraction — was already present in
             miniature in that lesson. Coming back to bandits after this lesson reveals the
             connection in full generality.</li>
-</ul>
-</div>
-<hr class="lesson-rule"/>
-<div class="section-head">References</div>
-<ul class="prose" style="padding-left:1.4em;font-size:13.5px;color:#5a6a7a;">
-<li style="margin-bottom:6px;">R. S. Sutton &amp; A. G. Barto, <em>Reinforcement Learning: An Introduction</em>
+        </ul>
+      </div>
+
+      <hr class="lesson-rule">
+
+      <div class="section-head">References</div>
+      <ul class="prose" style="padding-left:1.4em;font-size:13.5px;color:#5a6a7a;">
+        <li style="margin-bottom:6px;">R. S. Sutton &amp; A. G. Barto, <em>Reinforcement Learning: An Introduction</em>
           (2nd ed.) — Chapter 13: policy gradient theorem (13.2), REINFORCE (13.3), baseline (13.4),
           actor-critic (13.5), continuous action spaces (13.7). Chapter 13 is unusually concise
           and self-contained; read it end-to-end.</li>
-<li style="margin-bottom:6px;">J. Schulman et al. (2017), "Proximal Policy Optimization
+        <li style="margin-bottom:6px;">J. Schulman et al. (2017), "Proximal Policy Optimization
           Algorithms" — the PPO paper. Very readable (~8 pages); shows how minor modifications
           to REINFORCE + baseline give a robust, production-quality algorithm.</li>
-<li>R. S. Sutton et al. (2000), "Policy gradient methods for reinforcement learning
+        <li>R. S. Sutton et al. (2000), "Policy gradient methods for reinforcement learning
           with function approximation" — the proof of the policy gradient theorem with
           function approximation.</li>
-</ul>
-<div id="lesson-nav"></div>
-</div><!-- /main -->
-</div><!-- /page-body -->
+      </ul>
+
+      <div id="lesson-nav"></div>
+
+    </div><!-- /main -->
+
+  </div><!-- /page-body -->
 </div><!-- /site-wrap -->
+
 <footer class="site-footer">
-<span>elee03.github.io/notes</span>
-<span>Est. MMXXVI</span>
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
 </footer>
-<script src="../notes-nav.js"></script>
+
+    <script src="../notes-nav.js"></script>
 </body>
 </html>
