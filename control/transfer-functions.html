@@ -1,17 +1,18 @@
 ﻿<!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dynamical Systems &amp; Transfer Functions — Field Notes</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../style.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
-  <script>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Dynamical Systems &amp; Transfer Functions — Field Notes</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="../style.css" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" rel="stylesheet"/>
+<script defer="" src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer="" src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<script>
     document.addEventListener('DOMContentLoaded', function() {
       renderMathInElement(document.body, {
         delimiters: [
@@ -22,7 +23,7 @@
       });
     });
   </script>
-  <style>
+<style>
     .widget-card {
       background: #f0f4f7;
       border: 1px solid #c0d0dc;
@@ -88,65 +89,56 @@
   </style>
 </head>
 <body>
-
 <div class="topbar">
-  <div class="topbar-inner">
-    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
-    <span class="topbar-sep">·</span>
-    <a href="../references.html" class="topbar-link">Library</a>
-    <span class="topbar-sep">·</span>
-    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
-  </div>
+<div class="topbar-inner">
+<a class="topbar-brand" href="../index.html">Field <span class="accent">Notes</span></a>
+<span class="topbar-sep">·</span>
+<a class="topbar-link" href="../references.html">Library</a>
+<span class="topbar-sep">·</span>
+<a class="topbar-back" href="https://elee03.github.io">elee03.github.io ↗</a>
 </div>
-
+</div>
 <div class="site-wrap">
-  <div class="page-body">
-
-    <div class="sidebar">
-      <div id="cluster-nav" data-cluster="control" data-current="transfer-functions.html"></div>
-            <hr class="sidebar-rule">
-
-      <div class="nav-section">
-        <div class="nav-label">On this page</div>
-        <a href="#from-odes" class="nav-item">ODEs to transfer functions</a>
-        <a href="#poles-zeros" class="nav-item">Poles and zeros</a>
-        <a href="#first-order" class="nav-item">First-order systems</a>
-        <a href="#system-type" class="nav-item">System type &amp; steady-state error</a>
-        <a href="#examples" class="nav-item">Worked examples</a>
-        <a href="#interactive" class="nav-item">Interactive demo</a>
-        <a href="#food-for-thought" class="nav-item">Food for thought</a>
-        <a href="#pitfalls" class="nav-item">Common pitfalls</a>
-      </div>
-    </div>
-
-    <div class="main">
-
-      <div class="breadcrumb">
-        <a href="../index.html">Field Notes</a>
-        <span class="sep">›</span>
-        <a href="index.html">Control Theory</a>
-        <span class="sep">›</span>
-        <span>2 · Dynamical Systems &amp; Transfer Functions</span>
-      </div>
-
-      <div class="lesson-title">2 · Dynamical Systems &amp; Transfer Functions</div>
-      <div class="lesson-meta">ODEs · Laplace Transform · Poles &amp; Zeros · First-Order Response · System Type</div>
-
-      <!-- ── Notation recap ──────────────────────────────────────── -->
-      <div class="notation-box" style="background:#f0f6fa;border-left:3px solid #3a8abf;padding:14px 18px;border-radius:0 4px 4px 0;margin:20px 0 24px;">
-        <div style="font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#1a5a8a;margin-bottom:10px;">Notation used in this lesson</div>
-        <table style="font-size:13px;border-collapse:collapse;width:100%;">
-          <tr><td style="padding:3px 8px 3px 0;color:#3a5a78;font-family:'IBM Plex Mono',monospace;white-space:nowrap;">$G(s)$</td><td style="padding:3px 0;color:#2a3a4a;">Transfer function (Laplace-domain input-output map, zero ICs)</td></tr>
-          <tr><td style="padding:3px 8px 3px 0;color:#3a5a78;font-family:'IBM Plex Mono',monospace;white-space:nowrap;">$Y(s),\,U(s)$</td><td style="padding:3px 0;color:#2a3a4a;">Laplace transforms of output $y(t)$ and input $u(t)$</td></tr>
-          <tr><td style="padding:3px 8px 3px 0;color:#3a5a78;font-family:'IBM Plex Mono',monospace;white-space:nowrap;">$\tau$</td><td style="padding:3px 0;color:#2a3a4a;">Time constant (seconds); governs speed of first-order response</td></tr>
-          <tr><td style="padding:3px 8px 3px 0;color:#3a5a78;font-family:'IBM Plex Mono',monospace;white-space:nowrap;">$K$</td><td style="padding:3px 0;color:#2a3a4a;">DC gain: $K = G(0)$ — steady-state output for unit step input</td></tr>
-          <tr><td style="padding:3px 8px 3px 0;color:#3a5a78;font-family:'IBM Plex Mono',monospace;white-space:nowrap;">$p_i,\,z_i$</td><td style="padding:3px 0;color:#2a3a4a;">Poles (roots of denominator) and zeros (roots of numerator)</td></tr>
-          <tr><td style="padding:3px 8px 3px 0;color:#3a5a78;font-family:'IBM Plex Mono',monospace;white-space:nowrap;">$e_{ss}$</td><td style="padding:3px 0;color:#2a3a4a;">Steady-state error; depends on system type and input type</td></tr>
-          <tr><td style="padding:3px 8px 3px 0;color:#3a5a78;font-family:'IBM Plex Mono',monospace;white-space:nowrap;">$K_p,\,K_v,\,K_a$</td><td style="padding:3px 0;color:#2a3a4a;">Position, velocity, and acceleration error constants</td></tr>
-        </table>
-      </div>
-
-      <div class="prose">
+<div class="page-body">
+<div class="sidebar">
+<div data-cluster="control" data-current="transfer-functions.html" id="cluster-nav"></div>
+<hr class="sidebar-rule"/>
+<div class="nav-section">
+<div class="nav-label">On this page</div>
+<a class="nav-item" href="#from-odes">ODEs to transfer functions</a>
+<a class="nav-item" href="#poles-zeros">Poles and zeros</a>
+<a class="nav-item" href="#first-order">First-order systems</a>
+<a class="nav-item" href="#system-type">System type &amp; steady-state error</a>
+<a class="nav-item" href="#examples">Worked examples</a>
+<a class="nav-item" href="#interactive">Interactive demo</a>
+<a class="nav-item" href="#food-for-thought">Food for thought</a>
+<a class="nav-item" href="#pitfalls">Common pitfalls</a>
+</div>
+</div>
+<div class="main">
+<div class="breadcrumb">
+<a href="../index.html">Field Notes</a>
+<span class="sep">›</span>
+<a href="index.html">Control Theory</a>
+<span class="sep">›</span>
+<span>2 · Dynamical Systems &amp; Transfer Functions</span>
+</div>
+<div class="lesson-title">2 · Dynamical Systems &amp; Transfer Functions</div>
+<div class="lesson-meta">ODEs · Laplace Transform · Poles &amp; Zeros · First-Order Response · System Type</div>
+<!-- ── Notation recap ──────────────────────────────────────── -->
+<div class="notation-box" style="background:#f0f6fa;border-left:3px solid #3a8abf;padding:14px 18px;border-radius:0 4px 4px 0;margin:20px 0 24px;">
+<div style="font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#1a5a8a;margin-bottom:10px;">Notation used in this lesson</div>
+<table style="font-size:13px;border-collapse:collapse;width:100%;">
+<tr><td style="padding:3px 8px 3px 0;color:#3a5a78;font-family:'IBM Plex Mono',monospace;white-space:nowrap;">$G(s)$</td><td style="padding:3px 0;color:#2a3a4a;">Transfer function (Laplace-domain input-output map, zero ICs)</td></tr>
+<tr><td style="padding:3px 8px 3px 0;color:#3a5a78;font-family:'IBM Plex Mono',monospace;white-space:nowrap;">$Y(s),\,U(s)$</td><td style="padding:3px 0;color:#2a3a4a;">Laplace transforms of output $y(t)$ and input $u(t)$</td></tr>
+<tr><td style="padding:3px 8px 3px 0;color:#3a5a78;font-family:'IBM Plex Mono',monospace;white-space:nowrap;">$\tau$</td><td style="padding:3px 0;color:#2a3a4a;">Time constant (seconds); governs speed of first-order response</td></tr>
+<tr><td style="padding:3px 8px 3px 0;color:#3a5a78;font-family:'IBM Plex Mono',monospace;white-space:nowrap;">$K$</td><td style="padding:3px 0;color:#2a3a4a;">DC gain: $K = G(0)$ — steady-state output for unit step input</td></tr>
+<tr><td style="padding:3px 8px 3px 0;color:#3a5a78;font-family:'IBM Plex Mono',monospace;white-space:nowrap;">$p_i,\,z_i$</td><td style="padding:3px 0;color:#2a3a4a;">Poles (roots of denominator) and zeros (roots of numerator)</td></tr>
+<tr><td style="padding:3px 8px 3px 0;color:#3a5a78;font-family:'IBM Plex Mono',monospace;white-space:nowrap;">$e_{ss}$</td><td style="padding:3px 0;color:#2a3a4a;">Steady-state error; depends on system type and input type</td></tr>
+<tr><td style="padding:3px 8px 3px 0;color:#3a5a78;font-family:'IBM Plex Mono',monospace;white-space:nowrap;">$K_p,\,K_v,\,K_a$</td><td style="padding:3px 0;color:#2a3a4a;">Position, velocity, and acceleration error constants</td></tr>
+</table>
+</div>
+<div class="prose">
         Every physical system around you — a motor, an RC circuit, a heated room — is governed
         by differential equations. But differential equations are cumbersome to manipulate:
         cascading two systems means convolving two impulse responses, a painful operation in time.
@@ -155,18 +147,16 @@
         — is the single most important object in classical control theory. Everything in this
         cluster, from Bode plots to root locus to PID design, is manipulation of transfer functions.
       </div>
-
-      <!-- ── From ODEs to TFs ──────────────────────────────────────── -->
-      <div class="section-head" id="from-odes">From differential equations to transfer functions</div>
-
-      <div class="prose">
+<!-- ── From ODEs to TFs ──────────────────────────────────────── -->
+<div class="section-head" id="from-odes">From differential equations to transfer functions</div>
+<div class="prose">
         Consider a simple first-order linear system modeled by the ODE
       </div>
 
       $$\tau \dot{y}(t) + y(t) = K\, u(t)$$
 
       <div class="prose">
-        where $y$ is the output, $u$ is the input, $\tau > 0$ is the time constant, and $K$ is
+        where $y$ is the output, $u$ is the input, $\tau &gt; 0$ is the time constant, and $K$ is
         the DC gain. Taking the Laplace transform of both sides (with zero initial conditions):
       </div>
 
@@ -196,73 +186,68 @@
         realizable system (the output can't respond before the input), we require $m \le n$
         (the transfer function is <em>proper</em>).
       </div>
-
-      <div class="callout">
-        <strong>Why zero initial conditions?</strong> The transfer function is defined for the
+<div class="callout">
+<strong>Why zero initial conditions?</strong> The transfer function is defined for the
         <em>forced response</em> only. If initial conditions are nonzero, the full response is
         $Y(s) = G(s)U(s) + (\text{terms from ICs})$. We keep the two parts separate:
         $G(s)U(s)$ handles inputs; the IC terms are handled by partial fractions and the
         homogeneous solution. Control design only concerns the forced response, so the transfer
         function is what matters.
       </div>
-
-      <div class="prose">
-        <strong>Useful Laplace pairs</strong> (you need these constantly):
+<div class="prose">
+<strong>Useful Laplace pairs</strong> (you need these constantly):
       </div>
-
-      <div style="overflow-x:auto;margin:16px 0 24px;">
-        <table style="width:100%;border-collapse:collapse;font-size:13.5px;">
-          <thead>
-            <tr style="background:#f0f4f7;">
-              <th style="padding:8px 14px;text-align:left;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;">Time domain $f(t)$, $t \ge 0$</th>
-              <th style="padding:8px 14px;text-align:left;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;">Laplace domain $F(s)$</th>
-              <th style="padding:8px 14px;text-align:left;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;">Notes</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">$\delta(t)$ (impulse)</td>
-              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">$1$</td>
-              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Unit impulse</td>
-            </tr>
-            <tr style="background:#f8fafb;">
-              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">$\mathbf{1}(t)$ (unit step)</td>
-              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">$\dfrac{1}{s}$</td>
-              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Most common test input</td>
-            </tr>
-            <tr>
-              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">$t$ (ramp)</td>
-              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">$\dfrac{1}{s^2}$</td>
-              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Position tracking, robot paths</td>
-            </tr>
-            <tr style="background:#f8fafb;">
-              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">$e^{-at}$</td>
-              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">$\dfrac{1}{s+a}$</td>
-              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Decaying exponential; stable if $a > 0$</td>
-            </tr>
-            <tr>
-              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">$\sin(\omega t)$</td>
-              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">$\dfrac{\omega}{s^2+\omega^2}$</td>
-              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Pure oscillation (no decay)</td>
-            </tr>
-            <tr style="background:#f8fafb;">
-              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">$e^{-at}\sin(\omega t)$</td>
-              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">$\dfrac{\omega}{(s+a)^2+\omega^2}$</td>
-              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Damped oscillation — second-order step response</td>
-            </tr>
-            <tr>
-              <td style="padding:8px 14px;">$\dot{f}(t)$ (derivative)</td>
-              <td style="padding:8px 14px;">$s F(s) - f(0^-)$</td>
-              <td style="padding:8px 14px;">Key rule: $s \leftrightarrow \frac{d}{dt}$</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- ── Poles and zeros ──────────────────────────────────────── -->
-      <div class="section-head" id="poles-zeros">Poles, zeros, and what they tell you</div>
-
-      <div class="prose">
+<div style="overflow-x:auto;margin:16px 0 24px;">
+<table style="width:100%;border-collapse:collapse;font-size:13.5px;">
+<thead>
+<tr style="background:#f0f4f7;">
+<th style="padding:8px 14px;text-align:left;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;">Time domain $f(t)$, $t \ge 0$</th>
+<th style="padding:8px 14px;text-align:left;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;">Laplace domain $F(s)$</th>
+<th style="padding:8px 14px;text-align:left;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;">Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">$\delta(t)$ (impulse)</td>
+<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">$1$</td>
+<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Unit impulse</td>
+</tr>
+<tr style="background:#f8fafb;">
+<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">$\mathbf{1}(t)$ (unit step)</td>
+<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">$\dfrac{1}{s}$</td>
+<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Most common test input</td>
+</tr>
+<tr>
+<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">$t$ (ramp)</td>
+<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">$\dfrac{1}{s^2}$</td>
+<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Position tracking, robot paths</td>
+</tr>
+<tr style="background:#f8fafb;">
+<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">$e^{-at}$</td>
+<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">$\dfrac{1}{s+a}$</td>
+<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Decaying exponential; stable if $a &gt; 0$</td>
+</tr>
+<tr>
+<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">$\sin(\omega t)$</td>
+<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">$\dfrac{\omega}{s^2+\omega^2}$</td>
+<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Pure oscillation (no decay)</td>
+</tr>
+<tr style="background:#f8fafb;">
+<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">$e^{-at}\sin(\omega t)$</td>
+<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">$\dfrac{\omega}{(s+a)^2+\omega^2}$</td>
+<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Damped oscillation — second-order step response</td>
+</tr>
+<tr>
+<td style="padding:8px 14px;">$\dot{f}(t)$ (derivative)</td>
+<td style="padding:8px 14px;">$s F(s) - f(0^-)$</td>
+<td style="padding:8px 14px;">Key rule: $s \leftrightarrow \frac{d}{dt}$</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- ── Poles and zeros ──────────────────────────────────────── -->
+<div class="section-head" id="poles-zeros">Poles, zeros, and what they tell you</div>
+<div class="prose">
         Factor both numerator and denominator of $G(s) = N(s)/D(s)$:
       </div>
 
@@ -270,121 +255,114 @@
                         {(s - p_1)(s - p_2)\cdots(s - p_n)}$$
 
       <ul class="prose" style="padding-left:1.4em;">
-        <li style="margin-bottom:8px;"><strong>Poles</strong> $p_i$ are the roots of $D(s) = 0$.
+<li style="margin-bottom:8px;"><strong>Poles</strong> $p_i$ are the roots of $D(s) = 0$.
           They are the values of $s$ at which $|G(s)| \to \infty$.
           Poles determine the <em>natural modes</em> of the system — what the system does with no
           input after a perturbation.</li>
-        <li style="margin-bottom:8px;"><strong>Zeros</strong> $z_i$ are the roots of $N(s) = 0$.
+<li style="margin-bottom:8px;"><strong>Zeros</strong> $z_i$ are the roots of $N(s) = 0$.
           They are the values of $s$ at which $G(s) = 0$ exactly — the system blocks sinusoidal
           inputs at those frequencies.</li>
-        <li style="margin-bottom:8px;"><strong>$K_0$</strong> is the <em>gain</em> (or zero-frequency
+<li style="margin-bottom:8px;"><strong>$K_0$</strong> is the <em>gain</em> (or zero-frequency
           scaling factor). Not the same as the DC gain unless you evaluate at $s=0$.</li>
-      </ul>
-
-      <div class="prose">
+</ul>
+<div class="prose">
         The <strong>pole locations</strong> in the complex $s$-plane tell you everything about
         stability and transient behavior:
       </div>
-
-      <!-- SVG: s-plane diagram showing stable/unstable regions and pole types -->
-      <svg viewBox="0 0 500 280" style="width:100%;max-width:520px;display:block;margin:18px auto 10px;font-family:'IBM Plex Sans',sans-serif;">
-        <defs>
-          <marker id="axarr" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
-            <path d="M0,0 L0,7 L7,3.5 z" fill="#6a8a9a"/>
-          </marker>
-        </defs>
-        <!-- Background regions -->
-        <!-- LHP: stable -->
-        <rect x="30" y="20" width="210" height="240" fill="#f0f7f0" rx="2"/>
-        <!-- RHP: unstable -->
-        <rect x="240" y="20" width="240" height="240" fill="#fdf0f0" rx="2"/>
-        <!-- Region labels -->
-        <text x="75" y="42" font-size="11" fill="#4a7a4a" font-family="IBM Plex Sans,sans-serif" font-weight="600">LEFT HALF-PLANE</text>
-        <text x="75" y="56" font-size="10" fill="#4a7a4a" font-family="IBM Plex Sans,sans-serif">Stable (Re(p) &lt; 0)</text>
-        <text x="300" y="42" font-size="11" fill="#8a3a3a" font-family="IBM Plex Sans,sans-serif" font-weight="600">RIGHT HALF-PLANE</text>
-        <text x="300" y="56" font-size="10" fill="#8a3a3a" font-family="IBM Plex Sans,sans-serif">Unstable (Re(p) &gt; 0)</text>
-        <!-- Imaginary axis -->
-        <line x1="240" y1="10" x2="240" y2="265" stroke="#6a8a9a" stroke-width="1.5" marker-end="url(#axarr)"/>
-        <text x="244" y="14" font-size="11" fill="#5a7a8a">j&#x3c9;</text>
-        <!-- Real axis -->
-        <line x1="20" y1="140" x2="480" y2="140" stroke="#6a8a9a" stroke-width="1.5" marker-end="url(#axarr)"/>
-        <text x="475" y="154" font-size="11" fill="#5a7a8a">&#x3c3;</text>
-        <!-- Tick marks -->
-        <line x1="120" y1="136" x2="120" y2="144" stroke="#6a8a9a" stroke-width="1"/>
-        <text x="120" y="156" text-anchor="middle" font-size="10" fill="#7a9aaa">-2</text>
-        <line x1="180" y1="136" x2="180" y2="144" stroke="#6a8a9a" stroke-width="1"/>
-        <text x="180" y="156" text-anchor="middle" font-size="10" fill="#7a9aaa">-1</text>
-        <line x1="300" y1="136" x2="300" y2="144" stroke="#6a8a9a" stroke-width="1"/>
-        <text x="300" y="156" text-anchor="middle" font-size="10" fill="#7a9aaa">1</text>
-        <!-- Poles with annotations -->
-        <!-- Real stable pole at -2 -->
-        <text x="120" y="145" text-anchor="middle" font-size="16" fill="#2a6a2a">&#x00D7;</text>
-        <text x="98" y="132" font-size="10" fill="#2a6a2a" font-family="IBM Plex Mono,sans-serif">p=-2</text>
-        <text x="75" y="175" font-size="10" fill="#2a6a2a" font-family="IBM Plex Sans,sans-serif">fast decay</text>
-        <text x="75" y="188" font-size="10" fill="#2a6a2a" font-family="IBM Plex Mono,sans-serif">e^{-2t}</text>
-        <!-- Complex stable pole pair at -1±2j -->
-        <text x="180" y="85" text-anchor="middle" font-size="16" fill="#2a6a2a">&#x00D7;</text>
-        <text x="152" y="78" font-size="10" fill="#2a6a2a" font-family="IBM Plex Mono,sans-serif">p=-1+2j</text>
-        <text x="180" y="200" text-anchor="middle" font-size="16" fill="#2a6a2a">&#x00D7;</text>
-        <text x="150" y="218" font-size="10" fill="#2a6a2a" font-family="IBM Plex Mono,sans-serif">p=-1-2j</text>
-        <text x="62" y="108" font-size="10" fill="#2a6a2a" font-family="IBM Plex Sans,sans-serif">oscillatory decay</text>
-        <text x="62" y="121" font-size="10" fill="#2a6a2a" font-family="IBM Plex Mono,sans-serif">e^{-t}sin(2t)</text>
-        <!-- Pole on imaginary axis: marginally stable -->
-        <text x="240" y="95" text-anchor="middle" font-size="16" fill="#c07030">&#x00D7;</text>
-        <text x="248" y="90" font-size="10" fill="#c07030" font-family="IBM Plex Mono,sans-serif">p=3j</text>
-        <text x="248" y="102" font-size="10" fill="#c07030">marginal: sin(3t)</text>
-        <!-- Real unstable pole at +1 -->
-        <text x="300" y="145" text-anchor="middle" font-size="16" fill="#c03030">&#x00D7;</text>
-        <text x="308" y="132" font-size="10" fill="#c03030" font-family="IBM Plex Mono,sans-serif">p=1</text>
-        <text x="308" y="165" font-size="10" fill="#c03030">unstable: e^t</text>
-        <!-- Axis label: jω values -->
-        <line x1="236" y1="80" x2="244" y2="80" stroke="#6a8a9a" stroke-width="1"/>
-        <text x="224" y="84" font-size="10" fill="#7a9aaa" text-anchor="end">3j</text>
-        <line x1="236" y1="200" x2="244" y2="200" stroke="#6a8a9a" stroke-width="1"/>
-        <text x="228" y="204" font-size="10" fill="#7a9aaa" text-anchor="end">-3j</text>
-      </svg>
-      <div style="text-align:center;font-size:11.5px;color:#7a8a9a;margin-top:4px;margin-bottom:20px;">
+<!-- SVG: s-plane diagram showing stable/unstable regions and pole types -->
+<svg style="width:100%;max-width:520px;display:block;margin:18px auto 10px;font-family:'IBM Plex Sans',sans-serif;" viewbox="0 0 500 280">
+<defs>
+<marker id="axarr" markerheight="7" markerwidth="7" orient="auto" refx="5" refy="3.5">
+<path d="M0,0 L0,7 L7,3.5 z" fill="#6a8a9a"></path>
+</marker>
+</defs>
+<!-- Background regions -->
+<!-- LHP: stable -->
+<rect fill="#f0f7f0" height="240" rx="2" width="210" x="30" y="20"></rect>
+<!-- RHP: unstable -->
+<rect fill="#fdf0f0" height="240" rx="2" width="240" x="240" y="20"></rect>
+<!-- Region labels -->
+<text fill="#4a7a4a" font-family="IBM Plex Sans,sans-serif" font-size="11" font-weight="600" x="75" y="42">LEFT HALF-PLANE</text>
+<text fill="#4a7a4a" font-family="IBM Plex Sans,sans-serif" font-size="10" x="75" y="56">Stable (Re(p) &lt; 0)</text>
+<text fill="#8a3a3a" font-family="IBM Plex Sans,sans-serif" font-size="11" font-weight="600" x="300" y="42">RIGHT HALF-PLANE</text>
+<text fill="#8a3a3a" font-family="IBM Plex Sans,sans-serif" font-size="10" x="300" y="56">Unstable (Re(p) &gt; 0)</text>
+<!-- Imaginary axis -->
+<line marker-end="url(#axarr)" stroke="#6a8a9a" stroke-width="1.5" x1="240" x2="240" y1="10" y2="265"></line>
+<text fill="#5a7a8a" font-size="11" x="244" y="14">jω</text>
+<!-- Real axis -->
+<line marker-end="url(#axarr)" stroke="#6a8a9a" stroke-width="1.5" x1="20" x2="480" y1="140" y2="140"></line>
+<text fill="#5a7a8a" font-size="11" x="475" y="154">σ</text>
+<!-- Tick marks -->
+<line stroke="#6a8a9a" stroke-width="1" x1="120" x2="120" y1="136" y2="144"></line>
+<text fill="#7a9aaa" font-size="10" text-anchor="middle" x="120" y="156">-2</text>
+<line stroke="#6a8a9a" stroke-width="1" x1="180" x2="180" y1="136" y2="144"></line>
+<text fill="#7a9aaa" font-size="10" text-anchor="middle" x="180" y="156">-1</text>
+<line stroke="#6a8a9a" stroke-width="1" x1="300" x2="300" y1="136" y2="144"></line>
+<text fill="#7a9aaa" font-size="10" text-anchor="middle" x="300" y="156">1</text>
+<!-- Poles with annotations -->
+<!-- Real stable pole at -2 -->
+<text fill="#2a6a2a" font-size="16" text-anchor="middle" x="120" y="145">×</text>
+<text fill="#2a6a2a" font-family="IBM Plex Mono,sans-serif" font-size="10" x="98" y="132">p=-2</text>
+<text fill="#2a6a2a" font-family="IBM Plex Sans,sans-serif" font-size="10" x="75" y="175">fast decay</text>
+<text fill="#2a6a2a" font-family="IBM Plex Mono,sans-serif" font-size="10" x="75" y="188">e^{-2t}</text>
+<!-- Complex stable pole pair at -1±2j -->
+<text fill="#2a6a2a" font-size="16" text-anchor="middle" x="180" y="85">×</text>
+<text fill="#2a6a2a" font-family="IBM Plex Mono,sans-serif" font-size="10" x="152" y="78">p=-1+2j</text>
+<text fill="#2a6a2a" font-size="16" text-anchor="middle" x="180" y="200">×</text>
+<text fill="#2a6a2a" font-family="IBM Plex Mono,sans-serif" font-size="10" x="150" y="218">p=-1-2j</text>
+<text fill="#2a6a2a" font-family="IBM Plex Sans,sans-serif" font-size="10" x="62" y="108">oscillatory decay</text>
+<text fill="#2a6a2a" font-family="IBM Plex Mono,sans-serif" font-size="10" x="62" y="121">e^{-t}sin(2t)</text>
+<!-- Pole on imaginary axis: marginally stable -->
+<text fill="#c07030" font-size="16" text-anchor="middle" x="240" y="95">×</text>
+<text fill="#c07030" font-family="IBM Plex Mono,sans-serif" font-size="10" x="248" y="90">p=3j</text>
+<text fill="#c07030" font-size="10" x="248" y="102">marginal: sin(3t)</text>
+<!-- Real unstable pole at +1 -->
+<text fill="#c03030" font-size="16" text-anchor="middle" x="300" y="145">×</text>
+<text fill="#c03030" font-family="IBM Plex Mono,sans-serif" font-size="10" x="308" y="132">p=1</text>
+<text fill="#c03030" font-size="10" x="308" y="165">unstable: e^t</text>
+<!-- Axis label: jω values -->
+<line stroke="#6a8a9a" stroke-width="1" x1="236" x2="244" y1="80" y2="80"></line>
+<text fill="#7a9aaa" font-size="10" text-anchor="end" x="224" y="84">3j</text>
+<line stroke="#6a8a9a" stroke-width="1" x1="236" x2="244" y1="200" y2="200"></line>
+<text fill="#7a9aaa" font-size="10" text-anchor="end" x="228" y="204">-3j</text>
+</svg>
+<div style="text-align:center;font-size:11.5px;color:#7a8a9a;margin-top:4px;margin-bottom:20px;">
         × = pole location. Left half-plane poles → decaying modes (stable). Imaginary axis → sustained oscillation. Right half-plane → growing (unstable).
       </div>
-
-      <div class="prose">
-        <strong>Reading poles:</strong>
-      </div>
-
-      <ul class="prose" style="padding-left:1.4em;">
-        <li style="margin-bottom:8px;"><strong>Real pole at $s = -a$ ($a > 0$):</strong> contributes
+<div class="prose">
+<strong>Reading poles:</strong>
+</div>
+<ul class="prose" style="padding-left:1.4em;">
+<li style="margin-bottom:8px;"><strong>Real pole at $s = -a$ ($a &gt; 0$):</strong> contributes
           a decaying exponential mode $e^{-at}$ to the time response. Faster decay as $|a|$
           increases. The time constant is $\tau = 1/a$.</li>
-        <li style="margin-bottom:8px;"><strong>Complex conjugate poles at $s = -\sigma \pm j\omega_d$
-          ($\sigma > 0$):</strong> contributes an oscillatory decaying mode $e^{-\sigma t}\sin(\omega_d t)$.
+<li style="margin-bottom:8px;"><strong>Complex conjugate poles at $s = -\sigma \pm j\omega_d$
+          ($\sigma &gt; 0$):</strong> contributes an oscillatory decaying mode $e^{-\sigma t}\sin(\omega_d t)$.
           The oscillation frequency is $\omega_d$; the decay rate is $\sigma$.</li>
-        <li style="margin-bottom:8px;"><strong>Poles on the imaginary axis ($\sigma = 0$):</strong>
+<li style="margin-bottom:8px;"><strong>Poles on the imaginary axis ($\sigma = 0$):</strong>
           marginally stable — sustained oscillation, neither decaying nor growing. Any perturbation
           oscillates forever.</li>
-        <li><strong>Poles in the right half-plane ($\sigma < 0$, i.e., positive real part):</strong>
+<li><strong>Poles in the right half-plane ($\sigma &lt; 0$, i.e., positive real part):</strong>
           unstable — the corresponding mode grows exponentially. Even a tiny perturbation diverges.</li>
-      </ul>
-
-      <div class="callout">
-        <strong>Dominant poles.</strong> In a system with multiple poles, the
+</ul>
+<div class="callout">
+<strong>Dominant poles.</strong> In a system with multiple poles, the
         <em>dominant poles</em> are the ones closest to the imaginary axis — they decay the
         slowest and therefore dominate the long-term transient behavior. Poles far to the left
         decay so quickly they barely affect the response. This is why a 10th-order system often
         "behaves like" a second-order system: the 8 fast poles die out in the first few
         milliseconds and the two dominant poles govern the rest.
       </div>
-
-      <!-- ── First-order systems ──────────────────────────────────── -->
-      <div class="section-head" id="first-order">First-order systems</div>
-
-      <div class="prose">
+<!-- ── First-order systems ──────────────────────────────────── -->
+<div class="section-head" id="first-order">First-order systems</div>
+<div class="prose">
         The prototypical first-order system is:
       </div>
 
       $$G(s) = \frac{K}{\tau s + 1} = \frac{K/\tau}{s + 1/\tau}$$
 
       <div class="prose">
-        One pole at $s = -1/\tau$ (stable for $\tau > 0$); no finite zeros. To find the step
+        One pole at $s = -1/\tau$ (stable for $\tau &gt; 0$); no finite zeros. To find the step
         response, apply a unit step input $U(s) = 1/s$:
       </div>
 
@@ -402,71 +380,65 @@
         This is the <strong>first-order step response</strong>. It starts at 0, rises toward the
         final value $K$, and never overshoots. Key time-domain characteristics:
       </div>
-
-      <div style="overflow-x:auto;margin:16px 0 24px;">
-        <table style="width:100%;border-collapse:collapse;font-size:13.5px;">
-          <thead>
-            <tr style="background:#f0f4f7;">
-              <th style="padding:8px 14px;text-align:left;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;">Characteristic</th>
-              <th style="padding:8px 14px;text-align:left;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;">Value</th>
-              <th style="padding:8px 14px;text-align:left;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;">Meaning</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;font-weight:500;">Time constant $\tau$</td>
-              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;font-family:'IBM Plex Mono',monospace;">$y(\tau) = K(1-e^{-1}) \approx 0.632\,K$</td>
-              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Reaches 63.2% of final value</td>
-            </tr>
-            <tr style="background:#f8fafb;">
-              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;font-weight:500;">Rise time $t_r$</td>
-              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;font-family:'IBM Plex Mono',monospace;">$\approx 2.2\tau$ (10%→90%)</td>
-              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">How fast the output rises</td>
-            </tr>
-            <tr>
-              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;font-weight:500;">Settling time $t_s$</td>
-              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;font-family:'IBM Plex Mono',monospace;">$\approx 4\tau$ (within 2%)</td>
-              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">When the response is essentially done</td>
-            </tr>
-            <tr style="background:#f8fafb;">
-              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;font-weight:500;">DC gain $K$</td>
-              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;font-family:'IBM Plex Mono',monospace;">$G(0) = K$</td>
-              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Final value for unit step</td>
-            </tr>
-            <tr>
-              <td style="padding:8px 14px;font-weight:500;">Overshoot</td>
-              <td style="padding:8px 14px;font-family:'IBM Plex Mono',monospace;">0%</td>
-              <td style="padding:8px 14px;">First-order systems never overshoot</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="prose">
+<div style="overflow-x:auto;margin:16px 0 24px;">
+<table style="width:100%;border-collapse:collapse;font-size:13.5px;">
+<thead>
+<tr style="background:#f0f4f7;">
+<th style="padding:8px 14px;text-align:left;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;">Characteristic</th>
+<th style="padding:8px 14px;text-align:left;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;">Value</th>
+<th style="padding:8px 14px;text-align:left;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;">Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;font-weight:500;">Time constant $\tau$</td>
+<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;font-family:'IBM Plex Mono',monospace;">$y(\tau) = K(1-e^{-1}) \approx 0.632\,K$</td>
+<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Reaches 63.2% of final value</td>
+</tr>
+<tr style="background:#f8fafb;">
+<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;font-weight:500;">Rise time $t_r$</td>
+<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;font-family:'IBM Plex Mono',monospace;">$\approx 2.2\tau$ (10%→90%)</td>
+<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">How fast the output rises</td>
+</tr>
+<tr>
+<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;font-weight:500;">Settling time $t_s$</td>
+<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;font-family:'IBM Plex Mono',monospace;">$\approx 4\tau$ (within 2%)</td>
+<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">When the response is essentially done</td>
+</tr>
+<tr style="background:#f8fafb;">
+<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;font-weight:500;">DC gain $K$</td>
+<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;font-family:'IBM Plex Mono',monospace;">$G(0) = K$</td>
+<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Final value for unit step</td>
+</tr>
+<tr>
+<td style="padding:8px 14px;font-weight:500;">Overshoot</td>
+<td style="padding:8px 14px;font-family:'IBM Plex Mono',monospace;">0%</td>
+<td style="padding:8px 14px;">First-order systems never overshoot</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="prose">
         The initial slope is $\dot{y}(0^+) = K/\tau$. A tangent line from the origin with this
         slope reaches the final value exactly at $t = \tau$ — a useful graphical check for reading
         $\tau$ off an experimental step response.
       </div>
-
-      <div class="prose">
-        <strong>Physical examples of first-order systems:</strong>
-      </div>
-
-      <ul class="prose" style="padding-left:1.4em;">
-        <li style="margin-bottom:6px;"><strong>RC circuit:</strong> $\tau = RC$, $K = 1$.
+<div class="prose">
+<strong>Physical examples of first-order systems:</strong>
+</div>
+<ul class="prose" style="padding-left:1.4em;">
+<li style="margin-bottom:6px;"><strong>RC circuit:</strong> $\tau = RC$, $K = 1$.
           Output voltage $V_C(s)/V_{in}(s) = 1/(RCs+1)$.</li>
-        <li style="margin-bottom:6px;"><strong>Thermal system (room + heater):</strong>
+<li style="margin-bottom:6px;"><strong>Thermal system (room + heater):</strong>
           $\tau = $ thermal capacitance / thermal conductance, $K = $ steady-state temperature
           rise per unit power input.</li>
-        <li><strong>DC motor (torque-to-speed, electrical lag neglected):</strong>
+<li><strong>DC motor (torque-to-speed, electrical lag neglected):</strong>
           $\omega(s)/V(s) = K/(Js + b)$ where $J$ is moment of inertia and $b$ is
           viscous friction — same form with $\tau = J/b$, $K_{\text{dc}} = K/b$.</li>
-      </ul>
-
-      <!-- ── System type ───────────────────────────────────────────── -->
-      <div class="section-head" id="system-type">System type and steady-state error</div>
-
-      <div class="prose">
+</ul>
+<!-- ── System type ───────────────────────────────────────────── -->
+<div class="section-head" id="system-type">System type and steady-state error</div>
+<div class="prose">
         Closed-loop performance depends critically on how many <em>integrators</em> are in the
         open-loop transfer function $L(s) = C(s)P(s)$. Write:
       </div>
@@ -480,41 +452,39 @@
         polynomial inputs, at the cost of reduced phase margin (integrators contribute $-90°$
         of phase each).
       </div>
-
-      <div style="overflow-x:auto;margin:16px 0 24px;">
-        <table style="width:100%;border-collapse:collapse;font-size:13.5px;">
-          <thead>
-            <tr style="background:#f0f4f7;">
-              <th style="padding:8px 14px;text-align:left;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;">System Type $N$</th>
-              <th style="padding:8px 14px;text-align:left;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;">Step error $e_{ss}$</th>
-              <th style="padding:8px 14px;text-align:left;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;">Ramp error $e_{ss}$</th>
-              <th style="padding:8px 14px;text-align:left;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;">Example plant</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;font-weight:500;">Type 0</td>
-              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;font-family:'IBM Plex Mono',monospace;">$\dfrac{1}{1+K_p}$</td>
-              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;font-family:'IBM Plex Mono',monospace;">$\infty$</td>
-              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Thermal system, RC circuit</td>
-            </tr>
-            <tr style="background:#f8fafb;">
-              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;font-weight:500;">Type 1</td>
-              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;font-family:'IBM Plex Mono',monospace;">$0$</td>
-              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;font-family:'IBM Plex Mono',monospace;">$\dfrac{1}{K_v}$</td>
-              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Position servo, integrating plant</td>
-            </tr>
-            <tr>
-              <td style="padding:8px 14px;font-weight:500;">Type 2</td>
-              <td style="padding:8px 14px;font-family:'IBM Plex Mono',monospace;">$0$</td>
-              <td style="padding:8px 14px;font-family:'IBM Plex Mono',monospace;">$0$</td>
-              <td style="padding:8px 14px;">Double integrator (robotic arm acceleration)</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="prose">
+<div style="overflow-x:auto;margin:16px 0 24px;">
+<table style="width:100%;border-collapse:collapse;font-size:13.5px;">
+<thead>
+<tr style="background:#f0f4f7;">
+<th style="padding:8px 14px;text-align:left;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;">System Type $N$</th>
+<th style="padding:8px 14px;text-align:left;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;">Step error $e_{ss}$</th>
+<th style="padding:8px 14px;text-align:left;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;">Ramp error $e_{ss}$</th>
+<th style="padding:8px 14px;text-align:left;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;">Example plant</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;font-weight:500;">Type 0</td>
+<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;font-family:'IBM Plex Mono',monospace;">$\dfrac{1}{1+K_p}$</td>
+<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;font-family:'IBM Plex Mono',monospace;">$\infty$</td>
+<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Thermal system, RC circuit</td>
+</tr>
+<tr style="background:#f8fafb;">
+<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;font-weight:500;">Type 1</td>
+<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;font-family:'IBM Plex Mono',monospace;">$0$</td>
+<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;font-family:'IBM Plex Mono',monospace;">$\dfrac{1}{K_v}$</td>
+<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Position servo, integrating plant</td>
+</tr>
+<tr>
+<td style="padding:8px 14px;font-weight:500;">Type 2</td>
+<td style="padding:8px 14px;font-family:'IBM Plex Mono',monospace;">$0$</td>
+<td style="padding:8px 14px;font-family:'IBM Plex Mono',monospace;">$0$</td>
+<td style="padding:8px 14px;">Double integrator (robotic arm acceleration)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="prose">
         Here $K_p = \lim_{s \to 0} L(s)$ (position constant) and $K_v = \lim_{s \to 0} s\,L(s)$
         (velocity constant). These are the <em>error constants</em> from the final-value theorem.
         For a unity-feedback system, the steady-state error to a step input is:
@@ -526,132 +496,114 @@
         With $R(s) = 1/s$ (unit step) and a Type 0 system, this gives $1/(1+K_p)$. With a
         Type 1 system, $L(s) \to \infty$ as $s \to 0$, so $e_{ss} = 0$.
       </div>
-
-      <div class="callout">
-        <strong>Adding an integrator reduces steady-state error — for free?</strong>
+<div class="callout">
+<strong>Adding an integrator reduces steady-state error — for free?</strong>
         Not quite. Adding a pole at $s=0$ to the controller $C(s)$ shifts $90°$ of phase lag
         into the loop at low frequencies. Unless compensated, this eats into the phase margin
         and can destabilize the system. PID controllers (Lesson 7) include an integrator (the
         "I" action) precisely to eliminate steady-state error, but the integral gain must be
         tuned carefully to preserve stability.
       </div>
-
-      <!-- ── Worked examples ──────────────────────────────────────── -->
-      <div class="section-head" id="examples">Worked examples</div>
-
-      <div class="example-box">
-        <div class="example-header"><strong>Example 1 — RC circuit: first-order system</strong></div>
-        <div class="example-problem">
+<!-- ── Worked examples ──────────────────────────────────────── -->
+<div class="section-head" id="examples">Worked examples</div>
+<div class="example-box">
+<div class="example-header"><strong>Example 1 — RC circuit: first-order system</strong></div>
+<div class="example-problem">
           A series RC circuit with $R = 1\,\text{k}\Omega$, $C = 100\,\mu\text{F}$.
           The voltage across $C$ satisfies $RC\dot{V}_C + V_C = V_\text{in}$.
           Find the transfer function, time constant, and step response.
         </div>
-        <div class="example-body">
+<div class="example-body">
           Taking the Laplace transform: $(RCs + 1)V_C(s) = V_\text{in}(s)$.
           $$G(s) = \frac{V_C(s)}{V_\text{in}(s)} = \frac{1}{RCs + 1} = \frac{1}{0.1s + 1}$$
           <ul style="padding-left:1.4em; margin:6px 0;">
-            <li style="margin-bottom:4px;">Time constant: $\tau = RC = 0.1$ s.</li>
-            <li style="margin-bottom:4px;">Pole at $s = -1/\tau = -10$.</li>
-            <li style="margin-bottom:4px;">DC gain: $G(0) = 1$ (capacitor fully charges to input).</li>
-            <li>Step response: $V_C(t) = 1 - e^{-10t}$.
+<li style="margin-bottom:4px;">Time constant: $\tau = RC = 0.1$ s.</li>
+<li style="margin-bottom:4px;">Pole at $s = -1/\tau = -10$.</li>
+<li style="margin-bottom:4px;">DC gain: $G(0) = 1$ (capacitor fully charges to input).</li>
+<li>Step response: $V_C(t) = 1 - e^{-10t}$.
               Reaches 63.2% at $t = 0.1$ s, settled (2%) at $t \approx 0.4$ s.</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="example-box">
-        <div class="example-header"><strong>Example 2 — DC motor: Type 1 plant</strong></div>
-        <div class="example-problem">
+</ul>
+</div>
+</div>
+<div class="example-box">
+<div class="example-header"><strong>Example 2 — DC motor: Type 1 plant</strong></div>
+<div class="example-problem">
           A DC motor has velocity transfer function $\omega(s)/V(s) = K_m/(Js+b)$.
           Derive the transfer function for position control (input = voltage, output = angle).
         </div>
-        <div class="example-body">
+<div class="example-body">
           Position is the integral of velocity: $\theta = \int \omega\,dt \Rightarrow \theta(s) = \omega(s)/s$.
           $$P(s) = \frac{\theta(s)}{V(s)} = \frac{K_m}{s(Js + b)} = \frac{K_m/b}{s\!\left(\dfrac{J}{b}s + 1\right)}$$
           <ul style="padding-left:1.4em; margin:6px 0;">
-            <li style="margin-bottom:4px;">Pole at $s=0$: the integrator from velocity to position. <strong>Type 1 plant.</strong></li>
-            <li style="margin-bottom:4px;">Pole at $s = -b/J$: mechanical time constant $\tau_m = J/b$.</li>
-            <li>A proportional controller gives zero SSE to a step position reference — the plant
+<li style="margin-bottom:4px;">Pole at $s=0$: the integrator from velocity to position. <strong>Type 1 plant.</strong></li>
+<li style="margin-bottom:4px;">Pole at $s = -b/J$: mechanical time constant $\tau_m = J/b$.</li>
+<li>A proportional controller gives zero SSE to a step position reference — the plant
               integrator ensures this without needing an integral controller term.</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="example-box">
-        <div class="example-header"><strong>Example 3 — Reading poles, zeros, and DC gain</strong></div>
-        <div class="example-problem">
+</ul>
+</div>
+</div>
+<div class="example-box">
+<div class="example-header"><strong>Example 3 — Reading poles, zeros, and DC gain</strong></div>
+<div class="example-problem">
           For $G(s) = \dfrac{5(s+2)}{(s+1)(s+4)}$, identify poles, zeros, DC gain, and dominant behavior.
         </div>
-        <div class="example-body">
-          <ul style="padding-left:1.4em; margin:6px 0;">
-            <li style="margin-bottom:4px;"><strong>Zero:</strong> $s = -2$.</li>
-            <li style="margin-bottom:4px;"><strong>Poles:</strong> $s = -1$ and $s = -4$. Both in the LHP → stable.</li>
-            <li style="margin-bottom:4px;"><strong>DC gain:</strong> $G(0) = 5 \cdot 2 / (1 \cdot 4) = 2.5$.</li>
-            <li><strong>Dominant pole:</strong> $s = -1$ (closest to the imaginary axis, slowest mode).
+<div class="example-body">
+<ul style="padding-left:1.4em; margin:6px 0;">
+<li style="margin-bottom:4px;"><strong>Zero:</strong> $s = -2$.</li>
+<li style="margin-bottom:4px;"><strong>Poles:</strong> $s = -1$ and $s = -4$. Both in the LHP → stable.</li>
+<li style="margin-bottom:4px;"><strong>DC gain:</strong> $G(0) = 5 \cdot 2 / (1 \cdot 4) = 2.5$.</li>
+<li><strong>Dominant pole:</strong> $s = -1$ (closest to the imaginary axis, slowest mode).
               The step response is primarily governed by $e^{-t}$ with time constant $\tau = 1$ s.
               The $e^{-4t}$ mode settles in $\approx 1$ s and barely affects the overall response.</li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- ── Interactive ────────────────────────────────────────────── -->
-      <div class="section-head" id="interactive">Interactive: first-order system explorer</div>
-
-      <div class="prose">
+</ul>
+</div>
+</div>
+<!-- ── Interactive ────────────────────────────────────────────── -->
+<div class="section-head" id="interactive">Interactive: first-order system explorer</div>
+<div class="prose">
         Adjust the time constant $\tau$ and DC gain $K$ of a first-order system
         $G(s) = K/(\tau s + 1)$. The step response and pole location update in real time.
       </div>
-
-      <div class="widget-card">
-        <div class="widget-title">First-Order System Explorer</div>
-
-        <div style="display:flex;gap:28px;flex-wrap:wrap;margin-bottom:16px;">
-          <div style="display:flex;flex-direction:column;gap:5px;">
-            <label style="font-size:12.5px;color:#5a6a7a;">
+<div class="widget-card">
+<div class="widget-title">First-Order System Explorer</div>
+<div style="display:flex;gap:28px;flex-wrap:wrap;margin-bottom:16px;">
+<div style="display:flex;flex-direction:column;gap:5px;">
+<label style="font-size:12.5px;color:#5a6a7a;">
               Time constant $\tau$:
               <span id="tf-tau-val" style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:#1a2840;">1.00</span> s
             </label>
-            <input type="range" id="tf-tau" min="0.1" max="4.0" step="0.05" value="1.0"
-              style="width:180px;"
-              oninput="document.getElementById('tf-tau-val').textContent=parseFloat(this.value).toFixed(2); tfUpdate();">
-          </div>
-          <div style="display:flex;flex-direction:column;gap:5px;">
-            <label style="font-size:12.5px;color:#5a6a7a;">
+<input id="tf-tau" max="4.0" min="0.1" oninput="document.getElementById('tf-tau-val').textContent=parseFloat(this.value).toFixed(2); tfUpdate();" step="0.05" style="width:180px;" type="range" value="1.0"/>
+</div>
+<div style="display:flex;flex-direction:column;gap:5px;">
+<label style="font-size:12.5px;color:#5a6a7a;">
               DC gain $K$:
               <span id="tf-k-val" style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:#1a2840;">1.00</span>
-            </label>
-            <input type="range" id="tf-k" min="0.2" max="3.0" step="0.1" value="1.0"
-              style="width:180px;"
-              oninput="document.getElementById('tf-k-val').textContent=parseFloat(this.value).toFixed(2); tfUpdate();">
-          </div>
-        </div>
-
-        <div class="tf-display" id="tf-formula">G(s) = 1.00 / (1.00·s + 1)</div>
-
-        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;">
-          <div class="stat-grid" style="flex:1;min-width:260px;">
-            <div class="stat-cell">Pole location<strong id="tf-pole">s = -1.00</strong></div>
-            <div class="stat-cell">DC gain<strong id="tf-dcgain">1.00</strong></div>
-            <div class="stat-cell">Rise time (10→90%)<strong id="tf-rise">2.20 s</strong></div>
-            <div class="stat-cell">Settling time (2%)<strong id="tf-settle">4.00 s</strong></div>
-          </div>
-        </div>
-
-        <div style="display:flex;gap:16px;flex-wrap:wrap;">
-          <!-- Step response plot -->
-          <svg id="tf-step-plot" viewBox="0 0 280 180" style="flex:1;min-width:230px;max-width:320px;"></svg>
-          <!-- S-plane plot -->
-          <svg id="tf-splane-plot" viewBox="0 0 180 180" style="flex:0 0 160px;max-width:190px;"></svg>
-        </div>
-
-        <div style="display:flex;gap:20px;margin-top:8px;font-size:12px;color:#5a6a7a;flex-wrap:wrap;">
-          <span><span style="display:inline-block;width:18px;height:3px;background:#3a6a8a;vertical-align:middle;margin-right:4px;"></span>Step response</span>
-          <span><span style="display:inline-block;width:18px;height:2px;border-top:2px dashed #b0b0b0;vertical-align:middle;margin-right:4px;"></span>Final value $K$</span>
-          <span style="color:#c07030;">Dashed vertical lines: $\tau$, $2\tau$, $4\tau$</span>
-        </div>
-      </div>
-
-      <script>
+</label>
+<input id="tf-k" max="3.0" min="0.2" oninput="document.getElementById('tf-k-val').textContent=parseFloat(this.value).toFixed(2); tfUpdate();" step="0.1" style="width:180px;" type="range" value="1.0"/>
+</div>
+</div>
+<div class="tf-display" id="tf-formula">G(s) = 1.00 / (1.00·s + 1)</div>
+<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;">
+<div class="stat-grid" style="flex:1;min-width:260px;">
+<div class="stat-cell">Pole location<strong id="tf-pole">s = -1.00</strong></div>
+<div class="stat-cell">DC gain<strong id="tf-dcgain">1.00</strong></div>
+<div class="stat-cell">Rise time (10→90%)<strong id="tf-rise">2.20 s</strong></div>
+<div class="stat-cell">Settling time (2%)<strong id="tf-settle">4.00 s</strong></div>
+</div>
+</div>
+<div style="display:flex;gap:16px;flex-wrap:wrap;">
+<!-- Step response plot -->
+<svg id="tf-step-plot" style="flex:1;min-width:230px;max-width:320px;" viewbox="0 0 280 180"></svg>
+<!-- S-plane plot -->
+<svg id="tf-splane-plot" style="flex:0 0 160px;max-width:190px;" viewbox="0 0 180 180"></svg>
+</div>
+<div style="display:flex;gap:20px;margin-top:8px;font-size:12px;color:#5a6a7a;flex-wrap:wrap;">
+<span><span style="display:inline-block;width:18px;height:3px;background:#3a6a8a;vertical-align:middle;margin-right:4px;"></span>Step response</span>
+<span><span style="display:inline-block;width:18px;height:2px;border-top:2px dashed #b0b0b0;vertical-align:middle;margin-right:4px;"></span>Final value $K$</span>
+<span style="color:#c07030;">Dashed vertical lines: $\tau$, $2\tau$, $4\tau$</span>
+</div>
+</div>
+<script>
       (function() {
         // Step plot dimensions
         const SW = 280, SH = 180, SML = 38, SMR = 10, SMT = 12, SMB = 28;
@@ -770,26 +722,23 @@
         tfUpdate();
       })();
       </script>
-
-      <div class="prose" style="margin-top:12px;">
+<div class="prose" style="margin-top:12px;">
         Notice: increasing $\tau$ stretches the response out (slower), and the pole moves
         closer to the imaginary axis. The orange dashed lines mark $\tau$ (63.2% of final value),
         $2\tau$ (86.5%), and $4\tau$ (98.2%, essentially settled). The DC gain $K$ scales the
         final value but does not change the shape or speed of the response.
       </div>
-
-      <!-- ── Food for thought ──────────────────────────────────────── -->
-      <div class="section-head" id="food-for-thought">Food for thought</div>
-
-      <div class="fft-block" style="border-left:3px solid #b89040;background:#faf8f2;padding:14px 18px;border-radius:0 4px 4px 0;margin:20px 0;">
-        <div style="font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#8a6010;margin-bottom:10px;">Reflection questions</div>
-        <ol style="padding-left:1.4em;color:#2a3a4a;font-size:14px;line-height:1.7;">
-          <li style="margin-bottom:12px;">The DC gain is $G(0) = K$. What does $G(j\omega)$
+<!-- ── Food for thought ──────────────────────────────────────── -->
+<div class="section-head" id="food-for-thought">Food for thought</div>
+<div class="fft-block" style="border-left:3px solid #b89040;background:#faf8f2;padding:14px 18px;border-radius:0 4px 4px 0;margin:20px 0;">
+<div style="font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#8a6010;margin-bottom:10px;">Reflection questions</div>
+<ol style="padding-left:1.4em;color:#2a3a4a;font-size:14px;line-height:1.7;">
+<li class="fft-item" style="margin-bottom:12px;">The DC gain is $G(0) = K$. What does $G(j\omega)$
             represent physically? If you drive the system with a sinusoidal input
             $u(t) = A\sin(\omega t)$, what is the steady-state output?
             (Hint: the magnitude is $A|G(j\omega)|$ and the phase shift is $\angle G(j\omega)$.)
             What happens to $|G(j\omega)|$ as $\omega \to \infty$ for the first-order system?
-                          <div class="fft-answer-body">
+                          <div class="fft-answer">
                 $G(j\omega)$ is the <strong>frequency response</strong> — it describes how the system
                 responds to sinusoidal inputs at frequency $\omega$. For a stable LTI system driven
                 by $u(t) = A\sin(\omega t)$, the steady-state output is:
@@ -801,14 +750,13 @@
                 At $\omega = 1/\tau$ (the corner frequency), the output is $K/\sqrt{2} \approx 0.707K$
                 (−3 dB), and the phase is −45°.
               </div>
-            
-          </li>
-          <li style="margin-bottom:12px;">Two first-order systems in series:
+</li>
+<li class="fft-item" style="margin-bottom:12px;">Two first-order systems in series:
             $G_1(s) = 1/(\tau_1 s + 1)$ and $G_2(s) = 1/(\tau_2 s + 1)$.
             The combined transfer function is $G_1 G_2 = 1/((\tau_1 s+1)(\tau_2 s+1))$.
             Is this still "first-order"? How does its step response differ from a single
             first-order system with $\tau = \tau_1 + \tau_2$? Does it still have no overshoot?
-                          <div class="fft-answer-body">
+                          <div class="fft-answer">
                 No, $G_1 G_2$ is <strong>second-order</strong> (denominator degree 2), not first-order.
                 It has two real poles at $-1/\tau_1$ and $-1/\tau_2$.
 
@@ -821,14 +769,13 @@
                 single first-order system with time constant $\tau_1 + \tau_2$: the two-stage system is
                 slower, and the initial slope is zero, not $K/\tau$.
               </div>
-            
-          </li>
-          <li>The final value theorem says $\lim_{t\to\infty} y(t) = \lim_{s\to 0} s\,Y(s)$
+</li>
+<li class="fft-item">The final value theorem says $\lim_{t\to\infty} y(t) = \lim_{s\to 0} s\,Y(s)$
             (when the limit exists). Use this to derive the steady-state error formula
             $e_{ss} = \lim_{s\to 0} s \cdot E(s)$ for the closed-loop system, where
             $E(s) = R(s)/(1+L(s))$. When does the final-value theorem fail to give the
             correct answer?
-                          <div class="fft-answer-body">
+                          <div class="fft-answer">
                 For a unit step input $r(t) = 1(t)$, $R(s) = 1/s$. The error signal is
                 $E(s) = R(s)/(1+L(s))$. Applying the FVT:
                 $$e_{ss} = \lim_{s\to 0} s \cdot E(s) = \lim_{s\to 0} s \cdot \frac{1/s}{1+L(s)} = \frac{1}{1 + L(0)}$$
@@ -842,95 +789,84 @@
                 (3) the system oscillates at steady state ($y(t)$ doesn't settle to a constant).
                 In all these cases, the formula gives a number that doesn't correspond to any physical limit.
               </div>
-            
-          </li>
-        </ol>
-      </div>
-
-      <!-- ── Common pitfalls ─────────────────────────────────────── -->
-      <div class="section-head" id="pitfalls">Common pitfalls</div>
-
-      <div class="pitfalls-block" style="border-left:3px solid #c07070;background:#fdf8f8;padding:14px 18px;border-radius:0 4px 4px 0;margin:20px 0;">
-        <div style="font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#8a2020;margin-bottom:10px;">Mistakes worth knowing about in advance</div>
-        <ul style="padding-left:1.4em;color:#2a3a4a;font-size:14px;line-height:1.7;">
-          <li style="margin-bottom:10px;"><strong>Confusing poles of $G(s)$ with closed-loop poles.</strong>
+</li>
+</ol>
+</div>
+<!-- ── Common pitfalls ─────────────────────────────────────── -->
+<div class="section-head" id="pitfalls">Common pitfalls</div>
+<div class="pitfalls-block" style="border-left:3px solid #c07070;background:#fdf8f8;padding:14px 18px;border-radius:0 4px 4px 0;margin:20px 0;">
+<div style="font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#8a2020;margin-bottom:10px;">Mistakes worth knowing about in advance</div>
+<ul style="padding-left:1.4em;color:#2a3a4a;font-size:14px;line-height:1.7;">
+<li style="margin-bottom:10px;"><strong>Confusing poles of $G(s)$ with closed-loop poles.</strong>
             The plant transfer function $P(s)$ has poles that determine the plant's open-loop behavior.
             The <em>closed-loop</em> poles are the roots of $1+C(s)P(s)=0$, which are completely
             different. A plant with a pole at $s=-2$ might have a closed-loop pole at $s=-10$
             (much faster) or at $s=+1$ (unstable), depending on the controller. Always be clear
             which system's poles you're discussing.</li>
-          <li style="margin-bottom:10px;"><strong>Pole-zero cancellation.</strong>
+<li style="margin-bottom:10px;"><strong>Pole-zero cancellation.</strong>
             If the controller has a zero at the same location as a plant pole, they appear to
             "cancel" in the product $C(s)P(s)$. But the cancelled pole is still present in the
             closed-loop system — it just becomes unobservable or uncontrollable. If that cancelled
             pole is unstable (positive real part), the closed-loop system contains a hidden
             unstable mode that can destabilize when perturbed. Never cancel an unstable pole
             with a controller zero.</li>
-          <li style="margin-bottom:10px;"><strong>The final value theorem requires stability.</strong>
+<li style="margin-bottom:10px;"><strong>The final value theorem requires stability.</strong>
             $\lim_{t\to\infty} y(t) = \lim_{s\to 0} sY(s)$ only holds if $y(t)$ has a finite
             limit — i.e., if the system is stable. If there's a pole at $s=0$ (or right of it)
             in $Y(s)$, the formula gives a meaningless number. Always check stability before
             applying the final-value theorem.</li>
-          <li><strong>Treating all time constants as equal.</strong>
+<li><strong>Treating all time constants as equal.</strong>
             A second-order system $(s+1)(s+100)$ has one pole at $-1$ and one at $-100$.
             The dominant behavior is set by the slow pole at $-1$; the fast pole at $-100$
             is gone in about $0.04$ s. But you cannot simply <em>ignore</em> the fast pole
             when it is inside the feedback loop — it contributes $-90°$ of phase at the
             crossover frequency, which can push the phase margin negative.</li>
-        </ul>
-      </div>
-
-      <div class="connects-to" style="border-left:3px solid #c0d4de;background:#f8fafb;padding:14px 18px;border-radius:0 4px 4px 0;margin:20px 0;">
-        <div style="font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;margin-bottom:10px;">Connects to</div>
-        <ul style="padding-left:1.4em;color:#2a3a4a;font-size:14px;line-height:1.7;">
-          <li style="margin-bottom:8px;"><strong>Lesson 3 (Second-Order Systems)</strong> — Extends
+</ul>
+</div>
+<div class="connects-to" style="border-left:3px solid #c0d4de;background:#f8fafb;padding:14px 18px;border-radius:0 4px 4px 0;margin:20px 0;">
+<div style="font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;margin-bottom:10px;">Connects to</div>
+<ul style="padding-left:1.4em;color:#2a3a4a;font-size:14px;line-height:1.7;">
+<li style="margin-bottom:8px;"><strong>Lesson 3 (Second-Order Systems)</strong> — Extends
             this framework to two-pole systems with complex conjugate poles. Introduces the damping
             ratio $\zeta$ and natural frequency $\omega_n$, and explains overshoot and oscillation
             in terms of pole locations. Bode plots are the frequency-domain version of $G(j\omega)$.</li>
-          <li style="margin-bottom:8px;"><strong>Lesson 4 (Routh-Hurwitz)</strong> — Given a
+<li style="margin-bottom:8px;"><strong>Lesson 4 (Routh-Hurwitz)</strong> — Given a
             characteristic polynomial $1+L(s)$, Routh-Hurwitz determines stability without
             finding the roots explicitly. Entirely a consequence of the pole-location analysis
             from this lesson: stability ⟺ all poles in the left half-plane.</li>
-          <li style="margin-bottom:8px;"><strong>Lesson 9 (State-Space Representation)</strong> —
+<li style="margin-bottom:8px;"><strong>Lesson 9 (State-Space Representation)</strong> —
             The state-space model $\dot{x} = Ax+Bu$, $y = Cx+Du$ and the transfer function
             $G(s) = C(sI-A)^{-1}B + D$ are two views of the same system. The poles of $G(s)$
             are the eigenvalues of $A$. State-space allows you to handle MIMO systems and systems
             with non-zero initial conditions directly.</li>
-          <li><strong>Signal Analysis (ECE355)</strong> — The Laplace transform here is a
+<li><strong>Signal Analysis (ECE355)</strong> — The Laplace transform here is a
             direct extension of the Fourier transform from your signals course.
             Replace $j\omega$ with $s = \sigma + j\omega$ to extend the Fourier transform to
             signals that grow or decay exponentially. Transfer functions evaluated on the
             imaginary axis ($s = j\omega$) give the frequency response $G(j\omega)$.</li>
-        </ul>
-      </div>
-
-      <hr class="lesson-rule">
-
-      <div class="section-head">References</div>
-      <ul class="prose" style="padding-left:1.4em;font-size:13.5px;color:#5a6a7a;">
-        <li style="margin-bottom:6px;">G. Franklin, J. Powell &amp; A. Emami-Naeini,
+</ul>
+</div>
+<hr class="lesson-rule"/>
+<div class="section-head">References</div>
+<ul class="prose" style="padding-left:1.4em;font-size:13.5px;color:#5a6a7a;">
+<li style="margin-bottom:6px;">G. Franklin, J. Powell &amp; A. Emami-Naeini,
           <em>Feedback Control of Dynamic Systems</em> (8th ed.) — Chapter 2: dynamic models and
           transfer functions. Chapter 3: dynamic response (poles, step response, time constants).</li>
-        <li style="margin-bottom:6px;">K. Ogata, <em>Modern Control Engineering</em> (5th ed.) —
+<li style="margin-bottom:6px;">K. Ogata, <em>Modern Control Engineering</em> (5th ed.) —
           Chapter 2: Laplace transform and transfer functions. Chapter 5: transient and
           steady-state response analysis.</li>
-        <li>M. Broucke, ECE356 Course Notes — Lecture 2–4 cover transfer functions, poles/zeros,
+<li>M. Broucke, ECE356 Course Notes — Lecture 2–4 cover transfer functions, poles/zeros,
           and steady-state error with a focus on the unity-feedback architecture used throughout
           ECE356.</li>
-      </ul>
-
-      <div id="lesson-nav"></div>
-
-    </div><!-- /main -->
-
-  </div><!-- /page-body -->
+</ul>
+<div id="lesson-nav"></div>
+</div><!-- /main -->
+</div><!-- /page-body -->
 </div><!-- /site-wrap -->
-
 <footer class="site-footer">
-  <span>elee03.github.io/notes</span>
-  <span>Est. MMXXVI</span>
+<span>elee03.github.io/notes</span>
+<span>Est. MMXXVI</span>
 </footer>
-
-    <script src="../notes-nav.js"></script>
+<script src="../notes-nav.js"></script>
 </body>
 </html>

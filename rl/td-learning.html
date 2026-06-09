@@ -1,18 +1,19 @@
 ﻿<!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Temporal Difference Learning — Field Notes</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../style.css">
-  <link rel="stylesheet" href="rl-interactive.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
-  <script>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Temporal Difference Learning — Field Notes</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="../style.css" rel="stylesheet"/>
+<link href="rl-interactive.css" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" rel="stylesheet"/>
+<script defer="" src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer="" src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<script>
     document.addEventListener('DOMContentLoaded', function() {
       renderMathInElement(document.body, {
         delimiters: [
@@ -25,62 +26,52 @@
   </script>
 </head>
 <body>
-
 <div class="topbar">
-  <div class="topbar-inner">
-    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
-    <span class="topbar-sep">·</span>
-    <a href="../references.html" class="topbar-link">Library</a>
-    <span class="topbar-sep">·</span>
-    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
-  </div>
+<div class="topbar-inner">
+<a class="topbar-brand" href="../index.html">Field <span class="accent">Notes</span></a>
+<span class="topbar-sep">·</span>
+<a class="topbar-link" href="../references.html">Library</a>
+<span class="topbar-sep">·</span>
+<a class="topbar-back" href="https://elee03.github.io">elee03.github.io ↗</a>
 </div>
-
+</div>
 <div class="site-wrap">
-  <div class="page-body">
-
-    <div class="sidebar">
-      <div class="nav-section">
-        <div class="nav-label">Prerequisites</div>
-        <a href="monte-carlo.html" class="nav-item">6 · Monte Carlo Methods</a>
-        <a href="dp.html" class="nav-item">5 · Dynamic Programming</a>
-      </div>
-
-      <div id="cluster-nav" data-cluster="rl" data-current="td-learning.html"></div>
-
-            <hr class="sidebar-rule">
-
-      <div class="nav-section">
-        <div class="nav-label">On this page</div>
-        <a href="#td-idea" class="nav-item">The TD idea</a>
-        <a href="#td0" class="nav-item">TD(0) prediction</a>
-        <a href="#td-error" class="nav-item">The TD error</a>
-        <a href="#td-vs-mc" class="nav-item">TD vs MC vs DP</a>
-        <a href="#sarsa" class="nav-item">SARSA</a>
-        <a href="#qlearning" class="nav-item">Q-learning</a>
-        <a href="#cliff" class="nav-item">Cliff walking</a>
-        <a href="#nstep" class="nav-item">n-step TD</a>
-        <a href="#worked-examples" class="nav-item">Worked examples</a>
-        <a href="#interactive" class="nav-item">Interactive explorer</a>
-        <a href="#food-for-thought" class="nav-item">Food for thought</a>
-        <a href="#pitfalls" class="nav-item">Common pitfalls</a>
-      </div>
-    </div>
-
-    <div class="main">
-
-      <div class="breadcrumb">
-        <a href="../index.html">Field Notes</a>
-        <span class="sep">›</span>
-        <a href="index.html">Reinforcement Learning</a>
-        <span class="sep">›</span>
-        <span>7 · Temporal Difference Learning</span>
-      </div>
-
-      <div class="lesson-title">7 · Temporal Difference Learning</div>
-      <div class="lesson-meta">TD(0) · TD Error · SARSA · Q-Learning · n-Step TD · Online Learning</div>
-
-      <div class="prose">
+<div class="page-body">
+<div class="sidebar">
+<div class="nav-section">
+<div class="nav-label">Prerequisites</div>
+<a class="nav-item" href="monte-carlo.html">6 · Monte Carlo Methods</a>
+<a class="nav-item" href="dp.html">5 · Dynamic Programming</a>
+</div>
+<div data-cluster="rl" data-current="td-learning.html" id="cluster-nav"></div>
+<hr class="sidebar-rule"/>
+<div class="nav-section">
+<div class="nav-label">On this page</div>
+<a class="nav-item" href="#td-idea">The TD idea</a>
+<a class="nav-item" href="#td0">TD(0) prediction</a>
+<a class="nav-item" href="#td-error">The TD error</a>
+<a class="nav-item" href="#td-vs-mc">TD vs MC vs DP</a>
+<a class="nav-item" href="#sarsa">SARSA</a>
+<a class="nav-item" href="#qlearning">Q-learning</a>
+<a class="nav-item" href="#cliff">Cliff walking</a>
+<a class="nav-item" href="#nstep">n-step TD</a>
+<a class="nav-item" href="#worked-examples">Worked examples</a>
+<a class="nav-item" href="#interactive">Interactive explorer</a>
+<a class="nav-item" href="#food-for-thought">Food for thought</a>
+<a class="nav-item" href="#pitfalls">Common pitfalls</a>
+</div>
+</div>
+<div class="main">
+<div class="breadcrumb">
+<a href="../index.html">Field Notes</a>
+<span class="sep">›</span>
+<a href="index.html">Reinforcement Learning</a>
+<span class="sep">›</span>
+<span>7 · Temporal Difference Learning</span>
+</div>
+<div class="lesson-title">7 · Temporal Difference Learning</div>
+<div class="lesson-meta">TD(0) · TD Error · SARSA · Q-Learning · n-Step TD · Online Learning</div>
+<div class="prose">
         Monte Carlo methods are model-free but require complete episodes. Dynamic programming
         is exact but requires a complete model. Temporal Difference learning is model-free
         <em>and</em> bootstraps from incomplete episodes — it is the union of the best properties
@@ -88,38 +79,35 @@
         and the TD component of actor-critic methods all rest on the same core update rule
         introduced here.
       </div>
-
-      <!-- ── Notation recap ────────────────────────────────────── -->
-      <div class="notation-box">
-        <div class="notation-box-title">Notation used in this lesson</div>
-        <table class="notation-table">
-          <tr>
-            <td>$\delta_t$</td>
-            <td>TD error at time $t$: $\delta_t = R_{t+1} + \gamma V(S_{t+1}) - V(S_t)$</td>
-          </tr>
-          <tr>
-            <td>$\alpha$</td>
-            <td>Step size (learning rate) — how strongly each update moves the estimate</td>
-          </tr>
-          <tr>
-            <td>$G_t^{(n)}$</td>
-            <td>$n$-step return: $R_{t+1} + \gamma R_{t+2} + \cdots + \gamma^{n-1}R_{t+n} + \gamma^n V(S_{t+n})$</td>
-          </tr>
-          <tr>
-            <td>SARSA</td>
-            <td>On-policy TD control; name from the quintuple $(S_t, A_t, R_{t+1}, S_{t+1}, A_{t+1})$</td>
-          </tr>
-          <tr>
-            <td>Q-learning</td>
-            <td>Off-policy TD control; directly approximates $q_*$ using $\max_{a'} Q(S_{t+1}, a')$</td>
-          </tr>
-        </table>
-      </div>
-
-      <!-- ── The TD idea ────────────────────────────────────────── -->
-      <div class="section-head" id="td-idea">The TD idea: bootstrap without a model</div>
-
-      <div class="prose">
+<!-- ── Notation recap ────────────────────────────────────── -->
+<div class="notation-box">
+<div class="notation-box-title">Notation used in this lesson</div>
+<table class="notation-table">
+<tr>
+<td>$\delta_t$</td>
+<td>TD error at time $t$: $\delta_t = R_{t+1} + \gamma V(S_{t+1}) - V(S_t)$</td>
+</tr>
+<tr>
+<td>$\alpha$</td>
+<td>Step size (learning rate) — how strongly each update moves the estimate</td>
+</tr>
+<tr>
+<td>$G_t^{(n)}$</td>
+<td>$n$-step return: $R_{t+1} + \gamma R_{t+2} + \cdots + \gamma^{n-1}R_{t+n} + \gamma^n V(S_{t+n})$</td>
+</tr>
+<tr>
+<td>SARSA</td>
+<td>On-policy TD control; name from the quintuple $(S_t, A_t, R_{t+1}, S_{t+1}, A_{t+1})$</td>
+</tr>
+<tr>
+<td>Q-learning</td>
+<td>Off-policy TD control; directly approximates $q_*$ using $\max_{a'} Q(S_{t+1}, a')$</td>
+</tr>
+</table>
+</div>
+<!-- ── The TD idea ────────────────────────────────────────── -->
+<div class="section-head" id="td-idea">The TD idea: bootstrap without a model</div>
+<div class="prose">
         The Bellman expectation equation tells us that the value of a state equals the expected
         immediate reward plus the discounted value of the next state:
         $$v_\pi(S_t) = \mathbb{E}_\pi[R_{t+1} + \gamma v_\pi(S_{t+1}) \mid S_t]$$
@@ -127,104 +115,87 @@
         states. MC turns it into an update by running to the end of the episode and observing the
         actual return $G_t$.
       </div>
-
-      <div class="prose">
+<div class="prose">
         TD takes a different route: observe just the next single step $(R_{t+1}, S_{t+1})$,
         and substitute the current estimate $V(S_{t+1})$ for the unknown $v_\pi(S_{t+1})$:
       </div>
-
-      <div class="math-block">
+<div class="math-block">
         $$V(S_t) \leftarrow V(S_t) + \alpha\bigl[\underbrace{R_{t+1} + \gamma V(S_{t+1})}_{\text{TD target}} - V(S_t)\bigr]$$
       </div>
-
-      <div class="prose">
+<div class="prose">
         This is the <strong>TD(0)</strong> update — the simplest TD method. The quantity
         $R_{t+1} + \gamma V(S_{t+1})$ is the <em>TD target</em>: a one-step estimate of what
         $V(S_t)$ should be. The difference between the target and current estimate is the
         <em>TD error</em> $\delta_t$. The update nudges $V(S_t)$ toward the target by step size $\alpha$.
       </div>
-
-      <div class="prose">
+<div class="prose">
         Key observations:
       </div>
-
-      <ul class="prose" style="padding-left:1.4em;">
-        <li style="margin-bottom:8px;"><strong>No model.</strong> The update only uses observed
+<ul class="prose" style="padding-left:1.4em;">
+<li style="margin-bottom:8px;"><strong>No model.</strong> The update only uses observed
           $(R_{t+1}, S_{t+1})$ — actual samples from the environment, not $p(s', r \mid s, a)$.</li>
-        <li style="margin-bottom:8px;"><strong>No complete episode.</strong> The update happens
+<li style="margin-bottom:8px;"><strong>No complete episode.</strong> The update happens
           after every single step. TD can learn in continuing tasks with no terminal state.</li>
-        <li style="margin-bottom:8px;"><strong>Bootstrapping.</strong> The target uses $V(S_{t+1})$,
+<li style="margin-bottom:8px;"><strong>Bootstrapping.</strong> The target uses $V(S_{t+1})$,
           which is itself an estimate. We update one estimate using another — this is bootstrapping.
           It introduces some bias (if $V$ is wrong, the target is wrong), but dramatically reduces
           variance compared to waiting for a full episode return.</li>
-      </ul>
-
-      <!-- ── TD(0) prediction ───────────────────────────────────── -->
-      <div class="section-head" id="td0">TD(0) prediction</div>
-
-      <div class="prose">
+</ul>
+<!-- ── TD(0) prediction ───────────────────────────────────── -->
+<div class="section-head" id="td0">TD(0) prediction</div>
+<div class="prose">
         TD(0) for policy evaluation (estimating $v_\pi$) works as follows:
       </div>
-
-      <ol class="prose" style="padding-left:1.4em;">
-        <li style="margin-bottom:10px;">Initialize $V(s)$ arbitrarily (e.g. all zeros). Set $V(\text{terminal}) = 0$.</li>
-        <li style="margin-bottom:10px;">Observe $S_t$. Take action $A_t \sim \pi(\cdot \mid S_t)$.
+<ol class="prose" style="padding-left:1.4em;">
+<li style="margin-bottom:10px;">Initialize $V(s)$ arbitrarily (e.g. all zeros). Set $V(\text{terminal}) = 0$.</li>
+<li style="margin-bottom:10px;">Observe $S_t$. Take action $A_t \sim \pi(\cdot \mid S_t)$.
           Observe $R_{t+1}$ and $S_{t+1}$.</li>
-        <li style="margin-bottom:10px;">Compute the TD error: $\delta_t = R_{t+1} + \gamma V(S_{t+1}) - V(S_t)$.</li>
-        <li style="margin-bottom:10px;">Update: $V(S_t) \leftarrow V(S_t) + \alpha \delta_t$.</li>
-        <li>Move to $S_{t+1}$ and repeat. At end of episode (if episodic), reset.</li>
-      </ol>
-
-      <div class="prose">
+<li style="margin-bottom:10px;">Compute the TD error: $\delta_t = R_{t+1} + \gamma V(S_{t+1}) - V(S_t)$.</li>
+<li style="margin-bottom:10px;">Update: $V(S_t) \leftarrow V(S_t) + \alpha \delta_t$.</li>
+<li>Move to $S_{t+1}$ and repeat. At end of episode (if episodic), reset.</li>
+</ol>
+<div class="prose">
         That is the entire algorithm. One step of experience → one update → move on. Compare to
         MC, which must buffer the entire episode before updating anything.
       </div>
-
-      <div class="proof-box">
-        <div class="proof-header">Proof sketch — TD(0) convergence (on-policy, tabular)</div>
-        <div class="proof-body">
-          <p>TD(0) is a form of <strong>stochastic approximation</strong> (Robbins-Monro 1951). The update $V(s) \leftarrow V(s) + \alpha_t \delta_t$ can be written as $V \leftarrow V + \alpha_t(b_t - A_t V)$ where $A_t$ and $b_t$ are random quantities. For TD(0) to converge, we require:</p>
-          <p><strong>Robbins-Monro conditions on step sizes:</strong> $\sum_t \alpha_t = \infty$ and $\sum_t \alpha_t^2 < \infty$. The first condition ensures learning is not swamped by initialization; the second ensures noise averages out.</p>
-          <p><strong>On-policy convergence argument.</strong> Under these conditions and assuming all states are visited infinitely often (guaranteed by the on-policy ε-soft behavior), one can show that the expected update $\mathbb{E}[\delta_t \mid V]$ points toward $v_\pi$. Formally, define $\bar{A} = \mathbb{E}[A_t]$ and $\bar{b} = \mathbb{E}[b_t]$; the fixed point of the mean ODE $\dot{V} = \bar{b} - \bar{A}V$ is $v_\pi$. The matrix $\bar{A}$ is positive definite under $\gamma < 1$ (a consequence of the discount — the "shifted" Bellman operator shrinks norms), so $v_\pi$ is a stable equilibrium. By the ODE method (Borkar & Meyn 2000), the stochastic iterates track this ODE and converge to $v_\pi$ w.p.1. $\blacksquare$</p>
-          <p style="color:#9aabb8;font-size:12px;margin-top:8px;">With a constant step size $\alpha$, TD(0) does not converge in the strict sense — it cycles around $v_\pi$ with variance $O(\alpha)$. Decaying step sizes are required for exact convergence.</p>
-        </div>
-      </div>
-
-      <div class="callout">
-        <strong>TD vs MC on the same data:</strong> Consider an episode $S_0, R_1, S_1, R_2, S_2, \ldots$.
+<div class="proof-box">
+<div class="proof-header">Proof sketch — TD(0) convergence (on-policy, tabular)</div>
+<div class="proof-body">
+<p>TD(0) is a form of <strong>stochastic approximation</strong> (Robbins-Monro 1951). The update $V(s) \leftarrow V(s) + \alpha_t \delta_t$ can be written as $V \leftarrow V + \alpha_t(b_t - A_t V)$ where $A_t$ and $b_t$ are random quantities. For TD(0) to converge, we require:</p>
+<p><strong>Robbins-Monro conditions on step sizes:</strong> $\sum_t \alpha_t = \infty$ and $\sum_t \alpha_t^2 &lt; \infty$. The first condition ensures learning is not swamped by initialization; the second ensures noise averages out.</p>
+<p><strong>On-policy convergence argument.</strong> Under these conditions and assuming all states are visited infinitely often (guaranteed by the on-policy ε-soft behavior), one can show that the expected update $\mathbb{E}[\delta_t \mid V]$ points toward $v_\pi$. Formally, define $\bar{A} = \mathbb{E}[A_t]$ and $\bar{b} = \mathbb{E}[b_t]$; the fixed point of the mean ODE $\dot{V} = \bar{b} - \bar{A}V$ is $v_\pi$. The matrix $\bar{A}$ is positive definite under $\gamma &lt; 1$ (a consequence of the discount — the "shifted" Bellman operator shrinks norms), so $v_\pi$ is a stable equilibrium. By the ODE method (Borkar &amp; Meyn 2000), the stochastic iterates track this ODE and converge to $v_\pi$ w.p.1. $\blacksquare$</p>
+<p style="color:#9aabb8;font-size:12px;margin-top:8px;">With a constant step size $\alpha$, TD(0) does not converge in the strict sense — it cycles around $v_\pi$ with variance $O(\alpha)$. Decaying step sizes are required for exact convergence.</p>
+</div>
+</div>
+<div class="callout">
+<strong>TD vs MC on the same data:</strong> Consider an episode $S_0, R_1, S_1, R_2, S_2, \ldots$.
         MC waits for the episode to end, then updates $V(S_0)$ using $G_0 = R_1 + \gamma R_2 + \cdots$.
         TD updates $V(S_0)$ using $R_1 + \gamma V(S_1)$ immediately after observing $S_1$.
         If $V(S_1)$ is a reasonable estimate, this is a <em>much</em> lower-variance update — we're not
         propagating all the noise from the entire episode. The trade-off is that the TD target is biased
         if $V$ is wrong — but as learning proceeds and $V$ improves, this bias decreases.
       </div>
-
-      <!-- ── TD Error ───────────────────────────────────────────── -->
-      <div class="section-head" id="td-error">The TD error $\delta_t$</div>
-
-      <div class="prose">
+<!-- ── TD Error ───────────────────────────────────────────── -->
+<div class="section-head" id="td-error">The TD error $\delta_t$</div>
+<div class="prose">
         The TD error deserves its own section because it appears everywhere in RL — not just in TD
         prediction, but in actor-critic methods, reward shaping, and neuroscience models of learning.
       </div>
-
-      <div class="math-block">
+<div class="math-block">
         $$\delta_t = R_{t+1} + \gamma V(S_{t+1}) - V(S_t)$$
       </div>
-
-      <div class="prose">
+<div class="prose">
         Intuitively: $\delta_t$ measures the <em>prediction error</em> at time $t$. Before seeing
         $R_{t+1}$, the agent's "prediction" of what it will observe from $S_t$ onward is $V(S_t)$.
         After seeing one step, the revised estimate is $R_{t+1} + \gamma V(S_{t+1})$.
         The TD error is the discrepancy between the prediction and the revised estimate.
       </div>
-
-      <div class="prose">
+<div class="prose">
         A positive $\delta_t$ means the outcome was better than predicted ($V(S_t)$ was too low).
         A negative $\delta_t$ means it was worse. The TD update moves $V(S_t)$ in the direction
         that would have made the prediction correct.
       </div>
-
-      <div class="prose">
+<div class="prose">
         There is a beautiful relationship between the TD error and the Monte Carlo return. If you
         run an episode and collect $\delta_t$ at each step, the sum telescopes:
         $$G_t - V(S_t) = \sum_{k=t}^{T-1} \gamma^{k-t} \delta_k$$
@@ -232,62 +203,57 @@
         equivalent to summing all future TD errors along the trajectory. MC is TD, applied retroactively
         over the entire episode. This is the formal bridge between the two methods.
       </div>
-
-      <div class="callout">
-        <strong>⟶ Worth verifying yourself:</strong> Expand the sum $\sum_{k=t}^{T-1} \gamma^{k-t}\delta_k$
+<div class="callout">
+<strong>⟶ Worth verifying yourself:</strong> Expand the sum $\sum_{k=t}^{T-1} \gamma^{k-t}\delta_k$
         using the definition $\delta_k = R_{k+1} + \gamma V(S_{k+1}) - V(S_k)$. Write out
         the first three terms and watch the cancellation. The telescoping property is not
         obvious until you write it out term by term — and once you see it, the MC/TD
         relationship is completely clear.
       </div>
-
-      <!-- ── TD vs MC vs DP ─────────────────────────────────────── -->
-      <div class="section-head" id="td-vs-mc">TD, MC, and DP: a unified view</div>
-
-      <div class="prose">
+<!-- ── TD vs MC vs DP ─────────────────────────────────────── -->
+<div class="section-head" id="td-vs-mc">TD, MC, and DP: a unified view</div>
+<div class="prose">
         These three methods are not competitors — they are points in a continuum. The key axes
         are <em>how far ahead do you look</em> and <em>do you use a model or samples</em>:
       </div>
-
-      <!-- Diagram showing 3-way comparison -->
-      <svg viewBox="0 0 580 220" style="width:100%;max-width:600px;display:block;margin:18px auto 10px;font-family:'IBM Plex Sans',sans-serif;">
-        <defs>
-          <marker id="arr7" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-            <path d="M0,0 L0,6 L8,3 z" fill="#3a6a8a"/>
-          </marker>
-        </defs>
-        <!-- DP box -->
-        <rect x="20" y="30" width="160" height="120" rx="6" fill="#e8f0f5" stroke="#7ab8d4" stroke-width="1.5"/>
-        <text x="100" y="60" text-anchor="middle" font-size="14" font-weight="600" fill="#1a2840">DP</text>
-        <text x="100" y="80" text-anchor="middle" font-size="11" fill="#3a5a78">Model-based</text>
-        <text x="100" y="96" text-anchor="middle" font-size="11" fill="#3a5a78">Bootstraps</text>
-        <text x="100" y="112" text-anchor="middle" font-size="11" fill="#3a5a78">All next states</text>
-        <text x="100" y="128" text-anchor="middle" font-size="11" fill="#3a5a78">(full Bellman backup)</text>
-        <text x="100" y="168" text-anchor="middle" font-size="10" fill="#5a7a9a" font-style="italic">Policy iter, value iter</text>
-        <!-- TD box -->
-        <rect x="210" y="30" width="160" height="120" rx="6" fill="#eef4f8" stroke="#7ab8d4" stroke-width="1.5"/>
-        <text x="290" y="60" text-anchor="middle" font-size="14" font-weight="600" fill="#1a2840">TD</text>
-        <text x="290" y="80" text-anchor="middle" font-size="11" fill="#3a5a78">Model-free</text>
-        <text x="290" y="96" text-anchor="middle" font-size="11" fill="#3a5a78">Bootstraps</text>
-        <text x="290" y="112" text-anchor="middle" font-size="11" fill="#3a5a78">1 sampled next state</text>
-        <text x="290" y="128" text-anchor="middle" font-size="11" fill="#3a5a78">(n=1 sample backup)</text>
-        <text x="290" y="168" text-anchor="middle" font-size="10" fill="#5a7a9a" font-style="italic">TD(0), SARSA, Q-learning</text>
-        <!-- MC box -->
-        <rect x="400" y="30" width="160" height="120" rx="6" fill="#f0f8f0" stroke="#7ab8d4" stroke-width="1.5"/>
-        <text x="480" y="60" text-anchor="middle" font-size="14" font-weight="600" fill="#1a2840">MC</text>
-        <text x="480" y="80" text-anchor="middle" font-size="11" fill="#3a5a78">Model-free</text>
-        <text x="480" y="96" text-anchor="middle" font-size="11" fill="#3a5a78">No bootstrapping</text>
-        <text x="480" y="112" text-anchor="middle" font-size="11" fill="#3a5a78">Full episode return</text>
-        <text x="480" y="128" text-anchor="middle" font-size="11" fill="#3a5a78">(n=∞ sample backup)</text>
-        <text x="480" y="168" text-anchor="middle" font-size="10" fill="#5a7a9a" font-style="italic">First-visit MC</text>
-        <!-- arrows -->
-        <line x1="188" y1="90" x2="202" y2="90" stroke="#3a6a8a" stroke-width="1.5" marker-end="url(#arr7)"/>
-        <line x1="378" y1="90" x2="392" y2="90" stroke="#3a6a8a" stroke-width="1.5" marker-end="url(#arr7)"/>
-        <!-- n-step label -->
-        <text x="290" y="202" text-anchor="middle" font-size="11" fill="#3a6a8a" font-style="italic">← n-step TD connects all three →</text>
-      </svg>
-
-      <div class="prose">
+<!-- Diagram showing 3-way comparison -->
+<svg style="width:100%;max-width:600px;display:block;margin:18px auto 10px;font-family:'IBM Plex Sans',sans-serif;" viewbox="0 0 580 220">
+<defs>
+<marker id="arr7" markerheight="8" markerwidth="8" orient="auto" refx="6" refy="3">
+<path d="M0,0 L0,6 L8,3 z" fill="#3a6a8a"></path>
+</marker>
+</defs>
+<!-- DP box -->
+<rect fill="#e8f0f5" height="120" rx="6" stroke="#7ab8d4" stroke-width="1.5" width="160" x="20" y="30"></rect>
+<text fill="#1a2840" font-size="14" font-weight="600" text-anchor="middle" x="100" y="60">DP</text>
+<text fill="#3a5a78" font-size="11" text-anchor="middle" x="100" y="80">Model-based</text>
+<text fill="#3a5a78" font-size="11" text-anchor="middle" x="100" y="96">Bootstraps</text>
+<text fill="#3a5a78" font-size="11" text-anchor="middle" x="100" y="112">All next states</text>
+<text fill="#3a5a78" font-size="11" text-anchor="middle" x="100" y="128">(full Bellman backup)</text>
+<text fill="#5a7a9a" font-size="10" font-style="italic" text-anchor="middle" x="100" y="168">Policy iter, value iter</text>
+<!-- TD box -->
+<rect fill="#eef4f8" height="120" rx="6" stroke="#7ab8d4" stroke-width="1.5" width="160" x="210" y="30"></rect>
+<text fill="#1a2840" font-size="14" font-weight="600" text-anchor="middle" x="290" y="60">TD</text>
+<text fill="#3a5a78" font-size="11" text-anchor="middle" x="290" y="80">Model-free</text>
+<text fill="#3a5a78" font-size="11" text-anchor="middle" x="290" y="96">Bootstraps</text>
+<text fill="#3a5a78" font-size="11" text-anchor="middle" x="290" y="112">1 sampled next state</text>
+<text fill="#3a5a78" font-size="11" text-anchor="middle" x="290" y="128">(n=1 sample backup)</text>
+<text fill="#5a7a9a" font-size="10" font-style="italic" text-anchor="middle" x="290" y="168">TD(0), SARSA, Q-learning</text>
+<!-- MC box -->
+<rect fill="#f0f8f0" height="120" rx="6" stroke="#7ab8d4" stroke-width="1.5" width="160" x="400" y="30"></rect>
+<text fill="#1a2840" font-size="14" font-weight="600" text-anchor="middle" x="480" y="60">MC</text>
+<text fill="#3a5a78" font-size="11" text-anchor="middle" x="480" y="80">Model-free</text>
+<text fill="#3a5a78" font-size="11" text-anchor="middle" x="480" y="96">No bootstrapping</text>
+<text fill="#3a5a78" font-size="11" text-anchor="middle" x="480" y="112">Full episode return</text>
+<text fill="#3a5a78" font-size="11" text-anchor="middle" x="480" y="128">(n=∞ sample backup)</text>
+<text fill="#5a7a9a" font-size="10" font-style="italic" text-anchor="middle" x="480" y="168">First-visit MC</text>
+<!-- arrows -->
+<line marker-end="url(#arr7)" stroke="#3a6a8a" stroke-width="1.5" x1="188" x2="202" y1="90" y2="90"></line>
+<line marker-end="url(#arr7)" stroke="#3a6a8a" stroke-width="1.5" x1="378" x2="392" y1="90" y2="90"></line>
+<!-- n-step label -->
+<text fill="#3a6a8a" font-size="11" font-style="italic" text-anchor="middle" x="290" y="202">← n-step TD connects all three →</text>
+</svg>
+<div class="prose">
         The <strong>bias–variance tradeoff</strong> runs left to right in this diagram. DP and TD
         bootstrap — they use estimates as targets, introducing bias but keeping variance low (a
         one-step TD error is much less noisy than a full episode return). MC uses the true return,
@@ -295,8 +261,7 @@
         In practice TD methods typically converge faster and more stably than MC, especially in
         long-episode environments.
       </div>
-
-      <div class="prose">
+<div class="prose">
         There is also a subtler advantage of TD on Markov environments. Because TD exploits the
         Markov structure (propagating values step-by-step through the state space), it can make
         better use of limited data than MC. If you observe an episode where state $s$ transitions
@@ -304,62 +269,50 @@
         and uses the full return — the information about the $s \to s'$ relationship is mixed into
         a single number and the Markov structure is not explicitly used.
       </div>
-
-      <!-- ── SARSA ──────────────────────────────────────────────── -->
-      <div class="section-head" id="sarsa">SARSA: on-policy TD control</div>
-
-      <div class="prose">
+<!-- ── SARSA ──────────────────────────────────────────────── -->
+<div class="section-head" id="sarsa">SARSA: on-policy TD control</div>
+<div class="prose">
         For control (finding an optimal policy), we switch from $V(s)$ to $Q(s,a)$ — just as
         we did with MC control. This avoids needing a model for policy improvement.
       </div>
-
-      <div class="prose">
-        <strong>SARSA</strong> is the on-policy TD control algorithm. The update rule uses the
+<div class="prose">
+<strong>SARSA</strong> is the on-policy TD control algorithm. The update rule uses the
         quintuple $(S_t, A_t, R_{t+1}, S_{t+1}, A_{t+1})$ — hence the name:
       </div>
-
-      <div class="math-block">
+<div class="math-block">
         $$Q(S_t, A_t) \leftarrow Q(S_t, A_t) + \alpha\bigl[R_{t+1} + \gamma Q(S_{t+1}, A_{t+1}) - Q(S_t, A_t)\bigr]$$
       </div>
-
-      <div class="prose">
+<div class="prose">
         The TD target uses the Q-value of the <em>actual next action</em> $A_{t+1}$ — the one
         selected by the current ε-greedy policy. Since the target depends on the policy being
         followed, this is on-policy: SARSA evaluates and improves the same policy it acts with.
       </div>
-
-      <div class="prose">
+<div class="prose">
         The algorithm:
       </div>
-
-      <ol class="prose" style="padding-left:1.4em;">
-        <li style="margin-bottom:8px;">Initialize $Q(s,a) = 0$ for all $s, a$.</li>
-        <li style="margin-bottom:8px;">In state $S_t$: choose $A_t$ using ε-greedy w.r.t. $Q$.</li>
-        <li style="margin-bottom:8px;">Take $A_t$, observe $R_{t+1}, S_{t+1}$.</li>
-        <li style="margin-bottom:8px;">Choose $A_{t+1}$ using ε-greedy w.r.t. $Q$ from $S_{t+1}$.</li>
-        <li style="margin-bottom:8px;">Update: $Q(S_t, A_t) \leftarrow Q(S_t, A_t) + \alpha[R_{t+1} + \gamma Q(S_{t+1}, A_{t+1}) - Q(S_t, A_t)]$.</li>
-        <li>Set $S_t \leftarrow S_{t+1}$, $A_t \leftarrow A_{t+1}$; repeat.</li>
-      </ol>
-
-      <div class="prose">
+<ol class="prose" style="padding-left:1.4em;">
+<li style="margin-bottom:8px;">Initialize $Q(s,a) = 0$ for all $s, a$.</li>
+<li style="margin-bottom:8px;">In state $S_t$: choose $A_t$ using ε-greedy w.r.t. $Q$.</li>
+<li style="margin-bottom:8px;">Take $A_t$, observe $R_{t+1}, S_{t+1}$.</li>
+<li style="margin-bottom:8px;">Choose $A_{t+1}$ using ε-greedy w.r.t. $Q$ from $S_{t+1}$.</li>
+<li style="margin-bottom:8px;">Update: $Q(S_t, A_t) \leftarrow Q(S_t, A_t) + \alpha[R_{t+1} + \gamma Q(S_{t+1}, A_{t+1}) - Q(S_t, A_t)]$.</li>
+<li>Set $S_t \leftarrow S_{t+1}$, $A_t \leftarrow A_{t+1}$; repeat.</li>
+</ol>
+<div class="prose">
         SARSA converges to $q_*$ (the optimal action-value function) provided all state-action
-        pairs continue to be visited (i.e. $\varepsilon > 0$ throughout or decaying appropriately)
+        pairs continue to be visited (i.e. $\varepsilon &gt; 0$ throughout or decaying appropriately)
         and the step sizes satisfy the usual stochastic approximation conditions.
       </div>
-
-      <!-- ── Q-learning ─────────────────────────────────────────── -->
-      <div class="section-head" id="qlearning">Q-learning: off-policy TD control</div>
-
-      <div class="prose">
+<!-- ── Q-learning ─────────────────────────────────────────── -->
+<div class="section-head" id="qlearning">Q-learning: off-policy TD control</div>
+<div class="prose">
         Q-learning modifies the SARSA target in one critical way: instead of using the Q-value
         of the actual next action $A_{t+1}$, it uses the maximum Q-value over all next actions:
       </div>
-
-      <div class="math-block">
+<div class="math-block">
         $$Q(S_t, A_t) \leftarrow Q(S_t, A_t) + \alpha\bigl[R_{t+1} + \gamma \max_{a'} Q(S_{t+1}, a') - Q(S_t, A_t)\bigr]$$
       </div>
-
-      <div class="prose">
+<div class="prose">
         This seemingly small change has a major consequence. The target
         $R_{t+1} + \gamma\max_{a'} Q(S_{t+1}, a')$ is the Bellman <em>optimality</em> operator
         applied to $Q$ — the same operator whose fixed point is $q_*$. So Q-learning directly
@@ -367,110 +320,95 @@
         Q-learning is inherently <strong>off-policy</strong>: the behavior policy (ε-greedy) is
         used to collect data, but the target is computed as if a greedy policy were followed.
       </div>
-
-      <div class="callout">
-        <strong>Q-learning as stochastic value iteration:</strong> Recall that DP value iteration
+<div class="callout">
+<strong>Q-learning as stochastic value iteration:</strong> Recall that DP value iteration
         updates $V(s) \leftarrow \max_a \sum_{s',r} p(s',r|s,a)[r + \gamma V(s')]$. Q-learning
         does the same thing, but uses a single sampled $(s', r)$ instead of averaging over the
         model. Q-learning is value iteration with sampled transitions — no model needed.
       </div>
-
-      <div class="prose">
+<div class="prose">
         The algorithm is simpler than SARSA: you do not need to select $A_{t+1}$ before updating.
         After taking $A_t$, observing $(R_{t+1}, S_{t+1})$, update and move to $S_{t+1}$. Then
         select the next action. The update target does not depend on what you will do next.
       </div>
-
-      <div class="proof-box">
-        <div class="proof-header">Proof sketch — Q-learning convergence (Watkins &amp; Dayan 1992)</div>
-        <div class="proof-body">
-          <p>Q-learning converges to $q_*$ w.p.1 provided: (1) all state-action pairs are visited infinitely often, (2) step sizes satisfy $\sum_t \alpha_t(s,a) = \infty$ and $\sum_t \alpha_t(s,a)^2 < \infty$ for all $(s,a)$, and (3) rewards are bounded.</p>
-          <p><strong>Key idea.</strong> Define the sequence of iterates $Q_t$ and the approximation error $F_t(s,a) = Q_t(s,a) - q_*(s,a)$. The Q-learning update can be rewritten as:
+<div class="proof-box">
+<div class="proof-header">Proof sketch — Q-learning convergence (Watkins &amp; Dayan 1992)</div>
+<div class="proof-body">
+<p>Q-learning converges to $q_*$ w.p.1 provided: (1) all state-action pairs are visited infinitely often, (2) step sizes satisfy $\sum_t \alpha_t(s,a) = \infty$ and $\sum_t \alpha_t(s,a)^2 &lt; \infty$ for all $(s,a)$, and (3) rewards are bounded.</p>
+<p><strong>Key idea.</strong> Define the sequence of iterates $Q_t$ and the approximation error $F_t(s,a) = Q_t(s,a) - q_*(s,a)$. The Q-learning update can be rewritten as:
           $$F_{t+1}(s,a) = (1-\alpha_t)F_t(s,a) + \alpha_t\bigl[\gamma\max_{a'}Q_t(s',a') - \gamma\max_{a'}q_*(s',a') + \text{noise}_t\bigr]$$
           where $\text{noise}_t$ has zero conditional mean (since $\mathbb{E}[R|s,a]$ and $\mathbb{E}[\max_{a'}q_*(s',a')|s,a]$ are the deterministic parts). The $\max$ operator is a $\gamma$-contraction:
           $$|\gamma\max_{a'}Q_t(s',a') - \gamma\max_{a'}q_*(s',a')| \leq \gamma\|F_t\|_\infty$$
-          So $\|F_{t+1}\|_\infty \leq (1-\alpha_t)\|F_t\|_\infty + \alpha_t\gamma\|F_t\|_\infty + \alpha_t|\text{noise}_t|$. This is a contraction-with-noise iteration. By the stochastic approximation theory (Robbins-Monro), the noise term averages out under the step-size conditions, and the contraction factor $\gamma < 1$ drives $\|F_t\|_\infty \to 0$. $\blacksquare$</p>
-        </div>
-      </div>
-
-      <!-- ── Cliff walking ──────────────────────────────────────── -->
-      <div class="section-head" id="cliff">Cliff walking: SARSA vs Q-learning</div>
-
-      <div class="prose">
+          So $\|F_{t+1}\|_\infty \leq (1-\alpha_t)\|F_t\|_\infty + \alpha_t\gamma\|F_t\|_\infty + \alpha_t|\text{noise}_t|$. This is a contraction-with-noise iteration. By the stochastic approximation theory (Robbins-Monro), the noise term averages out under the step-size conditions, and the contraction factor $\gamma &lt; 1$ drives $\|F_t\|_\infty \to 0$. $\blacksquare$</p>
+</div>
+</div>
+<!-- ── Cliff walking ──────────────────────────────────────── -->
+<div class="section-head" id="cliff">Cliff walking: SARSA vs Q-learning</div>
+<div class="prose">
         The classic example showing where SARSA and Q-learning differ is the
         <strong>cliff walking</strong> problem. Consider a grid with a sheer cliff along the
         bottom row. Stepping onto the cliff sends the agent back to the start with a reward of
         $-100$. All other steps give $-1$. The goal is in the bottom-right corner.
       </div>
-
-      <!-- SVG: cliff walking grid -->
-      <svg viewBox="0 0 500 200" style="width:100%;max-width:520px;display:block;margin:18px auto 10px;font-family:'IBM Plex Sans',sans-serif;">
-        <defs>
-          <marker id="clfarr" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
-            <path d="M0,1 L0,5 L6,3 z" fill="#3a6a8a"/>
-          </marker>
-          <marker id="clfarr2" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
-            <path d="M0,1 L0,5 L6,3 z" fill="#c84040"/>
-          </marker>
-        </defs>
-        <!-- Grid: 4 rows × 12 cols simplified to 4×8 -->
-        <!-- Rows 0-2: normal cells -->
-        <!-- Row 3: start, cliff, cliff, ..., goal -->
-        <!-- Using 8 cols, cell size 55×42 -->
-        <rect x="20" y="20" width="55" height="38" rx="2" fill="#e8f0f5" stroke="#c0d0dc"/>
-        <rect x="20" y="62" width="55" height="38" rx="2" fill="#e8f0f5" stroke="#c0d0dc"/>
-        <rect x="20" y="104" width="55" height="38" rx="2" fill="#e8f0f5" stroke="#c0d0dc"/>
-        <rect x="20" y="146" width="55" height="38" rx="2" fill="#c8e8c4" stroke="#6aa06a" stroke-width="1.5"/>
-        <text x="47" y="170" text-anchor="middle" font-size="11" fill="#2a4a2a" font-weight="600">Start</text>
-
-        <!-- cols 1-6: normal rows, cliff bottom -->
-        <!-- I'll draw simplified: col positions 75, 130, 185, 240, 295, 350 -->
-        <!-- Normal cells rows 0-2 -->
-        <!-- Row 3: cliff cells cols 1-6 -->
-        <rect x="75" y="146" width="55" height="38" rx="2" fill="#f0c8c8" stroke="#c07070" stroke-width="1.5"/>
-        <rect x="130" y="146" width="55" height="38" rx="2" fill="#f0c8c8" stroke="#c07070" stroke-width="1.5"/>
-        <rect x="185" y="146" width="55" height="38" rx="2" fill="#f0c8c8" stroke="#c07070" stroke-width="1.5"/>
-        <rect x="240" y="146" width="55" height="38" rx="2" fill="#f0c8c8" stroke="#c07070" stroke-width="1.5"/>
-        <rect x="295" y="146" width="55" height="38" rx="2" fill="#f0c8c8" stroke="#c07070" stroke-width="1.5"/>
-        <rect x="350" y="146" width="55" height="38" rx="2" fill="#f0c8c8" stroke="#c07070" stroke-width="1.5"/>
-        <text x="212" y="170" text-anchor="middle" font-size="11" fill="#8a2020" font-weight="600">The Cliff (reward −100)</text>
-
-        <!-- Goal cell -->
-        <rect x="405" y="146" width="55" height="38" rx="2" fill="#c8d8e8" stroke="#4a7a9a" stroke-width="1.5"/>
-        <text x="432" y="170" text-anchor="middle" font-size="11" fill="#1a3a5a" font-weight="600">Goal</text>
-
-        <!-- Normal cells above cliff (cols 1-6, rows 0-2) -->
-        <rect x="75" y="20" width="55" height="38" rx="2" fill="#e8f0f5" stroke="#c0d0dc"/>
-        <rect x="75" y="62" width="55" height="38" rx="2" fill="#e8f0f5" stroke="#c0d0dc"/>
-        <rect x="75" y="104" width="55" height="38" rx="2" fill="#e8f0f5" stroke="#c0d0dc"/>
-        <rect x="130" y="20" width="55" height="38" rx="2" fill="#e8f0f5" stroke="#c0d0dc"/>
-        <rect x="130" y="62" width="55" height="38" rx="2" fill="#e8f0f5" stroke="#c0d0dc"/>
-        <rect x="130" y="104" width="55" height="38" rx="2" fill="#e8f0f5" stroke="#c0d0dc"/>
-        <rect x="405" y="20" width="55" height="38" rx="2" fill="#e8f0f5" stroke="#c0d0dc"/>
-        <rect x="405" y="62" width="55" height="38" rx="2" fill="#e8f0f5" stroke="#c0d0dc"/>
-        <rect x="405" y="104" width="55" height="38" rx="2" fill="#e8f0f5" stroke="#c0d0dc"/>
-        <!-- ... (intermediate cells abbreviated visually) -->
-
-        <!-- Q-learning path: hugs the cliff (bottom row shortcut) -->
-        <path d="M47,142 L47,109 L432,109 L432,142" stroke="#3a6a8a" stroke-width="2.5" fill="none"
-          stroke-dasharray="none" marker-end="url(#clfarr)"/>
-        <text x="240" y="98" text-anchor="middle" font-size="11" fill="#3a6a8a" font-weight="600">Q-learning (optimal)</text>
-
-        <!-- SARSA path: goes around top -->
-        <path d="M47,142 L47,36 L432,36 L432,142" stroke="#c84040" stroke-width="2.5" fill="none"
-          stroke-dasharray="6,3" marker-end="url(#clfarr2)"/>
-        <text x="240" y="16" text-anchor="middle" font-size="11" fill="#c84040" font-weight="600">SARSA (safe, ε-conservative)</text>
-      </svg>
-
-      <div class="prose">
+<!-- SVG: cliff walking grid -->
+<svg style="width:100%;max-width:520px;display:block;margin:18px auto 10px;font-family:'IBM Plex Sans',sans-serif;" viewbox="0 0 500 200">
+<defs>
+<marker id="clfarr" markerheight="7" markerwidth="7" orient="auto" refx="5" refy="3">
+<path d="M0,1 L0,5 L6,3 z" fill="#3a6a8a"></path>
+</marker>
+<marker id="clfarr2" markerheight="7" markerwidth="7" orient="auto" refx="5" refy="3">
+<path d="M0,1 L0,5 L6,3 z" fill="#c84040"></path>
+</marker>
+</defs>
+<!-- Grid: 4 rows × 12 cols simplified to 4×8 -->
+<!-- Rows 0-2: normal cells -->
+<!-- Row 3: start, cliff, cliff, ..., goal -->
+<!-- Using 8 cols, cell size 55×42 -->
+<rect fill="#e8f0f5" height="38" rx="2" stroke="#c0d0dc" width="55" x="20" y="20"></rect>
+<rect fill="#e8f0f5" height="38" rx="2" stroke="#c0d0dc" width="55" x="20" y="62"></rect>
+<rect fill="#e8f0f5" height="38" rx="2" stroke="#c0d0dc" width="55" x="20" y="104"></rect>
+<rect fill="#c8e8c4" height="38" rx="2" stroke="#6aa06a" stroke-width="1.5" width="55" x="20" y="146"></rect>
+<text fill="#2a4a2a" font-size="11" font-weight="600" text-anchor="middle" x="47" y="170">Start</text>
+<!-- cols 1-6: normal rows, cliff bottom -->
+<!-- I'll draw simplified: col positions 75, 130, 185, 240, 295, 350 -->
+<!-- Normal cells rows 0-2 -->
+<!-- Row 3: cliff cells cols 1-6 -->
+<rect fill="#f0c8c8" height="38" rx="2" stroke="#c07070" stroke-width="1.5" width="55" x="75" y="146"></rect>
+<rect fill="#f0c8c8" height="38" rx="2" stroke="#c07070" stroke-width="1.5" width="55" x="130" y="146"></rect>
+<rect fill="#f0c8c8" height="38" rx="2" stroke="#c07070" stroke-width="1.5" width="55" x="185" y="146"></rect>
+<rect fill="#f0c8c8" height="38" rx="2" stroke="#c07070" stroke-width="1.5" width="55" x="240" y="146"></rect>
+<rect fill="#f0c8c8" height="38" rx="2" stroke="#c07070" stroke-width="1.5" width="55" x="295" y="146"></rect>
+<rect fill="#f0c8c8" height="38" rx="2" stroke="#c07070" stroke-width="1.5" width="55" x="350" y="146"></rect>
+<text fill="#8a2020" font-size="11" font-weight="600" text-anchor="middle" x="212" y="170">The Cliff (reward −100)</text>
+<!-- Goal cell -->
+<rect fill="#c8d8e8" height="38" rx="2" stroke="#4a7a9a" stroke-width="1.5" width="55" x="405" y="146"></rect>
+<text fill="#1a3a5a" font-size="11" font-weight="600" text-anchor="middle" x="432" y="170">Goal</text>
+<!-- Normal cells above cliff (cols 1-6, rows 0-2) -->
+<rect fill="#e8f0f5" height="38" rx="2" stroke="#c0d0dc" width="55" x="75" y="20"></rect>
+<rect fill="#e8f0f5" height="38" rx="2" stroke="#c0d0dc" width="55" x="75" y="62"></rect>
+<rect fill="#e8f0f5" height="38" rx="2" stroke="#c0d0dc" width="55" x="75" y="104"></rect>
+<rect fill="#e8f0f5" height="38" rx="2" stroke="#c0d0dc" width="55" x="130" y="20"></rect>
+<rect fill="#e8f0f5" height="38" rx="2" stroke="#c0d0dc" width="55" x="130" y="62"></rect>
+<rect fill="#e8f0f5" height="38" rx="2" stroke="#c0d0dc" width="55" x="130" y="104"></rect>
+<rect fill="#e8f0f5" height="38" rx="2" stroke="#c0d0dc" width="55" x="405" y="20"></rect>
+<rect fill="#e8f0f5" height="38" rx="2" stroke="#c0d0dc" width="55" x="405" y="62"></rect>
+<rect fill="#e8f0f5" height="38" rx="2" stroke="#c0d0dc" width="55" x="405" y="104"></rect>
+<!-- ... (intermediate cells abbreviated visually) -->
+<!-- Q-learning path: hugs the cliff (bottom row shortcut) -->
+<path d="M47,142 L47,109 L432,109 L432,142" fill="none" marker-end="url(#clfarr)" stroke="#3a6a8a" stroke-dasharray="none" stroke-width="2.5"></path>
+<text fill="#3a6a8a" font-size="11" font-weight="600" text-anchor="middle" x="240" y="98">Q-learning (optimal)</text>
+<!-- SARSA path: goes around top -->
+<path d="M47,142 L47,36 L432,36 L432,142" fill="none" marker-end="url(#clfarr2)" stroke="#c84040" stroke-dasharray="6,3" stroke-width="2.5"></path>
+<text fill="#c84040" font-size="11" font-weight="600" text-anchor="middle" x="240" y="16">SARSA (safe, ε-conservative)</text>
+</svg>
+<div class="prose">
         Q-learning learns the <em>truly optimal</em> policy: walk along the edge of the cliff,
         since that is the shortest path to the goal with reward $-1$ per step. Q-learning can
         afford to learn this because its target is computed using $\max_{a'} Q$, which imagines
         a greedy agent that never accidentally falls off the cliff. The random exploration doesn't
         affect what the algorithm is trying to learn.
       </div>
-
-      <div class="prose">
+<div class="prose">
         SARSA learns the <em>optimal ε-soft policy</em>: the best policy given that it must
         sometimes explore randomly. Since an ε-greedy SARSA agent occasionally takes random
         actions, walking next to the cliff means sometimes falling off (reward $-100$). SARSA
@@ -478,47 +416,39 @@
         It learns that the safe path (going high above the cliff) is better in practice, even
         though it is longer.
       </div>
-
-      <div class="prose">
+<div class="prose">
         Neither is universally better. Q-learning finds the truly optimal policy but risks
         poor performance during training (many $-100$ penalties). SARSA finds a safer
         policy that accounts for its own exploration behavior. This distinction becomes important
         in real-world systems where falling off a "cliff" during training is costly or dangerous.
       </div>
-
-      <!-- ── n-step TD ───────────────────────────────────────────── -->
-      <div class="section-head" id="nstep">n-step TD: unifying MC and TD</div>
-
-      <div class="prose">
+<!-- ── n-step TD ───────────────────────────────────────────── -->
+<div class="section-head" id="nstep">n-step TD: unifying MC and TD</div>
+<div class="prose">
         TD(0) looks one step ahead before bootstrapping. MC looks all the way to the end of
         the episode. The natural generalization is to look $n$ steps ahead, then bootstrap:
       </div>
-
-      <div class="math-block">
+<div class="math-block">
         $$G_t^{(n)} = R_{t+1} + \gamma R_{t+2} + \cdots + \gamma^{n-1} R_{t+n} + \gamma^n V(S_{t+n})$$
       </div>
-
-      <div class="prose">
+<div class="prose">
         The $n$-step TD update is:
         $$V(S_t) \leftarrow V(S_t) + \alpha\bigl[G_t^{(n)} - V(S_t)\bigr]$$
       </div>
-
-      <div class="prose">
+<div class="prose">
         At $n=1$: $G_t^{(1)} = R_{t+1} + \gamma V(S_{t+1})$ — ordinary TD(0).
         At $n=\infty$: $G_t^{(\infty)} = G_t$ — the full Monte Carlo return.
         Any finite $n$ is a middle ground: accumulate $n$ real reward observations, then bootstrap
         with the current value estimate.
       </div>
-
-      <div class="prose">
+<div class="prose">
         In practice, $n$ is a hyperparameter. Larger $n$ reduces bias (more real reward
         observations, less dependence on the current $V$ estimate) at the cost of higher variance
         and requiring $n$ steps before an update can be made. For many problems, $n = 3$–$10$
         outperforms both $n=1$ and $n=\infty$.
       </div>
-
-      <div class="callout">
-        <strong>TD(λ) and eligibility traces:</strong> Rather than picking a fixed $n$, TD(λ)
+<div class="callout">
+<strong>TD(λ) and eligibility traces:</strong> Rather than picking a fixed $n$, TD(λ)
         uses a weighted average of all $n$-step returns, with the weight of the $n$-step return
         decaying geometrically as $\lambda^{n-1}(1-\lambda)$. This is the $\lambda$-return.
         $\lambda = 0$ gives TD(0); $\lambda = 1$ gives MC. Implemented using eligibility traces
@@ -526,131 +456,115 @@
         elegant unified framework. This lesson focuses on the $n$-step case; TD(λ) is covered
         in most textbooks as the natural extension.
       </div>
-
-      <!-- ── Worked examples ─────────────────────────────────────── -->
-      <div class="section-head" id="worked-examples">Worked examples</div>
-
-      <div class="example-box">
-        <div class="example-header"><strong>Example 1 — TD(0) update, step by step</strong></div>
-        <div class="example-problem">
+<!-- ── Worked examples ─────────────────────────────────────── -->
+<div class="section-head" id="worked-examples">Worked examples</div>
+<div class="example-box">
+<div class="example-header"><strong>Example 1 — TD(0) update, step by step</strong></div>
+<div class="example-problem">
           Current estimates: $V(s_3) = -1.5$, $V(s_7) = -3.0$. An agent in state $s_3$ takes
           an action, receives reward $R = -1$, and transitions to $s_7$.
           Use $\alpha = 0.1$, $\gamma = 0.9$. Compute the TD target, TD error, and updated $V(s_3)$.
         </div>
-        <div class="example-body">
-          <div class="prose">TD target: $R + \gamma V(s_7) = -1 + 0.9 \times (-3.0) = -1 - 2.7 = -3.7$</div>
-          <div class="prose">TD error: $\delta = -3.7 - (-1.5) = -2.2$</div>
-          <div class="prose">Update: $V(s_3) \leftarrow -1.5 + 0.1 \times (-2.2) = -1.5 - 0.22 = \mathbf{-1.72}$</div>
-          <div class="prose">
+<div class="example-body">
+<div class="prose">TD target: $R + \gamma V(s_7) = -1 + 0.9 \times (-3.0) = -1 - 2.7 = -3.7$</div>
+<div class="prose">TD error: $\delta = -3.7 - (-1.5) = -2.2$</div>
+<div class="prose">Update: $V(s_3) \leftarrow -1.5 + 0.1 \times (-2.2) = -1.5 - 0.22 = \mathbf{-1.72}$</div>
+<div class="prose">
             The negative TD error means the outcome was worse than predicted — $s_3$ is further from
             a good future than $V$ thought. The update moves $V(s_3)$ downward. Notice this update
             happens immediately after one step; MC would wait for the whole episode.
           </div>
-        </div>
-      </div>
-
-      <div class="example-box">
-        <div class="example-header"><strong>Example 2 — Q-learning update</strong></div>
-        <div class="example-problem">
+</div>
+</div>
+<div class="example-box">
+<div class="example-header"><strong>Example 2 — Q-learning update</strong></div>
+<div class="example-problem">
           State $s$: $Q(s,\text{N})=-2.0$, $Q(s,\text{E})=-1.5$, $Q(s,\text{S})=-3.0$, $Q(s,\text{W})=-2.5$.
           Agent takes East, receives $R=-1$, arrives at $s'$: $Q(s',\text{N})=Q(s',\text{E})=-0.5$,
           $Q(s',\text{S})=Q(s',\text{W})=-1.0$. Use $\alpha=0.2$, $\gamma=1$.
           Compute the Q-learning update to $Q(s,\text{E})$.
         </div>
-        <div class="example-body">
-          <div class="prose">$\max_{a'} Q(s', a') = -0.5$ (North or East from $s'$).</div>
-          <div class="prose">TD target: $R + \gamma \max_{a'} Q(s', a') = -1 + 1.0 \times (-0.5) = -1.5$</div>
-          <div class="prose">TD error: $\delta = -1.5 - (-1.5) = 0$</div>
-          <div class="prose">
+<div class="example-body">
+<div class="prose">$\max_{a'} Q(s', a') = -0.5$ (North or East from $s'$).</div>
+<div class="prose">TD target: $R + \gamma \max_{a'} Q(s', a') = -1 + 1.0 \times (-0.5) = -1.5$</div>
+<div class="prose">TD error: $\delta = -1.5 - (-1.5) = 0$</div>
+<div class="prose">
             No update! $Q(s, \text{E})$ is already consistent with the optimal value of $s'$.
             This is a fixed-point: if the rest of $Q$ is correct, no further update is needed here.
             In practice this happens near convergence — once $Q$ is close to $q_*$, TD errors become
             small everywhere.
           </div>
-        </div>
-      </div>
-
-      <div class="example-box">
-        <div class="example-header"><strong>Example 3 — n-step return calculation</strong></div>
-        <div class="example-problem">
+</div>
+</div>
+<div class="example-box">
+<div class="example-header"><strong>Example 3 — n-step return calculation</strong></div>
+<div class="example-problem">
           An episode proceeds: $S_3 \xrightarrow{R_4=-1} S_4 \xrightarrow{R_5=-1} S_5 \xrightarrow{R_6=-1} S_6$.
           Current estimate $V(S_6) = -2.0$. Compute the 3-step return $G_3^{(3)}$ for state $S_3$
           with $\gamma=1$, and compare it to the TD(0) target for the same state.
         </div>
-        <div class="example-body">
-          <div class="prose">
+<div class="example-body">
+<div class="prose">
             $$G_3^{(3)} = R_4 + \gamma R_5 + \gamma^2 R_6 + \gamma^3 V(S_6) = -1 + (-1) + (-1) + (-2) = -5$$
           </div>
-          <div class="prose">
+<div class="prose">
             Compare to TD(0) for $S_3$: $G_3^{(1)} = R_4 + \gamma V(S_4)$. This requires $V(S_4)$
             but only one real observation. The 3-step version uses three real reward observations and
             then bootstraps — lower variance, but needs to wait 3 steps before the update can be
             applied.
           </div>
-        </div>
-      </div>
-
-      <!-- ── Interactive ─────────────────────────────────────────── -->
-      <div class="section-head" id="interactive">Interactive: Q-learning on the grid</div>
-
-      <div class="prose">
+</div>
+</div>
+<!-- ── Interactive ─────────────────────────────────────────── -->
+<div class="section-head" id="interactive">Interactive: Q-learning on the grid</div>
+<div class="prose">
         Q-learning running on the same 4×4 grid used in Lessons 5 and 6. Arrows show the
         current greedy policy derived from $Q$; cell shading reflects the maximum Q-value
         (lighter = better expected future). Watch how the policy becomes optimal over episodes.
       </div>
-
-      <div class="interactive" style="margin:24px 0;">
-        <div class="int-title">Q-Learning — 4×4 Grid World</div>
-
-        <div style="display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start;margin-bottom:16px;">
-          <div style="display:flex;flex-direction:column;gap:6px;">
-            <label style="font-size:12.5px;color:#5a6a7a;">
+<div class="interactive" style="margin:24px 0;">
+<div class="int-title">Q-Learning — 4×4 Grid World</div>
+<div style="display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start;margin-bottom:16px;">
+<div style="display:flex;flex-direction:column;gap:6px;">
+<label style="font-size:12.5px;color:#5a6a7a;">
               Step size $\alpha$:
               <span id="ql-alpha-val" style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:#1a2840;">0.10</span>
-            </label>
-            <input type="range" id="ql-alpha" min="0.01" max="0.5" step="0.01" value="0.1"
-              style="width:160px;" oninput="document.getElementById('ql-alpha-val').textContent=parseFloat(this.value).toFixed(2);">
-          </div>
-          <div style="display:flex;flex-direction:column;gap:6px;">
-            <label style="font-size:12.5px;color:#5a6a7a;">
+</label>
+<input id="ql-alpha" max="0.5" min="0.01" oninput="document.getElementById('ql-alpha-val').textContent=parseFloat(this.value).toFixed(2);" step="0.01" style="width:160px;" type="range" value="0.1"/>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px;">
+<label style="font-size:12.5px;color:#5a6a7a;">
               Exploration $\varepsilon$:
               <span id="ql-eps-val" style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:#1a2840;">0.10</span>
-            </label>
-            <input type="range" id="ql-eps" min="0.01" max="0.5" step="0.01" value="0.1"
-              style="width:160px;" oninput="document.getElementById('ql-eps-val').textContent=parseFloat(this.value).toFixed(2);">
-          </div>
-          <div style="display:flex;flex-direction:column;gap:6px;">
-            <label style="font-size:12.5px;color:#5a6a7a;">
+</label>
+<input id="ql-eps" max="0.5" min="0.01" oninput="document.getElementById('ql-eps-val').textContent=parseFloat(this.value).toFixed(2);" step="0.01" style="width:160px;" type="range" value="0.1"/>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px;">
+<label style="font-size:12.5px;color:#5a6a7a;">
               Discount $\gamma$:
               <span id="ql-gamma-val" style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:#1a2840;">1.00</span>
-            </label>
-            <input type="range" id="ql-gamma" min="0.5" max="1.0" step="0.05" value="1.0"
-              style="width:160px;" oninput="document.getElementById('ql-gamma-val').textContent=parseFloat(this.value).toFixed(2);">
-          </div>
-        </div>
-
-        <div style="font-size:12.5px;color:#5a6a7a;margin-bottom:12px;">
+</label>
+<input id="ql-gamma" max="1.0" min="0.5" oninput="document.getElementById('ql-gamma-val').textContent=parseFloat(this.value).toFixed(2);" step="0.05" style="width:160px;" type="range" value="1.0"/>
+</div>
+</div>
+<div style="font-size:12.5px;color:#5a6a7a;margin-bottom:12px;">
           Episodes: <span id="ql-ep-count" style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:#1a2840;">0</span>
-          &nbsp;&nbsp;Steps: <span id="ql-step-count" style="font-family:'IBM Plex Mono',monospace;color:#3a6a8a;">0</span>
-        </div>
-
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;">
-          <button onclick="qlRun(1)" style="padding:7px 14px;background:#3a6a8a;color:white;border:none;border-radius:4px;font-family:'IBM Plex Sans',sans-serif;font-size:13px;cursor:pointer;">1 episode</button>
-          <button onclick="qlRun(10)" style="padding:7px 14px;background:#3a6a8a;color:white;border:none;border-radius:4px;font-family:'IBM Plex Sans',sans-serif;font-size:13px;cursor:pointer;">10 episodes</button>
-          <button onclick="qlRun(100)" style="padding:7px 14px;background:#3a6a8a;color:white;border:none;border-radius:4px;font-family:'IBM Plex Sans',sans-serif;font-size:13px;cursor:pointer;">100 episodes</button>
-          <button onclick="qlRun(500)" style="padding:7px 14px;background:#3a6a8a;color:white;border:none;border-radius:4px;font-family:'IBM Plex Sans',sans-serif;font-size:13px;cursor:pointer;">500 episodes</button>
-          <button onclick="qlResetAll()" style="padding:7px 14px;background:#e8eef2;color:#2a3a4a;border:none;border-radius:4px;font-family:'IBM Plex Sans',sans-serif;font-size:13px;cursor:pointer;">Reset</button>
-        </div>
-
-        <svg id="ql-grid" viewBox="0 0 360 360" style="width:100%;max-width:400px;display:block;margin:0 auto;"></svg>
-
-        <p style="font-size:11.5px;color:#7a8a9a;text-align:center;margin-top:8px;">
+            Steps: <span id="ql-step-count" style="font-family:'IBM Plex Mono',monospace;color:#3a6a8a;">0</span>
+</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;">
+<button onclick="qlRun(1)" style="padding:7px 14px;background:#3a6a8a;color:white;border:none;border-radius:4px;font-family:'IBM Plex Sans',sans-serif;font-size:13px;cursor:pointer;">1 episode</button>
+<button onclick="qlRun(10)" style="padding:7px 14px;background:#3a6a8a;color:white;border:none;border-radius:4px;font-family:'IBM Plex Sans',sans-serif;font-size:13px;cursor:pointer;">10 episodes</button>
+<button onclick="qlRun(100)" style="padding:7px 14px;background:#3a6a8a;color:white;border:none;border-radius:4px;font-family:'IBM Plex Sans',sans-serif;font-size:13px;cursor:pointer;">100 episodes</button>
+<button onclick="qlRun(500)" style="padding:7px 14px;background:#3a6a8a;color:white;border:none;border-radius:4px;font-family:'IBM Plex Sans',sans-serif;font-size:13px;cursor:pointer;">500 episodes</button>
+<button onclick="qlResetAll()" style="padding:7px 14px;background:#e8eef2;color:#2a3a4a;border:none;border-radius:4px;font-family:'IBM Plex Sans',sans-serif;font-size:13px;cursor:pointer;">Reset</button>
+</div>
+<svg id="ql-grid" style="width:100%;max-width:400px;display:block;margin:0 auto;" viewbox="0 0 360 360"></svg>
+<p style="font-size:11.5px;color:#7a8a9a;text-align:center;margin-top:8px;">
           Arrows show the current greedy policy ($\arg\max_a Q(s,a)$). Cell color shows $\max_a Q(s,a)$.
           Terminals are green. After ~100 episodes, the arrows should form the optimal policy.
         </p>
-      </div>
-
-      <script>
+</div>
+<script>
       (function() {
         const GRID = 4, N = 16;
         const TERMINALS = new Set([0, 15]);
@@ -774,22 +688,20 @@
         qlRenderFn();
       })();
       </script>
-
-      <!-- ── Food for thought ────────────────────────────────────── -->
-      <div class="section-head" id="food-for-thought">Food for thought</div>
-
-      <div class="fft-block">
-        <div class="fft-title">Reflection questions</div>
-        <ol>
-          <li>TD(0) bootstraps from $V(S_{t+1})$, which is itself an estimate. This makes
+<!-- ── Food for thought ────────────────────────────────────── -->
+<div class="section-head" id="food-for-thought">Food for thought</div>
+<div class="fft-block">
+<div class="fft-title">Reflection questions</div>
+<ol>
+<li class="fft-item">TD(0) bootstraps from $V(S_{t+1})$, which is itself an estimate. This makes
             the target a moving target — as $V$ changes, so do all past TD targets. Does this
             cause a problem for convergence? What assumption about the step size $\alpha$ is
             needed to guarantee convergence, and why does that assumption address the issue?
-                          <div class="fft-answer-body">
+                          <div class="fft-answer">
                 The moving target is a genuine complication — TD is not gradient descent on a
                 fixed loss, so the standard convergence proofs don't apply directly. The classic
                 Robbins-Monro conditions handle it: $\sum_t \alpha_t = \infty$ (enough total
-                learning to overcome any initialization) and $\sum_t \alpha_t^2 < \infty$ (updates
+                learning to overcome any initialization) and $\sum_t \alpha_t^2 &lt; \infty$ (updates
                 shrink fast enough that noise averages out and the algorithm "settles"). As
                 $\alpha_t \to 0$, the target is moving slower and slower relative to the update
                 size, so the algorithm can converge to a fixed point even though the target was
@@ -797,13 +709,12 @@
                 linear function approximation but oscillates around the true values — useful in
                 practice but technically non-convergent in the classic sense.
               </div>
-            
-          </li>
-          <li>Q-learning converges to $q_*$ regardless of the behavior policy (as long as
+</li>
+<li class="fft-item">Q-learning converges to $q_*$ regardless of the behavior policy (as long as
             the behavior policy covers all actions). Does this mean you could use <em>any</em>
             data — even data from a completely different task — to learn $q_*$ for your task?
             What would go wrong (or right) in practice?
-                          <div class="fft-answer-body">
+                          <div class="fft-answer">
                 No — "any behavior policy" means any policy acting in <em>the same MDP</em>. The
                 reward signal in the data must come from the task you're learning. Data from a
                 different task has different rewards, so Q-learning on it would converge to $q_*$
@@ -814,116 +725,104 @@
                 were collected. Cross-task reuse requires transfer learning or meta-learning, not
                 just Q-learning's off-policy property.
               </div>
-            
-          </li>
-          <li>In the cliff walking example, SARSA learns a safer policy while Q-learning
+</li>
+<li class="fft-item">In the cliff walking example, SARSA learns a safer policy while Q-learning
             learns the optimal policy. Which would you prefer in a real robot deployment?
             Does the answer change depending on whether the robot is in training or in
             production?
-                          <div class="fft-answer-body">
-                <strong>During training:</strong> SARSA is typically safer for physical robots.
+                          <div class="fft-answer">
+<strong>During training:</strong> SARSA is typically safer for physical robots.
                 Its on-policy update accounts for the ε-greedy exploration noise — so the learned
                 policy stays away from catastrophic states even when the robot takes random actions.
                 Q-learning's target policy ignores the exploration; the cliff edge is avoided only
                 once exploration stops.
-                <br><br>
-                <strong>In production:</strong> With ε=0 (purely greedy), both algorithms'
+                <br/><br/>
+<strong>In production:</strong> With ε=0 (purely greedy), both algorithms'
                 policies converge to the same behaviour in most MDPs. Q-learning's optimal policy
                 (shorter path along the cliff) is strictly better in terms of expected reward. If
                 the deployment environment is safe and well-controlled, Q-learning's policy is
                 preferable.
-                <br><br>
-                <strong>The practical answer:</strong> Train with SARSA (safe exploration), then
+                <br/><br/>
+<strong>The practical answer:</strong> Train with SARSA (safe exploration), then
                 at deployment switch to the greedy policy derived from Q-learning's Q-values for
                 optimal performance. This is a common pattern in real robotics.
               </div>
-            
-          </li>
-        </ol>
-      </div>
-
-      <!-- ── Common pitfalls ─────────────────────────────────────── -->
-      <div class="section-head" id="pitfalls">Common pitfalls</div>
-
-      <div class="pitfalls-block">
-        <div class="pitfalls-title">Mistakes worth knowing about in advance</div>
-        <ul>
-          <li><span class="pitfall-name">Confusing TD target and TD error.</span>
+</li>
+</ol>
+</div>
+<!-- ── Common pitfalls ─────────────────────────────────────── -->
+<div class="section-head" id="pitfalls">Common pitfalls</div>
+<div class="pitfalls-block">
+<div class="pitfalls-title">Mistakes worth knowing about in advance</div>
+<ul>
+<li><span class="pitfall-name">Confusing TD target and TD error.</span>
             The TD target is $R_{t+1} + \gamma V(S_{t+1})$ — it is what you are trying to move
             $V(S_t)$ toward. The TD error $\delta_t$ is the difference between the target and
             $V(S_t)$. The update is $V(S_t) \leftarrow V(S_t) + \alpha \delta_t$, not
             $V(S_t) \leftarrow \text{target}$ (which would be a hard assignment, ignoring $\alpha$).</li>
-          <li><span class="pitfall-name">Using $V(S_{T+1})$ after the terminal step.</span>
+<li><span class="pitfall-name">Using $V(S_{T+1})$ after the terminal step.</span>
             When $S_{t+1}$ is the terminal state, $V(S_{t+1})$ must be treated as 0, not as
             whatever value $V(\text{terminal})$ happens to store. If you forget this, the
             terminal state's stored value will bleed into all previous states' estimates,
             producing wrong values near the end of episodes.</li>
-          <li><span class="pitfall-name">Thinking SARSA and Q-learning converge to the same policy.</span>
+<li><span class="pitfall-name">Thinking SARSA and Q-learning converge to the same policy.</span>
             In most textbook examples they do (or nearly so). But as the cliff walking example
             shows, they can converge to genuinely different policies. SARSA converges to the
             best policy under ε-greedy exploration; Q-learning converges to $q_*$ regardless.
             With small $\varepsilon$, the policies are close — but not identical.</li>
-          <li><span class="pitfall-name">Treating Q-learning as on-policy.</span>
+<li><span class="pitfall-name">Treating Q-learning as on-policy.</span>
             Q-learning is off-policy — the update target uses $\max_{a'} Q$, not the action
             that was actually taken. This means you can train Q-learning on any data collected
             from any policy, and re-use the same data multiple times (experience replay). This
             is a major practical advantage of Q-learning over SARSA.</li>
-          <li><span class="pitfall-name">Choosing $n$ in n-step TD without thinking about episode length.</span>
+<li><span class="pitfall-name">Choosing $n$ in n-step TD without thinking about episode length.</span>
             If your episodes are typically 10 steps long, $n=50$ step returns are mostly MC
             returns — you hit the terminal before bootstrapping. Choosing $n$ relative to the
             episode length matters; a good starting point is $n$ on the order of the average
             episode length divided by 5–10.</li>
-        </ul>
-      </div>
-
-      <!-- ── Connects to ──────────────────────────────────────────── -->
-      <div class="connects-to">
-        <div class="connects-to-label">Connects to</div>
-        <ul>
-          <li><strong>RL · Dynamic Programming</strong> (Lesson 5) — Q-learning is stochastic
+</ul>
+</div>
+<!-- ── Connects to ──────────────────────────────────────────── -->
+<div class="connects-to">
+<div class="connects-to-label">Connects to</div>
+<ul>
+<li><strong>RL · Dynamic Programming</strong> (Lesson 5) — Q-learning is stochastic
             value iteration: the same Bellman optimality operator, applied using sampled
             transitions rather than the model. SARSA is stochastic policy iteration (on-policy
             evaluation + greedy improvement). The DP algorithms are the model-based versions
             of what TD does here with samples.</li>
-          <li><strong>RL · Function Approximation</strong> (Lesson 8) — TD(0) and Q-learning
+<li><strong>RL · Function Approximation</strong> (Lesson 8) — TD(0) and Q-learning
             extend naturally to parameterized value functions via semi-gradient methods. The
             TD error $\delta_t$ becomes the signal for updating neural network weights.
             Deep Q-Networks (DQN) use Q-learning with a neural network for $Q(s,a;\theta)$
             and experience replay to stabilize training.</li>
-          <li><strong>Neuroscience</strong> — The TD error $\delta_t$ has a biological
+<li><strong>Neuroscience</strong> — The TD error $\delta_t$ has a biological
             interpretation: it matches the firing pattern of dopaminergic neurons during
             reward learning in the mammalian brain. Animals show positive prediction errors
             (unexpected rewards → dopamine burst) and negative prediction errors (expected
             reward omitted → dopamine dip) — exactly what $\delta_t$ captures. TD learning
             was partly inspired by, and later confirmed to explain, this neural signal.</li>
-        </ul>
-      </div>
-
-      <hr class="lesson-rule">
-
-      <div class="section-head">References</div>
-      <ul class="prose" style="padding-left:1.4em;font-size:13.5px;color:#5a6a7a;">
-        <li style="margin-bottom:6px;">R. S. Sutton &amp; A. G. Barto, <em>Reinforcement Learning: An Introduction</em>
+</ul>
+</div>
+<hr class="lesson-rule"/>
+<div class="section-head">References</div>
+<ul class="prose" style="padding-left:1.4em;font-size:13.5px;color:#5a6a7a;">
+<li style="margin-bottom:6px;">R. S. Sutton &amp; A. G. Barto, <em>Reinforcement Learning: An Introduction</em>
           (2nd ed.) — Chapter 6: TD prediction (6.1), advantages of TD (6.2), SARSA (6.4),
           Q-learning (6.5), cliff walking example (6.5). Chapter 7 covers n-step TD.
           The random walk example (Example 6.2) is the canonical demonstration of TD vs MC
           convergence speed.</li>
-        <li>C. Watkins (1989), <em>Learning from Delayed Rewards</em> — the original
+<li>C. Watkins (1989), <em>Learning from Delayed Rewards</em> — the original
           Q-learning thesis. Watkins and Dayan (1992) provide the convergence proof.</li>
-      </ul>
-
-      <div id="lesson-nav"></div>
-
-    </div><!-- /main -->
-
-  </div><!-- /page-body -->
+</ul>
+<div id="lesson-nav"></div>
+</div><!-- /main -->
+</div><!-- /page-body -->
 </div><!-- /site-wrap -->
-
 <footer class="site-footer">
-  <span>elee03.github.io/notes</span>
-  <span>Est. MMXXVI</span>
+<span>elee03.github.io/notes</span>
+<span>Est. MMXXVI</span>
 </footer>
-
-    <script src="../notes-nav.js"></script>
+<script src="../notes-nav.js"></script>
 </body>
 </html>

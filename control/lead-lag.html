@@ -1,17 +1,18 @@
 ﻿<!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lead-Lag Compensators — Field Notes</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../style.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
-  <script>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Lead-Lag Compensators — Field Notes</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="../style.css" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" rel="stylesheet"/>
+<script defer="" src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer="" src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<script>
     document.addEventListener('DOMContentLoaded', function() {
       renderMathInElement(document.body, {
         delimiters: [
@@ -23,7 +24,7 @@
       llInit();
     });
   </script>
-  <style>
+<style>
     .widget-card {
       background: #f0f4f7;
       border: 1px solid #c0d0dc;
@@ -160,54 +161,47 @@
   </style>
 </head>
 <body>
-
 <div class="topbar">
-  <div class="topbar-inner">
-    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
-    <span class="topbar-sep">·</span>
-    <a href="../references.html" class="topbar-link">Library</a>
-    <span class="topbar-sep">·</span>
-    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
-  </div>
+<div class="topbar-inner">
+<a class="topbar-brand" href="../index.html">Field <span class="accent">Notes</span></a>
+<span class="topbar-sep">·</span>
+<a class="topbar-link" href="../references.html">Library</a>
+<span class="topbar-sep">·</span>
+<a class="topbar-back" href="https://elee03.github.io">elee03.github.io ↗</a>
 </div>
-
+</div>
 <div class="site-wrap">
-  <div class="page-body">
-
-    <div class="sidebar">
-      <div id="cluster-nav" data-cluster="control" data-current="lead-lag.html"></div>
-            <hr class="sidebar-rule">
-      <div class="nav-section">
-        <div class="nav-label">On this page</div>
-        <a href="#the-idea" class="nav-item">The compensator idea</a>
-        <a href="#lead" class="nav-item">Lead compensator</a>
-        <a href="#lead-design" class="nav-item">Lead design procedure</a>
-        <a href="#lag" class="nav-item">Lag compensator</a>
-        <a href="#lag-design" class="nav-item">Lag design procedure</a>
-        <a href="#combined" class="nav-item">Combined lead-lag</a>
-        <a href="#pid-comparison" class="nav-item">Comparison to PID</a>
-        <a href="#interactive" class="nav-item">Interactive explorer</a>
-        <a href="#worked-examples" class="nav-item">Worked examples</a>
-        <a href="#food-for-thought" class="nav-item">Food for thought</a>
-        <a href="#pitfalls" class="nav-item">Common pitfalls</a>
-      </div>
-    </div><!-- /sidebar -->
-
-    <div class="main">
-
-      <div class="breadcrumb">
-        <a href="../index.html">Field Notes</a>
-        <span class="sep">›</span>
-        <a href="index.html">Control Theory</a>
-        <span class="sep">›</span>
-        <span>Lesson 8</span>
-      </div>
-
-      <div class="lesson-title">Lead-Lag Compensators</div>
-      <div class="lesson-meta">Frequency-Domain Design · Phase Lead · Steady-State Accuracy · Bandwidth Shaping</div>
-
-      <!-- ═══ HOOK ═══ -->
-      <div class="prose" id="hook">
+<div class="page-body">
+<div class="sidebar">
+<div data-cluster="control" data-current="lead-lag.html" id="cluster-nav"></div>
+<hr class="sidebar-rule"/>
+<div class="nav-section">
+<div class="nav-label">On this page</div>
+<a class="nav-item" href="#the-idea">The compensator idea</a>
+<a class="nav-item" href="#lead">Lead compensator</a>
+<a class="nav-item" href="#lead-design">Lead design procedure</a>
+<a class="nav-item" href="#lag">Lag compensator</a>
+<a class="nav-item" href="#lag-design">Lag design procedure</a>
+<a class="nav-item" href="#combined">Combined lead-lag</a>
+<a class="nav-item" href="#pid-comparison">Comparison to PID</a>
+<a class="nav-item" href="#interactive">Interactive explorer</a>
+<a class="nav-item" href="#worked-examples">Worked examples</a>
+<a class="nav-item" href="#food-for-thought">Food for thought</a>
+<a class="nav-item" href="#pitfalls">Common pitfalls</a>
+</div>
+</div><!-- /sidebar -->
+<div class="main">
+<div class="breadcrumb">
+<a href="../index.html">Field Notes</a>
+<span class="sep">›</span>
+<a href="index.html">Control Theory</a>
+<span class="sep">›</span>
+<span>Lesson 8</span>
+</div>
+<div class="lesson-title">Lead-Lag Compensators</div>
+<div class="lesson-meta">Frequency-Domain Design · Phase Lead · Steady-State Accuracy · Bandwidth Shaping</div>
+<!-- ═══ HOOK ═══ -->
+<div class="prose" id="hook">
         You've seen that adding gain increases bandwidth and improves steady-state error, but
         degrades phase margin. PID fixes steady-state error unconditionally — but only by
         adding an integrator that brings windup risk and tuning complexity. Is there a more
@@ -216,490 +210,446 @@
         while a lag section quietly boosts DC gain without touching the bandwidth. No integrator,
         no windup, and the design procedure is a short series of Bode calculations.
       </div>
-
-      <!-- ═══ THE COMPENSATOR IDEA ═══ -->
-      <div class="section-head" id="the-idea">The compensator idea</div>
-
-      <div class="prose">
+<!-- ═══ THE COMPENSATOR IDEA ═══ -->
+<div class="section-head" id="the-idea">The compensator idea</div>
+<div class="prose">
         Every closed-loop property we care about — phase margin, bandwidth, steady-state
         error — is encoded in the open-loop transfer function $L(s) = C(s)G(s)$. We've been
         using $C(s) = K$ (pure gain), which scales the Bode magnitude uniformly. Gain alone
         can move the gain crossover frequency up or down, but it cannot change the
         <em>shape</em> of the phase curve. That's the job of a dynamic compensator.
       </div>
-      <div class="prose">
+<div class="prose">
         A <strong>compensator</strong> is a transfer function $C(s)$ with non-trivial dynamics
         — poles and zeros placed deliberately to reshape the magnitude and phase of $L(j\omega)$.
         The two canonical shapes are:
       </div>
-      <ul class="prose" style="margin-top:0; padding-left:24px;">
-        <li style="margin-bottom:6px;"><strong>Phase lead</strong>: a zero-pole pair
+<ul class="prose" style="margin-top:0; padding-left:24px;">
+<li style="margin-bottom:6px;"><strong>Phase lead</strong>: a zero-pole pair
           $C(s) = (s+z)/(s+p)$ with $p &gt; z &gt; 0$ contributes positive (leading) phase
           in the frequency band between $z$ and $p$. Place that band around $\omega_c$ to
           boost phase margin and bandwidth.</li>
-        <li><strong>Phase lag</strong>: the same form with $0 &lt; p &lt; z$ attenuates
+<li><strong>Phase lag</strong>: the same form with $0 &lt; p &lt; z$ attenuates
           high frequencies relative to DC. The DC gain is $z/p &gt; 1$, boosting the
           low-frequency loop gain and improving steady-state accuracy.</li>
-      </ul>
-      <div class="prose">
+</ul>
+<div class="prose">
         These can be cascaded — a lead section to fix the phase margin, a lag section to
         fix the steady-state error — giving the <em>lead-lag compensator</em>. Each section
         targets a different part of the frequency axis, so they can be designed nearly
         independently.
       </div>
-
-      <!-- ═══ LEAD COMPENSATOR ═══ -->
-      <div class="section-head" id="lead">The lead compensator</div>
-
-      <div class="prose">
+<!-- ═══ LEAD COMPENSATOR ═══ -->
+<div class="section-head" id="lead">The lead compensator</div>
+<div class="prose">
         The lead compensator has the form:
       </div>
-
-      <div class="math-block">
-        $$C_\text{lead}(s) = K_c \frac{s + z}{s + p}, \qquad p > z > 0$$
+<div class="math-block">
+        $$C_\text{lead}(s) = K_c \frac{s + z}{s + p}, \qquad p &gt; z &gt; 0$$
       </div>
-
-      <div class="prose">
+<div class="prose">
         Define $\alpha = z/p &lt; 1$ (the ratio of zero to pole location). The compensator
         can be written in a normalized form that makes its Bode behavior explicit:
       </div>
-
-      <div class="math-block">
+<div class="math-block">
         $$C_\text{lead}(s) = K_c\alpha \cdot \frac{Ts + 1}{\alpha T s + 1}, \qquad T = \frac{1}{z}$$
       </div>
-
-      <div class="prose">
-        <strong>Bode magnitude:</strong> At low frequencies ($\omega \ll z$), $|C| \approx K_c$.
+<div class="prose">
+<strong>Bode magnitude:</strong> At low frequencies ($\omega \ll z$), $|C| \approx K_c$.
         Between $z$ and $p$, the zero adds +20 dB/dec but the pole hasn't contributed yet, so
         the magnitude rises. Above $p$, both contribute and the gain flattens at $K_c/\alpha$.
         The net high-frequency boost is a factor of $p/z = 1/\alpha &gt; 1$.
       </div>
-      <div class="prose">
-        <strong>Bode phase:</strong> Both the zero and the pole are in the left half-plane,
+<div class="prose">
+<strong>Bode phase:</strong> Both the zero and the pole are in the left half-plane,
         so each contributes phase in a specific range: the zero adds $+90°$ total (ramping
         from $0°$ at low freq to $+90°$ at high freq), and the pole subtracts $90°$. But
         their break frequencies differ ($z &lt; p$), so there's a frequency band where the
         zero has contributed phase but the pole hasn't yet cancelled it. This produces a
         positive phase <em>hump</em> between $z$ and $p$.
       </div>
-
-      <div class="callout">
+<div class="callout">
         The maximum phase contribution of a lead compensator and the frequency at which it
         occurs are:
         $$\phi_\text{max} = \arcsin\!\left(\frac{1 - \alpha}{1 + \alpha}\right), \qquad
           \omega_\text{max} = \sqrt{zp} = \frac{1}{T\sqrt{\alpha}}$$
         The magnitude of $C_\text{lead}$ at $\omega_\text{max}$ (with $K_c = 1$) is
-        $1/\sqrt{\alpha} > 1$.
+        $1/\sqrt{\alpha} &gt; 1$.
       </div>
-
-      <div class="prose">
+<div class="prose">
         The table below shows what $\alpha$ value is needed for common phase-lead targets.
         Note how quickly $\alpha$ approaches zero — very aggressive lead ($\alpha &lt; 0.1$)
         comes with a large magnitude hump that can push the new gain crossover into a region
         with less phase than expected.
       </div>
-
-      <table class="comp-table" style="margin:16px 0;">
-        <thead>
-          <tr>
-            <th>Target $\phi_\text{max}$</th>
-            <th>Required $\alpha$</th>
-            <th>HF magnitude boost $1/\alpha$</th>
-            <th>Magnitude at peak ($1/\sqrt{\alpha}$)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td>15°</td><td>0.59</td><td>1.7×</td><td>4.5 dB</td></tr>
-          <tr><td>20°</td><td>0.49</td><td>2.0×</td><td>6 dB</td></tr>
-          <tr><td>30°</td><td>0.33</td><td>3.0×</td><td>9.5 dB</td></tr>
-          <tr><td>45°</td><td>0.17</td><td>5.8×</td><td>15.3 dB</td></tr>
-          <tr><td>60°</td><td>0.072</td><td>13.9×</td><td>22.8 dB</td></tr>
-        </tbody>
-      </table>
-
-      <!-- ═══ LEAD DESIGN PROCEDURE ═══ -->
-      <div class="section-head" id="lead-design">Lead design procedure</div>
-
-      <div class="prose">
+<table class="comp-table" style="margin:16px 0;">
+<thead>
+<tr>
+<th>Target $\phi_\text{max}$</th>
+<th>Required $\alpha$</th>
+<th>HF magnitude boost $1/\alpha$</th>
+<th>Magnitude at peak ($1/\sqrt{\alpha}$)</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>15°</td><td>0.59</td><td>1.7×</td><td>4.5 dB</td></tr>
+<tr><td>20°</td><td>0.49</td><td>2.0×</td><td>6 dB</td></tr>
+<tr><td>30°</td><td>0.33</td><td>3.0×</td><td>9.5 dB</td></tr>
+<tr><td>45°</td><td>0.17</td><td>5.8×</td><td>15.3 dB</td></tr>
+<tr><td>60°</td><td>0.072</td><td>13.9×</td><td>22.8 dB</td></tr>
+</tbody>
+</table>
+<!-- ═══ LEAD DESIGN PROCEDURE ═══ -->
+<div class="section-head" id="lead-design">Lead design procedure</div>
+<div class="prose">
         The strategy: choose $\alpha$ to provide the needed phase boost, then
         position $\omega_\text{max}$ so the peak phase coincides with the new gain crossover.
       </div>
-
-      <div class="design-steps">
-        <div class="design-step">
-          <div class="step-num">1</div>
-          <div class="step-body">
-            <strong>Determine required phase addition.</strong> Compute the uncompensated
+<div class="design-steps">
+<div class="design-step">
+<div class="step-num">1</div>
+<div class="step-body">
+<strong>Determine required phase addition.</strong> Compute the uncompensated
             phase margin $PM_0$ and the desired PM. Add 5°–10° extra to account for the phase
             shift from moving the crossover:
             $$\phi_\text{max} = PM_\text{desired} - PM_0 + \delta, \qquad \delta \approx 5°\text{–}10°$$
           </div>
-        </div>
-        <div class="design-step">
-          <div class="step-num">2</div>
-          <div class="step-body">
-            <strong>Compute $\alpha$:</strong>
+</div>
+<div class="design-step">
+<div class="step-num">2</div>
+<div class="step-body">
+<strong>Compute $\alpha$:</strong>
             $$\alpha = \frac{1 - \sin\phi_\text{max}}{1 + \sin\phi_\text{max}}$$
             If $\alpha &lt; 0.1$ (more than about 55° of lead), a single lead stage is
             likely insufficient — use two cascaded lead sections.
           </div>
-        </div>
-        <div class="design-step">
-          <div class="step-num">3</div>
-          <div class="step-body">
-            <strong>Find $\omega_\text{max}$</strong> — the new gain crossover frequency.
+</div>
+<div class="design-step">
+<div class="step-num">3</div>
+<div class="step-body">
+<strong>Find $\omega_\text{max}$</strong> — the new gain crossover frequency.
             With $K_c = 1$, the compensator magnitude at $\omega_\text{max}$ is $1/\sqrt{\alpha}$.
             For this to be a crossover ($|C \cdot G| = 1$), we need
             $|KG(j\omega_\text{max})| = \sqrt{\alpha}$.
             On the Bode magnitude plot, find the frequency where the uncompensated loop is
             $20\log_{10}(1/\sqrt{\alpha}) = -10\log_{10}(1/\alpha)$ dB below 0 dB.
           </div>
-        </div>
-        <div class="design-step">
-          <div class="step-num">4</div>
-          <div class="step-body">
-            <strong>Compute the zero and pole:</strong>
+</div>
+<div class="design-step">
+<div class="step-num">4</div>
+<div class="step-body">
+<strong>Compute the zero and pole:</strong>
             $$T = \frac{1}{\omega_\text{max}\sqrt{\alpha}}, \qquad
               z = \frac{1}{T} = \omega_\text{max}\sqrt{\alpha}, \qquad
               p = \frac{z}{\alpha} = \frac{\omega_\text{max}}{\sqrt{\alpha}}$$
           </div>
-        </div>
-        <div class="design-step">
-          <div class="step-num">5</div>
-          <div class="step-body">
-            <strong>Adjust $K_c$ if needed</strong> to meet a specific velocity constant
+</div>
+<div class="design-step">
+<div class="step-num">5</div>
+<div class="step-body">
+<strong>Adjust $K_c$ if needed</strong> to meet a specific velocity constant
             or DC gain requirement. This may shift the crossover slightly — verify.
           </div>
-        </div>
-        <div class="design-step">
-          <div class="step-num">6</div>
-          <div class="step-body">
-            <strong>Verify</strong> the compensated PM by computing $\angle L(j\omega_c)$
+</div>
+<div class="design-step">
+<div class="step-num">6</div>
+<div class="step-body">
+<strong>Verify</strong> the compensated PM by computing $\angle L(j\omega_c)$
             for the full compensated loop. Iterate if the result differs from the target
             by more than a few degrees.
           </div>
-        </div>
-      </div>
-
-      <div class="callout">
-        <strong>Why add 5°–10° extra in step 1?</strong> Moving the gain crossover to a higher
+</div>
+</div>
+<div class="callout">
+<strong>Why add 5°–10° extra in step 1?</strong> Moving the gain crossover to a higher
         frequency exposes the plant's phase curve at a frequency where it's slightly more
         negative than at the original $\omega_{c0}$. The 5°–10° buffer accounts for this.
         Neglecting it is the single most common reason a designed compensator falls short of
         the PM target when implemented.
       </div>
-
-      <!-- ═══ LAG COMPENSATOR ═══ -->
-      <div class="section-head" id="lag">The lag compensator</div>
-
-      <div class="prose">
+<!-- ═══ LAG COMPENSATOR ═══ -->
+<div class="section-head" id="lag">The lag compensator</div>
+<div class="prose">
         The lag compensator has the same algebraic form but with the zero and pole swapped:
       </div>
-
-      <div class="math-block">
-        $$C_\text{lag}(s) = \frac{s + z}{s + p}, \qquad 0 < p < z, \qquad \beta = \frac{z}{p} > 1$$
+<div class="math-block">
+        $$C_\text{lag}(s) = \frac{s + z}{s + p}, \qquad 0 &lt; p &lt; z, \qquad \beta = \frac{z}{p} &gt; 1$$
       </div>
-
-      <div class="prose">
-        <strong>Bode magnitude:</strong> At $\omega \to 0$ the gain is $z/p = \beta > 1$ (above 1).
+<div class="prose">
+<strong>Bode magnitude:</strong> At $\omega \to 0$ the gain is $z/p = \beta &gt; 1$ (above 1).
         Between $p$ and $z$ it rolls off at $-20$ dB/dec, then flattens at 1 above $z$.
         The lag compensator is a <em>low-pass filter</em>: it passes DC at gain $\beta$ and
         high frequencies at gain 1.
       </div>
-      <div class="prose">
-        <strong>Bode phase:</strong> The phase is 0° at DC, becomes negative (lagging)
+<div class="prose">
+<strong>Bode phase:</strong> The phase is 0° at DC, becomes negative (lagging)
         in the band between $p$ and $z$, reaching its most negative value at
         $\omega_\text{mid} = \sqrt{pz}$, and returning to 0° above $z$.
       </div>
-      <div class="prose">
+<div class="prose">
         The phase lag is the danger — if it falls at or near $\omega_c$, it degrades
         the phase margin. The design rule is to place both break frequencies well below
         $\omega_c$ so the phase contribution at crossover is negligible (typically &lt; 5°).
         A safe choice: $z \approx \omega_c / 10$.
       </div>
-
-      <div class="callout">
-        <strong>Steady-state effect of a lag compensator.</strong>
+<div class="callout">
+<strong>Steady-state effect of a lag compensator.</strong>
         The lag compensator multiplies the error constant by $\beta$:
         <ul style="margin: 10px 0 0; padding-left:20px;">
-          <li>Type 0 system: position constant $K_p \to \beta K_p$, step SSE reduces by factor $\approx\beta$.</li>
-          <li>Type 1 system: velocity constant $K_v \to \beta K_v$, ramp SSE reduces by factor $\beta$.</li>
-        </ul>
+<li>Type 0 system: position constant $K_p \to \beta K_p$, step SSE reduces by factor $\approx\beta$.</li>
+<li>Type 1 system: velocity constant $K_v \to \beta K_v$, ramp SSE reduces by factor $\beta$.</li>
+</ul>
         This improvement happens because the lag compensator boosts the DC loop gain by $\beta$
         without moving the crossover frequency or degrading PM significantly.
       </div>
-
-      <div class="prose">
+<div class="prose">
         The intuition: the lag compensator is doing what adding extra gain does (boosting
         DC gain → better SSE), but <em>without</em> the full gain boost at all frequencies.
         By attenuating the HF region back down to unity, it avoids the bandwidth increase and
         PM degradation that a flat gain boost would cause. The "free lunch" region is DC to $p$;
         you pay nothing in PM because the phase effect is confined well below $\omega_c$.
       </div>
-
-      <!-- ═══ LAG DESIGN PROCEDURE ═══ -->
-      <div class="section-head" id="lag-design">Lag design procedure</div>
-
-      <div class="design-steps">
-        <div class="design-step">
-          <div class="step-num">1</div>
-          <div class="step-body">
-            <strong>Check that PM is already acceptable.</strong> The lag compensator does
+<!-- ═══ LAG DESIGN PROCEDURE ═══ -->
+<div class="section-head" id="lag-design">Lag design procedure</div>
+<div class="design-steps">
+<div class="design-step">
+<div class="step-num">1</div>
+<div class="step-body">
+<strong>Check that PM is already acceptable.</strong> The lag compensator does
             not improve PM — it slightly degrades it. If PM is insufficient, add a lead
             section first (or use PID).
           </div>
-        </div>
-        <div class="design-step">
-          <div class="step-num">2</div>
-          <div class="step-body">
-            <strong>Determine $\beta$</strong> from the steady-state requirement. If you
+</div>
+<div class="design-step">
+<div class="step-num">2</div>
+<div class="step-body">
+<strong>Determine $\beta$</strong> from the steady-state requirement. If you
             need the error constant to increase by a factor of $\beta$, that's your target
             ratio $z/p$.
           </div>
-        </div>
-        <div class="design-step">
-          <div class="step-num">3</div>
-          <div class="step-body">
-            <strong>Place the zero</strong> a decade below the crossover frequency:
+</div>
+<div class="design-step">
+<div class="step-num">3</div>
+<div class="step-body">
+<strong>Place the zero</strong> a decade below the crossover frequency:
             $z = \omega_c / 10$. Then compute $p = z / \beta$.
           </div>
-        </div>
-        <div class="design-step">
-          <div class="step-num">4</div>
-          <div class="step-body">
-            <strong>Account for the PM penalty.</strong> The lag contributes a phase of
+</div>
+<div class="design-step">
+<div class="step-num">4</div>
+<div class="step-body">
+<strong>Account for the PM penalty.</strong> The lag contributes a phase of
             approximately $\arctan(\omega_c/z) - \arctan(\omega_c/p)$ (negative) at $\omega_c$.
             With $z = \omega_c/10$: $\arctan(10) - \arctan(10\beta) \approx -84° + 84° \approx -5°$
             for large $\beta$. This is small and predictable — just verify it doesn't push
             PM below the requirement.
           </div>
-        </div>
-        <div class="design-step">
-          <div class="step-num">5</div>
-          <div class="step-body">
-            <strong>Large $\beta$ warning:</strong> for $\beta &gt; 10$, the pole $p = z/\beta$
+</div>
+<div class="design-step">
+<div class="step-num">5</div>
+<div class="step-body">
+<strong>Large $\beta$ warning:</strong> for $\beta &gt; 10$, the pole $p = z/\beta$
             moves very close to the origin. Physically this creates a very slow mode in the
             closed loop that can make transient performance sluggish even if PM is fine.
             If $\beta$ needs to be large, consider adding an integrator (PID) instead.
           </div>
-        </div>
-      </div>
-
-      <!-- ═══ COMBINED LEAD-LAG ═══ -->
-      <div class="section-head" id="combined">Combined lead-lag</div>
-
-      <div class="prose">
+</div>
+</div>
+<!-- ═══ COMBINED LEAD-LAG ═══ -->
+<div class="section-head" id="combined">Combined lead-lag</div>
+<div class="prose">
         When a plant needs both better PM and better steady-state accuracy, the two
         compensators are cascaded:
       </div>
-
-      <div class="math-block">
-        $$C(s) = K_c \cdot \underbrace{\frac{s+z_1}{s+p_1}}_\text{lead: $p_1>z_1$} \cdot
-          \underbrace{\frac{s+z_2}{s+p_2}}_\text{lag: $p_2<z_2$}$$
-      </div>
-
-      <div class="prose">
+<div class="math-block">
+        $$C(s) = K_c \cdot \underbrace{\frac{s+z_1}{s+p_1}}_\text{lead: $p_1&gt;z_1$} \cdot
+          \underbrace{\frac{s+z_2}{s+p_2}}_\text{lag: $p_2<z_2$}$$ <="" div="">
+<div class="prose">
         The lead section operates near $\omega_c$ ($z_1$ and $p_1$ close to crossover),
         while the lag section operates well below $\omega_c$ ($z_2$ and $p_2$ far to the left).
         Because the two sections occupy different frequency bands, their effects are nearly
         decoupled, and you can design them sequentially:
       </div>
-      <ol class="prose" style="padding-left:24px; margin-top:0;">
-        <li style="margin-bottom:6px;">Design the <strong>lead section</strong> to achieve the desired PM and bandwidth,
+<ol class="prose" style="padding-left:24px; margin-top:0;">
+<li style="margin-bottom:6px;">Design the <strong>lead section</strong> to achieve the desired PM and bandwidth,
           treating the lag as absent. Compute $z_1, p_1$.</li>
-        <li style="margin-bottom:6px;">Design the <strong>lag section</strong> to achieve the desired error constant
+<li style="margin-bottom:6px;">Design the <strong>lag section</strong> to achieve the desired error constant
           improvement, treating the lead as a flat gain of $K_c \approx 1$. Compute $z_2, p_2$.</li>
-        <li>Verify the combined system. The lead introduces a slight gain boost at $\omega_c$
+<li>Verify the combined system. The lead introduces a slight gain boost at $\omega_c$
           (magnitude $\approx 1/\sqrt{\alpha}$ there), so the lag's effect on PM is usually
           still negligible. Iterate once if needed.</li>
-      </ol>
-
-      <div class="prose">
+</ol>
+<div class="prose">
         The combined lead-lag is roughly analogous to the "PD + PI" decomposition of a full
         PID, but the implementation is simpler and avoids the integrator: two stable RC
         networks in cascade are sufficient.
       </div>
-
-      <!-- ═══ COMPARISON TO PID ═══ -->
-      <div class="section-head" id="pid-comparison">Comparison to PID</div>
-
-      <div class="prose">
+<!-- ═══ COMPARISON TO PID ═══ -->
+<div class="section-head" id="pid-comparison">Comparison to PID</div>
+<div class="prose">
         Both PID and lead-lag are classical controller structures designed in the frequency
         domain. Their key structural difference is the integrator: PID has a pole at the
         origin; lead-lag does not.
       </div>
-
-      <table class="comp-table">
-        <thead>
-          <tr>
-            <th>Property</th>
-            <th>Lead</th>
-            <th>Lag</th>
-            <th>Lead-Lag</th>
-            <th>PID</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Improves phase margin</td>
-            <td class="yes-cell">Yes</td>
-            <td class="partial-cell">Slight degradation</td>
-            <td class="yes-cell">Yes (lead part)</td>
-            <td class="yes-cell">Yes (D term)</td>
-          </tr>
-          <tr>
-            <td>Increases bandwidth</td>
-            <td class="yes-cell">Yes</td>
-            <td class="no-cell">No</td>
-            <td class="yes-cell">Yes (lead part)</td>
-            <td class="yes-cell">Yes (D term)</td>
-          </tr>
-          <tr>
-            <td>Improves SSE to step</td>
-            <td class="no-cell">No (type unchanged)</td>
-            <td class="yes-cell">Yes (factor $\beta$)</td>
-            <td class="yes-cell">Yes (lag part)</td>
-            <td class="yes-cell">Yes (eliminates it)</td>
-          </tr>
-          <tr>
-            <td>Eliminates SSE to ramp</td>
-            <td class="no-cell">No</td>
-            <td class="no-cell">No</td>
-            <td class="no-cell">No</td>
-            <td class="partial-cell">Yes (with I action, type 0→1)</td>
-          </tr>
-          <tr>
-            <td>Windup risk</td>
-            <td class="yes-cell">None</td>
-            <td class="yes-cell">None</td>
-            <td class="yes-cell">None</td>
-            <td class="partial-cell">Yes (needs anti-windup)</td>
-          </tr>
-          <tr>
-            <td>Implementation</td>
-            <td>Passive RC, 2 components</td>
-            <td>Passive RC, 2 components</td>
-            <td>Two RC stages</td>
-            <td>Op-amp circuit or digital</td>
-          </tr>
-          <tr>
-            <td>Tuning</td>
-            <td>Systematic (Bode steps)</td>
-            <td>Systematic (choose $\beta, z$)</td>
-            <td>Sequential design</td>
-            <td>Ziegler-Nichols or iterative</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div class="prose">
-        <strong>When to use each:</strong>
+<table class="comp-table">
+<thead>
+<tr>
+<th>Property</th>
+<th>Lead</th>
+<th>Lag</th>
+<th>Lead-Lag</th>
+<th>PID</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Improves phase margin</td>
+<td class="yes-cell">Yes</td>
+<td class="partial-cell">Slight degradation</td>
+<td class="yes-cell">Yes (lead part)</td>
+<td class="yes-cell">Yes (D term)</td>
+</tr>
+<tr>
+<td>Increases bandwidth</td>
+<td class="yes-cell">Yes</td>
+<td class="no-cell">No</td>
+<td class="yes-cell">Yes (lead part)</td>
+<td class="yes-cell">Yes (D term)</td>
+</tr>
+<tr>
+<td>Improves SSE to step</td>
+<td class="no-cell">No (type unchanged)</td>
+<td class="yes-cell">Yes (factor $\beta$)</td>
+<td class="yes-cell">Yes (lag part)</td>
+<td class="yes-cell">Yes (eliminates it)</td>
+</tr>
+<tr>
+<td>Eliminates SSE to ramp</td>
+<td class="no-cell">No</td>
+<td class="no-cell">No</td>
+<td class="no-cell">No</td>
+<td class="partial-cell">Yes (with I action, type 0→1)</td>
+</tr>
+<tr>
+<td>Windup risk</td>
+<td class="yes-cell">None</td>
+<td class="yes-cell">None</td>
+<td class="yes-cell">None</td>
+<td class="partial-cell">Yes (needs anti-windup)</td>
+</tr>
+<tr>
+<td>Implementation</td>
+<td>Passive RC, 2 components</td>
+<td>Passive RC, 2 components</td>
+<td>Two RC stages</td>
+<td>Op-amp circuit or digital</td>
+</tr>
+<tr>
+<td>Tuning</td>
+<td>Systematic (Bode steps)</td>
+<td>Systematic (choose $\beta, z$)</td>
+<td>Sequential design</td>
+<td>Ziegler-Nichols or iterative</td>
+</tr>
+</tbody>
+</table>
+<div class="prose">
+<strong>When to use each:</strong>
         Use a lead compensator when the plant has acceptable steady-state performance but
         insufficient PM or bandwidth. Use a lag when PM is already fine but SSE is too large.
         Use PID when you need guaranteed zero SSE (integrator action) or when the plant has
         no existing integrators and the lag compensator can't deliver the required gain boost.
         Lead-lag is the middle ground: cleaner than PID, more powerful than either alone.
       </div>
-      <div class="prose">
+<div class="prose">
         One practical advantage of lead-lag in analog implementations: the compensator can be
         realized with a single passive RC network (lead) or a voltage divider plus capacitor
         (lag). PID requires active circuitry for the differentiator. For motor drives,
         hydraulic servos, and other high-reliability systems, the simplicity of the passive
         realization is a genuine benefit.
       </div>
-
-      <!-- ═══ INTERACTIVE ═══ -->
-      <div class="section-head" id="interactive">Interactive: lead compensator explorer</div>
-
-      <div class="prose">
+<!-- ═══ INTERACTIVE ═══ -->
+<div class="section-head" id="interactive">Interactive: lead compensator explorer</div>
+<div class="prose">
         The plant below is fixed at $G(s) = 10/(s(s+2))$ — a type-1 system with velocity
         constant $K_v = 5$. The uncompensated phase margin is around 35°. Use the sliders
-        to place the lead compensator zero $z$ and pole $p$ ($p > z$) and watch the
+        to place the lead compensator zero $z$ and pole $p$ ($p &gt; z$) and watch the
         compensated Bode plot update. The grey traces are the uncompensated loop; blue is
         the compensated loop $L(s) = C(s) \cdot G(s)$.
       </div>
-
-      <div class="widget-card" id="interactive">
-        <div class="widget-title">Lead Compensator — Bode Explorer</div>
-
-        <div style="display:grid; grid-template-columns:260px 1fr; gap:18px;">
-          <!-- Controls -->
-          <div>
-            <div style="font-size:12px; color:#7a9ab0; margin-bottom:10px;">Plant (fixed): $G(s)=10/(s(s+2))$</div>
-            <div class="slider-row">
-              <label>$z$ (zero):</label>
-              <input type="range" id="ll-z" min="0.2" max="8" step="0.05" value="1.5" oninput="llUpdate()">
-              <span class="sv" id="ll-z-v">1.50</span>
+<div class="widget-card" id="interactive">
+<div class="widget-title">Lead Compensator — Bode Explorer</div>
+<div style="display:grid; grid-template-columns:260px 1fr; gap:18px;">
+<!-- Controls -->
+<div>
+<div style="font-size:12px; color:#7a9ab0; margin-bottom:10px;">Plant (fixed): $G(s)=10/(s(s+2))$</div>
+<div class="slider-row">
+<label>$z$ (zero):</label>
+<input id="ll-z" max="8" min="0.2" oninput="llUpdate()" step="0.05" type="range" value="1.5"/>
+<span class="sv" id="ll-z-v">1.50</span>
+</div>
+<div class="slider-row">
+<label>$p$ (pole):</label>
+<input id="ll-p" max="20" min="0.5" oninput="llUpdate()" step="0.1" type="range" value="4.0"/>
+<span class="sv" id="ll-p-v">4.00</span>
+</div>
+<div style="font-size:12px; color:#7a9ab0; margin-top:4px; margin-bottom:14px; line-height:1.5;">
+              Constraint: $p &gt; z$ (lead).<br/>
+              If $p ≤ z$, the pole will be forced to $z + 0.5$.
             </div>
-            <div class="slider-row">
-              <label>$p$ (pole):</label>
-              <input type="range" id="ll-p" min="0.5" max="20" step="0.1" value="4.0" oninput="llUpdate()">
-              <span class="sv" id="ll-p-v">4.00</span>
-            </div>
-            <div style="font-size:12px; color:#7a9ab0; margin-top:4px; margin-bottom:14px; line-height:1.5;">
-              Constraint: $p &gt; z$ (lead).<br>
-              If $p &le; z$, the pole will be forced to $z + 0.5$.
-            </div>
-
-            <!-- Compensator stats -->
-            <div style="background:#fff; border:1px solid #c8d8e4; border-radius:5px; padding:12px 14px; font-size:13px; line-height:1.8;">
-              <div><span style="color:#7a9ab0;">$C(s)$ =</span> <span id="ll-tf" style="font-family:'IBM Plex Mono',monospace; font-size:12.5px;">(s+1.50)/(s+4.00)</span></div>
-              <div><span style="color:#7a9ab0;">$\alpha = z/p$ =</span> <span id="ll-alpha" style="font-family:'IBM Plex Mono',monospace;">0.375</span></div>
-              <div><span style="color:#7a9ab0;">$\phi_\text{max}$ =</span> <span id="ll-phimax" style="font-family:'IBM Plex Mono',monospace; color:#2a6a2a;">27.0°</span></div>
-              <div><span style="color:#7a9ab0;">$\omega_\text{max}$ =</span> <span id="ll-wmax" style="font-family:'IBM Plex Mono',monospace;">2.45 rad/s</span></div>
-            </div>
-
-            <!-- Margin comparison -->
-            <div style="margin-top:14px; background:#fff; border:1px solid #c8d8e4; border-radius:5px; padding:12px 14px; font-size:12.5px; line-height:1.9;">
-              <div style="font-weight:600; font-size:11.5px; text-transform:uppercase; letter-spacing:0.05em; color:#5a7a90; margin-bottom:6px;">Stability Margins</div>
-              <table style="width:100%; border-collapse:collapse;">
-                <tr>
-                  <td style="color:#9aabb8; padding:0 0 2px;"></td>
-                  <td style="font-size:11px; color:#9aabb8; text-align:right; padding-bottom:2px;">Uncomp.</td>
-                  <td style="font-size:11px; color:#3a6a8a; text-align:right; padding-bottom:2px; padding-left:12px;">Comp.</td>
-                </tr>
-                <tr>
-                  <td>PM</td>
-                  <td style="font-family:'IBM Plex Mono',monospace; text-align:right;" id="ll-pm0">35.3°</td>
-                  <td style="font-family:'IBM Plex Mono',monospace; text-align:right; color:#2a6a2a; padding-left:12px;" id="ll-pm1">—</td>
-                </tr>
-                <tr>
-                  <td>$\omega_c$</td>
-                  <td style="font-family:'IBM Plex Mono',monospace; text-align:right;" id="ll-wc0">2.86</td>
-                  <td style="font-family:'IBM Plex Mono',monospace; text-align:right; color:#2a6a2a; padding-left:12px;" id="ll-wc1">—</td>
-                </tr>
-              </table>
-            </div>
-          </div>
-
-          <!-- Bode plots -->
-          <div>
-            <!-- Magnitude -->
-            <svg id="ll-mag-svg" width="100%" viewBox="0 0 460 180"
-                 style="display:block; background:#fff; border:1px solid #d0dce6; border-radius:4px 4px 0 0;"></svg>
-            <!-- Phase -->
-            <svg id="ll-ph-svg" width="100%" viewBox="0 0 460 160"
-                 style="display:block; background:#fff; border:1px solid #d0dce6; border-top:none; border-radius:0 0 4px 4px;"></svg>
-            <!-- Legend -->
-            <div style="font-size:12px; color:#7a9ab0; margin-top:6px; display:flex; gap:20px;">
-              <span><svg width="22" height="10" style="vertical-align:middle;"><line x1="0" y1="5" x2="22" y2="5" stroke="#c0ccd6" stroke-width="2" stroke-dasharray="4,2"/></svg> Uncompensated</span>
-              <span><svg width="22" height="10" style="vertical-align:middle;"><line x1="0" y1="5" x2="22" y2="5" stroke="#3a6a8a" stroke-width="2"/></svg> Compensated $L = C \cdot G$</span>
-              <span><svg width="22" height="10" style="vertical-align:middle;"><line x1="0" y1="5" x2="22" y2="5" stroke="#e08030" stroke-width="1.5" stroke-dasharray="3,2"/></svg> $\omega_c$ markers</span>
-            </div>
-          </div>
-        </div>
-      </div><!-- /widget -->
-
-      <!-- ═══ WORKED EXAMPLES ═══ -->
-      <div class="section-head" id="worked-examples">Worked examples</div>
-
-      <div class="example-box">
-        <div class="example-header"><strong>Example 1 — Lead design for a second-order plant</strong></div>
-        <div class="example-problem">
+<!-- Compensator stats -->
+<div style="background:#fff; border:1px solid #c8d8e4; border-radius:5px; padding:12px 14px; font-size:13px; line-height:1.8;">
+<div><span style="color:#7a9ab0;">$C(s)$ =</span> <span id="ll-tf" style="font-family:'IBM Plex Mono',monospace; font-size:12.5px;">(s+1.50)/(s+4.00)</span></div>
+<div><span style="color:#7a9ab0;">$\alpha = z/p$ =</span> <span id="ll-alpha" style="font-family:'IBM Plex Mono',monospace;">0.375</span></div>
+<div><span style="color:#7a9ab0;">$\phi_\text{max}$ =</span> <span id="ll-phimax" style="font-family:'IBM Plex Mono',monospace; color:#2a6a2a;">27.0°</span></div>
+<div><span style="color:#7a9ab0;">$\omega_\text{max}$ =</span> <span id="ll-wmax" style="font-family:'IBM Plex Mono',monospace;">2.45 rad/s</span></div>
+</div>
+<!-- Margin comparison -->
+<div style="margin-top:14px; background:#fff; border:1px solid #c8d8e4; border-radius:5px; padding:12px 14px; font-size:12.5px; line-height:1.9;">
+<div style="font-weight:600; font-size:11.5px; text-transform:uppercase; letter-spacing:0.05em; color:#5a7a90; margin-bottom:6px;">Stability Margins</div>
+<table style="width:100%; border-collapse:collapse;">
+<tr>
+<td style="color:#9aabb8; padding:0 0 2px;"></td>
+<td style="font-size:11px; color:#9aabb8; text-align:right; padding-bottom:2px;">Uncomp.</td>
+<td style="font-size:11px; color:#3a6a8a; text-align:right; padding-bottom:2px; padding-left:12px;">Comp.</td>
+</tr>
+<tr>
+<td>PM</td>
+<td id="ll-pm0" style="font-family:'IBM Plex Mono',monospace; text-align:right;">35.3°</td>
+<td id="ll-pm1" style="font-family:'IBM Plex Mono',monospace; text-align:right; color:#2a6a2a; padding-left:12px;">—</td>
+</tr>
+<tr>
+<td>$\omega_c$</td>
+<td id="ll-wc0" style="font-family:'IBM Plex Mono',monospace; text-align:right;">2.86</td>
+<td id="ll-wc1" style="font-family:'IBM Plex Mono',monospace; text-align:right; color:#2a6a2a; padding-left:12px;">—</td>
+</tr>
+</table>
+</div>
+</div>
+<!-- Bode plots -->
+<div>
+<!-- Magnitude -->
+<svg id="ll-mag-svg" style="display:block; background:#fff; border:1px solid #d0dce6; border-radius:4px 4px 0 0;" viewbox="0 0 460 180" width="100%"></svg>
+<!-- Phase -->
+<svg id="ll-ph-svg" style="display:block; background:#fff; border:1px solid #d0dce6; border-top:none; border-radius:0 0 4px 4px;" viewbox="0 0 460 160" width="100%"></svg>
+<!-- Legend -->
+<div style="font-size:12px; color:#7a9ab0; margin-top:6px; display:flex; gap:20px;">
+<span><svg height="10" style="vertical-align:middle;" width="22"><line stroke="#c0ccd6" stroke-dasharray="4,2" stroke-width="2" x1="0" x2="22" y1="5" y2="5"></line></svg> Uncompensated</span>
+<span><svg height="10" style="vertical-align:middle;" width="22"><line stroke="#3a6a8a" stroke-width="2" x1="0" x2="22" y1="5" y2="5"></line></svg> Compensated $L = C \cdot G$</span>
+<span><svg height="10" style="vertical-align:middle;" width="22"><line stroke="#e08030" stroke-dasharray="3,2" stroke-width="1.5" x1="0" x2="22" y1="5" y2="5"></line></svg> $\omega_c$ markers</span>
+</div>
+</div>
+</div>
+</div><!-- /widget -->
+<!-- ═══ WORKED EXAMPLES ═══ -->
+<div class="section-head" id="worked-examples">Worked examples</div>
+<div class="example-box">
+<div class="example-header"><strong>Example 1 — Lead design for a second-order plant</strong></div>
+<div class="example-problem">
           Plant: $G(s) = \dfrac{15}{(s+1)(s+5)}$. Required: PM $\geq 50°$. Is a lead compensator needed?
         </div>
-        <div class="example-body">
-          <strong>Step 1 — Uncompensated crossover frequency.</strong>
+<div class="example-body">
+<strong>Step 1 — Uncompensated crossover frequency.</strong>
           Find $\omega_{c0}$ where $|L_0(j\omega)| = 1$: solving $(\omega^2+1)(\omega^2+25) = 225$
           gives $\omega_{c0} \approx 2.49$ rad/s.
 
@@ -711,15 +661,14 @@
           This example illustrates why you must always compute PM first — adding a lead here would
           only increase bandwidth and HF noise sensitivity with no stability benefit.
         </div>
-      </div>
-
-      <div class="example-box">
-        <div class="example-header"><strong>Example 2 — Lead design for a type-1 plant</strong></div>
-        <div class="example-problem">
+</div>
+<div class="example-box">
+<div class="example-header"><strong>Example 2 — Lead design for a type-1 plant</strong></div>
+<div class="example-problem">
           Plant: $G(s) = \dfrac{20}{s(s+2)(s+8)}$. Design a lead compensator to achieve PM $\geq 60°$.
         </div>
-        <div class="example-body">
-          <strong>Uncompensated analysis.</strong>
+<div class="example-body">
+<strong>Uncompensated analysis.</strong>
           Searching $|L_0| = 1$: $\omega_{c0} \approx 1.08$ rad/s.
           Phase: $-90° - \arctan(0.54) - \arctan(0.135) = -90° - 28.3° - 7.7° = -126°$.
           PM$_0 = 54°$.
@@ -740,16 +689,15 @@
           <strong>Verify:</strong> At $\omega = 1.22$: $\angle C = \arctan(1.28) - \arctan(0.782) = 52° - 38° = 14°$ ✓.
           Compensated PM $\approx 54° + 14° \approx 60°$ ✓ (with slight shift correction).
         </div>
-      </div>
-
-      <div class="example-box">
-        <div class="example-header"><strong>Example 3 — Lag design to improve velocity constant</strong></div>
-        <div class="example-problem">
+</div>
+<div class="example-box">
+<div class="example-header"><strong>Example 3 — Lag design to improve velocity constant</strong></div>
+<div class="example-problem">
           Plant: $G(s) = \dfrac{4}{s(s+4)}$. Current $K_v = 1$. Design a lag compensator to achieve
           $K_v \geq 5$ while approximately preserving PM.
         </div>
-        <div class="example-body">
-          <strong>Uncompensated.</strong>
+<div class="example-body">
+<strong>Uncompensated.</strong>
           $\omega_{c0} \approx 0.97$ rad/s, PM$_0 = 90° - \arctan(0.97/4) = 76.4°$.
 
           <strong>Lag design.</strong>
@@ -764,17 +712,16 @@
           $\angle C = \arctan(10) - \arctan(50) = 84.3° - 88.9° = -4.6°$.
           New PM $\approx 76.4° - 4.6° = 71.8°$ — well above requirement. $K_v = 5$ ✓.
         </div>
-      </div>
-
-      <!-- ═══ FOOD FOR THOUGHT ═══ -->
-      <div class="section-head" id="food-for-thought">Food for thought</div>
-      <ol class="prose" style="padding-left:22px;">
-        <li style="margin-bottom:10px;">
+</div>
+<!-- ═══ FOOD FOR THOUGHT ═══ -->
+<div class="section-head" id="food-for-thought">Food for thought</div>
+<ol class="prose" style="padding-left:22px;">
+<li class="fft-item" style="margin-bottom:10px;">
           A lead compensator increases bandwidth. Higher bandwidth means the system responds
           faster, but it also means it responds to high-frequency noise faster. When does
           increasing bandwidth become counterproductive, and how does this shape the practical
           upper limit on $\phi_\text{max}$ (i.e., how small $\alpha$ can be)?
-                      <div class="fft-answer-body">
+                      <div class="fft-answer">
               Bandwidth becomes counterproductive when it reaches the noise floor of the sensors.
               At frequencies above the signal bandwidth, the output is dominated by measurement
               noise. A high-bandwidth controller faithfully tracks this noise with large, rapid
@@ -790,13 +737,12 @@
               attenuate this noise. Practical designs rarely use $\alpha &lt; 0.1$ ($\phi_\text{max} \approx 55°$)
               without explicitly accounting for noise.
             </div>
-          
-        </li>
-        <li style="margin-bottom:10px;">
+</li>
+<li class="fft-item" style="margin-bottom:10px;">
           A lag compensator boosts DC gain by $\beta$ relative to HF gain. Why doesn't this
           simply allow you to substitute it for a gain increase of $\beta$? What does a flat
           gain increase of $\beta$ do that the lag compensator does <em>not</em>?
-                      <div class="fft-answer-body">
+                      <div class="fft-answer">
               A flat gain increase of $\beta$ multiplies the loop gain at <em>all</em> frequencies by
               $\beta$ — including at the gain crossover frequency $\omega_c$. This shifts $\omega_c$
               up, moving the operating point on the Bode plot to a region of more negative phase.
@@ -811,15 +757,14 @@
               increase would be simpler to implement but risks instability; the lag achieves the
               steady-state goal without destabilizing.
             </div>
-          
-        </li>
-        <li>
+</li>
+<li class="fft-item">
           Consider a plant with a RHP zero (non-minimum phase). The phase of a RHP zero is
           $+180° - \arctan(\omega/z)$, which is negative (lagging) — it <em>removes</em> phase
           as frequency increases. How does this constrain the achievable phase margin and
           bandwidth, and why do both lead and lag compensators become much less effective in
           this case?
-                      <div class="fft-answer-body">
+                      <div class="fft-answer">
               A RHP zero at $s = +z$ contributes a phase lag of $-\arctan(\omega/z)$ that starts at 0°
               and approaches $-90°$ as $\omega \to \infty$. Near and above $\omega = z$, the plant phase
               is severely lagging. If the desired bandwidth exceeds roughly $0.1z$–$0.5z$, the phase
@@ -837,49 +782,46 @@
               help either — they would reduce bandwidth even further (worsening tracking) without
               recovering phase. Non-minimum phase plants fundamentally limit achievable bandwidth.
             </div>
-          
-        </li>
-      </ol>
-
-      <!-- ═══ COMMON PITFALLS ═══ -->
-      <div class="section-head" id="pitfalls">Common pitfalls</div>
-      <ul class="prose" style="padding-left:22px;">
-        <li style="margin-bottom:8px;">
-          <strong>Forgetting the phase correction factor.</strong> Moving the gain crossover
+</li>
+</ol>
+<!-- ═══ COMMON PITFALLS ═══ -->
+<div class="section-head" id="pitfalls">Common pitfalls</div>
+<ul class="prose" style="padding-left:22px;">
+<li style="margin-bottom:8px;">
+<strong>Forgetting the phase correction factor.</strong> Moving the gain crossover
           to $\omega_\text{max} &gt; \omega_{c0}$ exposes a slightly more negative plant phase
           at the new crossover. Skipping the 5°–10° buffer in step 1 routinely results in a
           compensated PM 5–10° below target. Always verify the compensated PM numerically.
         </li>
-        <li style="margin-bottom:8px;">
-          <strong>Using a lag to improve an already-low PM.</strong> The lag compensator
+<li style="margin-bottom:8px;">
+<strong>Using a lag to improve an already-low PM.</strong> The lag compensator
           cannot add phase margin — it only degrades it (slightly). If PM is already
           borderline, adding a lag pushes it lower. The right tool is lead, PD, or a full PID.
         </li>
-        <li style="margin-bottom:8px;">
-          <strong>Placing the lag break frequencies too close to $\omega_c$.</strong>
+<li style="margin-bottom:8px;">
+<strong>Placing the lag break frequencies too close to $\omega_c$.</strong>
           The "decade below" rule ($z = \omega_c/10$) is not conservative paranoia — it's
           the threshold below which the phase contribution at $\omega_c$ stays small (&lt; 6°).
           Placing $z$ at $\omega_c/3$, say, can degrade PM by 15°–20°, defeating the
           purpose of the design.
         </li>
-        <li style="margin-bottom:8px;">
-          <strong>Confusing lead and lag pole/zero ordering.</strong>
+<li style="margin-bottom:8px;">
+<strong>Confusing lead and lag pole/zero ordering.</strong>
           Lead: $p &gt; z$ (pole further left, zero closer to origin).
           Lag: $p &lt; z$ (pole closer to origin, zero further left).
           Swapping them reverses the effect — you'd add phase lag where you wanted lead.
         </li>
-        <li>
-          <strong>Expecting a lag compensator to eliminate SSE from a type-0 plant.</strong>
+<li>
+<strong>Expecting a lag compensator to eliminate SSE from a type-0 plant.</strong>
           A lag compensator multiplies the position constant by $\beta$ — it reduces SSE
           but does not make it zero. Only an integrator (PID I action) eliminates type-0
           steady-state error to a step entirely.
         </li>
-      </ul>
-
-      <!-- ═══ CONNECTS TO ═══ -->
-      <div class="section-head">Connects to</div>
-      <div class="prose">
-        <a href="nyquist.html">Lesson 6 (Nyquist &amp; Stability Margins)</a> — the Bode
+</ul>
+<!-- ═══ CONNECTS TO ═══ -->
+<div class="section-head">Connects to</div>
+<div class="prose">
+<a href="nyquist.html">Lesson 6 (Nyquist &amp; Stability Margins)</a> — the Bode
         gain/phase margin framework that defines what "phase margin" means and why we need to
         increase it. Lead compensators operate directly on the Bode plot that lesson introduced.
         ·
@@ -893,19 +835,15 @@
         (lead-lag, PID) excels when you have a measured Bode plot and limited model detail;
         state-space design excels when you have a full state model and tight performance specs.
       </div>
-
-      <!-- ═══ NAV ═══ -->
-      <div id="lesson-nav"></div>
-
-    </div><!-- /main -->
-  </div><!-- /page-body -->
+<!-- ═══ NAV ═══ -->
+<div id="lesson-nav"></div>
+</z_2$}$$></div><!-- /main -->
+</div><!-- /page-body -->
 </div><!-- /site-wrap -->
-
 <footer class="site-footer">
-  <span>elee03.github.io/notes</span>
-  <span>Est. MMXXVI</span>
+<span>elee03.github.io/notes</span>
+<span>Est. MMXXVI</span>
 </footer>
-
 <script>
 // ─── Lead-Lag Interactive ───────────────────────────────────────────────────
 
@@ -1128,7 +1066,6 @@ function llRenderBode(omegas, mag0, phase0, mag1, phase1, wc0, wc1) {
   phSvg.innerHTML = phContent;
 }
 </script>
-
-    <script src="../notes-nav.js"></script>
-</body>
+<script src="../notes-nav.js"></script>
+</div></body>
 </html>

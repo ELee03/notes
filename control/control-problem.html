@@ -1,17 +1,18 @@
 ﻿<!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The Control Problem — Field Notes</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../style.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
-  <script>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>The Control Problem — Field Notes</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="../style.css" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" rel="stylesheet"/>
+<script defer="" src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer="" src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<script>
     document.addEventListener('DOMContentLoaded', function() {
       renderMathInElement(document.body, {
         delimiters: [
@@ -22,7 +23,7 @@
       });
     });
   </script>
-  <style>
+<style>
     .widget-card {
       background: #f0f4f7;
       border: 1px solid #c0d0dc;
@@ -60,53 +61,45 @@
   </style>
 </head>
 <body>
-
 <div class="topbar">
-  <div class="topbar-inner">
-    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
-    <span class="topbar-sep">·</span>
-    <a href="../references.html" class="topbar-link">Library</a>
-    <span class="topbar-sep">·</span>
-    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
-  </div>
+<div class="topbar-inner">
+<a class="topbar-brand" href="../index.html">Field <span class="accent">Notes</span></a>
+<span class="topbar-sep">·</span>
+<a class="topbar-link" href="../references.html">Library</a>
+<span class="topbar-sep">·</span>
+<a class="topbar-back" href="https://elee03.github.io">elee03.github.io ↗</a>
 </div>
-
+</div>
 <div class="site-wrap">
-  <div class="page-body">
-
-    <div class="sidebar">
-      <div id="cluster-nav" data-cluster="control" data-current="control-problem.html"></div>
-            <hr class="sidebar-rule">
-
-      <div class="nav-section">
-        <div class="nav-label">On this page</div>
-        <a href="#what-is-control" class="nav-item">What is control?</a>
-        <a href="#open-loop" class="nav-item">Open-loop control</a>
-        <a href="#closed-loop" class="nav-item">Closed-loop feedback</a>
-        <a href="#why-feedback" class="nav-item">Why feedback wins</a>
-        <a href="#block-diagrams" class="nav-item">Block diagram notation</a>
-        <a href="#objectives" class="nav-item">Performance objectives</a>
-        <a href="#examples" class="nav-item">Examples</a>
-        <a href="#interactive" class="nav-item">Interactive demo</a>
-        <a href="#food-for-thought" class="nav-item">Food for thought</a>
-        <a href="#pitfalls" class="nav-item">Common pitfalls</a>
-      </div>
-    </div>
-
-    <div class="main">
-
-      <div class="breadcrumb">
-        <a href="../index.html">Field Notes</a>
-        <span class="sep">›</span>
-        <a href="index.html">Control Theory</a>
-        <span class="sep">›</span>
-        <span>1 · The Control Problem</span>
-      </div>
-
-      <div class="lesson-title">1 · The Control Problem</div>
-      <div class="lesson-meta">Feedback · Open-Loop vs Closed-Loop · Block Diagrams · Stability · Disturbance Rejection</div>
-
-      <div class="prose">
+<div class="page-body">
+<div class="sidebar">
+<div data-cluster="control" data-current="control-problem.html" id="cluster-nav"></div>
+<hr class="sidebar-rule"/>
+<div class="nav-section">
+<div class="nav-label">On this page</div>
+<a class="nav-item" href="#what-is-control">What is control?</a>
+<a class="nav-item" href="#open-loop">Open-loop control</a>
+<a class="nav-item" href="#closed-loop">Closed-loop feedback</a>
+<a class="nav-item" href="#why-feedback">Why feedback wins</a>
+<a class="nav-item" href="#block-diagrams">Block diagram notation</a>
+<a class="nav-item" href="#objectives">Performance objectives</a>
+<a class="nav-item" href="#examples">Examples</a>
+<a class="nav-item" href="#interactive">Interactive demo</a>
+<a class="nav-item" href="#food-for-thought">Food for thought</a>
+<a class="nav-item" href="#pitfalls">Common pitfalls</a>
+</div>
+</div>
+<div class="main">
+<div class="breadcrumb">
+<a href="../index.html">Field Notes</a>
+<span class="sep">›</span>
+<a href="index.html">Control Theory</a>
+<span class="sep">›</span>
+<span>1 · The Control Problem</span>
+</div>
+<div class="lesson-title">1 · The Control Problem</div>
+<div class="lesson-meta">Feedback · Open-Loop vs Closed-Loop · Block Diagrams · Stability · Disturbance Rejection</div>
+<div class="prose">
         Everything around you is being controlled. The temperature in the room stays within a
         comfortable range even as the sun moves. Your car's engine maintains a steady speed as
         the road tilts. Your body keeps its blood glucose at roughly 5 mmol/L through a network
@@ -116,206 +109,183 @@
         and things you can't measure directly. This lesson is the conceptual foundation — the
         vocabulary and mental models that everything else in the cluster builds on.
       </div>
-
-      <!-- ── What is control? ───────────────────────────────────── -->
-      <div class="section-head" id="what-is-control">What is a control system?</div>
-
-      <div class="prose">
+<!-- ── What is control? ───────────────────────────────────── -->
+<div class="section-head" id="what-is-control">What is a control system?</div>
+<div class="prose">
         A control system is an arrangement of components that maintains some quantity of interest
         — temperature, speed, position, concentration, voltage — at a desired value or trajectory,
         despite the influence of external disturbances and internal imperfections.
       </div>
-
-      <div class="prose">
+<div class="prose">
         Three things are always present:
       </div>
-
-      <ul class="prose" style="padding-left:1.4em;">
-        <li style="margin-bottom:8px;"><strong>The plant</strong> — the physical process to be controlled.
+<ul class="prose" style="padding-left:1.4em;">
+<li style="margin-bottom:8px;"><strong>The plant</strong> — the physical process to be controlled.
           A motor, a furnace, a chemical reactor, a spacecraft. The plant takes an input (voltage,
           fuel flow, actuator force) and produces an output (shaft speed, temperature, composition,
           position). We can often model the plant mathematically, but the model is never perfect.</li>
-        <li style="margin-bottom:8px;"><strong>The actuator</strong> — the mechanism that applies
+<li style="margin-bottom:8px;"><strong>The actuator</strong> — the mechanism that applies
           the input to the plant. A valve, a servo, a heating element, a thruster. Often modeled
           as part of the plant for analysis purposes.</li>
-        <li style="margin-bottom:8px;"><strong>The sensor</strong> — the mechanism that measures
+<li style="margin-bottom:8px;"><strong>The sensor</strong> — the mechanism that measures
           the output (or some related quantity). A thermometer, a tachometer, a GPS receiver.
           Sensors are noisy and imperfect.</li>
-      </ul>
-
-      <div class="prose">
+</ul>
+<div class="prose">
         A <strong>controller</strong> is the algorithm that decides what input to apply to the plant
         based on some information about the desired output and the actual output.
         The question is: what information should the controller use?
       </div>
-
-      <!-- ── Open-loop ──────────────────────────────────────────── -->
-      <div class="section-head" id="open-loop">Open-loop control</div>
-
-      <div class="prose">
+<!-- ── Open-loop ──────────────────────────────────────────── -->
+<div class="section-head" id="open-loop">Open-loop control</div>
+<div class="prose">
         The simplest approach: compute the required input from the desired output,
         apply it, and never look at what actually happens. This is <strong>open-loop control</strong>.
       </div>
-
-      <!-- SVG: open-loop block diagram -->
-      <svg viewBox="0 0 520 90" style="width:100%;max-width:540px;display:block;margin:18px auto 10px;font-family:'IBM Plex Sans',sans-serif;">
-        <defs>
-          <marker id="olarr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-            <path d="M0,0 L0,6 L8,3 z" fill="#3a6a8a"/>
-          </marker>
-        </defs>
-        <!-- Reference -->
-        <text x="14" y="50" font-size="12" fill="#3a6a8a" font-family="IBM Plex Sans,sans-serif">$r(t)$</text>
-        <!-- Arrow: R → Controller -->
-        <line x1="45" y1="45" x2="88" y2="45" stroke="#3a6a8a" stroke-width="1.5" marker-end="url(#olarr)"/>
-        <!-- Controller box -->
-        <rect x="90" y="28" width="110" height="34" rx="4" fill="#e8f0f5" stroke="#7ab8d4" stroke-width="1.5"/>
-        <text x="145" y="49" text-anchor="middle" font-size="12" fill="#1a2840" font-family="IBM Plex Sans,sans-serif">Controller</text>
-        <!-- Arrow: Controller → Plant -->
-        <line x1="200" y1="45" x2="243" y2="45" stroke="#3a6a8a" stroke-width="1.5" marker-end="url(#olarr)"/>
-        <text x="222" y="40" text-anchor="middle" font-size="11" fill="#3a6a8a" font-family="IBM Plex Sans,sans-serif">$u(t)$</text>
-        <!-- Plant box -->
-        <rect x="245" y="28" width="110" height="34" rx="4" fill="#f0f4e8" stroke="#a0b870" stroke-width="1.5"/>
-        <text x="300" y="49" text-anchor="middle" font-size="12" fill="#1a2840" font-family="IBM Plex Sans,sans-serif">Plant</text>
-        <!-- Arrow: Plant → output -->
-        <line x1="355" y1="45" x2="398" y2="45" stroke="#3a6a8a" stroke-width="1.5" marker-end="url(#olarr)"/>
-        <text x="377" y="40" text-anchor="middle" font-size="11" fill="#3a6a8a" font-family="IBM Plex Sans,sans-serif">$y(t)$</text>
-        <!-- Disturbance (dashed) -->
-        <line x1="300" y1="12" x2="300" y2="28" stroke="#c07030" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#olarr)"/>
-        <text x="310" y="10" font-size="10" fill="#c07030" font-family="IBM Plex Sans,sans-serif">$d(t)$</text>
-        <!-- Output label -->
-        <text x="402" y="50" font-size="12" fill="#3a6a8a" font-family="IBM Plex Sans,sans-serif">$y(t)$</text>
-      </svg>
-
-      <div class="prose">
+<!-- SVG: open-loop block diagram -->
+<svg style="width:100%;max-width:540px;display:block;margin:18px auto 10px;font-family:'IBM Plex Sans',sans-serif;" viewbox="0 0 520 90">
+<defs>
+<marker id="olarr" markerheight="8" markerwidth="8" orient="auto" refx="6" refy="3">
+<path d="M0,0 L0,6 L8,3 z" fill="#3a6a8a"></path>
+</marker>
+</defs>
+<!-- Reference -->
+<text fill="#3a6a8a" font-family="IBM Plex Sans,sans-serif" font-size="12" x="14" y="50">$r(t)$</text>
+<!-- Arrow: R → Controller -->
+<line marker-end="url(#olarr)" stroke="#3a6a8a" stroke-width="1.5" x1="45" x2="88" y1="45" y2="45"></line>
+<!-- Controller box -->
+<rect fill="#e8f0f5" height="34" rx="4" stroke="#7ab8d4" stroke-width="1.5" width="110" x="90" y="28"></rect>
+<text fill="#1a2840" font-family="IBM Plex Sans,sans-serif" font-size="12" text-anchor="middle" x="145" y="49">Controller</text>
+<!-- Arrow: Controller → Plant -->
+<line marker-end="url(#olarr)" stroke="#3a6a8a" stroke-width="1.5" x1="200" x2="243" y1="45" y2="45"></line>
+<text fill="#3a6a8a" font-family="IBM Plex Sans,sans-serif" font-size="11" text-anchor="middle" x="222" y="40">$u(t)$</text>
+<!-- Plant box -->
+<rect fill="#f0f4e8" height="34" rx="4" stroke="#a0b870" stroke-width="1.5" width="110" x="245" y="28"></rect>
+<text fill="#1a2840" font-family="IBM Plex Sans,sans-serif" font-size="12" text-anchor="middle" x="300" y="49">Plant</text>
+<!-- Arrow: Plant → output -->
+<line marker-end="url(#olarr)" stroke="#3a6a8a" stroke-width="1.5" x1="355" x2="398" y1="45" y2="45"></line>
+<text fill="#3a6a8a" font-family="IBM Plex Sans,sans-serif" font-size="11" text-anchor="middle" x="377" y="40">$y(t)$</text>
+<!-- Disturbance (dashed) -->
+<line marker-end="url(#olarr)" stroke="#c07030" stroke-dasharray="4,3" stroke-width="1.5" x1="300" x2="300" y1="12" y2="28"></line>
+<text fill="#c07030" font-family="IBM Plex Sans,sans-serif" font-size="10" x="310" y="10">$d(t)$</text>
+<!-- Output label -->
+<text fill="#3a6a8a" font-family="IBM Plex Sans,sans-serif" font-size="12" x="402" y="50">$y(t)$</text>
+</svg>
+<div class="prose">
         Example: a toaster. You set the darkness level (the reference), and the timer determines
         how long the heating elements stay on (the input). The toaster doesn't measure whether
         your toast is actually dark or pale — it just runs for the preset time. If the bread is
         thin, it burns; if the voltage is lower than expected, it stays pale. No measurement,
         no correction.
       </div>
-
-      <div class="prose">
+<div class="prose">
         Open-loop control works when:
       </div>
-
-      <ul class="prose" style="padding-left:1.4em;">
-        <li>The plant model is accurate</li>
-        <li>There are no significant disturbances</li>
-        <li>Precise output is not critical</li>
-      </ul>
-
-      <div class="prose">
+<ul class="prose" style="padding-left:1.4em;">
+<li>The plant model is accurate</li>
+<li>There are no significant disturbances</li>
+<li>Precise output is not critical</li>
+</ul>
+<div class="prose">
         It fails when any of these conditions don't hold. A slightly wrong model, a gust of wind,
         a worn actuator — all produce uncorrected errors that persist indefinitely.
       </div>
-
-      <!-- ── Closed-loop ────────────────────────────────────────── -->
-      <div class="section-head" id="closed-loop">Closed-loop feedback control</div>
-
-      <div class="prose">
+<!-- ── Closed-loop ────────────────────────────────────────── -->
+<div class="section-head" id="closed-loop">Closed-loop feedback control</div>
+<div class="prose">
         The key insight of feedback control: <em>measure what is actually happening and use
         the discrepancy to correct the input.</em>
-      </div>
-
-      <!-- SVG: closed-loop block diagram -->
-      <svg viewBox="0 0 540 160" style="width:100%;max-width:560px;display:block;margin:18px auto 10px;font-family:'IBM Plex Sans',sans-serif;">
-        <defs>
-          <marker id="clarr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-            <path d="M0,0 L0,6 L8,3 z" fill="#3a6a8a"/>
-          </marker>
-        </defs>
-        <!-- Reference signal -->
-        <text x="5" y="58" font-size="12" fill="#3a6a8a" font-family="IBM Plex Sans,sans-serif">$r(t)$</text>
-        <!-- Arrow: r → summing junction -->
-        <line x1="38" y1="53" x2="64" y2="53" stroke="#3a6a8a" stroke-width="1.5" marker-end="url(#clarr)"/>
-        <!-- Summing junction circle -->
-        <circle cx="75" cy="53" r="11" fill="white" stroke="#3a6a8a" stroke-width="1.5"/>
-        <text x="75" y="48" text-anchor="middle" font-size="10" fill="#3a6a8a">+</text>
-        <text x="75" y="62" text-anchor="middle" font-size="10" fill="#c05050">−</text>
-        <!-- Arrow: junction → controller -->
-        <line x1="86" y1="53" x2="118" y2="53" stroke="#3a6a8a" stroke-width="1.5" marker-end="url(#clarr)"/>
-        <text x="102" y="48" text-anchor="middle" font-size="11" fill="#5a6a7a" font-family="IBM Plex Sans,sans-serif">$e(t)$</text>
-        <!-- Controller box -->
-        <rect x="120" y="36" width="110" height="34" rx="4" fill="#e8f0f5" stroke="#7ab8d4" stroke-width="1.5"/>
-        <text x="175" y="57" text-anchor="middle" font-size="12" fill="#1a2840" font-family="IBM Plex Sans,sans-serif">Controller</text>
-        <!-- Arrow: controller → plant -->
-        <line x1="230" y1="53" x2="268" y2="53" stroke="#3a6a8a" stroke-width="1.5" marker-end="url(#clarr)"/>
-        <text x="249" y="48" text-anchor="middle" font-size="11" fill="#3a6a8a" font-family="IBM Plex Sans,sans-serif">$u(t)$</text>
-        <!-- Plant box -->
-        <rect x="270" y="36" width="110" height="34" rx="4" fill="#f0f4e8" stroke="#a0b870" stroke-width="1.5"/>
-        <text x="325" y="57" text-anchor="middle" font-size="12" fill="#1a2840" font-family="IBM Plex Sans,sans-serif">Plant</text>
-        <!-- Arrow: plant → output -->
-        <line x1="380" y1="53" x2="430" y2="53" stroke="#3a6a8a" stroke-width="1.5" marker-end="url(#clarr)"/>
-        <text x="406" y="48" text-anchor="middle" font-size="11" fill="#3a6a8a" font-family="IBM Plex Sans,sans-serif">$y(t)$</text>
-        <!-- Output label -->
-        <text x="433" y="58" font-size="12" fill="#3a6a8a" font-family="IBM Plex Sans,sans-serif">$y(t)$</text>
-        <!-- Disturbance -->
-        <line x1="325" y1="20" x2="325" y2="36" stroke="#c07030" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#clarr)"/>
-        <text x="335" y="18" font-size="10" fill="#c07030" font-family="IBM Plex Sans,sans-serif">$d(t)$</text>
-        <!-- Feedback path: output goes down and back -->
-        <line x1="415" y1="53" x2="415" y2="128" stroke="#3a6a8a" stroke-width="1.5"/>
-        <line x1="415" y1="128" x2="75" y2="128" stroke="#3a6a8a" stroke-width="1.5"/>
-        <line x1="75" y1="128" x2="75" y2="64" stroke="#3a6a8a" stroke-width="1.5" marker-end="url(#clarr)"/>
-        <!-- Sensor label -->
-        <text x="245" y="144" text-anchor="middle" font-size="11" fill="#3a6a8a" font-family="IBM Plex Sans,sans-serif">Sensor / Feedback path</text>
-        <!-- Measurement noise -->
-        <line x1="245" y1="128" x2="245" y2="128" stroke="#c07030" stroke-width="0"/>
-        <text x="248" y="124" font-size="10" fill="#c07030" font-family="IBM Plex Sans,sans-serif">+ $n(t)$</text>
-      </svg>
-
-      <div class="prose">
+</div>
+<!-- SVG: closed-loop block diagram -->
+<svg style="width:100%;max-width:560px;display:block;margin:18px auto 10px;font-family:'IBM Plex Sans',sans-serif;" viewbox="0 0 540 160">
+<defs>
+<marker id="clarr" markerheight="8" markerwidth="8" orient="auto" refx="6" refy="3">
+<path d="M0,0 L0,6 L8,3 z" fill="#3a6a8a"></path>
+</marker>
+</defs>
+<!-- Reference signal -->
+<text fill="#3a6a8a" font-family="IBM Plex Sans,sans-serif" font-size="12" x="5" y="58">$r(t)$</text>
+<!-- Arrow: r → summing junction -->
+<line marker-end="url(#clarr)" stroke="#3a6a8a" stroke-width="1.5" x1="38" x2="64" y1="53" y2="53"></line>
+<!-- Summing junction circle -->
+<circle cx="75" cy="53" fill="white" r="11" stroke="#3a6a8a" stroke-width="1.5"></circle>
+<text fill="#3a6a8a" font-size="10" text-anchor="middle" x="75" y="48">+</text>
+<text fill="#c05050" font-size="10" text-anchor="middle" x="75" y="62">−</text>
+<!-- Arrow: junction → controller -->
+<line marker-end="url(#clarr)" stroke="#3a6a8a" stroke-width="1.5" x1="86" x2="118" y1="53" y2="53"></line>
+<text fill="#5a6a7a" font-family="IBM Plex Sans,sans-serif" font-size="11" text-anchor="middle" x="102" y="48">$e(t)$</text>
+<!-- Controller box -->
+<rect fill="#e8f0f5" height="34" rx="4" stroke="#7ab8d4" stroke-width="1.5" width="110" x="120" y="36"></rect>
+<text fill="#1a2840" font-family="IBM Plex Sans,sans-serif" font-size="12" text-anchor="middle" x="175" y="57">Controller</text>
+<!-- Arrow: controller → plant -->
+<line marker-end="url(#clarr)" stroke="#3a6a8a" stroke-width="1.5" x1="230" x2="268" y1="53" y2="53"></line>
+<text fill="#3a6a8a" font-family="IBM Plex Sans,sans-serif" font-size="11" text-anchor="middle" x="249" y="48">$u(t)$</text>
+<!-- Plant box -->
+<rect fill="#f0f4e8" height="34" rx="4" stroke="#a0b870" stroke-width="1.5" width="110" x="270" y="36"></rect>
+<text fill="#1a2840" font-family="IBM Plex Sans,sans-serif" font-size="12" text-anchor="middle" x="325" y="57">Plant</text>
+<!-- Arrow: plant → output -->
+<line marker-end="url(#clarr)" stroke="#3a6a8a" stroke-width="1.5" x1="380" x2="430" y1="53" y2="53"></line>
+<text fill="#3a6a8a" font-family="IBM Plex Sans,sans-serif" font-size="11" text-anchor="middle" x="406" y="48">$y(t)$</text>
+<!-- Output label -->
+<text fill="#3a6a8a" font-family="IBM Plex Sans,sans-serif" font-size="12" x="433" y="58">$y(t)$</text>
+<!-- Disturbance -->
+<line marker-end="url(#clarr)" stroke="#c07030" stroke-dasharray="4,3" stroke-width="1.5" x1="325" x2="325" y1="20" y2="36"></line>
+<text fill="#c07030" font-family="IBM Plex Sans,sans-serif" font-size="10" x="335" y="18">$d(t)$</text>
+<!-- Feedback path: output goes down and back -->
+<line stroke="#3a6a8a" stroke-width="1.5" x1="415" x2="415" y1="53" y2="128"></line>
+<line stroke="#3a6a8a" stroke-width="1.5" x1="415" x2="75" y1="128" y2="128"></line>
+<line marker-end="url(#clarr)" stroke="#3a6a8a" stroke-width="1.5" x1="75" x2="75" y1="128" y2="64"></line>
+<!-- Sensor label -->
+<text fill="#3a6a8a" font-family="IBM Plex Sans,sans-serif" font-size="11" text-anchor="middle" x="245" y="144">Sensor / Feedback path</text>
+<!-- Measurement noise -->
+<line stroke="#c07030" stroke-width="0" x1="245" x2="245" y1="128" y2="128"></line>
+<text fill="#c07030" font-family="IBM Plex Sans,sans-serif" font-size="10" x="248" y="124">+ $n(t)$</text>
+</svg>
+<div class="prose">
         The key elements in the closed-loop block diagram:
       </div>
-
-      <ul class="prose" style="padding-left:1.4em;">
-        <li style="margin-bottom:8px;"><strong>Reference $r(t)$</strong> — the desired output (setpoint).
+<ul class="prose" style="padding-left:1.4em;">
+<li style="margin-bottom:8px;"><strong>Reference $r(t)$</strong> — the desired output (setpoint).
           "I want the temperature to be 22°C."</li>
-        <li style="margin-bottom:8px;"><strong>Error $e(t) = r(t) - y(t)$</strong> — the discrepancy
+<li style="margin-bottom:8px;"><strong>Error $e(t) = r(t) - y(t)$</strong> — the discrepancy
           between what you want and what you have. The summing junction computes this.</li>
-        <li style="margin-bottom:8px;"><strong>Controller</strong> — takes the error and computes the
+<li style="margin-bottom:8px;"><strong>Controller</strong> — takes the error and computes the
           control input $u(t)$. This is where the engineering happens.</li>
-        <li style="margin-bottom:8px;"><strong>Plant</strong> — the physical process. Produces output
+<li style="margin-bottom:8px;"><strong>Plant</strong> — the physical process. Produces output
           $y(t)$ in response to input $u(t)$ and disturbances $d(t)$.</li>
-        <li style="margin-bottom:8px;"><strong>Disturbance $d(t)$</strong> — unwanted inputs to the plant
+<li style="margin-bottom:8px;"><strong>Disturbance $d(t)$</strong> — unwanted inputs to the plant
           (wind, load changes, power fluctuations). Feedback allows these to be corrected.</li>
-        <li style="margin-bottom:8px;"><strong>Measurement noise $n(t)$</strong> — sensor errors that
+<li style="margin-bottom:8px;"><strong>Measurement noise $n(t)$</strong> — sensor errors that
           corrupt the feedback signal. A real constraint on how aggressively you can control.</li>
-      </ul>
-
-      <!-- ── Why feedback wins ──────────────────────────────────── -->
-      <div class="section-head" id="why-feedback">Why feedback wins</div>
-
-      <div class="prose">
+</ul>
+<!-- ── Why feedback wins ──────────────────────────────────── -->
+<div class="section-head" id="why-feedback">Why feedback wins</div>
+<div class="prose">
         Feedback is not just "better" than open-loop — it is qualitatively different. Consider
         three failure modes of open-loop control, and how feedback handles each:
       </div>
-
-      <div class="prose">
-        <strong>Model uncertainty.</strong> Your model of the plant is wrong — the gain is 10%
+<div class="prose">
+<strong>Model uncertainty.</strong> Your model of the plant is wrong — the gain is 10%
         higher than you assumed. Open-loop: the output is 10% off forever.
         Closed-loop with high gain: the error drives the input until the output matches the
         reference, regardless of the exact plant gain. Feedback desensitizes the system to
         plant variations.
       </div>
-
-      <div class="prose">
-        <strong>Disturbances.</strong> A load is suddenly applied to the motor.
+<div class="prose">
+<strong>Disturbances.</strong> A load is suddenly applied to the motor.
         Open-loop: the speed drops and stays low until you manually increase the input.
         Closed-loop: the speed drop creates an error, which increases the control input,
         which brings the speed back. Feedback rejects disturbances automatically.
       </div>
-
-      <div class="prose">
-        <strong>Unstable plants.</strong> Some physical systems are inherently unstable
+<div class="prose">
+<strong>Unstable plants.</strong> Some physical systems are inherently unstable
         — an inverted pendulum, an unstable aircraft, a chemical reactor with positive feedback.
         Open-loop control cannot stabilize an unstable plant (any perturbation grows without
         bound). Feedback control can stabilize plants that are fundamentally unstable by
         continuously correcting errors before they grow large.
       </div>
-
-      <div class="callout">
-        <strong>The fundamental trade-off.</strong> Feedback introduces a new problem: the
+<div class="callout">
+<strong>The fundamental trade-off.</strong> Feedback introduces a new problem: the
         feedback signal carries measurement noise $n(t)$. If you control very aggressively
         (high gain), you react quickly to errors — but you also react to sensor noise,
         potentially causing the actuator to chatter and the output to oscillate. The entire
@@ -323,180 +293,156 @@
         to reject disturbances, gentle enough to not amplify noise. This trade-off runs through
         every topic in this cluster.
       </div>
-
-      <!-- ── Block diagram notation ─────────────────────────────── -->
-      <div class="section-head" id="block-diagrams">Block diagram notation</div>
-
-      <div class="prose">
+<!-- ── Block diagram notation ─────────────────────────────── -->
+<div class="section-head" id="block-diagrams">Block diagram notation</div>
+<div class="prose">
         Block diagrams are the language of control systems. Each block represents a transformation
         from input to output, described by a transfer function $G(s)$ (introduced in Lesson 2).
         A few rules:
       </div>
-
-      <ul class="prose" style="padding-left:1.4em;">
-        <li style="margin-bottom:8px;"><strong>Cascade (series):</strong> Two blocks in series
+<ul class="prose" style="padding-left:1.4em;">
+<li style="margin-bottom:8px;"><strong>Cascade (series):</strong> Two blocks in series
           have combined transfer function $G_1(s) \cdot G_2(s)$. The output of the first
           feeds the input of the second.</li>
-        <li style="margin-bottom:8px;"><strong>Summing junction:</strong> A circle with a $+$ or
+<li style="margin-bottom:8px;"><strong>Summing junction:</strong> A circle with a $+$ or
           $-$ at each input. Sums (or subtracts) signals. The negative sign at the feedback
           path input is the "negative feedback" that makes error = reference − output.</li>
-        <li style="margin-bottom:8px;"><strong>Parallel paths:</strong> Two blocks in parallel
+<li style="margin-bottom:8px;"><strong>Parallel paths:</strong> Two blocks in parallel
           with outputs summed have combined transfer function $G_1(s) + G_2(s)$.</li>
-        <li style="margin-bottom:8px;"><strong>Closed-loop transfer function:</strong> For the
+<li style="margin-bottom:8px;"><strong>Closed-loop transfer function:</strong> For the
           standard unity-feedback loop with plant $P(s)$ and controller $C(s)$:
           $$T(s) = \frac{C(s)P(s)}{1 + C(s)P(s)}$$
           This is the transfer function from reference $r$ to output $y$. The denominator
           $1 + C(s)P(s)$ is the <em>characteristic polynomial</em> — its roots (the closed-loop
           poles) determine stability and response speed.</li>
-      </ul>
-
-      <div class="callout">
-        <strong>⟶ Worth understanding:</strong> Derive the closed-loop transfer function
+</ul>
+<div class="callout">
+<strong>⟶ Worth understanding:</strong> Derive the closed-loop transfer function
         $T(s) = Y(s)/R(s)$ from the block diagram. Start from $Y = P(U)$ and $U = C(R - Y)$.
         Substitute and solve for $Y/R$. This algebraic manipulation is the foundation of
         all closed-loop analysis — once you can do it for simple loops, you can handle
         multi-loop systems by the same algebra.
       </div>
-
-      <!-- ── Performance objectives ─────────────────────────────── -->
-      <div class="section-head" id="objectives">Performance objectives</div>
-
-      <div class="prose">
+<!-- ── Performance objectives ─────────────────────────────── -->
+<div class="section-head" id="objectives">Performance objectives</div>
+<div class="prose">
         What does "good" control mean? Several objectives, often in tension:
       </div>
-
-      <div style="overflow-x:auto;margin:16px 0 24px;">
-        <table style="width:100%;border-collapse:collapse;font-size:13.5px;">
-          <thead>
-            <tr style="background:#f0f4f7;">
-              <th style="padding:8px 14px;text-align:left;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;">Objective</th>
-              <th style="padding:8px 14px;text-align:left;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;">What it means</th>
-              <th style="padding:8px 14px;text-align:left;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;">Metric</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;font-weight:500;">Stability</td>
-              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">The system doesn't blow up (outputs remain bounded for bounded inputs)</td>
-              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">All closed-loop poles in the left half-plane</td>
-            </tr>
-            <tr style="background:#f8fafb;">
-              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;font-weight:500;">Tracking</td>
-              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">The output follows the reference closely and quickly</td>
-              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Rise time, settling time, overshoot, steady-state error</td>
-            </tr>
-            <tr>
-              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;font-weight:500;">Disturbance rejection</td>
-              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">External disturbances have small effect on the output</td>
-              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Disturbance transfer function magnitude</td>
-            </tr>
-            <tr style="background:#f8fafb;">
-              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;font-weight:500;">Robustness</td>
-              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">System remains stable and performs well even if the plant model is wrong</td>
-              <td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Gain margin, phase margin</td>
-            </tr>
-            <tr>
-              <td style="padding:8px 14px;font-weight:500;">Noise attenuation</td>
-              <td style="padding:8px 14px;">Sensor noise is not amplified into the actuator or output</td>
-              <td style="padding:8px 14px;">High-frequency gain of sensitivity function</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="prose">
+<div style="overflow-x:auto;margin:16px 0 24px;">
+<table style="width:100%;border-collapse:collapse;font-size:13.5px;">
+<thead>
+<tr style="background:#f0f4f7;">
+<th style="padding:8px 14px;text-align:left;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;">Objective</th>
+<th style="padding:8px 14px;text-align:left;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;">What it means</th>
+<th style="padding:8px 14px;text-align:left;border-bottom:2px solid #c0dae8;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;">Metric</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;font-weight:500;">Stability</td>
+<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">The system doesn't blow up (outputs remain bounded for bounded inputs)</td>
+<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">All closed-loop poles in the left half-plane</td>
+</tr>
+<tr style="background:#f8fafb;">
+<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;font-weight:500;">Tracking</td>
+<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">The output follows the reference closely and quickly</td>
+<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Rise time, settling time, overshoot, steady-state error</td>
+</tr>
+<tr>
+<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;font-weight:500;">Disturbance rejection</td>
+<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">External disturbances have small effect on the output</td>
+<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Disturbance transfer function magnitude</td>
+</tr>
+<tr style="background:#f8fafb;">
+<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;font-weight:500;">Robustness</td>
+<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">System remains stable and performs well even if the plant model is wrong</td>
+<td style="padding:8px 14px;border-bottom:1px solid #e8eef2;">Gain margin, phase margin</td>
+</tr>
+<tr>
+<td style="padding:8px 14px;font-weight:500;">Noise attenuation</td>
+<td style="padding:8px 14px;">Sensor noise is not amplified into the actuator or output</td>
+<td style="padding:8px 14px;">High-frequency gain of sensitivity function</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="prose">
         These objectives conflict. Faster tracking requires higher controller gain, which
         reduces robustness and amplifies noise. Rejecting disturbances requires high gain at
         low frequencies, but this tends to make the system less stable at high frequencies.
         Control design is the process of navigating these trade-offs within the constraints
         set by the application.
       </div>
-
-      <!-- ── Examples ──────────────────────────────────────────── -->
-      <div class="section-head" id="examples">Examples across engineering and biology</div>
-
-      <div class="prose">
-        <strong>Thermostat.</strong> Plant: building heating system. Reference: desired temperature.
+<!-- ── Examples ──────────────────────────────────────────── -->
+<div class="section-head" id="examples">Examples across engineering and biology</div>
+<div class="prose">
+<strong>Thermostat.</strong> Plant: building heating system. Reference: desired temperature.
         Measurement: thermometer. Control: on/off relay. Disturbance: outdoor temperature changes,
         doors opening. This is on/off (bang-bang) control — crude but sufficient for a slow, lossy
         plant where exact tracking is unnecessary.
       </div>
-
-      <div class="prose">
-        <strong>Cruise control.</strong> Plant: car engine and drivetrain. Reference: target speed.
+<div class="prose">
+<strong>Cruise control.</strong> Plant: car engine and drivetrain. Reference: target speed.
         Measurement: wheel speed sensor. Control: throttle position. Disturbance: hills, headwinds,
         passengers boarding. The PI (proportional-integral) controller common in cruise control
         eliminates steady-state error when climbing hills.
       </div>
-
-      <div class="prose">
-        <strong>Inverted pendulum.</strong> Plant: a stick balanced on a cart. This is open-loop
+<div class="prose">
+<strong>Inverted pendulum.</strong> Plant: a stick balanced on a cart. This is open-loop
         unstable — without feedback, any perturbation causes it to fall. Feedback control
         measures the angle and continuously drives the cart to keep the pendulum upright.
         The same principle applies to balancing rockets (SpaceX Falcon 9 vertical landing)
         and two-wheeled robots.
       </div>
-
-      <div class="prose">
-        <strong>Blood glucose regulation.</strong> The pancreas secretes insulin (reduces glucose)
+<div class="prose">
+<strong>Blood glucose regulation.</strong> The pancreas secretes insulin (reduces glucose)
         and glucagon (raises glucose) based on blood glucose measurements — a biological feedback
         controller that has been running for hundreds of millions of years. Diabetes is, in part,
         a failure of this feedback loop. Artificial pancreas devices (closed-loop insulin pumps)
         replicate it using engineering control theory.
       </div>
-
-      <div class="prose">
-        <strong>Operational amplifier.</strong> A standalone op-amp has enormous gain (10⁵–10⁷)
+<div class="prose">
+<strong>Operational amplifier.</strong> A standalone op-amp has enormous gain (10⁵–10⁷)
         but is unstable and sensitive to temperature. By wrapping it in a feedback network
         (resistors from output to inverting input), the closed-loop gain becomes precisely set
         by the resistor ratio and is nearly independent of the op-amp's exact gain. This is
         the same principle as Lesson 2's closed-loop formula applied to analog circuits.
       </div>
-
-      <!-- ── Interactive ────────────────────────────────────────── -->
-      <div class="section-head" id="interactive">Interactive: open-loop vs closed-loop</div>
-
-      <div class="prose">
+<!-- ── Interactive ────────────────────────────────────────── -->
+<div class="section-head" id="interactive">Interactive: open-loop vs closed-loop</div>
+<div class="prose">
         Simulation of a simple first-order temperature system:
         $\dot{y} = -y + u + d(t)$ (time constant 1 s, unity gain).
         The reference is $r = 1$. Observe how each approach responds to a disturbance.
       </div>
-
-      <div class="widget-card">
-        <div class="widget-title">Open-loop vs Closed-loop Control</div>
-
-        <div style="display:flex;gap:24px;flex-wrap:wrap;margin-bottom:16px;align-items:flex-start;">
-          <div style="display:flex;flex-direction:column;gap:6px;">
-            <label style="font-size:12.5px;color:#5a6a7a;">
+<div class="widget-card">
+<div class="widget-title">Open-loop vs Closed-loop Control</div>
+<div style="display:flex;gap:24px;flex-wrap:wrap;margin-bottom:16px;align-items:flex-start;">
+<div style="display:flex;flex-direction:column;gap:6px;">
+<label style="font-size:12.5px;color:#5a6a7a;">
               Closed-loop gain $K_p$:
               <span id="ctrl-kp-val" style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:#1a2840;">5.0</span>
-            </label>
-            <input type="range" id="ctrl-kp" min="0.5" max="20" step="0.5" value="5"
-              style="width:180px;" oninput="document.getElementById('ctrl-kp-val').textContent=parseFloat(this.value).toFixed(1);">
-            <div style="font-size:11.5px;color:#7a8a9a;">Higher $K_p$ → faster correction, smaller steady-state error.</div>
-          </div>
-          <div style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;color:#5a6a7a;'>
-            <span>Simulation time: <span id="ctrl-time" style="font-family:'IBM Plex Mono',monospace;color:#1a2840;">0.0 s</span></span>
-            <span>Disturbance: <span id="ctrl-dist-status" style="font-family:'IBM Plex Mono',monospace;color:#1a2840;">off</span></span>
-          </div>
-        </div>
-
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
-          <button class="sim-btn" onclick="ctrlStart()">▶ Run</button>
-          <button class="sim-btn danger" onclick="ctrlApplyDist()">Apply disturbance d=0.5</button>
-          <button class="sim-btn secondary" onclick="ctrlReset()">Reset</button>
-        </div>
-
-        <svg id="ctrl-plot" viewBox="0 0 480 220" style="width:100%;max-width:520px;display:block;margin:0 auto;"></svg>
-
-        <div style="display:flex;gap:20px;justify-content:center;margin-top:10px;font-size:12px;color:#5a6a7a;">
-          <span><span style="display:inline-block;width:20px;height:2px;background:#b0b0b0;vertical-align:middle;margin-right:4px;border-top:2px dashed #b0b0b0;"></span>Reference $r=1$</span>
-          <span><span style="display:inline-block;width:20px;height:3px;background:#3a6a8a;vertical-align:middle;margin-right:4px;"></span>Open-loop</span>
-          <span><span style="display:inline-block;width:20px;height:3px;background:#c84040;vertical-align:middle;margin-right:4px;"></span>Closed-loop</span>
-        </div>
-      </div>
-
-      <script>
+</label>
+<input id="ctrl-kp" max="20" min="0.5" oninput="document.getElementById('ctrl-kp-val').textContent=parseFloat(this.value).toFixed(1);" step="0.5" style="width:180px;" type="range" value="5"/>
+<div style="font-size:11.5px;color:#7a8a9a;">Higher $K_p$ → faster correction, smaller steady-state error.</div>
+</div>
+<div ctrl-time"="" style="font-family:'IBM Plex Mono',monospace;color:#1a2840;">0.0 s
+<span>Disturbance: <span id="ctrl-dist-status" style="font-family:'IBM Plex Mono',monospace;color:#1a2840;">off</span></span>
+</div>
+</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
+<button class="sim-btn" onclick="ctrlStart()">▶ Run</button>
+<button class="sim-btn danger" onclick="ctrlApplyDist()">Apply disturbance d=0.5</button>
+<button class="sim-btn secondary" onclick="ctrlReset()">Reset</button>
+</div>
+<svg id="ctrl-plot" style="width:100%;max-width:520px;display:block;margin:0 auto;" viewbox="0 0 480 220"></svg>
+<div style="display:flex;gap:20px;justify-content:center;margin-top:10px;font-size:12px;color:#5a6a7a;">
+<span><span style="display:inline-block;width:20px;height:2px;background:#b0b0b0;vertical-align:middle;margin-right:4px;border-top:2px dashed #b0b0b0;"></span>Reference $r=1$</span>
+<span><span style="display:inline-block;width:20px;height:3px;background:#3a6a8a;vertical-align:middle;margin-right:4px;"></span>Open-loop</span>
+<span><span style="display:inline-block;width:20px;height:3px;background:#c84040;vertical-align:middle;margin-right:4px;"></span>Closed-loop</span>
+</div>
+</div>
+<script>
       (function() {
         const DT = 0.05;   // simulation step (s)
         const T_MAX = 20;  // max sim time (s)
@@ -642,8 +588,7 @@
         resetFn();
       })();
       </script>
-
-      <div class="prose" style="margin-top:12px;">
+<div class="prose" style="margin-top:12px;">
         Try increasing $K_p$ to see the closed-loop response become faster but also more
         oscillatory. When you apply the disturbance: the open-loop output shifts to a new
         steady state ($y = 1.5$) and stays there; the closed-loop output dips and then
@@ -652,18 +597,16 @@
         overcorrects, then corrects the correction, and so on. This is the stability/performance
         tradeoff in action.
       </div>
-
-      <!-- ── Food for thought ────────────────────────────────────── -->
-      <div class="section-head" id="food-for-thought">Food for thought</div>
-
-      <div class="fft-block" style="border-left:3px solid #b89040;background:#faf8f2;padding:14px 18px;border-radius:0 4px 4px 0;margin:20px 0;">
-        <div style="font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#8a6010;margin-bottom:10px;">Reflection questions</div>
-        <ol style="padding-left:1.4em;color:#2a3a4a;font-size:14px;line-height:1.7;">
-          <li style="margin-bottom:12px;">The interactive shows that open-loop control reaches
+<!-- ── Food for thought ────────────────────────────────────── -->
+<div class="section-head" id="food-for-thought">Food for thought</div>
+<div class="fft-block" style="border-left:3px solid #b89040;background:#faf8f2;padding:14px 18px;border-radius:0 4px 4px 0;margin:20px 0;">
+<div style="font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#8a6010;margin-bottom:10px;">Reflection questions</div>
+<ol style="padding-left:1.4em;color:#2a3a4a;font-size:14px;line-height:1.7;">
+<li class="fft-item" style="margin-bottom:12px;">The interactive shows that open-loop control reaches
             the correct steady state ($y=1$) without any disturbance. But does it track a
             time-varying reference — say, a sinusoidal $r(t) = \sin(t)$? What would you need
             to know about the plant to make open-loop tracking work?
-                          <div class="fft-answer-body">
+                          <div class="fft-answer">
                 For open-loop tracking of a sinusoidal reference $r(t) = A\sin(\omega t)$, you need
                 to know the plant's frequency response $P(j\omega)$ exactly. The open-loop controller
                 must apply $u(t) = A|P(j\omega)|^{-1}\sin(\omega t - \angle P(j\omega))$ to cancel the
@@ -676,16 +619,15 @@
                 plants with no disturbances. For any dynamic reference or uncertain plant, feedback is
                 necessary to adapt to model errors in real time.
               </div>
-            
-          </li>
-          <li style="margin-bottom:12px;">Feedback can stabilize an unstable plant. But can
+</li>
+<li class="fft-item" style="margin-bottom:12px;">Feedback can stabilize an unstable plant. But can
             feedback make a stable plant unstable? Under what conditions would a feedback
             controller make things worse? (Think about high gain and time delays.)
-                          <div class="fft-answer-body">
+                          <div class="fft-answer">
                 Yes — feedback can absolutely destabilize a stable plant. The closed-loop characteristic
                 equation is $1 + C(s)P(s) = 0$, whose roots depend on both $C$ and $P$. Specific scenarios:
 
-                <strong>High gain:</strong> For any stable plant with more poles than zeros ($n > m$),
+                <strong>High gain:</strong> For any stable plant with more poles than zeros ($n &gt; m$),
                 the phase lag eventually exceeds $-180°$ at some frequency. Increasing gain raises the
                 loop crossover frequency toward this phase-crossing frequency, eventually causing the
                 Nyquist plot to encircle $-1$ — instability. This is the classic gain-induced instability
@@ -703,12 +645,11 @@
                 The general lesson: feedback helps in the frequency band where the loop gain is large,
                 but at frequencies where the phase lag exceeds $-180°$, feedback actively hurts stability.
               </div>
-            
-          </li>
-          <li>The closed-loop transfer function is $T(s) = CP/(1+CP)$. What happens to $T(s)$
+</li>
+<li class="fft-item">The closed-loop transfer function is $T(s) = CP/(1+CP)$. What happens to $T(s)$
             when $CP \gg 1$? What does this tell you about what the output does at frequencies
             where the loop gain is large?
-                          <div class="fft-answer-body">
+                          <div class="fft-answer">
                 When $|C(j\omega)P(j\omega)| \gg 1$:
                 $$T(j\omega) = \frac{C(j\omega)P(j\omega)}{1 + C(j\omega)P(j\omega)} \approx \frac{C(j\omega)P(j\omega)}{C(j\omega)P(j\omega)} = 1$$
                 The closed-loop gain approaches 1 at all frequencies where the loop gain is large.
@@ -724,86 +665,75 @@
                 higher frequencies to preserve stability margins. This is the intuition behind the
                 "loop shaping" approach to control design.
               </div>
-            
-          </li>
-        </ol>
-      </div>
-
-      <!-- ── Common pitfalls ─────────────────────────────────────── -->
-      <div class="section-head" id="pitfalls">Common pitfalls</div>
-
-      <div class="pitfalls-block" style="border-left:3px solid #c07070;background:#fdf8f8;padding:14px 18px;border-radius:0 4px 4px 0;margin:20px 0;">
-        <div style="font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#8a2020;margin-bottom:10px;">Mistakes worth knowing about in advance</div>
-        <ul style="padding-left:1.4em;color:#2a3a4a;font-size:14px;line-height:1.7;">
-          <li style="margin-bottom:10px;"><strong>Thinking more gain is always better.</strong>
+</li>
+</ol>
+</div>
+<!-- ── Common pitfalls ─────────────────────────────────────── -->
+<div class="section-head" id="pitfalls">Common pitfalls</div>
+<div class="pitfalls-block" style="border-left:3px solid #c07070;background:#fdf8f8;padding:14px 18px;border-radius:0 4px 4px 0;margin:20px 0;">
+<div style="font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#8a2020;margin-bottom:10px;">Mistakes worth knowing about in advance</div>
+<ul style="padding-left:1.4em;color:#2a3a4a;font-size:14px;line-height:1.7;">
+<li style="margin-bottom:10px;"><strong>Thinking more gain is always better.</strong>
             Increasing controller gain improves tracking and disturbance rejection — up to a
             point. Beyond a critical gain, the system oscillates or becomes unstable. Every
             control design problem has a gain limit set by the phase lag in the loop (delays,
             parasitic dynamics, sensor lag). Routh-Hurwitz (Lesson 4) and Nyquist (Lesson 6)
             make this precise.</li>
-          <li style="margin-bottom:10px;"><strong>Confusing the plant and the closed-loop system.</strong>
+<li style="margin-bottom:10px;"><strong>Confusing the plant and the closed-loop system.</strong>
             When someone asks "is this system stable?", they always mean the closed-loop system
             (plant + controller + feedback). An unstable plant can be stabilized by feedback;
             a stable plant can be destabilized. The plant's poles are not the same as the
             closed-loop poles.</li>
-          <li style="margin-bottom:10px;"><strong>Ignoring the negative in negative feedback.</strong>
+<li style="margin-bottom:10px;"><strong>Ignoring the negative in negative feedback.</strong>
             The standard feedback loop subtracts the measured output from the reference: $e = r - y$.
             If you accidentally wire positive feedback ($e = r + y$), the error grows without
             bound. In practice this happens with sign errors in sensor wiring or software,
             and the system immediately goes unstable.</li>
-          <li><strong>Assuming the model is good enough.</strong>
+<li><strong>Assuming the model is good enough.</strong>
             Real plants have dynamics that aren't in the model: actuator saturation, time delays,
             high-frequency resonances. A controller designed for the nominal model may fail
             badly when these unmodeled dynamics interact with the feedback loop. Robustness
             (gain and phase margins, Lesson 6) quantifies how much margin you have before
             unmodeled dynamics cause instability.</li>
-        </ul>
-      </div>
-
-      <div class="connects-to" style="border-left:3px solid #c0d4de;background:#f8fafb;padding:14px 18px;border-radius:0 4px 4px 0;margin:20px 0;">
-        <div style="font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;margin-bottom:10px;">Connects to</div>
-        <ul style="padding-left:1.4em;color:#2a3a4a;font-size:14px;line-height:1.7;">
-          <li style="margin-bottom:8px;"><strong>Differential Equations</strong> — Every block in
+</ul>
+</div>
+<div class="connects-to" style="border-left:3px solid #c0d4de;background:#f8fafb;padding:14px 18px;border-radius:0 4px 4px 0;margin:20px 0;">
+<div style="font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;margin-bottom:10px;">Connects to</div>
+<ul style="padding-left:1.4em;color:#2a3a4a;font-size:14px;line-height:1.7;">
+<li style="margin-bottom:8px;"><strong>Differential Equations</strong> — Every block in
             a block diagram corresponds to an ODE or a transfer function derived from one.
             The plant $P(s)$ is the Laplace transform of the plant's impulse response, which
             comes from the plant's differential equation. Lesson 2 builds this connection.</li>
-          <li style="margin-bottom:8px;"><strong>RL · The RL Problem</strong> (Lesson 1 of RL cluster) —
+<li style="margin-bottom:8px;"><strong>RL · The RL Problem</strong> (Lesson 1 of RL cluster) —
             The RL agent-environment loop is formally analogous to the closed-loop control
             diagram. The agent is the controller; the environment is the plant; the reward
             signal is an analog of the error. The key difference: RL learns the controller
             from data rather than designing it analytically from a plant model.</li>
-          <li><strong>Neuroscience</strong> — Biological motor control is feedback control:
+<li><strong>Neuroscience</strong> — Biological motor control is feedback control:
             the cerebellum acts as a predictive controller (open-loop component), while the
             spinal reflexes provide fast feedback loops. Parkinson's disease can be modeled
             as a change in the loop gain of the basal ganglia feedback circuit.</li>
-        </ul>
-      </div>
-
-      <hr class="lesson-rule">
-
-      <div class="section-head">References</div>
-      <ul class="prose" style="padding-left:1.4em;font-size:13.5px;color:#5a6a7a;">
-        <li style="margin-bottom:6px;">G. Franklin, J. Powell &amp; A. Emami-Naeini, <em>Feedback Control of Dynamic Systems</em>
+</ul>
+</div>
+<hr class="lesson-rule"/>
+<div class="section-head">References</div>
+<ul class="prose" style="padding-left:1.4em;font-size:13.5px;color:#5a6a7a;">
+<li style="margin-bottom:6px;">G. Franklin, J. Powell &amp; A. Emami-Naeini, <em>Feedback Control of Dynamic Systems</em>
           (8th ed.) — Chapter 1: overview of feedback control, historical examples, and
           performance objectives. This is the primary reference for the cluster's classical
           content (Parts I–III).</li>
-        <li>K. Ogata, <em>Modern Control Engineering</em> (5th ed.) — Chapter 1: similar
+<li>K. Ogata, <em>Modern Control Engineering</em> (5th ed.) — Chapter 1: similar
           introduction from a slightly different angle. Ogata is more mathematically direct
           from the start.</li>
-      </ul>
-
-      <div id="lesson-nav"></div>
-
-    </div><!-- /main -->
-
-  </div><!-- /page-body -->
+</ul>
+<div id="lesson-nav"></div>
+</div><!-- /main -->
+</div><!-- /page-body -->
 </div><!-- /site-wrap -->
-
 <footer class="site-footer">
-  <span>elee03.github.io/notes</span>
-  <span>Est. MMXXVI</span>
+<span>elee03.github.io/notes</span>
+<span>Est. MMXXVI</span>
 </footer>
-
-    <script src="../notes-nav.js"></script>
+<script src="../notes-nav.js"></script>
 </body>
 </html>

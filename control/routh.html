@@ -1,17 +1,18 @@
 ﻿<!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Routh-Hurwitz Stability — Field Notes</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../style.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
-  <script>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Routh-Hurwitz Stability — Field Notes</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="../style.css" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" rel="stylesheet"/>
+<script defer="" src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer="" src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<script>
     document.addEventListener('DOMContentLoaded', function() {
       renderMathInElement(document.body, {
         delimiters: [
@@ -22,7 +23,7 @@
       });
     });
   </script>
-  <style>
+<style>
     .widget-card {
       background: #f0f4f7;
       border: 1px solid #c0d0dc;
@@ -105,65 +106,56 @@
   </style>
 </head>
 <body>
-
 <div class="topbar">
-  <div class="topbar-inner">
-    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
-    <span class="topbar-sep">·</span>
-    <a href="../references.html" class="topbar-link">Library</a>
-    <span class="topbar-sep">·</span>
-    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
-  </div>
+<div class="topbar-inner">
+<a class="topbar-brand" href="../index.html">Field <span class="accent">Notes</span></a>
+<span class="topbar-sep">·</span>
+<a class="topbar-link" href="../references.html">Library</a>
+<span class="topbar-sep">·</span>
+<a class="topbar-back" href="https://elee03.github.io">elee03.github.io ↗</a>
 </div>
-
+</div>
 <div class="site-wrap">
-  <div class="page-body">
-
-    <div class="sidebar">
-      <div id="cluster-nav" data-cluster="control" data-current="routh.html"></div>
-            <hr class="sidebar-rule">
-
-      <div class="nav-section">
-        <div class="nav-label">On this page</div>
-        <a href="#the-problem" class="nav-item">The stability problem</a>
-        <a href="#necessary" class="nav-item">Necessary conditions</a>
-        <a href="#routh-array" class="nav-item">Building the Routh array</a>
-        <a href="#stability-test" class="nav-item">Stability test</a>
-        <a href="#special-cases" class="nav-item">Special cases</a>
-        <a href="#gain-range" class="nav-item">Stability range of gain</a>
-        <a href="#examples" class="nav-item">Worked examples</a>
-        <a href="#interactive" class="nav-item">Interactive calculator</a>
-        <a href="#food-for-thought" class="nav-item">Food for thought</a>
-        <a href="#pitfalls" class="nav-item">Common pitfalls</a>
-      </div>
-    </div>
-
-    <div class="main">
-
-      <div class="breadcrumb">
-        <a href="../index.html">Field Notes</a>
-        <span class="sep">›</span>
-        <a href="index.html">Control Theory</a>
-        <span class="sep">›</span>
-        <span>4 · Routh-Hurwitz Stability</span>
-      </div>
-
-      <div class="lesson-title">4 · Routh-Hurwitz Stability</div>
-      <div class="lesson-meta">Characteristic Polynomial · Routh Array · LHP Roots · Stability Margin</div>
-
-      <!-- ── Notation recap ──────────────────────────────────────── -->
-      <div class="notation-box" style="background:#f0f6fa;border-left:3px solid #3a8abf;padding:14px 18px;border-radius:0 4px 4px 0;margin:20px 0 24px;">
-        <div style="font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#1a5a8a;margin-bottom:10px;">Notation used in this lesson</div>
-        <table style="font-size:13px;border-collapse:collapse;width:100%;">
-          <tr><td style="padding:3px 8px 3px 0;color:#3a5a78;font-family:'IBM Plex Mono',monospace;white-space:nowrap;">$\Delta(s)$</td><td style="padding:3px 0;color:#2a3a4a;">Characteristic polynomial: $\Delta(s) = 1 + L(s) = $ denominator of closed-loop TF</td></tr>
-          <tr><td style="padding:3px 8px 3px 0;color:#3a5a78;font-family:'IBM Plex Mono',monospace;white-space:nowrap;">$r_i$</td><td style="padding:3px 0;color:#2a3a4a;">$i$th element of the first column of the Routh array</td></tr>
-          <tr><td style="padding:3px 8px 3px 0;color:#3a5a78;font-family:'IBM Plex Mono',monospace;white-space:nowrap;">$N_-$</td><td style="padding:3px 0;color:#2a3a4a;">Number of sign changes in the first column = number of RHP roots</td></tr>
-          <tr><td style="padding:3px 8px 3px 0;color:#3a5a78;font-family:'IBM Plex Mono',monospace;white-space:nowrap;">$K_{cr}$</td><td style="padding:3px 0;color:#2a3a4a;">Critical (ultimate) gain: the gain at which the system is marginally stable</td></tr>
-          <tr><td style="padding:3px 8px 3px 0;color:#3a5a78;font-family:'IBM Plex Mono',monospace;white-space:nowrap;">$\omega_{cr}$</td><td style="padding:3px 0;color:#2a3a4a;">Frequency of sustained oscillation at the stability boundary</td></tr>
-        </table>
-      </div>
-
-      <div class="prose">
+<div class="page-body">
+<div class="sidebar">
+<div data-cluster="control" data-current="routh.html" id="cluster-nav"></div>
+<hr class="sidebar-rule"/>
+<div class="nav-section">
+<div class="nav-label">On this page</div>
+<a class="nav-item" href="#the-problem">The stability problem</a>
+<a class="nav-item" href="#necessary">Necessary conditions</a>
+<a class="nav-item" href="#routh-array">Building the Routh array</a>
+<a class="nav-item" href="#stability-test">Stability test</a>
+<a class="nav-item" href="#special-cases">Special cases</a>
+<a class="nav-item" href="#gain-range">Stability range of gain</a>
+<a class="nav-item" href="#examples">Worked examples</a>
+<a class="nav-item" href="#interactive">Interactive calculator</a>
+<a class="nav-item" href="#food-for-thought">Food for thought</a>
+<a class="nav-item" href="#pitfalls">Common pitfalls</a>
+</div>
+</div>
+<div class="main">
+<div class="breadcrumb">
+<a href="../index.html">Field Notes</a>
+<span class="sep">›</span>
+<a href="index.html">Control Theory</a>
+<span class="sep">›</span>
+<span>4 · Routh-Hurwitz Stability</span>
+</div>
+<div class="lesson-title">4 · Routh-Hurwitz Stability</div>
+<div class="lesson-meta">Characteristic Polynomial · Routh Array · LHP Roots · Stability Margin</div>
+<!-- ── Notation recap ──────────────────────────────────────── -->
+<div class="notation-box" style="background:#f0f6fa;border-left:3px solid #3a8abf;padding:14px 18px;border-radius:0 4px 4px 0;margin:20px 0 24px;">
+<div style="font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#1a5a8a;margin-bottom:10px;">Notation used in this lesson</div>
+<table style="font-size:13px;border-collapse:collapse;width:100%;">
+<tr><td style="padding:3px 8px 3px 0;color:#3a5a78;font-family:'IBM Plex Mono',monospace;white-space:nowrap;">$\Delta(s)$</td><td style="padding:3px 0;color:#2a3a4a;">Characteristic polynomial: $\Delta(s) = 1 + L(s) = $ denominator of closed-loop TF</td></tr>
+<tr><td style="padding:3px 8px 3px 0;color:#3a5a78;font-family:'IBM Plex Mono',monospace;white-space:nowrap;">$r_i$</td><td style="padding:3px 0;color:#2a3a4a;">$i$th element of the first column of the Routh array</td></tr>
+<tr><td style="padding:3px 8px 3px 0;color:#3a5a78;font-family:'IBM Plex Mono',monospace;white-space:nowrap;">$N_-$</td><td style="padding:3px 0;color:#2a3a4a;">Number of sign changes in the first column = number of RHP roots</td></tr>
+<tr><td style="padding:3px 8px 3px 0;color:#3a5a78;font-family:'IBM Plex Mono',monospace;white-space:nowrap;">$K_{cr}$</td><td style="padding:3px 0;color:#2a3a4a;">Critical (ultimate) gain: the gain at which the system is marginally stable</td></tr>
+<tr><td style="padding:3px 8px 3px 0;color:#3a5a78;font-family:'IBM Plex Mono',monospace;white-space:nowrap;">$\omega_{cr}$</td><td style="padding:3px 0;color:#2a3a4a;">Frequency of sustained oscillation at the stability boundary</td></tr>
+</table>
+</div>
+<div class="prose">
         A closed-loop system is stable if and only if all roots of its characteristic polynomial
         $\Delta(s)$ lie in the left half of the complex plane. You could find the roots
         numerically — but a 6th-order polynomial has 6 roots to compute, and if you want to
@@ -173,11 +165,9 @@
         root-finding problem into a table calculation, and it turns a parametric design question
         into an algebraic inequality.
       </div>
-
-      <!-- ── The stability problem ─────────────────────────────────── -->
-      <div class="section-head" id="the-problem">The stability problem</div>
-
-      <div class="prose">
+<!-- ── The stability problem ─────────────────────────────────── -->
+<div class="section-head" id="the-problem">The stability problem</div>
+<div class="prose">
         Recall from Lesson 1: the closed-loop transfer function for a unity-feedback system
         with plant $P(s)$ and controller $C(s)$ is
         $$T(s) = \frac{C(s)P(s)}{1 + C(s)P(s)}$$
@@ -186,73 +176,63 @@
         $$\Delta(s) = 1 + C(s)P(s) = a_n s^n + a_{n-1}s^{n-1} + \cdots + a_1 s + a_0$$
         — have strictly negative real parts (lie in the open left half-plane).
       </div>
-
-      <div class="prose">
+<div class="prose">
         For a second-order polynomial $s^2 + b s + c$, the roots are in the LHP if and only
-        if $b > 0$ and $c > 0$ — check by inspection. For third and higher order, it is not
+        if $b &gt; 0$ and $c &gt; 0$ — check by inspection. For third and higher order, it is not
         so simple. The Routh-Hurwitz criterion is the systematic answer.
       </div>
-
-      <!-- ── Necessary conditions ───────────────────────────────────── -->
-      <div class="section-head" id="necessary">Necessary conditions first</div>
-
-      <div class="prose">
+<!-- ── Necessary conditions ───────────────────────────────────── -->
+<div class="section-head" id="necessary">Necessary conditions first</div>
+<div class="prose">
         Before building the full array, apply these quick filters:
       </div>
-
-      <ul class="prose" style="padding-left:1.4em;">
-        <li style="margin-bottom:8px;"><strong>All coefficients must be present.</strong>
+<ul class="prose" style="padding-left:1.4em;">
+<li style="margin-bottom:8px;"><strong>All coefficients must be present.</strong>
           If any coefficient $a_k$ is zero (for $0 \le k \le n$), the polynomial is
           missing a term. A zero coefficient is not sufficient for instability, but it means
           there are either roots on the imaginary axis or roots in the RHP.
           Exception: a missing $a_0$ (constant term) means there is a root at $s=0$ — a
           pure integrator, marginally stable at best.</li>
-        <li><strong>All coefficients must have the same sign.</strong>
+<li><strong>All coefficients must have the same sign.</strong>
           If the coefficients alternate in sign or some are negative, there is definitely
-          at least one RHP root. Necessary condition: $a_k > 0$ for all $k$ (or all $< 0$).
+          at least one RHP root. Necessary condition: $a_k &gt; 0$ for all $k$ (or all $&lt; 0$).
           This is not sufficient — a polynomial with all positive coefficients can still
           be unstable — but it's a fast pre-check that catches many common errors.</li>
-      </ul>
-
-      <div class="callout">
-        <strong>Example of necessary condition failure:</strong>
+</ul>
+<div class="callout">
+<strong>Example of necessary condition failure:</strong>
         $s^3 + 2s^2 - s + 4$ — the coefficient of $s$ is negative, so there is at least
         one RHP root. Stop here; no need to build the Routh array.
       </div>
-
-      <!-- ── Building the Routh array ───────────────────────────────── -->
-      <div class="section-head" id="routh-array">Building the Routh array</div>
-
-      <div class="prose">
+<!-- ── Building the Routh array ───────────────────────────────── -->
+<div class="section-head" id="routh-array">Building the Routh array</div>
+<div class="prose">
         Given the characteristic polynomial with all positive coefficients:
         $$\Delta(s) = a_n s^n + a_{n-1}s^{n-1} + a_{n-2}s^{n-2} + \cdots + a_1 s + a_0$$
       </div>
-
-      <div class="prose">
-        <strong>Step 1.</strong> Write the first two rows by alternating coefficients:
+<div class="prose">
+<strong>Step 1.</strong> Write the first two rows by alternating coefficients:
       </div>
-
-      <div style="overflow-x:auto;">
-        <table class="routh-table">
-          <tr>
-            <td class="row-label">$s^n$</td>
-            <td>$a_n$</td>
-            <td>$a_{n-2}$</td>
-            <td>$a_{n-4}$</td>
-            <td>$\cdots$</td>
-          </tr>
-          <tr>
-            <td class="row-label">$s^{n-1}$</td>
-            <td>$a_{n-1}$</td>
-            <td>$a_{n-3}$</td>
-            <td>$a_{n-5}$</td>
-            <td>$\cdots$</td>
-          </tr>
-        </table>
-      </div>
-
-      <div class="prose">
-        <strong>Step 2.</strong> Each subsequent row is computed from the two rows above it
+<div style="overflow-x:auto;">
+<table class="routh-table">
+<tr>
+<td class="row-label">$s^n$</td>
+<td>$a_n$</td>
+<td>$a_{n-2}$</td>
+<td>$a_{n-4}$</td>
+<td>$\cdots$</td>
+</tr>
+<tr>
+<td class="row-label">$s^{n-1}$</td>
+<td>$a_{n-1}$</td>
+<td>$a_{n-3}$</td>
+<td>$a_{n-5}$</td>
+<td>$\cdots$</td>
+</tr>
+</table>
+</div>
+<div class="prose">
+<strong>Step 2.</strong> Each subsequent row is computed from the two rows above it
         using $2\times 2$ determinants. Label the running rows as $b$, $c$, $d$, $\ldots$
         The formula for the $b$ row (third row):
       </div>
@@ -262,291 +242,262 @@
 
       <div class="prose">
         More compactly: each entry is
-        $-\frac{1}{\text{pivot}} \det\begin{pmatrix} \text{pivot} & \text{one right} \\ \text{below pivot} & \text{below right} \end{pmatrix}$
+        $-\frac{1}{\text{pivot}} \det\begin{pmatrix} \text{pivot} &amp; \text{one right} \\ \text{below pivot} &amp; \text{below right} \end{pmatrix}$
         where "pivot" is the first element of the row above.
       </div>
-
-      <div class="prose">
+<div class="prose">
         Continue until the row for $s^0$ is complete. The array always has $n+1$ rows.
         The last two rows each have one entry (except for the special cases below).
       </div>
-
-      <div class="prose">
-        <strong>Concrete 4th-order template</strong> for $\Delta(s) = a_4 s^4 + a_3 s^3 + a_2 s^2 + a_1 s + a_0$:
+<div class="prose">
+<strong>Concrete 4th-order template</strong> for $\Delta(s) = a_4 s^4 + a_3 s^3 + a_2 s^2 + a_1 s + a_0$:
       </div>
-
-      <div style="overflow-x:auto;">
-        <table class="routh-table">
-          <tr>
-            <td class="row-label">$s^4$</td>
-            <td>$a_4$</td>
-            <td>$a_2$</td>
-            <td>$a_0$</td>
-          </tr>
-          <tr>
-            <td class="row-label">$s^3$</td>
-            <td>$a_3$</td>
-            <td>$a_1$</td>
-            <td>$0$</td>
-          </tr>
-          <tr>
-            <td class="row-label">$s^2$</td>
-            <td>$b_1 = \dfrac{a_3 a_2 - a_4 a_1}{a_3}$</td>
-            <td>$b_2 = \dfrac{a_3 a_0 - a_4 \cdot 0}{a_3} = a_0$</td>
-            <td>$0$</td>
-          </tr>
-          <tr>
-            <td class="row-label">$s^1$</td>
-            <td>$c_1 = \dfrac{b_1 a_1 - a_3 b_2}{b_1}$</td>
-            <td>$0$</td>
-            <td></td>
-          </tr>
-          <tr>
-            <td class="row-label">$s^0$</td>
-            <td>$d_1 = b_2 = a_0$</td>
-            <td></td>
-            <td></td>
-          </tr>
-        </table>
-      </div>
-
-      <!-- ── Stability test ──────────────────────────────────────────── -->
-      <div class="section-head" id="stability-test">The stability test</div>
-
-      <div class="prose">
+<div style="overflow-x:auto;">
+<table class="routh-table">
+<tr>
+<td class="row-label">$s^4$</td>
+<td>$a_4$</td>
+<td>$a_2$</td>
+<td>$a_0$</td>
+</tr>
+<tr>
+<td class="row-label">$s^3$</td>
+<td>$a_3$</td>
+<td>$a_1$</td>
+<td>$0$</td>
+</tr>
+<tr>
+<td class="row-label">$s^2$</td>
+<td>$b_1 = \dfrac{a_3 a_2 - a_4 a_1}{a_3}$</td>
+<td>$b_2 = \dfrac{a_3 a_0 - a_4 \cdot 0}{a_3} = a_0$</td>
+<td>$0$</td>
+</tr>
+<tr>
+<td class="row-label">$s^1$</td>
+<td>$c_1 = \dfrac{b_1 a_1 - a_3 b_2}{b_1}$</td>
+<td>$0$</td>
+<td></td>
+</tr>
+<tr>
+<td class="row-label">$s^0$</td>
+<td>$d_1 = b_2 = a_0$</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<!-- ── Stability test ──────────────────────────────────────────── -->
+<div class="section-head" id="stability-test">The stability test</div>
+<div class="prose">
         Once the array is complete, read off the <strong>first column</strong>. This is the
         sequence $a_n,\, a_{n-1},\, b_1,\, c_1,\, d_1,\, \ldots$ (one entry per row).
       </div>
-
-      <div class="callout" style="border-color:#3a8a3a;background:#f4faf4;">
-        <strong>Routh-Hurwitz Theorem.</strong>
+<div class="callout" style="border-color:#3a8a3a;background:#f4faf4;">
+<strong>Routh-Hurwitz Theorem.</strong>
         The number of roots of $\Delta(s)$ in the right half-plane equals the number of
         <em>sign changes</em> in the first column of the Routh array.
-        <br><br>
+        <br/><br/>
         Corollary: the system is stable if and only if all first-column elements have the
         same sign (and are non-zero).
       </div>
-
-      <div class="prose">
+<div class="prose">
         When all coefficients are positive and all first-column entries are positive, the
         polynomial has all roots in the LHP → stable. If any first-column entry is negative,
         count the sign changes — each sign change corresponds to one root crossing into the RHP.
       </div>
-
-      <!-- ── Special cases ──────────────────────────────────────────── -->
-      <div class="section-head" id="special-cases">Special cases</div>
-
-      <div class="prose">
+<!-- ── Special cases ──────────────────────────────────────────── -->
+<div class="section-head" id="special-cases">Special cases</div>
+<div class="prose">
         Two situations break the standard algorithm:
       </div>
-
-      <div class="prose">
-        <strong>Case 1: Zero in the first column, but not an entire zero row.</strong>
+<div class="prose">
+<strong>Case 1: Zero in the first column, but not an entire zero row.</strong>
         The next row's computation would divide by zero. Fix: replace the zero with a
-        small positive number $\varepsilon > 0$, complete the array, then take the limit
+        small positive number $\varepsilon &gt; 0$, complete the array, then take the limit
         $\varepsilon \to 0^+$ to determine the signs. The number of sign changes tells you
         the number of RHP roots.
       </div>
-
-      <div class="prose">
-        <strong>Case 2: An entire row of zeros.</strong>
+<div class="prose">
+<strong>Case 2: An entire row of zeros.</strong>
         This happens when the polynomial has roots that are <em>symmetric about the origin</em>
         — either a purely imaginary conjugate pair $\pm j\omega$ (roots on the imaginary axis)
         or real roots with opposite signs (one in LHP, one in RHP).
       </div>
-
-      <ul class="prose" style="padding-left:1.4em;">
-        <li style="margin-bottom:8px;"><strong>Find the auxiliary polynomial</strong>
+<ul class="prose" style="padding-left:1.4em;">
+<li style="margin-bottom:8px;"><strong>Find the auxiliary polynomial</strong>
           $P_{\text{aux}}(s)$ from the row <em>above</em> the zero row. If the zero row
           is at the $s^k$ level, $P_{\text{aux}}(s)$ uses the coefficients of the $(s^{k+1})$
           row (or row above), treating them as coefficients of $s^{k+1},\, s^{k-1},\,
           s^{k-3},\ldots$</li>
-        <li style="margin-bottom:8px;"><strong>Replace the zero row</strong> with the
+<li style="margin-bottom:8px;"><strong>Replace the zero row</strong> with the
           coefficients of $dP_{\text{aux}}(s)/ds$.</li>
-        <li>Continue the array. Roots of $P_{\text{aux}}(s)$ include the
+<li>Continue the array. Roots of $P_{\text{aux}}(s)$ include the
           imaginary-axis or symmetric roots.</li>
-      </ul>
-
-      <div class="callout">
-        <strong>Physical meaning of a zero row.</strong> A zero row at $s^2$ means the
+</ul>
+<div class="callout">
+<strong>Physical meaning of a zero row.</strong> A zero row at $s^2$ means the
         characteristic polynomial has a factor $s^2 + \omega^2$ — a pair of imaginary-axis
         poles producing undamped oscillation. This is the boundary of stability: the system
         oscillates forever (neither grows nor decays). In a gain-tuning problem, this gives
         you the critical gain $K_{cr}$ and the oscillation frequency $\omega_{cr} = \sqrt{\omega^2}$.
       </div>
-
-      <!-- ── Stability range of gain ────────────────────────────────── -->
-      <div class="section-head" id="gain-range">Finding the stability range of the gain</div>
-
-      <div class="prose">
+<!-- ── Stability range of gain ────────────────────────────────── -->
+<div class="section-head" id="gain-range">Finding the stability range of the gain</div>
+<div class="prose">
         The most common design application: given a closed-loop system with a free gain
         parameter $K$, find the range of $K$ for which the system is stable.
       </div>
-
-      <div class="prose">
-        <strong>Method:</strong>
-      </div>
-
-      <ol class="prose" style="padding-left:1.4em;">
-        <li style="margin-bottom:8px;">Write out the characteristic polynomial
+<div class="prose">
+<strong>Method:</strong>
+</div>
+<ol class="prose" style="padding-left:1.4em;">
+<li style="margin-bottom:8px;">Write out the characteristic polynomial
           $\Delta(s)$ with $K$ as a parameter.</li>
-        <li style="margin-bottom:8px;">Build the Routh array; each entry will be a
+<li style="margin-bottom:8px;">Build the Routh array; each entry will be a
           function of $K$.</li>
-        <li style="margin-bottom:8px;">Require all first-column entries to be positive.
+<li style="margin-bottom:8px;">Require all first-column entries to be positive.
           This gives a set of inequalities in $K$.</li>
-        <li>Solve the inequalities. The intersection is the stability range.</li>
-      </ol>
-
-      <div class="prose">
+<li>Solve the inequalities. The intersection is the stability range.</li>
+</ol>
+<div class="prose">
         The critical gain $K_{cr}$ is the value at which one first-column entry transitions
         through zero. At $K = K_{cr}$, a row-of-zeros condition arises, and $\omega_{cr}$
         can be read from the auxiliary polynomial.
       </div>
-
-      <!-- ── Worked examples ─────────────────────────────────────────── -->
-      <div class="section-head" id="examples">Worked examples</div>
-
-      <div class="example-box">
-        <div class="example-header"><strong>Example 1 — Third-order stable system</strong></div>
-        <div class="example-problem">
+<!-- ── Worked examples ─────────────────────────────────────────── -->
+<div class="section-head" id="examples">Worked examples</div>
+<div class="example-box">
+<div class="example-header"><strong>Example 1 — Third-order stable system</strong></div>
+<div class="example-problem">
           Determine the stability of $\Delta(s) = s^3 + 6s^2 + 11s + 6$ using the Routh array.
         </div>
-        <div class="example-body">
+<div class="example-body">
           All coefficients positive → necessary condition satisfied. Build the array:
           <div style="overflow-x:auto; margin:10px 0;">
-            <table class="routh-table">
-              <tr><td class="row-label">$s^3$</td><td class="first-col positive">1</td><td>11</td></tr>
-              <tr><td class="row-label">$s^2$</td><td class="first-col positive">6</td><td>6</td></tr>
-              <tr><td class="row-label">$s^1$</td>
-                <td class="first-col positive">$\dfrac{6\cdot11-1\cdot6}{6}=10$</td><td>0</td></tr>
-              <tr><td class="row-label">$s^0$</td><td class="first-col positive">6</td><td></td></tr>
-            </table>
-          </div>
+<table class="routh-table">
+<tr><td class="row-label">$s^3$</td><td class="first-col positive">1</td><td>11</td></tr>
+<tr><td class="row-label">$s^2$</td><td class="first-col positive">6</td><td>6</td></tr>
+<tr><td class="row-label">$s^1$</td>
+<td class="first-col positive">$\dfrac{6\cdot11-1\cdot6}{6}=10$</td><td>0</td></tr>
+<tr><td class="row-label">$s^0$</td><td class="first-col positive">6</td><td></td></tr>
+</table>
+</div>
           First column: $1, 6, 10, 6$ — all positive, zero sign changes. <strong>Stable.</strong>
           (Roots are $s = -1, -2, -3$.)
         </div>
-      </div>
-
-      <div class="example-box">
-        <div class="example-header"><strong>Example 2 — Unstable polynomial (fails necessary condition)</strong></div>
-        <div class="example-problem">
+</div>
+<div class="example-box">
+<div class="example-header"><strong>Example 2 — Unstable polynomial (fails necessary condition)</strong></div>
+<div class="example-problem">
           Is $\Delta(s) = s^3 + 2s^2 - s + 2$ stable?
         </div>
-        <div class="example-body">
+<div class="example-body">
           The coefficient of $s$ is $-1 &lt; 0$. The necessary condition (all coefficients same sign)
           fails immediately. <strong>Unstable</strong> — no need to build the array.
           (There must be at least one root in the RHP.)
         </div>
-      </div>
-
-      <div class="example-box">
-        <div class="example-header"><strong>Example 3 — Stability range of gain $K$ (parametric Routh)</strong></div>
-        <div class="example-problem">
-          For the unity-feedback loop with $L(s) = K/[s(s+1)(s+3)]$, find the range of $K > 0$
+</div>
+<div class="example-box">
+<div class="example-header"><strong>Example 3 — Stability range of gain $K$ (parametric Routh)</strong></div>
+<div class="example-problem">
+          For the unity-feedback loop with $L(s) = K/[s(s+1)(s+3)]$, find the range of $K &gt; 0$
           for closed-loop stability and the critical oscillation frequency.
         </div>
-        <div class="example-body">
+<div class="example-body">
           Characteristic polynomial (numerator of $1 + L(s)$):
           $$\Delta(s) = s^3 + 4s^2 + 3s + K$$
           Build the Routh array with $K$ as a free parameter:
           <div style="overflow-x:auto; margin:10px 0;">
-            <table class="routh-table">
-              <tr><td class="row-label">$s^3$</td><td class="first-col">1</td><td>3</td></tr>
-              <tr><td class="row-label">$s^2$</td><td class="first-col">4</td><td>$K$</td></tr>
-              <tr><td class="row-label">$s^1$</td>
-                <td class="first-col">$\dfrac{12-K}{4}$</td><td>0</td></tr>
-              <tr><td class="row-label">$s^0$</td><td class="first-col">$K$</td><td></td></tr>
-            </table>
-          </div>
-          For all first-column entries to be positive: $K > 0$ and $(12-K)/4 > 0 \Rightarrow K < 12$.
-          $$\boxed{0 < K < 12}$$
+<table class="routh-table">
+<tr><td class="row-label">$s^3$</td><td class="first-col">1</td><td>3</td></tr>
+<tr><td class="row-label">$s^2$</td><td class="first-col">4</td><td>$K$</td></tr>
+<tr><td class="row-label">$s^1$</td>
+<td class="first-col">$\dfrac{12-K}{4}$</td><td>0</td></tr>
+<tr><td class="row-label">$s^0$</td><td class="first-col">$K$</td><td></td></tr>
+</table>
+</div>
+          For all first-column entries to be positive: $K &gt; 0$ and $(12-K)/4 &gt; 0 \Rightarrow K &lt; 12$.
+          $$\boxed{0 &lt; K &lt; 12}$$
           At $K = K_{cr} = 12$: the $s^1$ row is zero. Auxiliary polynomial from the $s^2$ row:
           $P_\text{aux}(s) = 4s^2 + 12$, giving $\omega_{cr} = \sqrt{3} \approx 1.73$ rad/s.
         </div>
-      </div>
-
-      <div class="example-box">
-        <div class="example-header"><strong>Example 4 — Zero first-column entry ($\varepsilon$ substitution)</strong></div>
-        <div class="example-problem">
+</div>
+<div class="example-box">
+<div class="example-header"><strong>Example 4 — Zero first-column entry ($\varepsilon$ substitution)</strong></div>
+<div class="example-problem">
           Determine the stability of $\Delta(s) = s^4 + s^3 + 3s^2 + 3s + 2$.
         </div>
-        <div class="example-body">
+<div class="example-body">
           Begin the array:
           <div style="overflow-x:auto; margin:10px 0;">
-            <table class="routh-table">
-              <tr><td class="row-label">$s^4$</td><td>1</td><td>3</td><td>2</td></tr>
-              <tr><td class="row-label">$s^3$</td><td>1</td><td>3</td><td>0</td></tr>
-              <tr><td class="row-label">$s^2$</td><td>$\dfrac{1\cdot3-1\cdot3}{1}=0$</td><td>$\dfrac{1\cdot2-0}{1}=2$</td><td></td></tr>
-            </table>
-          </div>
-          The $s^2$ row has a zero first entry. Replace with $\varepsilon > 0$ and continue:
+<table class="routh-table">
+<tr><td class="row-label">$s^4$</td><td>1</td><td>3</td><td>2</td></tr>
+<tr><td class="row-label">$s^3$</td><td>1</td><td>3</td><td>0</td></tr>
+<tr><td class="row-label">$s^2$</td><td>$\dfrac{1\cdot3-1\cdot3}{1}=0$</td><td>$\dfrac{1\cdot2-0}{1}=2$</td><td></td></tr>
+</table>
+</div>
+          The $s^2$ row has a zero first entry. Replace with $\varepsilon &gt; 0$ and continue:
           <div style="overflow-x:auto; margin:10px 0;">
-            <table class="routh-table">
-              <tr><td class="row-label">$s^4$</td><td>1</td><td>3</td><td>2</td></tr>
-              <tr><td class="row-label">$s^3$</td><td>1</td><td>3</td><td>0</td></tr>
-              <tr><td class="row-label">$s^2$</td><td class="zero-val">$\varepsilon$</td><td>2</td><td></td></tr>
-              <tr><td class="row-label">$s^1$</td>
-                <td>$3 - \dfrac{2}{\varepsilon}$</td><td>0</td></tr>
-              <tr><td class="row-label">$s^0$</td><td>2</td><td></td></tr>
-            </table>
-          </div>
+<table class="routh-table">
+<tr><td class="row-label">$s^4$</td><td>1</td><td>3</td><td>2</td></tr>
+<tr><td class="row-label">$s^3$</td><td>1</td><td>3</td><td>0</td></tr>
+<tr><td class="row-label">$s^2$</td><td class="zero-val">$\varepsilon$</td><td>2</td><td></td></tr>
+<tr><td class="row-label">$s^1$</td>
+<td>$3 - \dfrac{2}{\varepsilon}$</td><td>0</td></tr>
+<tr><td class="row-label">$s^0$</td><td>2</td><td></td></tr>
+</table>
+</div>
           As $\varepsilon \to 0^+$: $3 - 2/\varepsilon \to -\infty$. First column signs:
           $+, +, +, -, +$ — <strong>two sign changes</strong>. <strong>Two roots in the RHP. Unstable.</strong>
-        </div>
-      </div>
-
-      <!-- ── Interactive ──────────────────────────────────────────────── -->
-      <div class="section-head" id="interactive">Interactive: Routh array calculator</div>
-
-      <div class="prose">
+</div>
+</div>
+<!-- ── Interactive ──────────────────────────────────────────────── -->
+<div class="section-head" id="interactive">Interactive: Routh array calculator</div>
+<div class="prose">
         Enter the coefficients of your characteristic polynomial
         $a_4 s^4 + a_3 s^3 + a_2 s^2 + a_1 s + a_0$ (up to 4th order).
         Set unused high-order coefficients to zero to use a lower-order polynomial.
         The Routh array and stability verdict update instantly.
       </div>
-
-      <div class="widget-card">
-        <div class="widget-title">Routh-Hurwitz Calculator</div>
-
-        <div style="margin-bottom:16px;">
-          <div style="font-size:12.5px;color:#5a6a7a;margin-bottom:8px;">Characteristic polynomial coefficients:</div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-            <div style="display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;color:#7a8a9a;">
-              <input type="number" id="rc-a4" class="coeff-input" value="1" step="any">
-              <span>$a_4$</span>
-            </div>
-            <span style="font-size:16px;color:#9aabb8;padding-bottom:14px;">$s^4$+</span>
-            <div style="display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;color:#7a8a9a;">
-              <input type="number" id="rc-a3" class="coeff-input" value="6" step="any">
-              <span>$a_3$</span>
-            </div>
-            <span style="font-size:16px;color:#9aabb8;padding-bottom:14px;">$s^3$+</span>
-            <div style="display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;color:#7a8a9a;">
-              <input type="number" id="rc-a2" class="coeff-input" value="11" step="any">
-              <span>$a_2$</span>
-            </div>
-            <span style="font-size:16px;color:#9aabb8;padding-bottom:14px;">$s^2$+</span>
-            <div style="display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;color:#7a8a9a;">
-              <input type="number" id="rc-a1" class="coeff-input" value="6" step="any">
-              <span>$a_1$</span>
-            </div>
-            <span style="font-size:16px;color:#9aabb8;padding-bottom:14px;">$s$+</span>
-            <div style="display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;color:#7a8a9a;">
-              <input type="number" id="rc-a0" class="coeff-input" value="2" step="any">
-              <span>$a_0$</span>
-            </div>
-          </div>
-          <div style="font-size:11px;color:#9aabb8;margin-top:4px;">
+<div class="widget-card">
+<div class="widget-title">Routh-Hurwitz Calculator</div>
+<div style="margin-bottom:16px;">
+<div style="font-size:12.5px;color:#5a6a7a;margin-bottom:8px;">Characteristic polynomial coefficients:</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+<div style="display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;color:#7a8a9a;">
+<input class="coeff-input" id="rc-a4" step="any" type="number" value="1"/>
+<span>$a_4$</span>
+</div>
+<span style="font-size:16px;color:#9aabb8;padding-bottom:14px;">$s^4$+</span>
+<div style="display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;color:#7a8a9a;">
+<input class="coeff-input" id="rc-a3" step="any" type="number" value="6"/>
+<span>$a_3$</span>
+</div>
+<span style="font-size:16px;color:#9aabb8;padding-bottom:14px;">$s^3$+</span>
+<div style="display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;color:#7a8a9a;">
+<input class="coeff-input" id="rc-a2" step="any" type="number" value="11"/>
+<span>$a_2$</span>
+</div>
+<span style="font-size:16px;color:#9aabb8;padding-bottom:14px;">$s^2$+</span>
+<div style="display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;color:#7a8a9a;">
+<input class="coeff-input" id="rc-a1" step="any" type="number" value="6"/>
+<span>$a_1$</span>
+</div>
+<span style="font-size:16px;color:#9aabb8;padding-bottom:14px;">$s$+</span>
+<div style="display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;color:#7a8a9a;">
+<input class="coeff-input" id="rc-a0" step="any" type="number" value="2"/>
+<span>$a_0$</span>
+</div>
+</div>
+<div style="font-size:11px;color:#9aabb8;margin-top:4px;">
             Set $a_4=0$ for 3rd-order, $a_4=a_3=0$ for 2nd-order, etc.
           </div>
-        </div>
-
-        <div id="rc-array-container" style="overflow-x:auto;margin-bottom:12px;"></div>
-        <div id="rc-result"></div>
-        <div id="rc-firstcol-note" style="font-size:12.5px;color:#5a6a7a;margin-top:8px;"></div>
-      </div>
-
-      <script>
+</div>
+<div id="rc-array-container" style="overflow-x:auto;margin-bottom:12px;"></div>
+<div id="rc-result"></div>
+<div id="rc-firstcol-note" style="font-size:12.5px;color:#5a6a7a;margin-top:8px;"></div>
+</div>
+<script>
       (function() {
         var EPS = 1e-9;
 
@@ -672,28 +623,25 @@
         rcUpdate();
       })();
       </script>
-
-      <div class="prose" style="margin-top:12px;">
+<div class="prose" style="margin-top:12px;">
         Try these examples:
         <ul style="margin-top:6px;padding-left:1.4em;line-height:1.9;">
-          <li>$a_4=0,\; a_3=1,\; a_2=6,\; a_1=11,\; a_0=6$ → Example 1 above (stable, roots $-1,-2,-3$)</li>
-          <li>$a_4=1,\; a_3=4,\; a_2=3,\; a_1=0,\; a_0=12$ → $K=12$ critical gain from Example 3</li>
-          <li>$a_4=1,\; a_3=1,\; a_2=3,\; a_1=3,\; a_0=2$ → Example 4 above (two RHP roots)</li>
-        </ul>
-      </div>
-
-      <!-- ── Food for thought ──────────────────────────────────────── -->
-      <div class="section-head" id="food-for-thought">Food for thought</div>
-
-      <div class="fft-block" style="border-left:3px solid #b89040;background:#faf8f2;padding:14px 18px;border-radius:0 4px 4px 0;margin:20px 0;">
-        <div style="font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#8a6010;margin-bottom:10px;">Reflection questions</div>
-        <ol style="padding-left:1.4em;color:#2a3a4a;font-size:14px;line-height:1.7;">
-          <li style="margin-bottom:12px;">Routh-Hurwitz tells you <em>how many</em> roots are
+<li>$a_4=0,\; a_3=1,\; a_2=6,\; a_1=11,\; a_0=6$ → Example 1 above (stable, roots $-1,-2,-3$)</li>
+<li>$a_4=1,\; a_3=4,\; a_2=3,\; a_1=0,\; a_0=12$ → $K=12$ critical gain from Example 3</li>
+<li>$a_4=1,\; a_3=1,\; a_2=3,\; a_1=3,\; a_0=2$ → Example 4 above (two RHP roots)</li>
+</ul>
+</div>
+<!-- ── Food for thought ──────────────────────────────────────── -->
+<div class="section-head" id="food-for-thought">Food for thought</div>
+<div class="fft-block" style="border-left:3px solid #b89040;background:#faf8f2;padding:14px 18px;border-radius:0 4px 4px 0;margin:20px 0;">
+<div style="font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#8a6010;margin-bottom:10px;">Reflection questions</div>
+<ol style="padding-left:1.4em;color:#2a3a4a;font-size:14px;line-height:1.7;">
+<li class="fft-item" style="margin-bottom:12px;">Routh-Hurwitz tells you <em>how many</em> roots are
             in the RHP but not <em>where</em> they are. How does this compare to the root locus
             (Lesson 5), which shows you exactly where the closed-loop poles move as $K$ varies?
             When would you use Routh-Hurwitz instead of root locus, and vice versa?
-                          <div class="fft-answer-body">
-                <strong>Routh-Hurwitz advantages:</strong> Fast, algebraic, works directly with the
+                          <div class="fft-answer">
+<strong>Routh-Hurwitz advantages:</strong> Fast, algebraic, works directly with the
                 characteristic polynomial (no factoring needed). Ideal for: (1) checking if a given
                 set of parameters produces a stable system, (2) finding stability <em>ranges</em> for
                 a single parameter in closed form (as in Example 3), (3) stability analysis of high-order
@@ -709,15 +657,14 @@
                 Use root locus when you need to understand how closed-loop pole locations change and
                 want to choose design parameters beyond just "stable or not."
               </div>
-            
-          </li>
-          <li style="margin-bottom:12px;">The critical gain $K_{cr}$ in Example 3 is 12. If
+</li>
+<li class="fft-item" style="margin-bottom:12px;">The critical gain $K_{cr}$ in Example 3 is 12. If
             the plant gain drifts by 20% (a real physical system is not perfectly modeled), by how
             much does the closed-loop gain margin shrink? Express this as a percentage of $K_{cr}$.
             This is the practical meaning of a <em>gain margin</em>.
-                          <div class="fft-answer-body">
+                          <div class="fft-answer">
                 If the plant gain drifts by $+20\%$, the effective loop gain becomes $1.2K$. For stability we
-                need $1.2K < 12$, i.e., $K < 10$. The stability range shrinks from $K < 12$ to $K < 10$
+                need $1.2K &lt; 12$, i.e., $K &lt; 10$. The stability range shrinks from $K &lt; 12$ to $K &lt; 10$
                 — a reduction of $2/12 \approx 17\%$ of $K_{cr}$.
 
                 In terms of gain margin: if the nominal design uses $K = K_\text{design}$, the actual
@@ -729,109 +676,97 @@
                 This is why a nominal GM of $\geq 6$ dB is recommended: it provides buffer against
                 gain variations, parameter uncertainty, and the inevitable mismatch between model and plant.
               </div>
-            
-          </li>
-          <li>For a first-order system $s + a_0$, the Routh array is trivially two entries:
-            $a_1=1$ and $a_0$. Stable iff $a_0 > 0$. For a second-order system
-            $s^2 + a_1 s + a_0$, the condition is $a_1 > 0$ and $a_0 > 0$. Verify these
+</li>
+<li class="fft-item">For a first-order system $s + a_0$, the Routh array is trivially two entries:
+            $a_1=1$ and $a_0$. Stable iff $a_0 &gt; 0$. For a second-order system
+            $s^2 + a_1 s + a_0$, the condition is $a_1 &gt; 0$ and $a_0 &gt; 0$. Verify these
             match the Routh criterion. Can you derive a general Routh-like condition for
             third-order systems $s^3 + a_2 s^2 + a_1 s + a_0$ directly from the table
             (without looking it up)?
-                          <div class="fft-answer-body">
-                <strong>First order:</strong> $s + a_0$. Routh array: $[1;\; a_0]$. Stable iff $a_0 > 0$. ✓
+                          <div class="fft-answer">
+<strong>First order:</strong> $s + a_0$. Routh array: $[1;\; a_0]$. Stable iff $a_0 &gt; 0$. ✓
 
                 <strong>Second order:</strong> $s^2 + a_1 s + a_0$. Routh array:
                 Row $s^2$: $1,\; a_0$. Row $s^1$: $a_1,\; 0$. Row $s^0$: $a_0$.
-                First column: $1, a_1, a_0$. Stable iff $a_1 > 0$ and $a_0 > 0$. ✓
+                First column: $1, a_1, a_0$. Stable iff $a_1 &gt; 0$ and $a_0 &gt; 0$. ✓
 
                 <strong>Third order:</strong> $s^3 + a_2 s^2 + a_1 s + a_0$.
                 Row $s^3$: $1,\; a_1$. Row $s^2$: $a_2,\; a_0$.
                 Row $s^1$: $\dfrac{a_2 a_1 - a_0}{a_2},\; 0$.
                 Row $s^0$: $a_0$.
 
-                First column positive: $a_2 > 0$, $\dfrac{a_2 a_1 - a_0}{a_2} > 0$, $a_0 > 0$.
-                Combined: $a_2 > 0$, $a_1 > 0$, $a_0 > 0$, <strong>and</strong> $a_2 a_1 > a_0$.
+                First column positive: $a_2 &gt; 0$, $\dfrac{a_2 a_1 - a_0}{a_2} &gt; 0$, $a_0 &gt; 0$.
+                Combined: $a_2 &gt; 0$, $a_1 &gt; 0$, $a_0 &gt; 0$, <strong>and</strong> $a_2 a_1 &gt; a_0$.
                 The last condition is the extra Hurwitz condition for third-order systems — beyond
                 just requiring all coefficients positive.
               </div>
-            
-          </li>
-        </ol>
-      </div>
-
-      <!-- ── Common pitfalls ─────────────────────────────────────────── -->
-      <div class="section-head" id="pitfalls">Common pitfalls</div>
-
-      <div class="pitfalls-block" style="border-left:3px solid #c07070;background:#fdf8f8;padding:14px 18px;border-radius:0 4px 4px 0;margin:20px 0;">
-        <div style="font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#8a2020;margin-bottom:10px;">Mistakes worth knowing about in advance</div>
-        <ul style="padding-left:1.4em;color:#2a3a4a;font-size:14px;line-height:1.7;">
-          <li style="margin-bottom:10px;"><strong>Applying Routh to the plant, not the closed-loop.</strong>
+</li>
+</ol>
+</div>
+<!-- ── Common pitfalls ─────────────────────────────────────────── -->
+<div class="section-head" id="pitfalls">Common pitfalls</div>
+<div class="pitfalls-block" style="border-left:3px solid #c07070;background:#fdf8f8;padding:14px 18px;border-radius:0 4px 4px 0;margin:20px 0;">
+<div style="font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#8a2020;margin-bottom:10px;">Mistakes worth knowing about in advance</div>
+<ul style="padding-left:1.4em;color:#2a3a4a;font-size:14px;line-height:1.7;">
+<li style="margin-bottom:10px;"><strong>Applying Routh to the plant, not the closed-loop.</strong>
             The characteristic polynomial $\Delta(s) = 1 + C(s)P(s)$ is the denominator of the
             <em>closed-loop</em> transfer function. Applying the Routh test to $P(s)$ or $C(s)$
             alone tells you about the plant's open-loop stability, not the closed-loop stability.
             They are different polynomials with different roots.</li>
-          <li style="margin-bottom:10px;"><strong>Forgetting that a zero row ≠ a zero first entry.</strong>
+<li style="margin-bottom:10px;"><strong>Forgetting that a zero row ≠ a zero first entry.</strong>
             A zero in the first column (but with other nonzero entries in that row) and an entire
             zero row are two completely different situations requiring different fixes. A zero first
             entry → use $\varepsilon$ substitution. An entire zero row → use the auxiliary
             polynomial from the row above. Confusing them leads to the wrong stability count.</li>
-          <li style="margin-bottom:10px;"><strong>Reading "all positive" and stopping too early.</strong>
+<li style="margin-bottom:10px;"><strong>Reading "all positive" and stopping too early.</strong>
             All positive coefficients is a <em>necessary</em> condition, not sufficient.
-            $s^4 + s^3 + 4s^2 + 4s + K$ with $K > 0$ has all positive coefficients — but
-            the Routh array reveals that it's unstable for $K > 3$ due to a sign change
+            $s^4 + s^3 + 4s^2 + 4s + K$ with $K &gt; 0$ has all positive coefficients — but
+            the Routh array reveals that it's unstable for $K &gt; 3$ due to a sign change
             in the first column. Always complete the array.</li>
-          <li><strong>Treating the stability range as symmetric in $K$.</strong>
-            The stability range $0 < K < K_{cr}$ from Example 3 is bounded below by
-            $K > 0$ (plant-model constraint) and above by $K_{cr} = 12$ (first column
+<li><strong>Treating the stability range as symmetric in $K$.</strong>
+            The stability range $0 &lt; K &lt; K_{cr}$ from Example 3 is bounded below by
+            $K &gt; 0$ (plant-model constraint) and above by $K_{cr} = 12$ (first column
             constraint). Different systems give different ranges — sometimes one-sided
-            (all $K > 0$ stable), sometimes two-sided. Read the inequalities; don't assume.</li>
-        </ul>
-      </div>
-
-      <div class="connects-to" style="border-left:3px solid #c0d4de;background:#f8fafb;padding:14px 18px;border-radius:0 4px 4px 0;margin:20px 0;">
-        <div style="font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;margin-bottom:10px;">Connects to</div>
-        <ul style="padding-left:1.4em;color:#2a3a4a;font-size:14px;line-height:1.7;">
-          <li style="margin-bottom:8px;"><strong>Lesson 5 (Root Locus)</strong> — While Routh-Hurwitz
+            (all $K &gt; 0$ stable), sometimes two-sided. Read the inequalities; don't assume.</li>
+</ul>
+</div>
+<div class="connects-to" style="border-left:3px solid #c0d4de;background:#f8fafb;padding:14px 18px;border-radius:0 4px 4px 0;margin:20px 0;">
+<div style="font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#3a5a78;margin-bottom:10px;">Connects to</div>
+<ul style="padding-left:1.4em;color:#2a3a4a;font-size:14px;line-height:1.7;">
+<li style="margin-bottom:8px;"><strong>Lesson 5 (Root Locus)</strong> — While Routh-Hurwitz
             gives a <em>yes/no</em> stability answer for a given $K$, root locus shows you the
             continuous trajectory of all closed-loop poles as $K$ varies from 0 to ∞. The stability
             boundary from Routh ($K_{cr}$) corresponds to the gain where the root locus crosses
             the imaginary axis — they give the same answer through different means.</li>
-          <li style="margin-bottom:8px;"><strong>Lesson 6 (Nyquist Criterion)</strong> — An
+<li style="margin-bottom:8px;"><strong>Lesson 6 (Nyquist Criterion)</strong> — An
             alternative stability test using frequency-domain data (Bode or Nyquist plot) rather
             than polynomial algebra. Nyquist is more powerful for systems with pure time delays
             (which create non-polynomial transfer functions) where Routh cannot be applied directly.</li>
-          <li><strong>Lesson 2 (Transfer Functions)</strong> — This lesson extends the
+<li><strong>Lesson 2 (Transfer Functions)</strong> — This lesson extends the
             pole-location analysis from Lesson 2. The "all poles in the LHP" condition for a
             first-order system is trivial; Routh-Hurwitz is the general tool when the polynomial
             degree makes direct root-finding impractical.</li>
-        </ul>
-      </div>
-
-      <hr class="lesson-rule">
-
-      <div class="section-head">References</div>
-      <ul class="prose" style="padding-left:1.4em;font-size:13.5px;color:#5a6a7a;">
-        <li style="margin-bottom:6px;">G. Franklin, J. Powell &amp; A. Emami-Naeini,
+</ul>
+</div>
+<hr class="lesson-rule"/>
+<div class="section-head">References</div>
+<ul class="prose" style="padding-left:1.4em;font-size:13.5px;color:#5a6a7a;">
+<li style="margin-bottom:6px;">G. Franklin, J. Powell &amp; A. Emami-Naeini,
           <em>Feedback Control of Dynamic Systems</em> (8th ed.) — Section 6.2: Routh's
           stability criterion; the worked examples there include both the standard and special
           cases (zero row) in detail.</li>
-        <li>K. Ogata, <em>Modern Control Engineering</em> (5th ed.) — Section 5-5:
+<li>K. Ogata, <em>Modern Control Engineering</em> (5th ed.) — Section 5-5:
           the Routh-Hurwitz stability criterion; the worked examples show the gain-range
           method clearly.</li>
-      </ul>
-
-      <div id="lesson-nav"></div>
-
-    </div><!-- /main -->
-
-  </div><!-- /page-body -->
+</ul>
+<div id="lesson-nav"></div>
+</div><!-- /main -->
+</div><!-- /page-body -->
 </div><!-- /site-wrap -->
-
 <footer class="site-footer">
-  <span>elee03.github.io/notes</span>
-  <span>Est. MMXXVI</span>
+<span>elee03.github.io/notes</span>
+<span>Est. MMXXVI</span>
 </footer>
-
-    <script src="../notes-nav.js"></script>
+<script src="../notes-nav.js"></script>
 </body>
 </html>

@@ -1,18 +1,19 @@
 ﻿<!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dynamic Programming — Field Notes</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../style.css">
-  <link rel="stylesheet" href="rl-interactive.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
-  <script>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Dynamic Programming — Field Notes</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="../style.css" rel="stylesheet"/>
+<link href="rl-interactive.css" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" rel="stylesheet"/>
+<script defer="" src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer="" src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<script>
     document.addEventListener('DOMContentLoaded', function() {
       renderMathInElement(document.body, {
         delimiters: [
@@ -25,61 +26,51 @@
   </script>
 </head>
 <body>
-
 <div class="topbar">
-  <div class="topbar-inner">
-    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
-    <span class="topbar-sep">·</span>
-    <a href="../references.html" class="topbar-link">Library</a>
-    <span class="topbar-sep">·</span>
-    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
-  </div>
+<div class="topbar-inner">
+<a class="topbar-brand" href="../index.html">Field <span class="accent">Notes</span></a>
+<span class="topbar-sep">·</span>
+<a class="topbar-link" href="../references.html">Library</a>
+<span class="topbar-sep">·</span>
+<a class="topbar-back" href="https://elee03.github.io">elee03.github.io ↗</a>
 </div>
-
+</div>
 <div class="site-wrap">
-  <div class="page-body">
-
-    <div class="sidebar">
-      <div class="nav-section">
-        <div class="nav-label">Prerequisites</div>
-        <a href="value-functions.html" class="nav-item">4 · Value Functions &amp; Bellman</a>
-        <span class="nav-item planned">Linear Algebra · Matrix operations</span>
-      </div>
-
-      <div id="cluster-nav" data-cluster="rl" data-current="dp.html"></div>
-
-            <hr class="sidebar-rule">
-
-      <div class="nav-section">
-        <div class="nav-label">On this page</div>
-        <a href="#key-idea" class="nav-item">The DP idea</a>
-        <a href="#policy-evaluation" class="nav-item">Policy evaluation</a>
-        <a href="#policy-improvement" class="nav-item">Policy improvement</a>
-        <a href="#policy-iteration" class="nav-item">Policy iteration</a>
-        <a href="#value-iteration" class="nav-item">Value iteration</a>
-        <a href="#comparison" class="nav-item">Comparison</a>
-        <a href="#worked-example" class="nav-item">Worked example</a>
-        <a href="#grid-explorer" class="nav-item">Grid world explorer</a>
-        <a href="#limitations" class="nav-item">Limitations</a>
-        <a href="#food-for-thought" class="nav-item">Food for thought</a>
-        <a href="#pitfalls" class="nav-item">Common pitfalls</a>
-      </div>
-    </div>
-
-    <div class="main">
-
-      <div class="breadcrumb">
-        <a href="../index.html">Field Notes</a>
-        <span class="sep">›</span>
-        <a href="index.html">Reinforcement Learning</a>
-        <span class="sep">›</span>
-        <span>5 · Dynamic Programming</span>
-      </div>
-
-      <div class="lesson-title">5 · Dynamic Programming</div>
-      <div class="lesson-meta">Policy Evaluation · Policy Improvement · Policy Iteration · Value Iteration · Known Model</div>
-
-      <div class="prose">
+<div class="page-body">
+<div class="sidebar">
+<div class="nav-section">
+<div class="nav-label">Prerequisites</div>
+<a class="nav-item" href="value-functions.html">4 · Value Functions &amp; Bellman</a>
+<span class="nav-item planned">Linear Algebra · Matrix operations</span>
+</div>
+<div data-cluster="rl" data-current="dp.html" id="cluster-nav"></div>
+<hr class="sidebar-rule"/>
+<div class="nav-section">
+<div class="nav-label">On this page</div>
+<a class="nav-item" href="#key-idea">The DP idea</a>
+<a class="nav-item" href="#policy-evaluation">Policy evaluation</a>
+<a class="nav-item" href="#policy-improvement">Policy improvement</a>
+<a class="nav-item" href="#policy-iteration">Policy iteration</a>
+<a class="nav-item" href="#value-iteration">Value iteration</a>
+<a class="nav-item" href="#comparison">Comparison</a>
+<a class="nav-item" href="#worked-example">Worked example</a>
+<a class="nav-item" href="#grid-explorer">Grid world explorer</a>
+<a class="nav-item" href="#limitations">Limitations</a>
+<a class="nav-item" href="#food-for-thought">Food for thought</a>
+<a class="nav-item" href="#pitfalls">Common pitfalls</a>
+</div>
+</div>
+<div class="main">
+<div class="breadcrumb">
+<a href="../index.html">Field Notes</a>
+<span class="sep">›</span>
+<a href="index.html">Reinforcement Learning</a>
+<span class="sep">›</span>
+<span>5 · Dynamic Programming</span>
+</div>
+<div class="lesson-title">5 · Dynamic Programming</div>
+<div class="lesson-meta">Policy Evaluation · Policy Improvement · Policy Iteration · Value Iteration · Known Model</div>
+<div class="prose">
         The Bellman equations from Lesson 4 are a characterisation — they tell you what
         the value function must look like, but not how to compute it. Dynamic programming
         turns them into algorithms. The key assumption here is that you have a <em>complete
@@ -89,31 +80,27 @@
         and 7 will drop this model requirement — but DP is where the algorithmic ideas first
         take shape.
       </div>
-
-      <div class="notation-box">
-        <div class="notation-box-title">Notation used in this lesson</div>
-        <table class="notation-table">
-          <tr><td>$V_k(s)$</td><td>Estimate of $v_\pi(s)$ after $k$ sweeps (subscript $k$ = iteration count)</td></tr>
-          <tr><td>$\pi'$</td><td>Improved policy (greedy with respect to current $V$)</td></tr>
-          <tr><td>$\pi' \geq \pi$</td><td>Policy $\pi'$ is at least as good as $\pi$ from every state</td></tr>
-          <tr><td>$\max_a[\cdot]$</td><td>Maximum over all available actions</td></tr>
-          <tr><td>$\arg\max_a[\cdot]$</td><td>The action $a$ that achieves the maximum</td></tr>
-          <tr><td>$\theta$</td><td>Convergence threshold — stop when $\max_s |V_{k+1}(s) - V_k(s)| < \theta$</td></tr>
-        </table>
-      </div>
-
-      <!-- ── The DP idea ────────────────────────────────────────── -->
-      <div class="section-head" id="key-idea">The dynamic programming idea</div>
-
-      <div class="prose">
+<div class="notation-box">
+<div class="notation-box-title">Notation used in this lesson</div>
+<table class="notation-table">
+<tr><td>$V_k(s)$</td><td>Estimate of $v_\pi(s)$ after $k$ sweeps (subscript $k$ = iteration count)</td></tr>
+<tr><td>$\pi'$</td><td>Improved policy (greedy with respect to current $V$)</td></tr>
+<tr><td>$\pi' \geq \pi$</td><td>Policy $\pi'$ is at least as good as $\pi$ from every state</td></tr>
+<tr><td>$\max_a[\cdot]$</td><td>Maximum over all available actions</td></tr>
+<tr><td>$\arg\max_a[\cdot]$</td><td>The action $a$ that achieves the maximum</td></tr>
+<tr><td>$\theta$</td><td>Convergence threshold — stop when $\max_s |V_{k+1}(s) - V_k(s)| &lt; \theta$</td></tr>
+</table>
+</div>
+<!-- ── The DP idea ────────────────────────────────────────── -->
+<div class="section-head" id="key-idea">The dynamic programming idea</div>
+<div class="prose">
         The word "dynamic" refers to sequences of decisions over time; "programming" here means
         optimisation (in the 1950s sense, not software). Richard Bellman coined the term to
         describe the principle that optimal decisions at each stage can be found by working
         backward through the problem — each stage's optimal choice depends only on the value
         of what follows.
       </div>
-
-      <div class="prose">
+<div class="prose">
         In the RL context, DP exploits the fact that $v_\pi$ satisfies a self-consistency
         condition (the Bellman equation). If you start with any initial estimate $V_0$ —
         even all zeros — and repeatedly apply the Bellman update, the estimates converge
@@ -121,298 +108,261 @@
         <strong>contraction mapping</strong> in the max-norm: each application reduces
         the error by a factor of $\gamma$. After enough sweeps, $V_k \to v_\pi$.
       </div>
-
-      <!-- ── Policy evaluation ──────────────────────────────────── -->
-      <div class="section-head" id="policy-evaluation">Policy evaluation (the prediction problem)</div>
-
-      <div class="prose">
+<!-- ── Policy evaluation ──────────────────────────────────── -->
+<div class="section-head" id="policy-evaluation">Policy evaluation (the prediction problem)</div>
+<div class="prose">
         Given a policy $\pi$, compute $v_\pi$. The algorithm maintains an array $V$ of
         value estimates for each state and iteratively updates them using the Bellman
         expectation equation:
       </div>
-
-      <div class="math-block">
+<div class="math-block">
         $$V_{k+1}(s) \;\leftarrow\; \sum_a \pi(a \mid s) \sum_{s',\, r} p(s', r \mid s, a)
           \;\bigl[r + \gamma V_k(s')\bigr] \qquad \text{for all } s \in \mathcal{S}$$
       </div>
-
-      <div class="prose">
+<div class="prose">
         Each pass over all states is called a <strong>sweep</strong>. After each sweep,
         the maximum change across all states decreases. Stop when
-        $\max_s |V_{k+1}(s) - V_k(s)| < \theta$ for some small threshold $\theta$.
+        $\max_s |V_{k+1}(s) - V_k(s)| &lt; \theta$ for some small threshold $\theta$.
       </div>
-
-      <div class="callout">
-        <strong>Why does this converge?</strong> The Bellman expectation operator
+<div class="callout">
+<strong>Why does this converge?</strong> The Bellman expectation operator
         $\mathcal{T}^\pi V(s) = \sum_a \pi(a|s) \sum_{s',r} p(s',r|s,a)[r + \gamma V(s')]$
         is a $\gamma$-contraction in the infinity norm: $\|\mathcal{T}^\pi V - \mathcal{T}^\pi V'\|_\infty
         \leq \gamma \|V - V'\|_\infty$. By the Banach fixed-point theorem, repeated application
         of any contraction converges to a unique fixed point — which is exactly $v_\pi$.
-        The factor $\gamma < 1$ is what guarantees convergence.
+        The factor $\gamma &lt; 1$ is what guarantees convergence.
       </div>
-
-      <!-- ── Policy improvement ─────────────────────────────────── -->
-      <div class="section-head" id="policy-improvement">Policy improvement</div>
-
-      <div class="prose">
+<!-- ── Policy improvement ─────────────────────────────────── -->
+<div class="section-head" id="policy-improvement">Policy improvement</div>
+<div class="prose">
         Once you have an estimate of $v_\pi$, you can ask: is there a better policy? The
         <strong>greedy policy</strong> $\pi'$ with respect to $v_\pi$ selects, in each state,
         the action that maximises the one-step look-ahead value:
       </div>
-
-      <div class="math-block">
+<div class="math-block">
         $$\pi'(s) = \arg\max_a \sum_{s',\, r} p(s', r \mid s, a)\;\bigl[r + \gamma v_\pi(s')\bigr]
           = \arg\max_a\; q_\pi(s, a)$$
       </div>
-
-      <div class="prose">
+<div class="prose">
         The <strong>Policy Improvement Theorem</strong> guarantees that $\pi'$ is at least
         as good as $\pi$: for all $s$, $v_{\pi'}(s) \geq v_\pi(s)$. The intuition is clean —
         if $\pi'$ is choosing the action with the highest $q_\pi$ value while $\pi$ might not,
         then following $\pi'$ (greedily for one step, then $\pi$ after) must be at least
         as good as following $\pi$ all the time.
       </div>
-
-      <div class="callout">
-        <strong>⟶ Worth working through the Policy Improvement Theorem yourself.</strong>
+<div class="callout">
+<strong>⟶ Worth working through the Policy Improvement Theorem yourself.</strong>
         Start from $q_\pi(s, \pi'(s)) \geq q_\pi(s, \pi(s)) = v_\pi(s)$ and expand
         $q_\pi$ recursively to show $v_{\pi'}(s) \geq v_\pi(s)$. The key step uses the
         fact that following $\pi'$ at the first step is an improvement, and that the same
         argument applies at every subsequent step. This is the prototype for all policy
         improvement arguments in RL.
       </div>
-
-      <div class="proof-box">
-        <div class="proof-header">Proof — Policy Improvement Theorem &amp; policy iteration convergence</div>
-        <div class="proof-body">
-          <p><strong>Policy Improvement Theorem.</strong> Let $\pi'(s) = \arg\max_a q_\pi(s,a)$. By the greedy choice: $q_\pi(s,\pi'(s)) \geq q_\pi(s,\pi(s)) = v_\pi(s)$. Now unroll using Bellman:
+<div class="proof-box">
+<div class="proof-header">Proof — Policy Improvement Theorem &amp; policy iteration convergence</div>
+<div class="proof-body">
+<p><strong>Policy Improvement Theorem.</strong> Let $\pi'(s) = \arg\max_a q_\pi(s,a)$. By the greedy choice: $q_\pi(s,\pi'(s)) \geq q_\pi(s,\pi(s)) = v_\pi(s)$. Now unroll using Bellman:
           $$v_\pi(s) \leq \mathbb{E}_{\pi'}[R_{t+1} + \gamma v_\pi(S_{t+1}) \mid S_t=s] \leq \mathbb{E}_{\pi'}[R_{t+1} + \gamma q_\pi(S_{t+1},\pi'(S_{t+1})) \mid S_t=s]$$
-          Applying the greedy bound recursively at each future state and using $\gamma < 1$ to ensure convergence of the telescoping sum:
+          Applying the greedy bound recursively at each future state and using $\gamma &lt; 1$ to ensure convergence of the telescoping sum:
           $$\leq \mathbb{E}_{\pi'}[R_{t+1} + \gamma R_{t+2} + \gamma^2 R_{t+3} + \cdots \mid S_t=s] = v_{\pi'}(s) \quad \blacksquare$$</p>
-          <p><strong>Policy iteration convergence (finite MDPs).</strong> Each improvement step either strictly increases $v$ in at least one state, or the policy is unchanged. If unchanged, $\pi'=\pi$ implies $v_\pi = \mathcal{T}v_\pi$ (the greedy policy is already greedy with respect to its own value), so $v_\pi = v_*$. Since the number of deterministic policies is $|\mathcal{A}|^{|\mathcal{S}|}$ (finite), and each step either improves strictly or terminates, policy iteration terminates in at most $|\mathcal{A}|^{|\mathcal{S}|}$ steps. $\blacksquare$</p>
-        </div>
-      </div>
-
-      <div class="prose">
+<p><strong>Policy iteration convergence (finite MDPs).</strong> Each improvement step either strictly increases $v$ in at least one state, or the policy is unchanged. If unchanged, $\pi'=\pi$ implies $v_\pi = \mathcal{T}v_\pi$ (the greedy policy is already greedy with respect to its own value), so $v_\pi = v_*$. Since the number of deterministic policies is $|\mathcal{A}|^{|\mathcal{S}|}$ (finite), and each step either improves strictly or terminates, policy iteration terminates in at most $|\mathcal{A}|^{|\mathcal{S}|}$ steps. $\blacksquare$</p>
+</div>
+</div>
+<div class="prose">
         If $\pi' = \pi$ (no action changed), then we have hit a fixed point of the
         improvement step: $v_\pi = v_*$, and $\pi$ is already optimal. Policy improvement
         either strictly improves the policy or confirms it is already optimal.
       </div>
-
-      <!-- ── Policy iteration ───────────────────────────────────── -->
-      <div class="section-head" id="policy-iteration">Policy iteration</div>
-
-      <div class="prose">
+<!-- ── Policy iteration ───────────────────────────────────── -->
+<div class="section-head" id="policy-iteration">Policy iteration</div>
+<div class="prose">
         Alternate between evaluation and improvement until convergence:
       </div>
-
-      <!-- SVG: policy iteration loop -->
-      <svg viewBox="0 0 520 100" style="width:100%;max-width:520px;display:block;margin:20px auto 8px;">
-        <defs>
-          <marker id="arr-pi" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
-            <polygon points="0 0,7 3.5,0 7" fill="#3a6a8a"/>
-          </marker>
-        </defs>
-        <!-- boxes -->
-        <rect x="10" y="30" width="110" height="40" rx="5" fill="#eef4f8" stroke="#7ab8d4" stroke-width="1.5"/>
-        <text x="65" y="47" font-family="IBM Plex Sans,sans-serif" font-size="11" font-weight="600" fill="#1a2840" text-anchor="middle">Policy π</text>
-        <text x="65" y="61" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a6a7a" text-anchor="middle">(initial: random)</text>
-
-        <rect x="200" y="30" width="110" height="40" rx="5" fill="#eef4f8" stroke="#7ab8d4" stroke-width="1.5"/>
-        <text x="255" y="47" font-family="IBM Plex Sans,sans-serif" font-size="11" font-weight="600" fill="#1a2840" text-anchor="middle">Value v_π</text>
-        <text x="255" y="61" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a6a7a" text-anchor="middle">(from eval sweeps)</text>
-
-        <rect x="390" y="30" width="115" height="40" rx="5" fill="#d4ead4" stroke="#5a8a5a" stroke-width="1.5"/>
-        <text x="447" y="47" font-family="IBM Plex Sans,sans-serif" font-size="11" font-weight="600" fill="#2a5a2a" text-anchor="middle">Policy π′</text>
-        <text x="447" y="61" font-family="IBM Plex Mono,monospace" font-size="9" fill="#5a8a5a" text-anchor="middle">(greedy w.r.t. v_π)</text>
-
-        <!-- arrows -->
-        <line x1="120" y1="50" x2="196" y2="50" stroke="#3a6a8a" stroke-width="1.5" marker-end="url(#arr-pi)"/>
-        <text x="158" y="44" font-family="IBM Plex Sans,sans-serif" font-size="9.5" fill="#3a6a8a" text-anchor="middle">evaluate</text>
-
-        <line x1="310" y1="50" x2="386" y2="50" stroke="#3a6a8a" stroke-width="1.5" marker-end="url(#arr-pi)"/>
-        <text x="348" y="44" font-family="IBM Plex Sans,sans-serif" font-size="9.5" fill="#3a6a8a" text-anchor="middle">improve</text>
-
-        <!-- feedback arc -->
-        <path d="M 447 70 Q 447 90 255 90 Q 65 90 65 70" fill="none" stroke="#5a8a5a" stroke-width="1.5" marker-end="url(#arr-pi)" stroke-dasharray="5,3"/>
-        <text x="255" y="100" font-family="IBM Plex Sans,sans-serif" font-size="9.5" fill="#5a8a5a" text-anchor="middle">repeat until π′ = π  →  π* found</text>
-      </svg>
-
-      <div class="prose">
+<!-- SVG: policy iteration loop -->
+<svg style="width:100%;max-width:520px;display:block;margin:20px auto 8px;" viewbox="0 0 520 100">
+<defs>
+<marker id="arr-pi" markerheight="7" markerwidth="7" orient="auto" refx="6" refy="3.5">
+<polygon fill="#3a6a8a" points="0 0,7 3.5,0 7"></polygon>
+</marker>
+</defs>
+<!-- boxes -->
+<rect fill="#eef4f8" height="40" rx="5" stroke="#7ab8d4" stroke-width="1.5" width="110" x="10" y="30"></rect>
+<text fill="#1a2840" font-family="IBM Plex Sans,sans-serif" font-size="11" font-weight="600" text-anchor="middle" x="65" y="47">Policy π</text>
+<text fill="#5a6a7a" font-family="IBM Plex Mono,monospace" font-size="9" text-anchor="middle" x="65" y="61">(initial: random)</text>
+<rect fill="#eef4f8" height="40" rx="5" stroke="#7ab8d4" stroke-width="1.5" width="110" x="200" y="30"></rect>
+<text fill="#1a2840" font-family="IBM Plex Sans,sans-serif" font-size="11" font-weight="600" text-anchor="middle" x="255" y="47">Value v_π</text>
+<text fill="#5a6a7a" font-family="IBM Plex Mono,monospace" font-size="9" text-anchor="middle" x="255" y="61">(from eval sweeps)</text>
+<rect fill="#d4ead4" height="40" rx="5" stroke="#5a8a5a" stroke-width="1.5" width="115" x="390" y="30"></rect>
+<text fill="#2a5a2a" font-family="IBM Plex Sans,sans-serif" font-size="11" font-weight="600" text-anchor="middle" x="447" y="47">Policy π′</text>
+<text fill="#5a8a5a" font-family="IBM Plex Mono,monospace" font-size="9" text-anchor="middle" x="447" y="61">(greedy w.r.t. v_π)</text>
+<!-- arrows -->
+<line marker-end="url(#arr-pi)" stroke="#3a6a8a" stroke-width="1.5" x1="120" x2="196" y1="50" y2="50"></line>
+<text fill="#3a6a8a" font-family="IBM Plex Sans,sans-serif" font-size="9.5" text-anchor="middle" x="158" y="44">evaluate</text>
+<line marker-end="url(#arr-pi)" stroke="#3a6a8a" stroke-width="1.5" x1="310" x2="386" y1="50" y2="50"></line>
+<text fill="#3a6a8a" font-family="IBM Plex Sans,sans-serif" font-size="9.5" text-anchor="middle" x="348" y="44">improve</text>
+<!-- feedback arc -->
+<path d="M 447 70 Q 447 90 255 90 Q 65 90 65 70" fill="none" marker-end="url(#arr-pi)" stroke="#5a8a5a" stroke-dasharray="5,3" stroke-width="1.5"></path>
+<text fill="#5a8a5a" font-family="IBM Plex Sans,sans-serif" font-size="9.5" text-anchor="middle" x="255" y="100">repeat until π′ = π  →  π* found</text>
+</svg>
+<div class="prose">
         Policy iteration converges in a finite number of steps. There are finitely many
         deterministic policies ($|\mathcal{A}|^{|\mathcal{S}|}$), and each iteration either
         strictly improves the policy or terminates. In practice, policy iteration often
         converges in fewer iterations than you might expect — the value function does much
         of the work in a few sweeps.
       </div>
-
-      <!-- ── Value iteration ────────────────────────────────────── -->
-      <div class="section-head" id="value-iteration">Value iteration</div>
-
-      <div class="prose">
+<!-- ── Value iteration ────────────────────────────────────── -->
+<div class="section-head" id="value-iteration">Value iteration</div>
+<div class="prose">
         Policy iteration requires a full evaluation of $v_\pi$ (many sweeps to convergence)
         before each improvement step. This is expensive. Value iteration combines them:
         instead of evaluating $v_\pi$ exactly, apply just <em>one</em> sweep of the
         Bellman <em>optimality</em> update:
       </div>
-
-      <div class="math-block">
+<div class="math-block">
         $$V_{k+1}(s) \;\leftarrow\; \max_a \sum_{s',\, r} p(s', r \mid s, a)
           \;\bigl[r + \gamma V_k(s')\bigr] \qquad \text{for all } s \in \mathcal{S}$$
       </div>
-
-      <div class="prose">
+<div class="prose">
         This is the Bellman optimality operator applied repeatedly. It is still a contraction
         (the max-norm argument holds for the optimality operator too), so $V_k \to v_*$.
         Once $V$ has converged, extract the greedy policy:
         $\pi^*(s) = \arg\max_a \sum_{s',r} p(s',r \mid s,a)[r + \gamma V(s')]$.
       </div>
-
-      <div class="prose">
+<div class="prose">
         Conceptually: value iteration is doing policy evaluation (one sweep only) and
         policy improvement simultaneously. Each sweep improves both the value estimate
         and the implicit greedy policy. It is faster per iteration than policy iteration
         but typically needs more iterations to converge.
       </div>
-
-      <!-- ── Comparison ─────────────────────────────────────────── -->
-      <div class="section-head" id="comparison">Policy iteration vs value iteration</div>
-
-      <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:24px;">
-        <thead>
-          <tr style="background:#eef4f8;">
-            <th style="padding:8px 10px;border:1px solid #d0dae0;font-weight:600;text-align:left;"></th>
-            <th style="padding:8px 10px;border:1px solid #d0dae0;font-weight:600;">Policy Iteration</th>
-            <th style="padding:8px 10px;border:1px solid #d0dae0;font-weight:600;">Value Iteration</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td style="padding:7px 10px;border:1px solid #e0e8ed;font-weight:600;">Update rule</td>
-            <td style="padding:7px 10px;border:1px solid #e0e8ed;">Bellman expectation (with $\pi$)</td>
-            <td style="padding:7px 10px;border:1px solid #e0e8ed;">Bellman optimality (max over $a$)</td>
-          </tr>
-          <tr style="background:#f8f9fb;">
-            <td style="padding:7px 10px;border:1px solid #e0e8ed;font-weight:600;">Sweeps per policy</td>
-            <td style="padding:7px 10px;border:1px solid #e0e8ed;">Many (until convergence)</td>
-            <td style="padding:7px 10px;border:1px solid #e0e8ed;">One</td>
-          </tr>
-          <tr>
-            <td style="padding:7px 10px;border:1px solid #e0e8ed;font-weight:600;">Policy extractions</td>
-            <td style="padding:7px 10px;border:1px solid #e0e8ed;">After each policy improvement</td>
-            <td style="padding:7px 10px;border:1px solid #e0e8ed;">Once, at the end</td>
-          </tr>
-          <tr style="background:#f8f9fb;">
-            <td style="padding:7px 10px;border:1px solid #e0e8ed;font-weight:600;">Convergence</td>
-            <td style="padding:7px 10px;border:1px solid #e0e8ed;">Fewer outer iterations; each expensive</td>
-            <td style="padding:7px 10px;border:1px solid #e0e8ed;">More iterations; each cheap</td>
-          </tr>
-          <tr>
-            <td style="padding:7px 10px;border:1px solid #e0e8ed;font-weight:600;">Best for</td>
-            <td style="padding:7px 10px;border:1px solid #e0e8ed;">Small state spaces; exact evaluation matters</td>
-            <td style="padding:7px 10px;border:1px solid #e0e8ed;">Larger state spaces; speed per sweep matters</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <!-- ── Worked example ──────────────────────────────────────── -->
-      <div class="section-head" id="worked-example">Worked example: two-step policy evaluation</div>
-
-      <div class="example-box">
-        <div class="example-header"><strong>Example 1 — Policy evaluation on a 3-state chain (γ = 1)</strong></div>
-        <div class="example-problem">
+<!-- ── Comparison ─────────────────────────────────────────── -->
+<div class="section-head" id="comparison">Policy iteration vs value iteration</div>
+<table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:24px;">
+<thead>
+<tr style="background:#eef4f8;">
+<th style="padding:8px 10px;border:1px solid #d0dae0;font-weight:600;text-align:left;"></th>
+<th style="padding:8px 10px;border:1px solid #d0dae0;font-weight:600;">Policy Iteration</th>
+<th style="padding:8px 10px;border:1px solid #d0dae0;font-weight:600;">Value Iteration</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="padding:7px 10px;border:1px solid #e0e8ed;font-weight:600;">Update rule</td>
+<td style="padding:7px 10px;border:1px solid #e0e8ed;">Bellman expectation (with $\pi$)</td>
+<td style="padding:7px 10px;border:1px solid #e0e8ed;">Bellman optimality (max over $a$)</td>
+</tr>
+<tr style="background:#f8f9fb;">
+<td style="padding:7px 10px;border:1px solid #e0e8ed;font-weight:600;">Sweeps per policy</td>
+<td style="padding:7px 10px;border:1px solid #e0e8ed;">Many (until convergence)</td>
+<td style="padding:7px 10px;border:1px solid #e0e8ed;">One</td>
+</tr>
+<tr>
+<td style="padding:7px 10px;border:1px solid #e0e8ed;font-weight:600;">Policy extractions</td>
+<td style="padding:7px 10px;border:1px solid #e0e8ed;">After each policy improvement</td>
+<td style="padding:7px 10px;border:1px solid #e0e8ed;">Once, at the end</td>
+</tr>
+<tr style="background:#f8f9fb;">
+<td style="padding:7px 10px;border:1px solid #e0e8ed;font-weight:600;">Convergence</td>
+<td style="padding:7px 10px;border:1px solid #e0e8ed;">Fewer outer iterations; each expensive</td>
+<td style="padding:7px 10px;border:1px solid #e0e8ed;">More iterations; each cheap</td>
+</tr>
+<tr>
+<td style="padding:7px 10px;border:1px solid #e0e8ed;font-weight:600;">Best for</td>
+<td style="padding:7px 10px;border:1px solid #e0e8ed;">Small state spaces; exact evaluation matters</td>
+<td style="padding:7px 10px;border:1px solid #e0e8ed;">Larger state spaces; speed per sweep matters</td>
+</tr>
+</tbody>
+</table>
+<!-- ── Worked example ──────────────────────────────────────── -->
+<div class="section-head" id="worked-example">Worked example: two-step policy evaluation</div>
+<div class="example-box">
+<div class="example-header"><strong>Example 1 — Policy evaluation on a 3-state chain (γ = 1)</strong></div>
+<div class="example-problem">
           Consider a 3-state chain MDP: states A → B → C (terminal). Under a deterministic
           policy — from A go right to B; from B go right to C. Reward $-1$ per step, $\gamma = 1$.
           Start with $V_0 = [0, 0, 0]$ and perform two sweeps of synchronous policy evaluation.
           How many sweeps are needed to converge, and why?
         </div>
-        <div class="example-body">
-          <div class="example-block">
-            <div class="ex-title">Policy evaluation — 3-state chain, γ = 1</div>
-            <div style="font-size:13px;color:#4a5a6a;margin-bottom:10px;">
+<div class="example-body">
+<div class="example-block">
+<div class="ex-title">Policy evaluation — 3-state chain, γ = 1</div>
+<div style="font-size:13px;color:#4a5a6a;margin-bottom:10px;">
               Transitions: A→B (r=−1), B→C (r=−1). C is terminal with V(C)=0 always.
             </div>
-            <table class="int-table" style="margin-top:0;">
-              <thead><tr>
-                <th>Sweep k</th><th>V(A)</th><th>V(B)</th><th>V(C)</th><th>Max change</th>
-              </tr></thead>
-              <tbody>
-                <tr><td>0</td><td>0</td><td>0</td><td>0</td><td>—</td></tr>
-                <tr style="background:#f8f9fb;"><td>1</td>
-                  <td style="text-align:right;">−1+V<sub>0</sub>(B)=<strong>−1</strong></td>
-                  <td style="text-align:right;">−1+V<sub>0</sub>(C)=<strong>−1</strong></td>
-                  <td>0</td>
-                  <td>1.0</td>
-                </tr>
-                <tr><td>2</td>
-                  <td style="text-align:right;">−1+V<sub>1</sub>(B)=<strong>−2</strong></td>
-                  <td style="text-align:right;">−1+V<sub>1</sub>(C)=<strong>−1</strong></td>
-                  <td>0</td>
-                  <td>1.0</td>
-                </tr>
-                <tr style="background:#ddeef8;font-weight:600;"><td>∞</td>
-                  <td>−2</td><td>−1</td><td>0</td><td>0</td>
-                </tr>
-              </tbody>
-            </table>
-            <div style="margin-top:10px;font-size:12.5px;color:#4a5a6a;line-height:1.6;">
+<table class="int-table" style="margin-top:0;">
+<thead><tr>
+<th>Sweep k</th><th>V(A)</th><th>V(B)</th><th>V(C)</th><th>Max change</th>
+</tr></thead>
+<tbody>
+<tr><td>0</td><td>0</td><td>0</td><td>0</td><td>—</td></tr>
+<tr style="background:#f8f9fb;"><td>1</td>
+<td style="text-align:right;">−1+V<sub>0</sub>(B)=<strong>−1</strong></td>
+<td style="text-align:right;">−1+V<sub>0</sub>(C)=<strong>−1</strong></td>
+<td>0</td>
+<td>1.0</td>
+</tr>
+<tr><td>2</td>
+<td style="text-align:right;">−1+V<sub>1</sub>(B)=<strong>−2</strong></td>
+<td style="text-align:right;">−1+V<sub>1</sub>(C)=<strong>−1</strong></td>
+<td>0</td>
+<td>1.0</td>
+</tr>
+<tr style="background:#ddeef8;font-weight:600;"><td>∞</td>
+<td>−2</td><td>−1</td><td>0</td><td>0</td>
+</tr>
+</tbody>
+</table>
+<div style="margin-top:10px;font-size:12.5px;color:#4a5a6a;line-height:1.6;">
               After sweep 2, V(A)=−2 and V(B)=−1 — both have converged to their true values
               (A is 2 steps from terminal; B is 1 step). The sweep propagates value information
               one step backward per iteration: after sweep $k$, states $k$ steps from the terminal
               have correct values. This chain converges in exactly 2 sweeps because it is only
               2 steps deep.
             </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ── Grid world explorer ────────────────────────────────── -->
-      <div class="section-head" id="grid-explorer">Interactive: 4×4 grid world</div>
-
-      <div class="prose">
+</div>
+</div>
+</div>
+<!-- ── Grid world explorer ────────────────────────────────── -->
+<div class="section-head" id="grid-explorer">Interactive: 4×4 grid world</div>
+<div class="prose">
         The 4×4 grid world from Lesson 3. Terminal states at top-left and bottom-right
         (value 0). Reward $-1$ per step. Click <strong>Sweep</strong> to perform one
         policy evaluation sweep under the current policy; <strong>Improve Policy</strong>
         to make it greedy; <strong>Value Iteration</strong> to apply one Bellman optimality
         update. Watch the values and arrows stabilise.
       </div>
-
-      <div class="interactive">
-        <div class="int-title">4×4 grid world — policy evaluation &amp; improvement</div>
-
-        <div class="int-controls">
-          <button class="int-btn" onclick="dpSweep()">Sweep (eval)</button>
-          <button class="int-btn" onclick="dpImprove()">Improve policy</button>
-          <button class="int-btn" onclick="dpValIter()">Value iteration step</button>
-          <button class="int-btn" onclick="dpRunPI()">Run policy iteration</button>
-          <button class="int-btn sec" onclick="dpReset()">Reset</button>
-          <span class="int-label">γ =</span>
-          <input type="range" id="dpgamma" min="0.5" max="1.0" step="0.01" value="0.90"
-                 style="width:100px;" oninput="document.getElementById('dpgv').textContent=parseFloat(this.value).toFixed(2);dpRender()">
-          <span class="int-label" id="dpgv" style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:#1a2840;min-width:3em;">0.90</span>
-        </div>
-
-        <div style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;">
-          <svg id="dp-grid" viewBox="0 0 320 320" style="width:min(320px,100%);display:block;">
-            <!-- filled by JS -->
-          </svg>
-          <div style="flex:1;min-width:160px;">
-            <div class="int-stat" id="dp-info" style="font-size:12px;line-height:1.8;">
-              Sweeps: <span id="dp-sweeps">0</span><br>
-              Policy improvements: <span id="dp-pi-count">0</span><br>
-              Max ΔV last sweep: <span id="dp-delta">—</span><br>
+<div class="interactive">
+<div class="int-title">4×4 grid world — policy evaluation &amp; improvement</div>
+<div class="int-controls">
+<button class="int-btn" onclick="dpSweep()">Sweep (eval)</button>
+<button class="int-btn" onclick="dpImprove()">Improve policy</button>
+<button class="int-btn" onclick="dpValIter()">Value iteration step</button>
+<button class="int-btn" onclick="dpRunPI()">Run policy iteration</button>
+<button class="int-btn sec" onclick="dpReset()">Reset</button>
+<span class="int-label">γ =</span>
+<input id="dpgamma" max="1.0" min="0.5" oninput="document.getElementById('dpgv').textContent=parseFloat(this.value).toFixed(2);dpRender()" step="0.01" style="width:100px;" type="range" value="0.90"/>
+<span class="int-label" id="dpgv" style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:#1a2840;min-width:3em;">0.90</span>
+</div>
+<div style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;">
+<svg id="dp-grid" style="width:min(320px,100%);display:block;" viewbox="0 0 320 320">
+<!-- filled by JS -->
+</svg>
+<div style="flex:1;min-width:160px;">
+<div class="int-stat" id="dp-info" style="font-size:12px;line-height:1.8;">
+              Sweeps: <span id="dp-sweeps">0</span><br/>
+              Policy improvements: <span id="dp-pi-count">0</span><br/>
+              Max ΔV last sweep: <span id="dp-delta">—</span><br/>
               Status: <span id="dp-status">Random policy</span>
-            </div>
-            <div style="margin-top:12px;font-size:12px;color:#5a6a7a;line-height:1.6;">
-              <span style="display:inline-block;width:14px;height:14px;background:#d4ead4;border:1px solid #5a8a5a;vertical-align:middle;margin-right:4px;border-radius:2px;"></span>Terminal<br>
-              Arrow shows current greedy action.<br>
+</div>
+<div style="margin-top:12px;font-size:12px;color:#5a6a7a;line-height:1.6;">
+<span style="display:inline-block;width:14px;height:14px;background:#d4ead4;border:1px solid #5a8a5a;vertical-align:middle;margin-right:4px;border-radius:2px;"></span>Terminal<br/>
+              Arrow shows current greedy action.<br/>
               Blue shade = higher value (less negative).
             </div>
-          </div>
-        </div>
-      </div>
-
-      <script>
+</div>
+</div>
+</div>
+<script>
       (function() {
         var N = 4;
         var V = new Array(16).fill(0);
@@ -588,48 +538,42 @@
         window.dpRender();
       })();
       </script>
-
-      <!-- ── Limitations of DP ──────────────────────────────────── -->
-      <div class="section-head" id="limitations">Limitations of dynamic programming</div>
-
-      <div class="prose">
+<!-- ── Limitations of DP ──────────────────────────────────── -->
+<div class="section-head" id="limitations">Limitations of dynamic programming</div>
+<div class="prose">
         DP is exact and computationally well-understood, but it has two fundamental limitations
         that motivate everything in Lessons 6–9:
       </div>
-
-      <ul class="prose" style="padding-left:1.4em;">
-        <li style="margin-bottom:10px;"><strong>Requires a complete model.</strong> The update
+<ul class="prose" style="padding-left:1.4em;">
+<li style="margin-bottom:10px;"><strong>Requires a complete model.</strong> The update
           rule $V_{k+1}(s) = \max_a \sum_{s',r} p(s',r|s,a)[\ldots]$ uses $p(s',r|s,a)$
           explicitly. For most real problems — robots in physical spaces, games with complex
           rules, financial systems — this distribution is unknown. You can sample from the
           environment but not enumerate it.</li>
-        <li style="margin-bottom:10px;"><strong>Visits every state every sweep.</strong> DP
+<li style="margin-bottom:10px;"><strong>Visits every state every sweep.</strong> DP
           iterates over the entire state space on each sweep. For practical problems with
           large or continuous state spaces, this is computationally infeasible. Asynchronous
           DP variants (updating only some states per sweep) partially address this, but the
           fundamental issue remains.</li>
-      </ul>
-
-      <div class="prose">
+</ul>
+<div class="prose">
         These limitations are not fatal — they are boundaries that define where DP works
         and where you need something else. Monte Carlo methods (Lesson 6) address the model
         requirement by learning from sampled episodes. Temporal Difference (Lesson 7)
         addresses both requirements by bootstrapping from partial trajectories. Function
         approximation (Lesson 8) addresses the large-state-space problem.
       </div>
-
-      <!-- ── Food for thought ──────────────────────────────────── -->
-      <div class="section-head" id="food-for-thought">Food for thought</div>
-
-      <div class="fft-block">
-        <div class="fft-title">Reflection questions</div>
-        <ol>
-          <li>Policy iteration uses exact evaluation before each improvement. But you only
+<!-- ── Food for thought ──────────────────────────────────── -->
+<div class="section-head" id="food-for-thought">Food for thought</div>
+<div class="fft-block">
+<div class="fft-title">Reflection questions</div>
+<ol>
+<li class="fft-item">Policy iteration uses exact evaluation before each improvement. But you only
             need an estimate good enough to identify which action is best — not exact values.
             How much work do you think you're wasting, and what would you do differently?
             (This question is essentially asking you to re-invent <em>modified policy
             iteration</em> — look it up after thinking it through.)
-                          <div class="fft-answer-body">
+                          <div class="fft-answer">
                 Most of the evaluation sweeps are wasted: after the first few sweeps the relative
                 ordering of states has stabilised, and extra sweeps are just refining differences
                 that don't change the greedy action. Modified policy iteration performs exactly $k$
@@ -639,14 +583,13 @@
                 steps. In practice $k = 5$–$20$ sweeps is often enough to get a good approximation
                 while skipping the bulk of the redundant work.
               </div>
-            
-          </li>
-          <li>In value iteration, a single state can influence all its neighbours in one
+</li>
+<li class="fft-item">In value iteration, a single state can influence all its neighbours in one
             sweep, but those neighbours haven't yet "seen" their new values from other
             directions. How does the information about terminal states propagate outward
             with each sweep? How many sweeps does a state $k$ steps from a terminal need
             before its value first becomes nonzero?
-                          <div class="fft-answer-body">
+                          <div class="fft-answer">
                 Exactly $k$ sweeps. In sweep 1, only the direct neighbours of terminal states
                 (1 step away) receive nonzero values from the Bellman backup. In sweep 2, states
                 2 steps away receive their first nonzero value via the states that just became
@@ -655,12 +598,11 @@
                 why DP convergence for episodic tasks takes at least as many sweeps as the
                 diameter of the longest path to a terminal state.
               </div>
-            
-          </li>
-          <li>DP assumes the model is known. But what if you knew the model approximately —
+</li>
+<li class="fft-item">DP assumes the model is known. But what if you knew the model approximately —
             say, you had samples from $p(s',r|s,a)$ but not the exact distribution? Could you
             still run something like policy evaluation? What would you lose?
-                          <div class="fft-answer-body">
+                          <div class="fft-answer">
                 Yes — you could use sample means in place of the exact expectation: estimate
                 $r(s,a)$ and $p(s'|s,a)$ from observed transitions and then plug those estimates
                 into the Bellman update. This is called sample-based or approximate DP. What you
@@ -671,75 +613,66 @@
                 bootstraps single-step samples. The core idea — replace an expectation with a
                 sample average — is the bridge from model-based DP to model-free RL.
               </div>
-            
-          </li>
-        </ol>
-      </div>
-
-      <!-- ── Common pitfalls ───────────────────────────────────── -->
-      <div class="section-head" id="pitfalls">Common pitfalls</div>
-
-      <div class="pitfalls-block">
-        <div class="pitfalls-title">Mistakes worth knowing about in advance</div>
-        <ul>
-          <li><span class="pitfall-name">Confusing a sweep with convergence.</span>
+</li>
+</ol>
+</div>
+<!-- ── Common pitfalls ───────────────────────────────────── -->
+<div class="section-head" id="pitfalls">Common pitfalls</div>
+<div class="pitfalls-block">
+<div class="pitfalls-title">Mistakes worth knowing about in advance</div>
+<ul>
+<li><span class="pitfall-name">Confusing a sweep with convergence.</span>
             One sweep over all states is not evaluation — it is one step toward evaluation.
             After a single sweep, $V_1$ still has significant error. Convergence requires
             many sweeps; the exact number depends on $\gamma$ and the MDP structure.
             Stopping too early gives poor values and a poor improved policy.</li>
-          <li><span class="pitfall-name">Using in-place vs. two-array updates interchangeably.</span>
+<li><span class="pitfall-name">Using in-place vs. two-array updates interchangeably.</span>
             You can update $V$ in-place (using new values as soon as they are computed within
             a sweep) or with a separate copy. Both converge, but in-place typically converges
             faster because newly computed values propagate immediately. They are not equivalent;
             pick one and be consistent.</li>
-          <li><span class="pitfall-name">Thinking policy improvement always gives a strictly better policy.</span>
+<li><span class="pitfall-name">Thinking policy improvement always gives a strictly better policy.</span>
             Policy improvement either strictly improves the policy or confirms it is already
             optimal. If the new greedy policy matches the old policy everywhere, you have
             reached $v_*$ — not stagnation. This is the stopping criterion for policy
             iteration.</li>
-          <li><span class="pitfall-name">Forgetting that value iteration needs a final greedy pass.</span>
+<li><span class="pitfall-name">Forgetting that value iteration needs a final greedy pass.</span>
             Value iteration converges the value function $V \to v_*$, but the algorithm
             itself does not explicitly maintain a policy during iteration. You must extract
             the optimal policy at the end with one greedy pass: $\pi^*(s) = \arg\max_a[\ldots]$.
             Stopping value iteration early and reading off the greedy policy from an
             unconverged $V$ gives a suboptimal policy.</li>
-        </ul>
-      </div>
-
-      <!-- ── Connects to ────────────────────────────────────────── -->
-      <div class="connects-to">
-        <div class="connects-to-label">Connects to</div>
-        <ul>
-          <li><strong>Linear Algebra</strong> — the policy evaluation linear system
+</ul>
+</div>
+<!-- ── Connects to ────────────────────────────────────────── -->
+<div class="connects-to">
+<div class="connects-to-label">Connects to</div>
+<ul>
+<li><strong>Linear Algebra</strong> — the policy evaluation linear system
             $v = r^\pi + \gamma P^\pi v$ is solved iteratively here; its direct solution is
             $(I - \gamma P^\pi)^{-1} r^\pi$. The spectral radius of $\gamma P^\pi$ being less
             than 1 guarantees the Neumann series converges — this is the convergence proof for
             policy evaluation in matrix form.</li>
-          <li><strong>RL · Monte Carlo Methods</strong> (Lesson 6) — MC drops the model
+<li><strong>RL · Monte Carlo Methods</strong> (Lesson 6) — MC drops the model
             requirement of DP by estimating value functions from complete sampled episodes.
             The same policy evaluation target ($v_\pi$) is estimated, but by averaging sample
             returns rather than by solving the Bellman equations.</li>
-          <li><strong>Control Theory · LQR</strong> (Lesson 13) — the algebraic Riccati
+<li><strong>Control Theory · LQR</strong> (Lesson 13) — the algebraic Riccati
             equation in LQR is the continuous-time analog of the Bellman optimality equation
             here. Value iteration for LQR is the backward Riccati recursion.</li>
-        </ul>
-      </div>
-
-      <hr class="lesson-rule">
-
-      <div class="section-head">References</div>
-      <ul class="prose" style="padding-left:1.4em;font-size:13.5px;color:#5a6a7a;">
-        <li style="margin-bottom:6px;">R. S. Sutton &amp; A. G. Barto, <em>Reinforcement Learning: An Introduction</em>
+</ul>
+</div>
+<hr class="lesson-rule"/>
+<div class="section-head">References</div>
+<ul class="prose" style="padding-left:1.4em;font-size:13.5px;color:#5a6a7a;">
+<li style="margin-bottom:6px;">R. S. Sutton &amp; A. G. Barto, <em>Reinforcement Learning: An Introduction</em>
           (2nd ed.) — Chapter 4: Policy evaluation (4.1), policy improvement (4.2),
           policy iteration (4.3), value iteration (4.4). The 4×4 gridworld is Example 4.1;
           the jack's car rental problem (Example 4.2) shows DP on a realistic problem.</li>
-      </ul>
-
-      <div id="lesson-nav"></div>
-
-    </div><!-- /main -->
-
-  </div><!-- /page-body -->
+</ul>
+<div id="lesson-nav"></div>
+</div><!-- /main -->
+</div><!-- /page-body -->
 </div><!-- /site-wrap">
 
 <footer class="site-footer">
@@ -750,3 +683,4 @@
     <script src="../notes-nav.js"></script>
 </body>
 </html>
+--></body></html>
