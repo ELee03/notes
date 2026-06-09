@@ -8,7 +8,7 @@
           "children": [
             {
               "name": "Calculus &amp; Real Analysis",
-              "desc": "Single and multivariable calculus through real analysis — epsilon-delta, metric spaces, measure theory, and Lebesgue integration.",
+              "desc": "Single and multivariable calculus through real analysis — epsilon-delta, metric spaces, measure theory, Lebesgue integration — continuing into functional analysis: normed spaces, Banach and Hilbert spaces, bounded operators, and the spectral theorem in infinite dimensions.",
               "planned": true
             },
             {
@@ -49,6 +49,11 @@
             {
               "name": "Abstract Algebra",
               "desc": "Groups, subgroups, homomorphisms, rings, fields, and Galois theory — the structures underlying symmetry and number theory.",
+              "planned": true
+            },
+            {
+              "name": "Algebraic Topology",
+              "desc": "Homotopy and the fundamental group, covering spaces, simplicial and singular homology, cohomology, and CW complexes — the algebra of shape and continuity.",
               "planned": true
             }
           ]

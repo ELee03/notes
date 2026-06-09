@@ -148,3 +148,5 @@ relevant cluster is ready to be written.
 | Circuit Theory | Nilsson & Riedel *Electric Circuits* |
 | Probability Theory | Blitzstein & Hwang *Introduction to Probability* |
 | Statistics & Inference | DeGroot & Schervish *Probability and Statistics* |
+| Calculus & Real Analysis (functional analysis) | Kreyszig *Introductory Functional Analysis with Applications*; Rudin *Functional Analysis* |
+| Algebraic Topology | Hatcher *Algebraic Topology* (free online); Munkres *Topology* |
