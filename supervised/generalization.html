@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generalisation &amp; Regularization — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$',  right: '$',  display: false}
+        ],
+        throwOnError: false
+      });
+    });
+  </script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Prerequisites</div>
+        <span class="nav-item planned">Probability · Expectation, variance</span>
+        <a href="learning-problem.html" class="nav-item">L1 · The Learning Problem</a>
+        <a href="linear-regression.html" class="nav-item">L2 · Linear Regression</a>
+      </div>
+
+      <div id="cluster-nav" data-cluster="supervised" data-current="generalization.html"></div>
+
+      <hr class="sidebar-rule">
+
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#bias-variance" class="nav-item">Bias-variance decomposition</a>
+        <a href="#the-tradeoff" class="nav-item">The tradeoff in practice</a>
+        <a href="#double-descent" class="nav-item">Double descent</a>
+        <a href="#train-val-test" class="nav-item">Train / validation / test</a>
+        <a href="#cross-validation" class="nav-item">Cross-validation</a>
+        <a href="#learning-curves" class="nav-item">Learning curves</a>
+        <a href="#regularization" class="nav-item">Regularization revisited</a>
+        <a href="#examples" class="nav-item">Worked examples</a>
+        <a href="#food-for-thought" class="nav-item">Food for thought</a>
+        <a href="#pitfalls" class="nav-item">Common pitfalls</a>
+        <a href="#connects-to" class="nav-item">Connects to</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Supervised Learning</a>
+        <span class="sep">›</span>
+        <span>4 · Generalisation &amp; Regularization</span>
+      </div>
+
+      <div class="lesson-title">4 · Generalisation &amp; Regularization</div>
+      <div class="lesson-meta">Bias-Variance Decomposition · Cross-Validation · Learning Curves · Model Selection · Regularization</div>
+
+      <div class="prose">
+        Fitting the training data is easy — given enough parameters, any algorithm can do
+        it perfectly. The hard problem is fitting the underlying pattern without memorizing
+        the noise. This lesson makes that tension precise: the bias-variance decomposition
+        quantifies exactly what goes wrong when a model is too simple or too complex, and
+        cross-validation gives a practical procedure for finding the sweet spot.
+      </div>
+
+      <!-- ── Section 1: Bias-variance decomposition ────────────────────────── -->
+      <div class="section-head" id="bias-variance">The bias-variance decomposition</div>
+
+      <div class="prose">
+        Suppose the true relationship is $y = f(\mathbf{x}) + \varepsilon$, where
+        $f : \mathcal{X} \to \mathbb{R}$ is the true function and $\varepsilon$ is
+        zero-mean noise with variance $\sigma^2$ (irreducible error we cannot remove
+        regardless of our model). We train a model $\hat{h}$ on a training set
+        $\mathcal{D}$ drawn randomly from $P$.
+      </div>
+
+      <div class="prose">
+        Because $\mathcal{D}$ is random, so is $\hat{h}$ — a different training set
+        gives a different fitted model. The <strong>expected test error</strong> at a
+        fixed test point $\mathbf{x}$ averages over the randomness in $\mathcal{D}$:
+        $$\mathbb{E}_{\mathcal{D}}\bigl[(y - \hat{h}(\mathbf{x}))^2\bigr]$$
+        This decomposes into three terms.
+      </div>
+
+      <div class="proof-box">
+        <div class="proof-header">Derivation — Bias-variance decomposition</div>
+        <div class="proof-body">
+          <p>Let $\bar{h}(\mathbf{x}) = \mathbb{E}_{\mathcal{D}}[\hat{h}(\mathbf{x})]$
+          be the expected prediction of our model class (averaged over all possible
+          training sets). Write:
+          $$y - \hat{h}(\mathbf{x}) = \underbrace{(y - f(\mathbf{x}))}_{\text{noise}} + \underbrace{(f(\mathbf{x}) - \bar{h}(\mathbf{x}))}_{\text{bias}} + \underbrace{(\bar{h}(\mathbf{x}) - \hat{h}(\mathbf{x}))}_{\text{fluctuation}}$$</p>
+          <p>Square and take expectation. The cross terms vanish:
+          <ul style="margin:8px 0; padding-left:1.2em;">
+            <li>Noise × bias: $(y - f)$ is independent of $\mathcal{D}$, and $E[y - f] = 0$.</li>
+            <li>Noise × fluctuation: $E_\mathcal{D}[\bar{h} - \hat{h}] = 0$ by definition of $\bar{h}$.</li>
+            <li>Bias × fluctuation: bias is constant in $\mathcal{D}$; $E_\mathcal{D}[\bar{h} - \hat{h}] = 0$.</li>
+          </ul></p>
+          <p>What remains:
+          $$\mathbb{E}_{\mathcal{D}}\bigl[(y-\hat{h})^2\bigr] = \underbrace{\sigma^2}_{\text{irreducible noise}} + \underbrace{(f(\mathbf{x}) - \bar{h}(\mathbf{x}))^2}_{\text{Bias}^2} + \underbrace{\mathbb{E}_{\mathcal{D}}\bigl[(\bar{h}(\mathbf{x}) - \hat{h}(\mathbf{x}))^2\bigr]}_{\text{Variance}}$$</p>
+        </div>
+      </div>
+
+      <div class="prose">
+        The three terms:
+      </div>
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:12px;"><strong>Irreducible noise $\sigma^2$.</strong>
+          The variance of the noise in $y$ itself. No model can do better than this —
+          even a perfect $\hat{h} = f$ still incurs error $\sigma^2$ due to noise in
+          the labels.</li>
+        <li style="margin-bottom:12px;"><strong>Bias$^2$.</strong>
+          $(f(\mathbf{x}) - \bar{h}(\mathbf{x}))^2$ — the squared difference between
+          the true function and the average prediction of our model class. This measures
+          systematic error: how far off is our model family in principle, even with
+          infinite data? A linear model fitting a quadratic function has irreducible
+          bias. More complex models (neural networks, high-degree polynomials) can reduce
+          bias toward zero.</li>
+        <li><strong>Variance.</strong>
+          $\mathbb{E}_{\mathcal{D}}[(\bar{h} - \hat{h})^2]$ — how much the model's
+          predictions fluctuate across different training sets. High variance means
+          the model is sensitive to the particular data it was trained on. A model that
+          memorizes training data perfectly (zero training error) is extremely sensitive
+          to which samples appear — its predictions vary wildly with training set. Simpler
+          models have lower variance.</li>
+      </ul>
+
+      <div class="prose">
+        The total expected test error = Bias² + Variance + $\sigma^2$. The irreducible noise
+        is fixed. Reducing bias typically increases variance (more complex model), and vice
+        versa. This is the <strong>bias-variance tradeoff</strong>.
+      </div>
+
+      <!-- ── Section 2: The tradeoff in practice ───────────────────────────── -->
+      <div class="section-head" id="the-tradeoff">The tradeoff in practice</div>
+
+      <div class="prose">
+        Consider fitting a polynomial of degree $D$ to noisy data from a smooth function:
+      </div>
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:8px;"><strong>$D = 1$ (linear):</strong> If the true function
+          is quadratic, no linear model can capture it. Bias is large. But the linear fit
+          is stable across training sets (low variance). High bias, low variance.</li>
+        <li style="margin-bottom:8px;"><strong>$D = n-1$ (interpolating):</strong> Passes
+          through every training point — zero bias on training data. But it oscillates
+          wildly and a different training set gives a completely different polynomial.
+          Low bias (on training data), catastrophically high variance.</li>
+        <li><strong>$D^*$ (optimal):</strong> Some intermediate degree minimizes the sum
+          Bias² + Variance. This is the sweet spot.</li>
+      </ul>
+
+      <div class="prose">
+        The optimal complexity increases with the amount of data $n$: with more data,
+        we can afford a more complex model (variance decreases because more data pins
+        down the fit). With very little data, a simple model is safer even if it has
+        higher bias.
+      </div>
+
+      <!-- ── Section 3: Double descent ─────────────────────────────────────── -->
+      <div class="section-head" id="double-descent">Double descent: the modern view</div>
+
+      <div class="prose">
+        Classical bias-variance theory predicts a single U-shaped test error curve as model
+        complexity increases: error decreases (bias falls), reaches a minimum, then increases
+        (variance rises). This was considered settled theory.
+      </div>
+
+      <div class="prose">
+        Modern deep learning has revealed something unexpected: for highly overparameterized
+        models — where the number of parameters far exceeds the number of training examples —
+        the test error decreases again after the classical "overfitting regime." This
+        phenomenon is called <strong>double descent</strong>.
+      </div>
+
+      <div class="prose">
+        The picture is: as complexity increases, test error first decreases (bias falls),
+        then spikes sharply near the interpolation threshold (where parameters ≈ training
+        examples, and the model just barely interpolates), then decreases again as the model
+        becomes massively overparameterized. Large neural networks sit far to the right —
+        billions of parameters, far more than training examples — and still generalize well.
+      </div>
+
+      <div class="prose">
+        Why? Gradient descent with weight decay (L2 regularization) implicitly selects the
+        minimum-norm interpolating solution from the infinitely many that fit the training
+        data exactly. This minimum-norm solution turns out to have low effective complexity
+        even in the overparameterized regime. The classical bias-variance tradeoff is not
+        wrong — it applies within the under-parameterized regime. Double descent extends
+        the picture to the over-parameterized regime that modern deep learning inhabits.
+      </div>
+
+      <!-- ── Section 4: Train/validation/test ─────────────────────────────── -->
+      <div class="section-head" id="train-val-test">Training, validation, and test sets</div>
+
+      <div class="prose">
+        To evaluate generalization reliably, data must be split into three disjoint sets:
+      </div>
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:12px;"><strong>Training set.</strong> Used to fit the model
+          parameters ($\mathbf{w}$) by minimizing empirical risk. The model sees this data
+          during learning.</li>
+        <li style="margin-bottom:12px;"><strong>Validation set.</strong> Used to select
+          hyperparameters (regularization strength $\lambda$, polynomial degree $D$, neural
+          network architecture). The model does not directly train on this data, but
+          hyperparameter selection based on validation performance causes <em>indirect</em>
+          information leakage — the model was chosen to do well here.</li>
+        <li><strong>Test set.</strong> Used exactly once at the end to report final
+          generalization performance. Must never be used during model development.
+          Performance on the test set is the honest estimate of true risk.</li>
+      </ul>
+
+      <div class="callout">
+        <strong>The test set contamination failure mode.</strong> If you adjust your model
+        based on test set performance — even once — you have turned the test set into a
+        validation set. Its performance estimate is now optimistically biased. The only
+        remedy is a fresh held-out test set. In practice, ML competitions often report
+        inflated performance because participants iterate against the (nominally fixed)
+        test set via repeated submissions.
+      </div>
+
+      <div class="prose">
+        A common split: 70% training, 15% validation, 15% test. For small datasets, a
+        larger validation/test fraction is needed; for very large datasets ($n > 10^6$),
+        even 1–2% for validation/test provides millions of examples.
+      </div>
+
+      <!-- ── Section 5: Cross-validation ──────────────────────────────────── -->
+      <div class="section-head" id="cross-validation">Cross-validation</div>
+
+      <div class="prose">
+        With small datasets, reserving 30% for validation/test wastes too much training
+        data. <strong>$k$-fold cross-validation</strong> provides a more data-efficient
+        estimate of generalization error.
+      </div>
+
+      <div class="prose">
+        Procedure: randomly partition the training data into $k$ equal folds. For each
+        fold $i = 1, \ldots, k$:
+      </div>
+      <ol class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:6px;">Train on all folds except fold $i$.</li>
+        <li style="margin-bottom:6px;">Evaluate on fold $i$ — the held-out validation error for this round.</li>
+      </ol>
+
+      <div class="prose">
+        Average the validation errors across all $k$ folds. This is the cross-validated
+        estimate of generalization error. Then retrain on all the training data with the
+        selected hyperparameters, and evaluate once on the held-out test set.
+      </div>
+
+      <div class="prose">
+        Common choices: $k = 5$ or $k = 10$. A special case, <strong>leave-one-out
+        cross-validation (LOOCV)</strong>, uses $k = n$ — each example is held out once.
+        LOOCV gives an almost unbiased estimate of test error but is computationally
+        expensive ($n$ model fits). For linear regression, LOOCV has a closed form
+        (the PRESS statistic) that avoids refitting.
+      </div>
+
+      <div class="prose">
+        <strong>Stratified $k$-fold</strong> preserves class proportions within each fold
+        — important for imbalanced classification where random splits might accidentally
+        put all examples of a rare class into one fold.
+      </div>
+
+      <!-- ── Section 6: Learning curves ────────────────────────────────────── -->
+      <div class="section-head" id="learning-curves">Learning curves: diagnosing bias vs. variance</div>
+
+      <div class="prose">
+        A <strong>learning curve</strong> plots training error and validation error as a
+        function of training set size $n$. It is a powerful diagnostic for distinguishing
+        the two failure modes.
+      </div>
+
+      <div class="prose">
+        <strong>High-bias model (underfitting):</strong>
+      </div>
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:6px;">Training error starts high and stays high — the model
+          cannot fit even the training data well.</li>
+        <li style="margin-bottom:6px;">Validation error is close to training error — both
+          plateau at a level above acceptable.</li>
+        <li>Adding more training data does not help significantly — the bottleneck is model
+          capacity, not data quantity. <strong>Fix: increase model complexity.</strong></li>
+      </ul>
+
+      <div class="prose">
+        <strong>High-variance model (overfitting):</strong>
+      </div>
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:6px;">Training error is low.</li>
+        <li style="margin-bottom:6px;">Validation error is much higher than training error —
+          large gap.</li>
+        <li>As $n$ increases, the gap narrows because more data constrains the model.
+          <strong>Fix: get more data, add regularization, reduce model complexity.</strong></li>
+      </ul>
+
+      <div class="prose">
+        Reading a learning curve before investing in more data collection is standard
+        practice: if the curves show high bias, more data is wasted; the model must be
+        made more expressive first.
+      </div>
+
+      <!-- ── Section 7: Regularization revisited ───────────────────────────── -->
+      <div class="section-head" id="regularization">Regularization revisited</div>
+
+      <div class="prose">
+        Regularization was introduced for linear regression in Lesson 2. Here we see it
+        from the bias-variance perspective: adding a penalty on model complexity directly
+        increases bias (the model can no longer fit arbitrary functions) while decreasing
+        variance (the model is more stable across training sets). The goal is to find the
+        penalty strength $\lambda$ where the reduction in variance outweighs the increase
+        in bias, reducing total test error.
+      </div>
+
+      <div class="prose">
+        The pattern generalizes far beyond linear regression:
+      </div>
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:10px;"><strong>Weight decay</strong> — L2 regularization
+          applied to neural networks. Every weight $w$ in the network gets a penalty
+          $\frac{\lambda}{2} w^2$ added to the loss, shrinking weights toward zero.
+          Standard practice in training deep networks.</li>
+        <li style="margin-bottom:10px;"><strong>Dropout</strong> (Lesson 10) — randomly
+          zero out neurons during training, forcing the network not to rely on any single
+          feature. Acts as implicit regularization by reducing co-adaptation.</li>
+        <li style="margin-bottom:10px;"><strong>Early stopping</strong> — stop gradient
+          descent before it fully minimizes the training loss. Training longer increases
+          variance (the model overfits more). Monitoring validation error and stopping
+          when it starts rising is a form of regularization with the effective number of
+          training steps as the regularization parameter.</li>
+        <li><strong>Data augmentation</strong> — artificially expand the training set
+          by applying label-preserving transformations (rotate, flip, crop images; add
+          noise; paraphrase text). Reduces variance by making the model see more
+          diverse examples.</li>
+      </ul>
+
+      <div class="prose">
+        All regularization techniques trade some bias for a larger reduction in variance.
+        The right balance depends on the ratio of model capacity to dataset size — a
+        relationship that must be diagnosed empirically, usually via validation error.
+      </div>
+
+      <!-- ── Worked examples ─────────────────────────────────────────────── -->
+      <div class="section-head" id="examples">Worked examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Computing bias and variance</strong></div>
+        <div class="example-problem">
+          <p>The true function is $f(x) = x^2$. We fit a linear model $h(x; w_0, w_1) = w_0 + w_1 x$
+          using least squares. Training sets of size $n = 2$ are drawn i.i.d. with
+          $x \sim \text{Uniform}[-1, 1]$ and no noise ($\sigma^2 = 0$).</p>
+          <p>What is the bias of this model class at $x = 0.5$?</p>
+        </div>
+        <div class="example-body">
+          <p>The bias measures how far the average prediction (over all random training
+          sets) is from the truth.</p>
+          <p>For any two-point training set $\{(x_1, x_1^2), (x_2, x_2^2)\}$, the
+          least-squares linear fit passes through both points. The average prediction
+          at a new point $x$ is the expected value of the linear interpolant over
+          random pairs $(x_1, x_2)$. By symmetry of $\text{Uniform}[-1,1]$, the
+          expected linear fit is $\bar{h}(x) = \mathbb{E}[w_0] + \mathbb{E}[w_1]x$.</p>
+          <p>By symmetry: $\mathbb{E}[w_1] = \mathbb{E}[(x_1^2 - x_2^2)/(x_1 - x_2)] = \mathbb{E}[x_1 + x_2] = 0$.
+          And $\mathbb{E}[w_0] = \mathbb{E}[x_1^2] - \mathbb{E}[w_1 x_1] = E[x^2] = 1/3$.</p>
+          <p>So $\bar{h}(x) = 1/3$ for all $x$ — a horizontal line at height $1/3$.</p>
+          <p>At $x = 0.5$: $f(0.5) = 0.25$. Bias $= \bar{h}(0.5) - f(0.5) = 1/3 - 1/4 = 1/12 \approx 0.083$.
+          Bias² $= (1/12)^2 \approx 0.0069$.</p>
+          <p>The linear model cannot capture the curvature of $x^2$; it can only match
+          the average height. No amount of training data removes this bias — it is a
+          fundamental limitation of the hypothesis class.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Choosing $\lambda$ via cross-validation</strong></div>
+        <div class="example-problem">
+          <p>You have a regression dataset with $n = 100$ examples and $d = 50$ features.
+          You want to use Ridge regression and must choose $\lambda$ from the set
+          $\{0.001, 0.01, 0.1, 1, 10\}$. Describe the 5-fold cross-validation procedure
+          and interpret the results if the best $\lambda = 1$.</p>
+        </div>
+        <div class="example-body">
+          <p><strong>Procedure:</strong></p>
+          <ol style="padding-left:1.2em; margin-bottom:8px;">
+            <li>Split the 100 examples into 5 folds of 20 each.</li>
+            <li>For each candidate $\lambda$ and each fold $i$:
+              <ul style="padding-left:1em;"><li>Train Ridge regression on the 80 examples not in fold $i$.</li>
+              <li>Compute validation MSE on fold $i$'s 20 examples.</li></ul></li>
+            <li>For each $\lambda$, average the 5 validation MSEs.</li>
+            <li>Select the $\lambda$ with the lowest average validation MSE.</li>
+            <li>Retrain on all 100 examples with the chosen $\lambda$.</li>
+            <li>Report final performance on the held-out test set (separate from these 100).</li>
+          </ol>
+          <p><strong>Interpreting $\lambda^* = 1$:</strong> $\lambda = 0.001$ likely
+          overfits — with 50 features and 80 training examples per fold, unregularized
+          regression is nearly underdetermined. $\lambda = 10$ likely underfits —
+          penalizing weights too heavily forces the model toward zero everywhere.
+          $\lambda = 1$ achieves the best bias-variance balance: enough regularization
+          to prevent overfitting in the 50-feature space, not so much that useful signal
+          is washed out.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Reading a learning curve</strong></div>
+        <div class="example-problem">
+          <p>You observe the following as training set size $n$ grows from 100 to 10,000:</p>
+          <ul style="padding-left:1.2em; margin:8px 0;">
+            <li>Training MSE: starts low (~0.1), stays low (~0.1).</li>
+            <li>Validation MSE: starts high (~2.0), decreases to ~1.5 at $n = 10{,}000$.</li>
+          </ul>
+          <p>What does this curve tell you, and what should you do?</p>
+        </div>
+        <div class="example-body">
+          <p>The large gap between training (~0.1) and validation (~1.5) at large $n$ is
+          the signature of high variance. The model fits the training data very well but
+          does not generalize — it is memorizing training details. The fact that the gap
+          is still large at $n = 10{,}000$ suggests the model may be significantly
+          overparameterized relative to the problem's complexity.</p>
+          <p>The validation error is still decreasing slowly with $n$, suggesting more
+          data would help. But given the persistence of the gap, the more impactful
+          interventions are:</p>
+          <ol style="padding-left:1.2em;">
+            <li><strong>Add regularization</strong> (increase $\lambda$ for Ridge/Lasso,
+              add dropout for neural networks) — directly reduces variance.</li>
+            <li><strong>Reduce model complexity</strong> — fewer parameters means less
+              capacity to memorize noise.</li>
+            <li><strong>Data augmentation</strong> — if the domain permits it, augmenting
+              training data diversifies the examples and reduces effective variance.</li>
+          </ol>
+          <p>If instead training MSE were 1.0 and validation MSE 1.1 (small gap, both high),
+          that would be high bias — the fix would be to increase model complexity or
+          add features, not add regularization.</p>
+        </div>
+      </div>
+
+      <!-- ── Food for thought ────────────────────────────────────────────── -->
+      <div class="section-head" id="food-for-thought">Food for thought</div>
+
+      <ul class="fft-list">
+        <li class="fft-item">
+          The bias-variance decomposition is stated for squared loss. Does the same
+          decomposition hold for classification with 0-1 loss? Why or why not?
+          <div class="fft-answer">
+            Not cleanly. The decomposition works neatly for squared loss because variance
+            is additive in that setting. For 0-1 loss, an analogous decomposition exists
+            (Domingos, 2000) but takes a different form — variance can actually decrease
+            error in some cases when it tips a wrong average prediction to the correct
+            class. The 0-1 loss decomposition does not separate as cleanly into
+            independent additive terms. In practice, machine learning practitioners apply
+            the bias-variance intuition to classification anyway (high bias → underfitting,
+            high variance → overfitting) even though the formal squared-error derivation
+            does not carry over exactly.
+          </div>
+        </li>
+        <li class="fft-item">
+          We select hyperparameters using the validation set, then report test set
+          performance. If you had to choose only one hyperparameter selection method
+          when your dataset has only 200 examples, would you choose a fixed validation
+          split (say 160 train / 40 validation) or 5-fold cross-validation? What are the
+          tradeoffs?
+          <div class="fft-answer">
+            Cross-validation. With only 200 examples, a fixed 160/40 split means the
+            validation estimate of generalization error is based on just 40 examples —
+            noisy and dependent on exactly which 40 are held out. Cross-validation trains
+            on 160 examples in each fold and averages over 5 validation estimates, giving
+            a much lower-variance estimate of the generalization error. The cost is 5×
+            the computation. The tradeoff: fixed split is computationally cheaper and
+            simpler; cross-validation gives a more reliable hyperparameter selection.
+            With 200 examples, computational cost is trivial, so cross-validation wins
+            clearly. With 10 million examples, the 40-vs-CV tradeoff flips — a random
+            subset of 1 million gives a very low-variance estimate, and the 5× computation
+            cost is substantial.
+          </div>
+        </li>
+        <li class="fft-item">
+          Modern large language models have billions of parameters trained on trillions
+          of tokens — far into the overparameterized regime. Classical theory says this
+          should catastrophically overfit. It doesn't. What aspects of the training
+          process might explain this empirically?
+          <div class="fft-answer">
+            Several factors: (1) <em>Implicit regularization of gradient descent</em>:
+            SGD with weight decay selects solutions with small norm, which have low
+            effective complexity despite many parameters. (2) <em>The interpolation
+            threshold is far below the training set size</em>: with trillions of training
+            tokens, even a billion-parameter model is underparameterized in the classical
+            sense — the interpolation threshold (parameters ≈ training examples) is far
+            to the right. (3) <em>Data diversity</em>: the training distribution covers
+            so many modes that there is little room for memorization-style overfitting.
+            (4) <em>Early stopping</em>: training stops long before parameters have
+            converged to the minimum of training loss. The double descent phenomenon
+            suggests that in the massively overparameterized regime, test error can be
+            low anyway — the minimum-norm interpolant generalizes well when the true
+            function is smooth relative to the function class.
+          </div>
+        </li>
+      </ul>
+
+      <!-- ── Common pitfalls ─────────────────────────────────────────────── -->
+      <div class="section-head" id="pitfalls">Common pitfalls</div>
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:14px;">
+          <strong>Using the test set more than once.</strong>
+          Every time you check test performance and use it to make a decision (tweak the
+          model, try a different architecture, add features), you have used the test set
+          as a validation set. Reserve the test set for a single final evaluation. Use
+          a separate validation set or cross-validation for all development decisions.
+        </li>
+        <li style="margin-bottom:14px;">
+          <strong>Confusing high training accuracy with a well-fit model.</strong>
+          Training accuracy measures fit to the data the model has seen. Near-perfect
+          training accuracy with poor validation accuracy is the textbook overfitting
+          signature. Always monitor both.
+        </li>
+        <li style="margin-bottom:14px;">
+          <strong>Applying cross-validation to time-series data with random splits.</strong>
+          For time-ordered data (stock prices, sensor readings, user logs), randomly
+          shuffling before splitting causes data leakage — future information appears in
+          the training fold, giving an unrealistically optimistic estimate. Use
+          time-series cross-validation (train on past, validate on future) instead.
+        </li>
+        <li style="margin-bottom:14px;">
+          <strong>Assuming regularization always helps.</strong>
+          Regularization introduces bias. If the model is already underfitting
+          (high bias), adding regularization makes it worse. Regularization is the
+          cure for overfitting — not a universal improvement. Diagnose first with
+          learning curves, then regularize if variance is the problem.
+        </li>
+        <li>
+          <strong>Selecting hyperparameters on the training set.</strong>
+          If you tune $\lambda$ to minimize training error, you will always select
+          $\lambda = 0$ (no regularization) — training error monotonically decreases
+          as regularization weakens. Hyperparameters must be selected on held-out data.
+        </li>
+      </ul>
+
+      <!-- ── Connects to ─────────────────────────────────────────────────── -->
+      <div class="section-head" id="connects-to">Connects to</div>
+
+      <div class="prose">
+        <strong>Probability Theory</strong> — the bias-variance decomposition is a
+        statement about the distribution of $\hat{h}$ over random training sets. Deeper
+        generalization theory (PAC learning, VC dimension, Rademacher complexity) gives
+        high-probability bounds on the generalization gap, not just expected values.
+        These bounds are sharp enough to be actionable for classical models; for neural
+        networks, the classical bounds are vacuous but empirical practice fills the gap.
+      </div>
+      <div class="prose">
+        <strong>Bayesian Inference</strong> (Lesson 11) — the Bayesian perspective on
+        generalization is complementary: instead of controlling complexity via explicit
+        penalties, Bayesian methods place priors over models and average predictions over
+        the posterior. Marginalizing over model parameters automatically applies
+        Occam's razor — simpler models with fewer free parameters receive higher
+        marginal likelihood. Ridge regression is MAP inference under a Gaussian prior.
+      </div>
+      <div class="prose">
+        <strong>Deep Learning</strong> (Lessons 8–10) — the same concepts recur throughout
+        deep learning: early stopping as implicit regularization, dropout as stochastic
+        regularization, batch normalization as stabilization. The double-descent phenomenon
+        and the mystery of why massively overparameterized neural networks generalize are
+        among the most active open questions in ML theory.
+      </div>
+
+      <!-- ── Lesson nav ──────────────────────────────────────────────────── -->
+      <div class="lesson-nav">
+        <a href="classification.html" class="lesson-nav-btn">← 3 · Classification &amp; Logistic Regression</a>
+        <a href="svm.html" class="lesson-nav-btn">5 · Support Vector Machines →</a>
+      </div>
+
+    </div><!-- /main -->
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+
+</body>
+</html>

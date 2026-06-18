@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Supervised Learning — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="supervised" data-current="index.html"></div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <span>Supervised Learning</span>
+      </div>
+
+      <div class="lesson-title">Supervised Learning</div>
+      <div class="lesson-meta">Regression · Classification · Generalisation · Neural Networks · Backpropagation · Optimisation</div>
+
+      <div class="prose">
+        Supervised learning is the foundation of modern machine learning: given examples of
+        inputs paired with correct outputs, learn a function that generalises to unseen inputs.
+        It underlies spam filters, medical diagnosis, speech recognition, image classifiers,
+        and the neural networks that power large language models.
+      </div>
+
+      <div class="prose">
+        This cluster builds the subject from first principles. It begins with the formal
+        framework — hypothesis spaces, empirical risk, and the generalisation problem — then
+        covers the classical algorithms (linear regression, logistic regression, SVMs, decision
+        trees, ensembles) before developing the full neural network story: forward pass,
+        backpropagation, and the practical craft of training. The primary references are
+        Bishop &amp; Bishop (2024) and Goodfellow, Bengio &amp; Courville (2016).
+      </div>
+
+      <div class="section-head">Lessons</div>
+
+      <table class="lesson-list">
+        <thead>
+          <tr><th>#</th><th>Lesson</th><th>Key concepts</th></tr>
+        </thead>
+        <tbody id="lesson-tbody"></tbody>
+      </table>
+
+      <div class="section-head">References</div>
+      <ul class="book-list" id="cluster-refs"></ul>
+
+    </div><!-- /main -->
+
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+<script src="../notes-index.js"></script>
+<script src="../books-render.js"></script>
+<script>
+  renderLessonTable();
+  renderBooks({ containerId: 'cluster-refs', clusterId: 'supervised-learning', jsonPath: '../books.json' });
+</script>
+
+</body>
+</html>

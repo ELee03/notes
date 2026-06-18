@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Learning Problem — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$',  right: '$',  display: false}
+        ],
+        throwOnError: false
+      });
+    });
+  </script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Prerequisites</div>
+        <span class="nav-item planned">Probability · Expectation &amp; distributions</span>
+        <span class="nav-item planned">Calculus · Summation &amp; series</span>
+      </div>
+
+      <div id="cluster-nav" data-cluster="supervised" data-current="learning-problem.html"></div>
+
+      <hr class="sidebar-rule">
+
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#what-is-sl" class="nav-item">What is supervised learning?</a>
+        <a href="#three-paradigms" class="nav-item">The three paradigms</a>
+        <a href="#formal-framework" class="nav-item">The formal framework</a>
+        <a href="#erm" class="nav-item">Empirical risk minimization</a>
+        <a href="#generalization" class="nav-item">The generalization question</a>
+        <a href="#inductive-bias" class="nav-item">Hypothesis class &amp; inductive bias</a>
+        <a href="#nfl" class="nav-item">No free lunch</a>
+        <a href="#examples" class="nav-item">Worked examples</a>
+        <a href="#food-for-thought" class="nav-item">Food for thought</a>
+        <a href="#pitfalls" class="nav-item">Common pitfalls</a>
+        <a href="#connects-to" class="nav-item">Connects to</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Supervised Learning</a>
+        <span class="sep">›</span>
+        <span>1 · The Learning Problem</span>
+      </div>
+
+      <div class="lesson-title">1 · The Learning Problem</div>
+      <div class="lesson-meta">Hypothesis Spaces · Empirical Risk · True Risk · Generalisation · Inductive Bias · No Free Lunch</div>
+
+      <div class="prose">
+        Every supervised learning algorithm is trying to do the same thing: given examples
+        of inputs paired with outputs, infer a function that generalizes to unseen inputs.
+        The challenge is not fitting the training data — any algorithm can do that. The
+        challenge is building a function that captures the actual underlying relationship,
+        not the noise in your particular sample.
+      </div>
+
+      <!-- ── Notation recap ───────────────────────────────────────────────── -->
+
+      <div class="callout" style="margin-top:24px;">
+        <strong>Notation used in this lesson</strong>
+        <table style="margin-top:10px; border-collapse:collapse; width:100%;">
+          <tr><td style="padding:3px 16px 3px 0; white-space:nowrap; font-family:'IBM Plex Mono',monospace; font-size:0.9em;">$\mathcal{X}$</td><td style="padding:3px 0;">Input space — the set of all possible inputs</td></tr>
+          <tr><td style="padding:3px 16px 3px 0; white-space:nowrap; font-family:'IBM Plex Mono',monospace; font-size:0.9em;">$\mathcal{Y}$</td><td style="padding:3px 0;">Output space — the set of all possible labels or values</td></tr>
+          <tr><td style="padding:3px 16px 3px 0; white-space:nowrap; font-family:'IBM Plex Mono',monospace; font-size:0.9em;">$\mathcal{H}$</td><td style="padding:3px 0;">Hypothesis class — the family of functions the algorithm considers</td></tr>
+          <tr><td style="padding:3px 16px 3px 0; white-space:nowrap; font-family:'IBM Plex Mono',monospace; font-size:0.9em;">$h : \mathcal{X} \to \mathcal{Y}$</td><td style="padding:3px 0;">A hypothesis — one candidate function</td></tr>
+          <tr><td style="padding:3px 16px 3px 0; white-space:nowrap; font-family:'IBM Plex Mono',monospace; font-size:0.9em;">$\mathcal{L}(y, \hat{y})$</td><td style="padding:3px 0;">Loss function — the cost of predicting $\hat{y}$ when truth is $y$</td></tr>
+          <tr><td style="padding:3px 16px 3px 0; white-space:nowrap; font-family:'IBM Plex Mono',monospace; font-size:0.9em;">$P(X, Y)$</td><td style="padding:3px 0;">The unknown joint distribution over inputs and outputs</td></tr>
+          <tr><td style="padding:3px 16px 3px 0; white-space:nowrap; font-family:'IBM Plex Mono',monospace; font-size:0.9em;">$\mathbb{E}[\cdot]$</td><td style="padding:3px 0;">Expectation (average over the distribution)</td></tr>
+          <tr><td style="padding:3px 16px 3px 0; white-space:nowrap; font-family:'IBM Plex Mono',monospace; font-size:0.9em;">$(x_i, y_i)_{i=1}^n$</td><td style="padding:3px 0;">Training set of $n$ labeled examples</td></tr>
+          <tr><td style="padding:3px 16px 3px 0; white-space:nowrap; font-family:'IBM Plex Mono',monospace; font-size:0.9em;">$\operatorname{arg\,min}$</td><td style="padding:3px 0;">The input value that minimizes the function</td></tr>
+        </table>
+      </div>
+
+      <!-- ── Section 1: What is SL ────────────────────────────────────────── -->
+      <div class="section-head" id="what-is-sl">What is supervised learning?</div>
+
+      <div class="prose">
+        Supervised learning is the problem of learning a mapping from inputs to outputs,
+        given a dataset of examples of that mapping. You observe $n$ pairs
+        $$\{(x_1, y_1),\; (x_2, y_2),\; \ldots,\; (x_n, y_n)\}$$
+        where $x_i \in \mathcal{X}$ are the <strong>inputs</strong> (also called features or
+        covariates) and $y_i \in \mathcal{Y}$ are the <strong>outputs</strong> (also called
+        labels or targets). The goal is to find a function $h : \mathcal{X} \to \mathcal{Y}$
+        that accurately predicts $y$ from $x$ for new, unseen examples — examples not in the
+        training set.
+      </div>
+
+      <div class="prose">
+        The word <em>supervised</em> refers to the labels. During training, a "supervisor"
+        provides the correct output for each input — in contrast to unsupervised learning,
+        where no labels exist, and reinforcement learning, where a reward signal replaces
+        explicit labels.
+      </div>
+
+      <div class="prose">
+        Two families of tasks fall under supervised learning:
+      </div>
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:10px;"><strong>Regression</strong> — the output is continuous:
+          $\mathcal{Y} \subseteq \mathbb{R}$ (or $\mathbb{R}^k$ for multiple outputs). Predicting
+          house prices, tomorrow's temperature, a patient's blood glucose level.</li>
+        <li><strong>Classification</strong> — the output is discrete:
+          $\mathcal{Y} = \{1, 2, \ldots, K\}$ for $K$ classes. Spam detection
+          ($K = 2$), handwritten digit recognition ($K = 10$), species identification
+          ($K = $ hundreds).</li>
+      </ul>
+
+      <div class="prose">
+        Under the hood, both tasks share the same formal structure. The difference lies only
+        in the choice of output space and loss function.
+      </div>
+
+      <!-- ── Section 2: Three paradigms ──────────────────────────────────── -->
+      <div class="section-head" id="three-paradigms">The three machine learning paradigms</div>
+
+      <div class="prose">
+        Machine learning is divided into three broad paradigms, distinguished by the kind
+        of feedback the algorithm receives during training.
+      </div>
+
+      <div class="prose">
+        <strong>Supervised learning</strong> — the algorithm sees labeled input-output pairs.
+        A supervisor tells it the correct answer for each training example. This is the
+        richest form of feedback and produces the most reliable results when labeled data
+        is available. The challenge is that labeling data is expensive: a radiologist must
+        read each X-ray, a linguist must annotate each sentence.
+      </div>
+
+      <div class="prose">
+        <strong>Unsupervised learning</strong> — the algorithm sees only unlabeled inputs
+        $\{x_1, \ldots, x_n\}$, with no $y$. The goal shifts from prediction to structure
+        discovery: find clusters in the data (k-means), find low-dimensional representations
+        (PCA, autoencoders), or learn the distribution $P(X)$ itself (generative models).
+        The challenge is that "success" is harder to define without labels.
+      </div>
+
+      <div class="prose">
+        <strong>Reinforcement learning</strong> — there is no dataset at all. An agent
+        interacts with an environment, takes actions, and receives scalar rewards. The goal
+        is to learn a policy that maximizes cumulative reward. The challenge is the credit
+        assignment problem: which actions in a long sequence were responsible for a reward
+        that arrived much later? RL is covered in its own cluster.
+      </div>
+
+      <div class="prose">
+        This cluster focuses exclusively on supervised learning. Much of the mathematical
+        machinery — loss functions, gradient descent, generalization theory — carries over
+        to the other paradigms, but supervised learning is the cleanest setting in which
+        to develop the ideas.
+      </div>
+
+      <!-- ── Section 3: The formal framework ─────────────────────────────── -->
+      <div class="section-head" id="formal-framework">The formal framework</div>
+
+      <div class="prose">
+        To reason carefully about what an algorithm can and cannot learn, we need a precise
+        formulation. Every supervised learning problem has five ingredients:
+      </div>
+
+      <div class="prose">
+        <strong>1. Input space $\mathcal{X}$.</strong> The set of all possible inputs. For
+        tabular data with $d$ numerical features, $\mathcal{X} = \mathbb{R}^d$. For images,
+        it might be the space of $28 \times 28$ pixel grids. For text, the space of all
+        sequences of tokens. The structure of $\mathcal{X}$ constrains which algorithms
+        are natural to use.
+      </div>
+
+      <div class="prose">
+        <strong>2. Output space $\mathcal{Y}$.</strong> For regression, $\mathcal{Y} = \mathbb{R}$.
+        For binary classification, $\mathcal{Y} = \{0, 1\}$. For multi-class classification,
+        $\mathcal{Y} = \{1, \ldots, K\}$.
+      </div>
+
+      <div class="prose">
+        <strong>3. The unknown distribution $P(X, Y)$.</strong> This is the heart of the
+        problem. We assume the training data was generated by sampling $n$ pairs
+        <em>independently and identically</em> (i.i.d.) from some fixed but unknown
+        distribution $P(X, Y)$ over $\mathcal{X} \times \mathcal{Y}$. The distribution
+        $P$ encodes the true relationship between inputs and outputs — including the
+        irreducible noise. We never observe $P$ directly; we see only a finite sample from it.
+      </div>
+
+      <div class="prose">
+        <strong>4. Hypothesis class $\mathcal{H}$.</strong> Not all functions
+        $h : \mathcal{X} \to \mathcal{Y}$ are equally useful or equally tractable. In
+        practice we restrict attention to some family $\mathcal{H}$: perhaps all linear
+        functions, all decision trees of depth at most 5, or all neural networks with a
+        given architecture. This choice encodes our prior beliefs about what kind of
+        relationship we expect between $X$ and $Y$. It is arguably the most important
+        design decision in any machine learning problem.
+      </div>
+
+      <div class="prose">
+        <strong>5. Loss function $\mathcal{L} : \mathcal{Y} \times \mathcal{Y} \to \mathbb{R}_{\geq 0}$.</strong>
+        Given a prediction $\hat{y} = h(x)$ and the true label $y$, the loss
+        $\mathcal{L}(y, \hat{y})$ measures how bad the prediction was. Common choices:
+      </div>
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:8px;"><strong>Squared error</strong> (regression):
+          $\mathcal{L}(y, \hat{y}) = (y - \hat{y})^2$.
+          Penalizes large errors severely — outliers have disproportionate influence.</li>
+        <li style="margin-bottom:8px;"><strong>Absolute error</strong> (regression):
+          $\mathcal{L}(y, \hat{y}) = |y - \hat{y}|$.
+          More robust to outliers than squared error, but not differentiable at zero.</li>
+        <li style="margin-bottom:8px;"><strong>0-1 loss</strong> (classification):
+          $\mathcal{L}(y, \hat{y}) = \mathbf{1}[y \neq \hat{y}]$.
+          Simply counts mistakes, but is not differentiable — hard to optimize directly.</li>
+        <li><strong>Cross-entropy loss</strong> (classification):
+          $\mathcal{L}(y, \hat{p}) = -\log \hat{p}_y$, where $\hat{p}_y$ is the predicted
+          probability assigned to the true class. Differentiable and well-suited to
+          gradient-based optimization. More on this in Lesson 3.</li>
+      </ul>
+
+      <div class="prose">
+        With these five ingredients, the <strong>true risk</strong> (or expected loss) of a
+        hypothesis $h$ is defined as the expected loss over the distribution $P$:
+        $$R(h) \;=\; \mathbb{E}_{(X,\,Y) \sim P}\bigl[\mathcal{L}(h(X),\, Y)\bigr]$$
+        The ideal goal is to find
+        $$h^* \;=\; \operatorname{arg\,min}_{h \,\in\, \mathcal{H}}\; R(h)$$
+        That is, the function in $\mathcal{H}$ with the smallest expected loss under the
+        true distribution.
+      </div>
+
+      <div class="prose">
+        The problem, of course, is that we cannot compute $R(h)$ — we don't know $P$.
+        This is the fundamental obstacle that makes supervised learning non-trivial.
+      </div>
+
+      <!-- ── Section 4: ERM ───────────────────────────────────────────────── -->
+      <div class="section-head" id="erm">Empirical risk minimization</div>
+
+      <div class="prose">
+        The standard response to not knowing $P$ is to replace the expectation over $P$
+        with an average over the training data. Define the <strong>empirical risk</strong>:
+        $$\hat{R}(h) \;=\; \frac{1}{n} \sum_{i=1}^n \mathcal{L}(h(x_i),\, y_i)$$
+        This is simply the average loss on the training set — what practitioners call
+        <em>training error</em> or <em>training loss</em>. The <strong>Empirical Risk
+        Minimization (ERM)</strong> principle says: find the hypothesis in $\mathcal{H}$
+        that minimizes the empirical risk:
+        $$\hat{h} \;=\; \operatorname{arg\,min}_{h \,\in\, \mathcal{H}}\; \hat{R}(h)$$
+      </div>
+
+      <div class="prose">
+        <em>Why does this work?</em> By the <strong>Law of Large Numbers</strong>, for any
+        fixed $h$, the empirical average converges to the true expectation as the sample
+        size grows:
+        $$\hat{R}(h) \;\xrightarrow{n \to \infty}\; R(h) \quad \text{almost surely}$$
+        If this convergence were uniform across all $h \in \mathcal{H}$ simultaneously —
+        meaning $\hat{R}(h) \approx R(h)$ for every $h$ at once — then minimizing
+        $\hat{R}$ would approximately minimize $R$. Whether this uniform convergence
+        holds, and how many samples it requires, depends critically on the complexity
+        of $\mathcal{H}$.
+      </div>
+
+      <div class="prose">
+        For small hypothesis classes, uniform convergence comes cheaply. For large or
+        infinitely complex classes — like all possible neural networks — it requires much
+        more data. Generalization theory (VC dimension, Rademacher complexity) quantifies
+        exactly this tradeoff, though those tools are beyond our scope here.
+      </div>
+
+      <div class="callout">
+        <strong>ERM in practice:</strong> Even finding $\hat{h}$ exactly is often
+        computationally intractable. For neural networks, gradient descent finds a local
+        minimum of $\hat{R}$ — not the global minimum. The distinction between
+        "minimizer of empirical risk" (a theoretical object) and "what gradient descent
+        finds" (a practical one) matters. We return to this in Lesson 9.
+      </div>
+
+      <!-- ── Section 5: Generalization ─────────────────────────────────────── -->
+      <div class="section-head" id="generalization">The generalization question</div>
+
+      <div class="prose">
+        The central question of supervised learning: when does minimizing training error
+        lead to low test error?
+      </div>
+
+      <div class="prose">
+        Write the test error of $\hat{h}$ as:
+        $$\underbrace{R(\hat{h})}_{\text{test error}} \;=\; \underbrace{\bigl[R(\hat{h}) - \hat{R}(\hat{h})\bigr]}_{\text{generalization gap}} \;+\; \underbrace{\hat{R}(\hat{h})}_{\text{training error}}$$
+        The test error decomposes into two parts. The generalization gap measures how much
+        the training and test errors differ — it is always non-negative, since $\hat{h}$ was
+        chosen to minimize training error (so it can only look artificially good on training
+        data). The training error measures how well we fit the training set.
+      </div>
+
+      <div class="prose">
+        Two failure modes:
+      </div>
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:12px;"><strong>Overfitting.</strong> Low training error,
+          large generalization gap. The model has memorized the training data, including its
+          noise, and does not generalize. Classic symptom: near-perfect training accuracy,
+          poor test accuracy. Occurs when $\mathcal{H}$ is too expressive relative to the
+          amount of data.</li>
+        <li><strong>Underfitting.</strong> High training error. The model cannot capture
+          the true relationship even in the training data — $\mathcal{H}$ is not expressive
+          enough. Adding more data does not help; the model is limited by its own capacity.</li>
+      </ul>
+
+      <div class="prose">
+        A good model sits between these extremes: low training error and a small
+        generalization gap, so the test error is also low.
+      </div>
+
+      <div class="prose">
+        This gives rise to the fundamental tension in supervised learning. There are two
+        ways to think about it, and they are equivalent:
+      </div>
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:10px;"><strong>Model complexity view.</strong>
+          A complex model (large $\mathcal{H}$) can fit the training data well but tends
+          to overfit. A simple model (small $\mathcal{H}$) underfits but generalizes
+          stably.</li>
+        <li><strong>Bias-variance view.</strong> A complex model has low bias (can
+          approximate almost anything) but high variance (its output changes drastically
+          with different training sets). A simple model has high bias (systematically
+          wrong) but low variance (stable). We will formalize this decomposition precisely
+          in Lesson 4.</li>
+      </ul>
+
+      <div class="prose">
+        The art of supervised learning is choosing a model complex enough to capture the
+        true structure, but simple enough to generalize from the available data.
+      </div>
+
+      <!-- ── Section 6: Inductive bias ─────────────────────────────────────── -->
+      <div class="section-head" id="inductive-bias">Hypothesis class and inductive bias</div>
+
+      <div class="prose">
+        The choice of $\mathcal{H}$ encodes assumptions about the problem. This set of
+        assumptions is called the algorithm's <strong>inductive bias</strong>.
+      </div>
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:8px;"><strong>Linear models</strong> assume the output
+          is a linear function of the input features. Strong assumption — often wrong —
+          but makes the problem tractable and generalizes stably with limited data.</li>
+        <li style="margin-bottom:8px;"><strong>Decision trees</strong> assume the function
+          is piecewise constant with axis-aligned boundaries. No continuity assumption —
+          handles categorical features naturally but can overfit badly.</li>
+        <li style="margin-bottom:8px;"><strong>SVMs</strong> (Lesson 5) assume the classes
+          are separable by a large-margin boundary. The margin assumption acts as a
+          regularizer, controlling generalization.</li>
+        <li><strong>Neural networks</strong> make very weak structural assumptions — the
+          architecture (number of layers, type of activations) is the main constraint.
+          This makes them highly expressive and widely applicable, but they require large
+          amounts of data to use their flexibility well.</li>
+      </ul>
+
+      <div class="prose">
+        A common misconception is that neural networks "make no assumptions." They do —
+        the architecture encodes translation invariance (CNNs), sequential structure
+        (RNNs), or general function approximation (MLPs). The optimizer, initialization,
+        and regularization all implicitly further constrain which functions are found.
+        The difference is not that neural networks are assumption-free; it is that their
+        assumptions are weaker and more general than classical models.
+      </div>
+
+      <div class="prose">
+        Crucially, inductive bias is not a weakness. It is the mechanism by which
+        algorithms generalize. A learner with no prior assumptions about the problem
+        cannot generalize at all from a finite sample — any unseen input is equally
+        consistent with the training data under all possible functions. Inductive bias is
+        what makes generalization possible.
+      </div>
+
+      <!-- ── Section 7: NFL ───────────────────────────────────────────────── -->
+      <div class="section-head" id="nfl">The No Free Lunch theorem</div>
+
+      <div class="prose">
+        The previous discussion raises a natural question: is there an optimal inductive
+        bias? Is there an algorithm that is universally best?
+      </div>
+
+      <div class="prose">
+        The answer is no. The <strong>No Free Lunch (NFL) theorem</strong> (Wolpert, 1996)
+        states, informally, that averaged over all possible data-generating distributions
+        $P$, every learning algorithm performs identically — no better than random guessing.
+        Any algorithm that does well on some distributions must do poorly on others.
+      </div>
+
+      <div class="prose">
+        The proof sketch is elegant. For any algorithm $A$ that performs well on some
+        set of distributions $\mathcal{P}_{\text{good}}$ (where its inductive bias is
+        well-matched), one can construct a complementary set $\mathcal{P}_{\text{bad}}$
+        where $A$ performs poorly — and the two sets are symmetric enough that the
+        average performance is the same for every algorithm.
+      </div>
+
+      <div class="prose">
+        This might seem discouraging. But it is not, once you read the fine print:
+        <em>averaged over all possible problems</em>. In practice, the problems we
+        encounter are not drawn uniformly from all conceivable distributions. They are
+        structured — images are spatially local, text has grammatical regularities,
+        physical systems are smooth. Algorithms succeed because their inductive biases
+        are calibrated to this structure.
+      </div>
+
+      <div class="prose">
+        The NFL theorem is not a license for nihilism about algorithm selection. It is
+        a precise statement that success requires assumptions — and the assumptions must
+        match the problem. The question "which algorithm should I use?" is inseparable
+        from "what do I know about this problem's structure?"
+      </div>
+
+      <div class="callout">
+        <strong>NFL and neural networks:</strong> Deep neural networks have dominated
+        across extraordinarily diverse domains — vision, speech, language, protein
+        structure, board games. This does not contradict NFL. It says that neural
+        networks' implicit inductive biases (smoothness under gradient descent, local
+        composition via deep layers, data augmentation symmetries) happen to align
+        with the structure of many real-world problems. On a problem with genuinely
+        random structure, a neural network trained by gradient descent would fail just
+        as badly as any other method.
+      </div>
+
+      <!-- ── Worked examples ─────────────────────────────────────────────── -->
+      <div class="section-head" id="examples">Worked examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Choosing the hypothesis class</strong></div>
+        <div class="example-problem">
+          <p>You are predicting whether a loan applicant will default (yes/no) based on
+          three numerical features: credit score, annual income, and loan amount.
+          You have 10,000 labeled examples.</p>
+          <p>Compare the following choices of $\mathcal{H}$:
+          (a) all linear functions $\mathcal{X} \to \mathbb{R}$, thresholded at 0;
+          (b) all decision trees of depth at most 20;
+          (c) all neural networks with 10 hidden layers and 1,000 units each.</p>
+          <p>For each, describe the inductive bias and predict whether overfitting or
+          underfitting is more likely on this dataset.</p>
+        </div>
+        <div class="example-body">
+          <p><strong>(a) Linear threshold.</strong> Assumes the default boundary is a
+          hyperplane in 3D feature space. Likely to underfit if the true boundary is
+          nonlinear (e.g., defaults cluster in a region with <em>both</em> low income
+          and high loan amount, not captured by a single plane). But with 10,000 examples
+          and only 3 features, this model is unlikely to overfit. Low variance, potentially
+          high bias.</p>
+
+          <p><strong>(b) Depth-20 decision tree.</strong> Can represent up to $2^{20}
+          \approx 10^6$ distinct leaf regions — far more than the 10,000 training examples.
+          With that many parameters relative to data, ERM will typically find a tree that
+          memorizes the training labels. High risk of overfitting. In practice, trees are
+          limited to much smaller depths (5–10) or pruned after fitting.</p>
+
+          <p><strong>(c) Large neural network.</strong> Potentially millions of parameters
+          on 10,000 examples. With standard training (gradient descent, dropout,
+          regularization), modern neural networks can generalize despite massive
+          overparameterization — this is a surprising empirical fact called
+          <em>benign overfitting</em>, currently an active area of theory. But without
+          regularization, this network will almost certainly overfit on 10,000 examples.</p>
+
+          <p><strong>Takeaway:</strong> With 10,000 examples and 3 features, the linear
+          model is probably too simple, the depth-20 tree is too complex (without pruning),
+          and the neural network sits in between — powerful enough but needing
+          regularization to generalize.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — ERM and the memorization failure mode</strong></div>
+        <div class="example-problem">
+          <p>You have $n = 5$ training points $\{(x_i, y_i)\}_{i=1}^5$ on the real line.
+          You fit a degree-4 polynomial (which has 5 free parameters: the coefficients
+          $a_0, a_1, a_2, a_3, a_4$). The ERM solution achieves $\hat{R}(\hat{h}) = 0$.</p>
+          <p>Is this good? What does zero training error tell you about test error?</p>
+        </div>
+        <div class="example-body">
+          <p>Zero training error is not good here — it is a warning sign. By the
+          fundamental theorem of algebra, any $n$ points in the plane can be exactly
+          interpolated by a polynomial of degree $n - 1$. With 5 points and a degree-4
+          polynomial, the ERM solution is the unique polynomial passing through all 5
+          training points exactly.</p>
+
+          <p>But this polynomial oscillates wildly between the training points. If the
+          true relationship is smooth and the $y_i$ contain measurement noise, the
+          interpolating polynomial has memorized the noise, not the signal.</p>
+
+          <p>The generalization gap is large: $R(\hat{h}) - \hat{R}(\hat{h}) \approx R(\hat{h})$
+          since $\hat{R}(\hat{h}) = 0$ but $R(\hat{h})$ is large. Training error of zero
+          tells you nothing about test error when the number of parameters equals the
+          number of training points.</p>
+
+          <p>This is the overfitting failure mode in its starkest form. The fix: use a
+          simpler model (lower-degree polynomial), or add regularization to penalize
+          oscillatory solutions (Lesson 4).</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Identifying the loss function</strong></div>
+        <div class="example-problem">
+          <p>A hospital wants a model to diagnose whether a chest X-ray shows pneumonia.
+          A software engineer proposes minimizing the 0-1 loss. A statistician suggests
+          minimizing cross-entropy loss. Who is right, and why?</p>
+        </div>
+        <div class="example-body">
+          <p>Both capture the right goal (classify correctly) but the statistician's
+          choice is far more practical.</p>
+
+          <p>The 0-1 loss counts mistakes: $\mathcal{L}(y, \hat{y}) = \mathbf{1}[y \neq \hat{y}]$.
+          This is the correct measure of clinical accuracy. But it is
+          <em>discontinuous</em>: a small change in model parameters either changes a
+          prediction (loss jumps by 1) or doesn't (loss stays the same). No gradient
+          exists. Gradient descent — the algorithm that trains almost every modern ML
+          model — cannot optimize 0-1 loss directly.</p>
+
+          <p>Cross-entropy loss $\mathcal{L}(y, \hat{p}) = -\log \hat{p}_y$ treats the
+          model output as a probability $\hat{p}_y$ for the true class. It is smooth and
+          differentiable — gradient descent can optimize it continuously. When minimized,
+          it pushes the model toward correct and confident predictions.</p>
+
+          <p>The resolution: we <em>train</em> by minimizing cross-entropy (a
+          differentiable surrogate) and <em>evaluate</em> by measuring 0-1 loss (the
+          actual clinical metric). The surrogate loss approximates the true objective
+          closely enough that minimizing it in training usually minimizes 0-1 loss on
+          the test set. This surrogate-loss pattern appears throughout supervised
+          learning — the training objective and the evaluation metric are frequently
+          different.</p>
+        </div>
+      </div>
+
+      <!-- ── Food for thought ────────────────────────────────────────────── -->
+      <div class="section-head" id="food-for-thought">Food for thought</div>
+
+      <ul class="fft-list">
+        <li class="fft-item">
+          The No Free Lunch theorem says no algorithm is universally best. Yet in
+          practice, neural networks have dominated across vision, language, audio, and
+          scientific domains. Does this contradict NFL? If not, what is the reconciliation?
+          <div class="fft-answer">
+            NFL says averaged over <em>all possible</em> distributions, every algorithm
+            ties. But real-world problems are not drawn from this uniform distribution
+            over all conceivable functions. They are structured: natural images are locally
+            smooth, language has grammar, physical processes are governed by differential
+            equations. Neural networks' inductive biases — composition of local features,
+            smoothness under gradient descent, invariance from data augmentation — happen
+            to match this structure. NFL applies to the average over all problems; in
+            practice we only care about the structured problems that actually arise. If
+            you constructed a dataset whose labels were truly random (i.i.d. uniform over
+            $\{0,1\}$ regardless of the input), gradient-descent-trained neural networks
+            would fail just as badly as any other method.
+          </div>
+        </li>
+        <li class="fft-item">
+          We said the training data is sampled i.i.d. from $P(X, Y)$. What goes wrong
+          if this assumption is violated — for example, if the training data was collected
+          in 2020 and the model is deployed in 2025?
+          <div class="fft-answer">
+            When the distribution at deployment (test time) differs from the distribution
+            at training time, we face <em>distribution shift</em>. The theoretical
+            guarantees of ERM — that minimizing $\hat{R}$ minimizes $R$ — assume the
+            training and test examples are drawn from the same distribution. If $P$
+            changes between training and deployment, then even a model with tiny training
+            error and tiny generalization gap (by the training distribution's standard)
+            can have large test error. In the medical context: a disease prevalence
+            predictor trained on 2020 pandemic-era data may fail badly in 2025 when
+            disease patterns differ. Distribution shift is one of the hardest practical
+            challenges in ML deployment. Techniques like domain adaptation and importance
+            weighting partially address it, but there is no general solution.
+          </div>
+        </li>
+        <li class="fft-item">
+          You train a model to 99% accuracy on the training set. A colleague says "great,
+          that should give us around 95% test accuracy." What assumption is implicit in
+          that estimate, and when would it be badly wrong?
+          <div class="fft-answer">
+            The implicit assumption is that the generalization gap is small — perhaps
+            4–5 percentage points. This is reasonable if: (1) the model is not heavily
+            overparameterized relative to the data, (2) regularization was used, and
+            (3) the train/test data are genuinely i.i.d. from the same distribution.
+            It would be badly wrong if: the model memorized the training set (zero
+            training error on a small dataset with a complex model), in which case
+            training accuracy tells you almost nothing about test accuracy; or if the
+            training set was not representative of the test distribution (e.g., all
+            training images from one camera, test images from a different one). In the
+            extreme, a model can achieve 99% training accuracy and near-chance test
+            accuracy.
+          </div>
+        </li>
+      </ul>
+
+      <!-- ── Common pitfalls ─────────────────────────────────────────────── -->
+      <div class="section-head" id="pitfalls">Common pitfalls</div>
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:14px;">
+          <strong>Equating training error with test error.</strong>
+          Training error measures fit to the data you have. Test error measures
+          generalization to data you don't have. These are different quantities that
+          can diverge dramatically. Always report both.
+        </li>
+        <li style="margin-bottom:14px;">
+          <strong>Choosing the hypothesis class after seeing the data.</strong>
+          If you fit 20 different model types, pick the one with the best test set
+          performance, and report that performance — you have used your test set as
+          a validation signal. The test set no longer measures generalization to truly
+          unseen data; it measures fit to the test set. This is called "data snooping"
+          and inflates reported accuracy. Use a held-out test set that you look at
+          exactly once.
+        </li>
+        <li style="margin-bottom:14px;">
+          <strong>Assuming more data always helps.</strong>
+          More data reduces the generalization gap but does not fix underfitting. If
+          your model's hypothesis class cannot represent the true function, adding
+          training examples will not improve matters — the model is limited by its
+          capacity, not by the amount of data. Conversely, no amount of model complexity
+          fixes a dataset that is too small for the problem.
+        </li>
+        <li style="margin-bottom:14px;">
+          <strong>Ignoring the i.i.d. assumption.</strong>
+          ERM's guarantees require training and test data to come from the same
+          distribution. Real datasets frequently violate this: time-series data has
+          autocorrelation, data from different hospitals has covariate shift, scraped
+          web data has selection bias. Treating distribution shift as a detail to
+          address later is one of the most common sources of real-world ML failures.
+        </li>
+        <li>
+          <strong>Treating the loss function as fixed.</strong>
+          The loss function is a design choice that encodes what "good" means for
+          your problem. Cross-entropy and squared error are defaults, not the only
+          options. In medical diagnosis, false negatives (missing disease) and false
+          positives (alarming healthy patients) have very different costs. Using
+          an equal-cost loss in an asymmetric problem gives a model optimized for
+          the wrong objective.
+        </li>
+      </ul>
+
+      <!-- ── Connects to ─────────────────────────────────────────────────── -->
+      <div class="section-head" id="connects-to">Connects to</div>
+
+      <div class="prose">
+        <strong>Probability Theory</strong> — the formal foundation.
+        True risk is an expected value over $P$; the Law of Large Numbers is why
+        empirical risk concentrates around true risk; generalization bounds (VC dimension,
+        Rademacher complexity) are probabilistic guarantees on the generalization gap.
+        Understanding those bounds requires measure-theoretic probability.
+      </div>
+      <div class="prose">
+        <strong>Information Theory</strong> — cross-entropy loss
+        $-\log \hat{p}_y$ is the negative log-likelihood, and minimizing it is
+        equivalent to minimizing the KL divergence from the model distribution to the
+        true one. The connection between information theory and learning is deep:
+        the bits of information in a training set formally bound how much can be learned.
+      </div>
+      <div class="prose">
+        <strong>Reinforcement Learning</strong> — the RL "policy improvement" loop
+        is a form of ERM over trajectories. The reward signal plays the role of
+        the loss function. The exploration-exploitation dilemma is a variant of the
+        bias-variance tradeoff — exploiting known good actions (low variance) versus
+        exploring for potentially better ones (potentially lower bias).
+      </div>
+
+      <!-- ── Lesson nav ──────────────────────────────────────────────────── -->
+      <div class="lesson-nav">
+        <span class="lesson-nav-btn disabled">← Previous</span>
+        <a href="linear-regression.html" class="lesson-nav-btn">2 · Linear Regression →</a>
+      </div>
+
+    </div><!-- /main -->
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+
+</body>
+</html>

@@ -525,5 +525,40 @@
     ],
     "annotation": "Covers mechanism design, auctions, social choice, and computational aspects of game theory. Bridges AI/CS and economics perspectives. Freely available online.",
     "url": "https://www.masfoundations.org/"
+  },
+  {
+    "id": "goodfellow-dl",
+    "title": "Deep Learning",
+    "authors": [
+      "Ian Goodfellow",
+      "Yoshua Bengio",
+      "Aaron Courville"
+    ],
+    "publisher": "MIT Press",
+    "year": 2016,
+    "clusters": [
+      "supervised-learning",
+      "deep-learning",
+      "optimization"
+    ],
+    "annotation": "The standard reference for deep learning theory and practice. Part I covers mathematical foundations and supervised learning; Parts II–III cover deep architectures, optimization, regularization, CNNs, RNNs, and autoencoders.",
+    "url": "https://www.deeplearningbook.org",
+    "source": "SchoolStuff:Textbooks/ml/Goodfellow, Bengio & Courville - Deep Learning (2016).pdf"
+  },
+  {
+    "id": "bishop-bishop-dl",
+    "title": "Deep Learning: Foundations and Concepts",
+    "authors": [
+      "Christopher M. Bishop",
+      "Hugh Bishop"
+    ],
+    "publisher": "Springer",
+    "year": 2024,
+    "clusters": [
+      "supervised-learning",
+      "deep-learning"
+    ],
+    "annotation": "Modern treatment from first principles, covering feedforward networks, CNNs, RNNs, attention, Transformers, diffusion models, and the probabilistic perspective. The best current single-volume reference for both foundations and modern architectures.",
+    "source": "SchoolStuff:Textbooks/ml/Bishop & Bishop - Deep Learning Foundations and Concepts (2024).pdf"
   }
 ]

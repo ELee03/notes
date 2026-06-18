@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Linear Regression — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$',  right: '$',  display: false}
+        ],
+        throwOnError: false
+      });
+    });
+  </script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Prerequisites</div>
+        <span class="nav-item planned">Linear Algebra · Matrix multiplication, transpose</span>
+        <span class="nav-item planned">Calculus · Partial derivatives, gradient</span>
+        <a href="learning-problem.html" class="nav-item">L1 · The Learning Problem</a>
+      </div>
+
+      <div id="cluster-nav" data-cluster="supervised" data-current="linear-regression.html"></div>
+
+      <hr class="sidebar-rule">
+
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#the-model" class="nav-item">The linear model</a>
+        <a href="#loss" class="nav-item">The loss function</a>
+        <a href="#matrix-form" class="nav-item">Matrix form</a>
+        <a href="#normal-equation" class="nav-item">The normal equation</a>
+        <a href="#gradient-descent" class="nav-item">Gradient descent</a>
+        <a href="#polynomial" class="nav-item">Polynomial &amp; nonlinear features</a>
+        <a href="#regularization" class="nav-item">Regularization: Ridge &amp; Lasso</a>
+        <a href="#examples" class="nav-item">Worked examples</a>
+        <a href="#food-for-thought" class="nav-item">Food for thought</a>
+        <a href="#pitfalls" class="nav-item">Common pitfalls</a>
+        <a href="#connects-to" class="nav-item">Connects to</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Supervised Learning</a>
+        <span class="sep">›</span>
+        <span>2 · Linear Regression</span>
+      </div>
+
+      <div class="lesson-title">2 · Linear Regression</div>
+      <div class="lesson-meta">Least Squares · Normal Equation · Gradient Descent · Feature Maps · Ridge · Lasso</div>
+
+      <div class="prose">
+        Linear regression is the simplest predictive model, and studying it carefully pays
+        outsized dividends. Every idea here — loss functions, gradient descent, the normal
+        equation, regularization — reappears in more complex models. Getting the geometry
+        right in two dimensions makes the same geometry in ten thousand dimensions intuitive.
+      </div>
+
+      <!-- ── Notation recap ───────────────────────────────────────────────── -->
+      <div class="callout" style="margin-top:24px;">
+        <strong>Notation used in this lesson</strong>
+        <table style="margin-top:10px; border-collapse:collapse; width:100%;">
+          <tr><td style="padding:3px 16px 3px 0; white-space:nowrap; font-family:'IBM Plex Mono',monospace; font-size:0.9em;">$\mathbf{x} \in \mathbb{R}^d$</td><td style="padding:3px 0;">Input vector with $d$ features</td></tr>
+          <tr><td style="padding:3px 16px 3px 0; white-space:nowrap; font-family:'IBM Plex Mono',monospace; font-size:0.9em;">$y \in \mathbb{R}$</td><td style="padding:3px 0;">Scalar target output</td></tr>
+          <tr><td style="padding:3px 16px 3px 0; white-space:nowrap; font-family:'IBM Plex Mono',monospace; font-size:0.9em;">$\mathbf{w} \in \mathbb{R}^d$</td><td style="padding:3px 0;">Weight vector (parameters to learn)</td></tr>
+          <tr><td style="padding:3px 16px 3px 0; white-space:nowrap; font-family:'IBM Plex Mono',monospace; font-size:0.9em;">$b \in \mathbb{R}$</td><td style="padding:3px 0;">Bias (intercept)</td></tr>
+          <tr><td style="padding:3px 16px 3px 0; white-space:nowrap; font-family:'IBM Plex Mono',monospace; font-size:0.9em;">$X \in \mathbb{R}^{n \times d}$</td><td style="padding:3px 0;">Design matrix — rows are training inputs $\mathbf{x}_i^\top$</td></tr>
+          <tr><td style="padding:3px 16px 3px 0; white-space:nowrap; font-family:'IBM Plex Mono',monospace; font-size:0.9em;">$\mathbf{y} \in \mathbb{R}^n$</td><td style="padding:3px 0;">Vector of training targets</td></tr>
+          <tr><td style="padding:3px 16px 3px 0; white-space:nowrap; font-family:'IBM Plex Mono',monospace; font-size:0.9em;">$\mathbf{w}^\top \mathbf{x}$</td><td style="padding:3px 0;">Dot product: $\sum_{j=1}^d w_j x_j$</td></tr>
+          <tr><td style="padding:3px 16px 3px 0; white-space:nowrap; font-family:'IBM Plex Mono',monospace; font-size:0.9em;">$\|\mathbf{v}\|^2$</td><td style="padding:3px 0;">Squared Euclidean norm: $\mathbf{v}^\top \mathbf{v} = \sum_j v_j^2$</td></tr>
+          <tr><td style="padding:3px 16px 3px 0; white-space:nowrap; font-family:'IBM Plex Mono',monospace; font-size:0.9em;">$\nabla_\mathbf{w} f$</td><td style="padding:3px 0;">Gradient of $f$ with respect to $\mathbf{w}$: vector of partial derivatives</td></tr>
+        </table>
+      </div>
+
+      <!-- ── Section 1: The model ──────────────────────────────────────────── -->
+      <div class="section-head" id="the-model">The linear model</div>
+
+      <div class="prose">
+        A linear regression model predicts the output as a weighted sum of the input features
+        plus a bias term:
+        $$\hat{y} \;=\; \mathbf{w}^\top \mathbf{x} + b \;=\; w_1 x_1 + w_2 x_2 + \cdots + w_d x_d + b$$
+        The parameters $\mathbf{w}$ and $b$ are what we learn from data. Geometrically, this
+        is a hyperplane in $\mathbb{R}^d$: in 1D it is a line, in 2D a plane, in higher
+        dimensions a hyperplane you can't visualize but which behaves the same way.
+      </div>
+
+      <div class="prose">
+        <strong>Absorbing the bias.</strong> It is algebraically convenient to fold the bias
+        into the weight vector. Add a constant feature $x_0 = 1$ to every input, making
+        $\tilde{\mathbf{x}} = [1, x_1, \ldots, x_d]^\top \in \mathbb{R}^{d+1}$, and extend
+        the weight vector to $\tilde{\mathbf{w}} = [b, w_1, \ldots, w_d]^\top$. Then
+        $\hat{y} = \tilde{\mathbf{w}}^\top \tilde{\mathbf{x}}$ with no separate bias term.
+        This simplifies notation. From here on we write $\mathbf{w}$ and assume the bias
+        has been absorbed.
+      </div>
+
+      <!-- ── Section 2: Loss function ─────────────────────────────────────── -->
+      <div class="section-head" id="loss">The loss function: squared error</div>
+
+      <div class="prose">
+        The standard loss for regression is squared error:
+        $$\mathcal{L}(y, \hat{y}) \;=\; (y - \hat{y})^2$$
+        The full empirical risk — the training objective we minimize — is the <strong>mean
+        squared error (MSE)</strong>:
+        $$\hat{R}(\mathbf{w}) \;=\; \frac{1}{n} \sum_{i=1}^n \bigl(y_i - \mathbf{w}^\top \mathbf{x}_i\bigr)^2$$
+        <em>Why squared?</em> Three reasons:
+      </div>
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:8px;"><strong>Differentiable everywhere.</strong> Absolute
+          error $|y - \hat{y}|$ is not differentiable at zero, which complicates
+          gradient-based optimization. Squared error has a clean gradient everywhere.</li>
+        <li style="margin-bottom:8px;"><strong>Gaussian noise interpretation.</strong> If
+          the true targets satisfy $y_i = \mathbf{w}^\top \mathbf{x}_i + \varepsilon_i$
+          where $\varepsilon_i \sim \mathcal{N}(0, \sigma^2)$, then minimizing MSE is
+          equivalent to <em>maximum likelihood estimation</em> — finding the $\mathbf{w}$
+          that makes the data most probable. We return to this in Lesson 11.</li>
+        <li><strong>Analytic solution.</strong> The squared loss gives the objective a
+          quadratic shape in $\mathbf{w}$, which has a unique global minimum that can be
+          found in closed form.</li>
+      </ul>
+
+      <div class="prose">
+        The downside of squared error: it penalizes large errors quadratically. An outlier
+        with $|y_i - \hat{y}_i| = 10$ contributes 100 to the sum, while an outlier with
+        error 1 contributes only 1. This makes least-squares regression sensitive to outliers.
+        Alternatives (absolute error, Huber loss) are more robust but sacrifice the clean
+        analytic solution.
+      </div>
+
+      <!-- ── Section 3: Matrix form ────────────────────────────────────────── -->
+      <div class="section-head" id="matrix-form">Matrix form</div>
+
+      <div class="prose">
+        Before deriving the solution, cast everything into matrix form. Define the
+        <strong>design matrix</strong> $X \in \mathbb{R}^{n \times d}$, whose $i$-th row is
+        $\mathbf{x}_i^\top$, and the target vector $\mathbf{y} \in \mathbb{R}^n$:
+        $$X = \begin{bmatrix} \mathbf{x}_1^\top \\ \mathbf{x}_2^\top \\ \vdots \\ \mathbf{x}_n^\top \end{bmatrix}, \qquad \mathbf{y} = \begin{bmatrix} y_1 \\ y_2 \\ \vdots \\ y_n \end{bmatrix}$$
+        The vector of all predictions is $X\mathbf{w} \in \mathbb{R}^n$, where
+        $(X\mathbf{w})_i = \mathbf{x}_i^\top \mathbf{w} = \hat{y}_i$.
+        The residual vector is $\mathbf{y} - X\mathbf{w}$, and the MSE objective becomes:
+        $$\hat{R}(\mathbf{w}) \;=\; \frac{1}{n}\|\mathbf{y} - X\mathbf{w}\|^2 \;=\; \frac{1}{n}(\mathbf{y} - X\mathbf{w})^\top(\mathbf{y} - X\mathbf{w})$$
+        This is a scalar-valued function of the vector $\mathbf{w}$. To minimize it, take
+        the gradient with respect to $\mathbf{w}$ and set it to zero.
+      </div>
+
+      <!-- ── Section 4: Normal equation ───────────────────────────────────── -->
+      <div class="section-head" id="normal-equation">The normal equation</div>
+
+      <div class="prose">
+        Expand the objective and differentiate. Using the identities
+        $\nabla_\mathbf{w} (\mathbf{a}^\top \mathbf{w}) = \mathbf{a}$ and
+        $\nabla_\mathbf{w} (\mathbf{w}^\top A \mathbf{w}) = 2A\mathbf{w}$ for symmetric $A$:
+      </div>
+
+      <div class="proof-box">
+        <div class="proof-header">Derivation — The normal equation</div>
+        <div class="proof-body">
+          <p>Expand the squared norm:
+          $$\hat{R}(\mathbf{w}) \;=\; \frac{1}{n}\bigl(\mathbf{y}^\top\mathbf{y} - 2\mathbf{y}^\top X\mathbf{w} + \mathbf{w}^\top X^\top X\mathbf{w}\bigr)$$</p>
+          <p>Take the gradient with respect to $\mathbf{w}$:
+          $$\nabla_\mathbf{w} \hat{R}(\mathbf{w}) \;=\; \frac{1}{n}\bigl(-2X^\top\mathbf{y} + 2X^\top X\mathbf{w}\bigr)$$
+          where we used $\nabla_\mathbf{w}(\mathbf{y}^\top X\mathbf{w}) = X^\top \mathbf{y}$
+          and $\nabla_\mathbf{w}(\mathbf{w}^\top X^\top X \mathbf{w}) = 2X^\top X \mathbf{w}$
+          (since $X^\top X$ is symmetric).</p>
+          <p>Set the gradient to zero:
+          $$X^\top X \mathbf{w} \;=\; X^\top \mathbf{y}$$
+          These are called the <strong>normal equations</strong>. If $X^\top X$ is
+          invertible, the unique solution is:
+          $$\mathbf{w}^* \;=\; (X^\top X)^{-1} X^\top \mathbf{y}$$</p>
+          <p>The matrix $X^+ \equiv (X^\top X)^{-1} X^\top$ is called the
+          <strong>Moore-Penrose pseudoinverse</strong> of $X$, written $X^+$. So
+          $\mathbf{w}^* = X^+ \mathbf{y}$.</p>
+        </div>
+      </div>
+
+      <div class="prose">
+        The normal equation has a beautiful geometric interpretation. The predictions
+        $X\mathbf{w}^*$ are the <strong>orthogonal projection</strong> of $\mathbf{y}$
+        onto the column space of $X$ — the subspace spanned by the $d$ feature vectors.
+        The residual $\mathbf{y} - X\mathbf{w}^*$ is perpendicular to every column of $X$,
+        which is exactly what the normal equations $X^\top(\mathbf{y} - X\mathbf{w}^*) = \mathbf{0}$
+        say. We are finding the point in the column space of $X$ closest to $\mathbf{y}$.
+      </div>
+
+      <div class="prose">
+        <strong>When is $X^\top X$ invertible?</strong> Exactly when the $d$ columns of $X$
+        are linearly independent — i.e., no feature is a linear combination of the others.
+        If $n < d$ (fewer examples than features), $X^\top X$ cannot be full rank and the
+        normal equation has infinitely many solutions. Regularization (below) fixes this.
+      </div>
+
+      <div class="prose">
+        <strong>Computational cost.</strong> Computing $(X^\top X)^{-1}$ costs $O(d^3)$
+        operations. For $d = 1{,}000$ features this is manageable; for $d = 10^6$ (e.g.,
+        pixels in high-resolution images) it is completely intractable. In high dimensions,
+        gradient descent is preferred over the normal equation.
+      </div>
+
+      <!-- ── Section 5: Gradient descent ──────────────────────────────────── -->
+      <div class="section-head" id="gradient-descent">Gradient descent</div>
+
+      <div class="prose">
+        When the normal equation is too expensive to compute, we turn to <strong>gradient
+        descent</strong> — an iterative procedure that moves $\mathbf{w}$ in the direction
+        of steepest decrease of the objective. Starting from an initial guess $\mathbf{w}_0$
+        (often all zeros), repeatedly apply:
+        $$\mathbf{w}_{t+1} \;\leftarrow\; \mathbf{w}_t - \eta \,\nabla_\mathbf{w} \hat{R}(\mathbf{w}_t)$$
+        where $\eta > 0$ is the <strong>learning rate</strong> (also called step size).
+      </div>
+
+      <div class="prose">
+        For MSE, the gradient is:
+        $$\nabla_\mathbf{w} \hat{R}(\mathbf{w}) \;=\; -\frac{2}{n} X^\top(\mathbf{y} - X\mathbf{w})$$
+        So the update rule is:
+        $$\mathbf{w}_{t+1} \;\leftarrow\; \mathbf{w}_t + \frac{2\eta}{n}\, X^\top(\mathbf{y} - X\mathbf{w}_t)$$
+        The term $\mathbf{y} - X\mathbf{w}_t$ is the residual vector — how far off the
+        current predictions are. We add a step proportional to the input-weighted residuals.
+        Each step makes the predictions a little more accurate.
+      </div>
+
+      <div class="prose">
+        <strong>Why does this converge?</strong> The MSE objective for linear regression is
+        <em>convex</em> — it has a single bowl-shaped global minimum with no local minima.
+        The gradient always points uphill; stepping in the negative gradient direction always
+        moves toward the minimum. With an appropriate learning rate, gradient descent is
+        guaranteed to converge to the global optimum.
+      </div>
+
+      <div class="prose">
+        <strong>Stochastic gradient descent (SGD).</strong> Computing $X^\top(\mathbf{y} - X\mathbf{w})$
+        requires a pass through all $n$ training examples — expensive when $n$ is large.
+        <strong>Stochastic gradient descent</strong> approximates the full gradient using a
+        single randomly chosen example $(x_i, y_i)$:
+        $$\mathbf{w}_{t+1} \;\leftarrow\; \mathbf{w}_t + 2\eta\,(y_i - \mathbf{w}_t^\top \mathbf{x}_i)\,\mathbf{x}_i$$
+        This is noisy — each step uses only one example's gradient, not the true gradient —
+        but on average it points in the right direction, and the noise can actually help
+        escape sharp local minima in non-convex problems (like neural networks). In practice,
+        <strong>mini-batch gradient descent</strong> uses a batch of $B = 32$–$512$ examples,
+        balancing noise reduction with computational efficiency. We return to optimizer
+        variants in depth in Lesson 10.
+      </div>
+
+      <div class="callout">
+        <strong>The learning rate matters.</strong> Too large: gradient descent diverges
+        (overshoots the minimum, oscillates, or explodes). Too small: convergence is
+        agonizingly slow. For linear regression, the maximum stable learning rate is
+        $\eta < 2/\lambda_{\max}(X^\top X / n)$, where $\lambda_{\max}$ is the largest
+        eigenvalue of $X^\top X / n$. In practice, the learning rate is tuned by trial
+        and error or automated by adaptive methods (Adam, Lesson 10).
+      </div>
+
+      <!-- ── Section 6: Polynomial and nonlinear features ──────────────────── -->
+      <div class="section-head" id="polynomial">Polynomial and nonlinear features</div>
+
+      <div class="prose">
+        Linear regression fits hyperplanes. But most real relationships are nonlinear.
+        The key insight: we can fit nonlinear functions of $x$ while keeping the
+        model <em>linear in the parameters</em>, preserving the normal equation and
+        convexity.
+      </div>
+
+      <div class="prose">
+        Define a <strong>feature map</strong> $\phi : \mathbb{R}^d \to \mathbb{R}^p$ that
+        transforms the input into a higher-dimensional representation. For polynomial
+        regression in one dimension:
+        $$\phi(x) = \begin{bmatrix} 1 \\ x \\ x^2 \\ \vdots \\ x^D \end{bmatrix}$$
+        The model $\hat{y} = \mathbf{w}^\top \phi(x)$ is a degree-$D$ polynomial in $x$
+        but a linear function of $\mathbf{w}$. All the linear regression machinery applies
+        directly — just replace $\mathbf{x}$ with $\phi(\mathbf{x})$ everywhere.
+      </div>
+
+      <div class="prose">
+        More general feature maps can include interaction terms ($x_1 x_2$), radial basis
+        functions ($e^{-\|x - c\|^2 / 2\sigma^2}$), or arbitrary transformations. The
+        pattern is always the same: the model is nonlinear in the original input but linear
+        in $\mathbf{w}$ after the transformation. This is the foundation of <strong>kernel
+        methods</strong> (Lesson 5), where the feature map is implicit and potentially
+        infinite-dimensional.
+      </div>
+
+      <div class="prose">
+        <strong>The tradeoff.</strong> Higher-degree polynomials can fit more complex
+        functions, but they overfit more easily. A degree-$D$ polynomial has $D+1$ free
+        parameters — with enough degrees, you can interpolate any training set exactly.
+        The question of which $D$ to use is a model selection problem, answered via
+        cross-validation (Lesson 4) or regularization.
+      </div>
+
+      <!-- ── Section 7: Regularization ─────────────────────────────────────── -->
+      <div class="section-head" id="regularization">Regularization: Ridge and Lasso</div>
+
+      <div class="prose">
+        <strong>Regularization</strong> is the technique of adding a penalty on model
+        complexity to the training objective, discouraging overfitting. For linear
+        regression, two classical regularizers dominate.
+      </div>
+
+      <div class="prose">
+        <strong>Ridge regression (L2 regularization).</strong> Add a penalty proportional
+        to the squared norm of the weights:
+        $$\hat{R}_\lambda(\mathbf{w}) \;=\; \frac{1}{n}\|\mathbf{y} - X\mathbf{w}\|^2 + \lambda\|\mathbf{w}\|^2$$
+        The hyperparameter $\lambda \geq 0$ controls the strength of regularization.
+        This still has a closed-form solution — the penalized normal equation:
+        $$\mathbf{w}^* \;=\; (X^\top X + n\lambda I)^{-1} X^\top \mathbf{y}$$
+        The $n\lambda I$ term adds a positive constant to every diagonal entry of $X^\top X$,
+        ensuring the matrix is invertible even when $X$ has linearly dependent columns or
+        when $n < d$. It also shrinks the weights toward zero — large weights are penalized
+        regardless of which direction they point.
+      </div>
+
+      <div class="prose">
+        <strong>Lasso regression (L1 regularization).</strong> Replace the L2 penalty with
+        the L1 norm (sum of absolute values):
+        $$\hat{R}_\lambda(\mathbf{w}) \;=\; \frac{1}{n}\|\mathbf{y} - X\mathbf{w}\|^2 + \lambda\|\mathbf{w}\|_1 \;=\; \frac{1}{n}\|\mathbf{y} - X\mathbf{w}\|^2 + \lambda\sum_{j=1}^d |w_j|$$
+        No closed-form solution exists, but the problem is still convex and solvable
+        efficiently by coordinate descent or proximal methods.
+      </div>
+
+      <div class="prose">
+        The key distinction between Ridge and Lasso is the shape of their constraint regions:
+      </div>
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:10px;"><strong>Ridge</strong> shrinks all weights toward
+          zero but rarely sets any exactly to zero. The constraint region is a sphere
+          — smooth, so the optimum lands on its interior or its boundary at a non-corner
+          point.</li>
+        <li><strong>Lasso</strong> sets many weights <em>exactly</em> to zero, performing
+          automatic <strong>feature selection</strong>. The L1 ball has corners at the
+          coordinate axes. In high dimensions, the optimum frequently lands at one of
+          these corners, zeroing out the corresponding weight. Lasso is preferred when
+          you believe the true function depends on only a few features out of many.</li>
+      </ul>
+
+      <div class="prose">
+        Both have a Bayesian interpretation: Ridge corresponds to placing a Gaussian prior
+        $\mathbf{w} \sim \mathcal{N}(\mathbf{0}, \frac{1}{2\lambda}I)$ on the weights;
+        Lasso corresponds to a Laplace prior $p(w_j) \propto e^{-\lambda|w_j|}$. The MAP
+        (maximum a posteriori) estimate under these priors is exactly the regularized
+        least-squares solution. We will develop the Bayesian perspective fully in Lesson 11.
+      </div>
+
+      <!-- ── Worked examples ─────────────────────────────────────────────── -->
+      <div class="section-head" id="examples">Worked examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Solving the normal equation by hand</strong></div>
+        <div class="example-problem">
+          <p>You have three training points in one dimension (with bias already absorbed
+          via the constant feature): $\mathbf{x}_1 = [1, 1]^\top$, $\mathbf{x}_2 = [1, 2]^\top$,
+          $\mathbf{x}_3 = [1, 3]^\top$, with targets $y_1 = 1$, $y_2 = 3$, $y_3 = 2$.</p>
+          <p>Compute the least-squares solution $\mathbf{w}^* = (X^\top X)^{-1} X^\top \mathbf{y}$.</p>
+        </div>
+        <div class="example-body">
+          <p>Build the design matrix and target vector:
+          $$X = \begin{bmatrix} 1 & 1 \\ 1 & 2 \\ 1 & 3 \end{bmatrix}, \qquad \mathbf{y} = \begin{bmatrix} 1 \\ 3 \\ 2 \end{bmatrix}$$</p>
+          <p>Compute $X^\top X$:
+          $$X^\top X = \begin{bmatrix} 1 & 1 & 1 \\ 1 & 2 & 3 \end{bmatrix}\begin{bmatrix} 1 & 1 \\ 1 & 2 \\ 1 & 3 \end{bmatrix} = \begin{bmatrix} 3 & 6 \\ 6 & 14 \end{bmatrix}$$</p>
+          <p>Compute $X^\top \mathbf{y}$:
+          $$X^\top \mathbf{y} = \begin{bmatrix} 1 & 1 & 1 \\ 1 & 2 & 3 \end{bmatrix}\begin{bmatrix} 1 \\ 3 \\ 2 \end{bmatrix} = \begin{bmatrix} 6 \\ 13 \end{bmatrix}$$</p>
+          <p>Invert $X^\top X$. For a $2\times 2$ matrix $\begin{bmatrix}a & b \\ c & d\end{bmatrix}$,
+          the inverse is $\frac{1}{ad-bc}\begin{bmatrix}d & -b \\ -c & a\end{bmatrix}$:
+          $$\det(X^\top X) = 3 \cdot 14 - 6 \cdot 6 = 42 - 36 = 6$$
+          $$(X^\top X)^{-1} = \frac{1}{6}\begin{bmatrix}14 & -6 \\ -6 & 3\end{bmatrix}$$</p>
+          <p>Compute $\mathbf{w}^*$:
+          $$\mathbf{w}^* = \frac{1}{6}\begin{bmatrix}14 & -6 \\ -6 & 3\end{bmatrix}\begin{bmatrix}6 \\ 13\end{bmatrix} = \frac{1}{6}\begin{bmatrix}14\cdot6 - 6\cdot13 \\ -6\cdot6 + 3\cdot13\end{bmatrix} = \frac{1}{6}\begin{bmatrix}6 \\ 3\end{bmatrix} = \begin{bmatrix}1 \\ 0.5\end{bmatrix}$$</p>
+          <p>So the fitted line is $\hat{y} = 1 + 0.5x$. Check: predictions are
+          $\hat{y}_1 = 1.5$, $\hat{y}_2 = 2$, $\hat{y}_3 = 2.5$. The residuals are
+          $-0.5, +1, -0.5$, and they sum to zero (as they must for any unregularized fit
+          with an intercept).</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Gradient descent on a simple problem</strong></div>
+        <div class="example-problem">
+          <p>Consider 1D linear regression (no bias) with a single training point
+          $(x_1, y_1) = (2, 6)$. The objective is $\hat{R}(w) = (6 - 2w)^2$.
+          Start at $w_0 = 0$ and run gradient descent with learning rate $\eta = 0.1$.
+          What happens after two steps?</p>
+        </div>
+        <div class="example-body">
+          <p>Compute the gradient: $\frac{d\hat{R}}{dw} = 2(6 - 2w)(-2) = -4(6 - 2w)$.</p>
+          <p><strong>Step 1</strong> ($w_0 = 0$): gradient $= -4(6 - 0) = -24$.
+          $$w_1 = 0 - 0.1 \cdot (-24) = 2.4$$</p>
+          <p><strong>Step 2</strong> ($w_1 = 2.4$): gradient $= -4(6 - 4.8) = -4.8$.
+          $$w_2 = 2.4 - 0.1 \cdot (-4.8) = 2.88$$</p>
+          <p>The true optimum is $w^* = 3$ (since $6 = 2 \cdot 3$). After 2 steps we are
+          at 2.88, closer but not there. Gradient descent converges geometrically: the
+          error halves at each step (roughly) with this learning rate. After $k$ steps,
+          $w_k = 3(1 - (1 - 4\eta)^k)$. With $\eta = 0.1$ and $4\eta = 0.4$, the
+          factor is $0.6^k \to 0$.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — When Ridge regression matters</strong></div>
+        <div class="example-problem">
+          <p>You have $n = 10$ training examples and $d = 100$ features (more features
+          than data points). Can you fit linear regression without regularization?
+          What does Ridge do?</p>
+        </div>
+        <div class="example-body">
+          <p>Without regularization: the design matrix $X$ is $10 \times 100$. Its rank
+          is at most $\min(10, 100) = 10$. So $X^\top X$ is $100 \times 100$ with rank
+          at most 10 — it is <em>singular</em> and cannot be inverted. The normal equation
+          has infinitely many solutions: any $\mathbf{w}$ in the null space of $X$ can be
+          added to a solution without changing the training predictions. ERM is completely
+          underdetermined.</p>
+          <p>With Ridge ($\lambda > 0$): the matrix $X^\top X + n\lambda I$ has all
+          eigenvalues $\geq n\lambda > 0$, so it is always invertible regardless of the
+          rank of $X$. The regularizer selects the unique minimum-norm solution from the
+          infinitely many that fit the training data — the one with the smallest
+          $\|\mathbf{w}\|^2$. This is called the <em>minimum-norm interpolant</em>, and
+          it has better generalization properties than arbitrary solutions in the
+          underdetermined regime.</p>
+        </div>
+      </div>
+
+      <!-- ── Food for thought ────────────────────────────────────────────── -->
+      <div class="section-head" id="food-for-thought">Food for thought</div>
+
+      <ul class="fft-list">
+        <li class="fft-item">
+          The normal equation gives a closed-form global minimum because MSE is convex
+          in $\mathbf{w}$. Will this still be the case when we add hidden layers to get
+          a neural network? What changes?
+          <div class="fft-answer">
+            No. A neural network computes $h(x; \mathbf{w}) = \sigma(W_L \cdots \sigma(W_1 x))$,
+            where $\sigma$ is a nonlinear activation. The composition of nonlinearities
+            makes the loss non-convex in the joint weight vector $\mathbf{w}$. Multiple
+            local minima and saddle points exist. There is no closed-form solution; gradient
+            descent can get stuck (though in practice it often finds good solutions anyway,
+            for reasons that are still being actively studied). This is the central
+            computational challenge that distinguishes deep learning from linear regression.
+          </div>
+        </li>
+        <li class="fft-item">
+          Ridge regression shrinks weights toward zero. But what if some features truly
+          have zero effect? Ridge will give them small but nonzero weights. Lasso can
+          zero them out exactly. Why does the L1 penalty specifically produce sparse solutions
+          when L2 does not?
+          <div class="fft-answer">
+            The geometry of the constraint regions. In 2D, the L2 constraint is a disk
+            (smooth boundary), and the optimum generically lands at a non-corner point.
+            The L1 constraint is a square (corners at the axes), and the optimum
+            frequently lands at a corner where one coordinate is exactly zero. More
+            formally: for L1, the subdifferential of $|w_j|$ at $w_j = 0$ includes all
+            values in $[-\lambda, \lambda]$, making it possible for the gradient condition
+            to be satisfied with $w_j = 0$ exactly. For L2, the gradient of $w_j^2$ at
+            $w_j = 0$ is exactly 0, so the penalty never "pulls" a weight to exactly zero
+            unless the data gradient also happens to vanish there.
+          </div>
+        </li>
+        <li class="fft-item">
+          Stochastic gradient descent uses one training example per update instead of
+          all $n$. This introduces noise into the gradient. Surprisingly, this noise is
+          sometimes <em>helpful</em> in practice, especially for neural networks.
+          How can noisy gradient steps help?
+          <div class="fft-answer">
+            For convex problems like linear regression, SGD noise just slows convergence
+            (the gradient approximation is unbiased but has high variance). But for
+            non-convex neural network objectives, the noise can help escape sharp local
+            minima and saddle points — regions where full gradient descent would stall.
+            Minima found by SGD tend to be "flat" (large regions of low loss), which
+            empirically generalizes better than "sharp" minima (narrow valleys that
+            generalize poorly). There is also evidence that SGD's noise acts as implicit
+            regularization, preferring solutions with small norms. The precise mechanism
+            is still an active research area.
+          </div>
+        </li>
+      </ul>
+
+      <!-- ── Common pitfalls ─────────────────────────────────────────────── -->
+      <div class="section-head" id="pitfalls">Common pitfalls</div>
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:14px;">
+          <strong>Forgetting to normalize features.</strong>
+          If features have very different scales ($x_1$ is in meters, $x_2$ is in
+          kilometers), the loss landscape is elongated along one axis, making gradient
+          descent extremely slow. Always standardize features (subtract mean, divide by
+          standard deviation) before training. The normal equation is less sensitive to
+          this, but normalization helps numerical stability regardless.
+        </li>
+        <li style="margin-bottom:14px;">
+          <strong>Using the normal equation for large $d$.</strong>
+          Computing $(X^\top X)^{-1}$ costs $O(d^3)$. For $d = 10{,}000$ that is
+          $10^{12}$ operations — infeasible. For large-scale problems, gradient descent
+          is the only practical option.
+        </li>
+        <li style="margin-bottom:14px;">
+          <strong>Setting $\lambda$ by intuition.</strong>
+          The regularization strength $\lambda$ is a hyperparameter: it is not learned
+          from the training set but must be chosen before training. Setting it by intuition
+          is unreliable. Always select $\lambda$ via cross-validation (Lesson 4).
+        </li>
+        <li style="margin-bottom:14px;">
+          <strong>Applying linear regression to classification.</strong>
+          If $\mathcal{Y} = \{0, 1\}$, fitting a real-valued linear model and thresholding
+          at 0.5 technically works but is theoretically unsound — the model can predict
+          values outside $[0, 1]$, and MSE is a poor surrogate for 0-1 loss. Logistic
+          regression (Lesson 3) is the correct model for binary classification.
+        </li>
+        <li>
+          <strong>Confusing underfitting with a bad dataset.</strong>
+          If training error is high, the first instinct is often "the data is noisy."
+          But high training error may simply mean the model is too simple — try a higher-
+          degree polynomial, more features, or a more expressive model before blaming
+          the data.
+        </li>
+      </ul>
+
+      <!-- ── Connects to ─────────────────────────────────────────────────── -->
+      <div class="section-head" id="connects-to">Connects to</div>
+
+      <div class="prose">
+        <strong>Linear Algebra</strong> — the normal equation is a projection: the predicted
+        values $X\mathbf{w}^*$ are the orthogonal projection of $\mathbf{y}$ onto the column
+        space of $X$. Understanding this geometrically — eigenvectors, pseudoinverse, singular
+        value decomposition — gives the deepest understanding of linear regression.
+      </div>
+      <div class="prose">
+        <strong>Probability Theory</strong> — minimizing MSE is equivalent to maximum
+        likelihood estimation under a Gaussian noise model; Ridge regression is MAP
+        estimation under a Gaussian prior. The full probabilistic picture (Lesson 11)
+        unifies regression with Bayesian inference.
+      </div>
+      <div class="prose">
+        <strong>Neural Networks</strong> — gradient descent, the learning rate, and
+        mini-batch SGD introduced here are the exact same mechanisms used to train
+        neural networks. The difference is not the optimization procedure — it is that
+        the loss landscape is no longer convex, requiring careful initialization and
+        adaptive learning rates (Lesson 10).
+      </div>
+
+      <!-- ── Lesson nav ──────────────────────────────────────────────────── -->
+      <div class="lesson-nav">
+        <a href="learning-problem.html" class="lesson-nav-btn">← 1 · The Learning Problem</a>
+        <a href="classification.html" class="lesson-nav-btn">3 · Classification &amp; Logistic Regression →</a>
+      </div>
+
+    </div><!-- /main -->
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+
+</body>
+</html>

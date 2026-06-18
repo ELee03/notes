@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Classification &amp; Logistic Regression — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$',  right: '$',  display: false}
+        ],
+        throwOnError: false
+      });
+    });
+  </script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Prerequisites</div>
+        <span class="nav-item planned">Probability · Conditional probability, log</span>
+        <a href="learning-problem.html" class="nav-item">L1 · The Learning Problem</a>
+        <a href="linear-regression.html" class="nav-item">L2 · Linear Regression</a>
+      </div>
+
+      <div id="cluster-nav" data-cluster="supervised" data-current="classification.html"></div>
+
+      <hr class="sidebar-rule">
+
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#classification-setup" class="nav-item">The classification setting</a>
+        <a href="#why-not-linear" class="nav-item">Why not linear regression?</a>
+        <a href="#sigmoid" class="nav-item">The sigmoid function</a>
+        <a href="#logistic-model" class="nav-item">Logistic regression model</a>
+        <a href="#cross-entropy" class="nav-item">Cross-entropy loss</a>
+        <a href="#gradient" class="nav-item">Gradient &amp; training</a>
+        <a href="#decision-boundary" class="nav-item">Decision boundaries</a>
+        <a href="#softmax" class="nav-item">Multi-class: softmax</a>
+        <a href="#evaluation" class="nav-item">Evaluation metrics</a>
+        <a href="#examples" class="nav-item">Worked examples</a>
+        <a href="#food-for-thought" class="nav-item">Food for thought</a>
+        <a href="#pitfalls" class="nav-item">Common pitfalls</a>
+        <a href="#connects-to" class="nav-item">Connects to</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Supervised Learning</a>
+        <span class="sep">›</span>
+        <span>3 · Classification &amp; Logistic Regression</span>
+      </div>
+
+      <div class="lesson-title">3 · Classification &amp; Logistic Regression</div>
+      <div class="lesson-meta">Sigmoid · Cross-Entropy · Decision Boundaries · Softmax · MLE · Evaluation Metrics</div>
+
+      <div class="prose">
+        When the output is a category rather than a number — spam or not spam, digit 0–9,
+        benign or malignant — we need a different model. Logistic regression is the canonical
+        starting point: it learns to output <em>probabilities</em> over classes, not raw
+        numbers. The loss function it uses, cross-entropy, and the multi-class extension,
+        softmax, appear unchanged in virtually every neural network classifier and in the
+        Transformer's attention mechanism.
+      </div>
+
+      <!-- ── Section 1: Classification setting ────────────────────────────── -->
+      <div class="section-head" id="classification-setup">The classification setting</div>
+
+      <div class="prose">
+        In classification, the output space $\mathcal{Y}$ is a finite set of categories.
+        For <strong>binary classification</strong>, $\mathcal{Y} = \{0, 1\}$ (or
+        equivalently $\{-1, +1\}$). One class is called positive ($y = 1$) and the other
+        negative ($y = 0$). For <strong>multi-class classification</strong>,
+        $\mathcal{Y} = \{1, 2, \ldots, K\}$ for $K$ classes.
+      </div>
+
+      <div class="prose">
+        The goal remains the same as Lesson 1: find $h : \mathcal{X} \to \mathcal{Y}$ that
+        generalizes to unseen inputs. But the output type changes the loss function and the
+        model family appropriate to the problem.
+      </div>
+
+      <!-- ── Section 2: Why not linear regression ──────────────────────────── -->
+      <div class="section-head" id="why-not-linear">Why not linear regression for classification?</div>
+
+      <div class="prose">
+        A tempting approach: fit linear regression to binary labels ($y \in \{0, 1\}$) and
+        predict class 1 if $\hat{y} \geq 0.5$, class 0 otherwise. This works surprisingly
+        often in practice, but it has three fundamental problems.
+      </div>
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:10px;"><strong>Predictions outside $[0, 1]$.</strong>
+          Linear regression can predict $\hat{y} = 2.3$ or $\hat{y} = -0.7$. These cannot
+          be interpreted as probabilities, making confidence estimates meaningless.</li>
+        <li style="margin-bottom:10px;"><strong>MSE penalizes the wrong thing.</strong>
+          If a point is clearly class 1 with $y = 1$, a confident prediction $\hat{y} = 1.5$
+          incurs a loss of $0.25$ even though it is "more right." MSE penalizes overly
+          confident correct predictions — a perverse incentive for classification.</li>
+        <li><strong>Sensitivity to class imbalance.</strong> With highly imbalanced classes
+          (e.g., 99% negative), linear regression is dominated by the majority class and
+          the fitted line may never cross the threshold near the positive class.</li>
+      </ul>
+
+      <div class="prose">
+        What we want is a model that outputs probabilities: values in $[0, 1]$ that sum
+        to 1 across classes, with a loss that rewards confident correct predictions and
+        heavily penalizes confident wrong ones. This is logistic regression.
+      </div>
+
+      <!-- ── Section 3: Sigmoid ─────────────────────────────────────────────── -->
+      <div class="section-head" id="sigmoid">The sigmoid function</div>
+
+      <div class="prose">
+        The linear model $\mathbf{w}^\top \mathbf{x}$ maps inputs to all of $\mathbb{R}$.
+        To turn this into a probability, we need to squash it to $[0, 1]$. The
+        <strong>sigmoid function</strong> (also called the logistic function) does this:
+        $$\sigma(z) \;=\; \frac{1}{1 + e^{-z}}$$
+      </div>
+
+      <div class="prose">
+        Key properties:
+      </div>
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:8px;">Range: $\sigma(z) \in (0, 1)$ for all $z \in \mathbb{R}$.</li>
+        <li style="margin-bottom:8px;">Symmetry: $\sigma(-z) = 1 - \sigma(z)$.</li>
+        <li style="margin-bottom:8px;">Limiting behavior: $\sigma(z) \to 1$ as $z \to +\infty$;
+          $\sigma(z) \to 0$ as $z \to -\infty$.</li>
+        <li style="margin-bottom:8px;">Midpoint: $\sigma(0) = 0.5$.</li>
+        <li><strong>Derivative:</strong> $\sigma'(z) = \sigma(z)(1 - \sigma(z))$.
+          This elegant self-referential form is crucial for efficient backpropagation.</li>
+      </ul>
+
+      <div class="proof-box">
+        <div class="proof-header">Derivation — Sigmoid derivative</div>
+        <div class="proof-body">
+          <p>$$\frac{d}{dz}\sigma(z) = \frac{d}{dz}(1 + e^{-z})^{-1} = -(1 + e^{-z})^{-2} \cdot (-e^{-z}) = \frac{e^{-z}}{(1+e^{-z})^2}$$</p>
+          <p>Factor cleverly:
+          $$= \frac{1}{1+e^{-z}} \cdot \frac{e^{-z}}{1+e^{-z}} = \sigma(z) \cdot \frac{e^{-z}}{1+e^{-z}}$$</p>
+          <p>Note that $\frac{e^{-z}}{1+e^{-z}} = 1 - \frac{1}{1+e^{-z}} = 1 - \sigma(z)$. Therefore:
+          $$\sigma'(z) = \sigma(z)(1 - \sigma(z))$$</p>
+          <p>At $z = 0$: $\sigma'(0) = 0.5 \times 0.5 = 0.25$ — the maximum derivative.
+          At large $|z|$: $\sigma'(z) \approx 0$ — the sigmoid saturates, its derivative
+          vanishes. This saturation is the root cause of the vanishing gradient problem
+          in deep networks (Lesson 9).</p>
+        </div>
+      </div>
+
+      <!-- ── Section 4: Logistic regression model ──────────────────────────── -->
+      <div class="section-head" id="logistic-model">The logistic regression model</div>
+
+      <div class="prose">
+        <strong>Logistic regression</strong> models the probability that the output is class 1:
+        $$P(y = 1 \mid \mathbf{x};\, \mathbf{w}) \;=\; \sigma(\mathbf{w}^\top \mathbf{x}) \;=\; \frac{1}{1 + e^{-\mathbf{w}^\top \mathbf{x}}}$$
+        Equivalently, $P(y = 0 \mid \mathbf{x}; \mathbf{w}) = 1 - \sigma(\mathbf{w}^\top \mathbf{x})$.
+        To predict a class label, threshold the probability at 0.5:
+        $$\hat{y} \;=\; \begin{cases} 1 & \text{if } \sigma(\mathbf{w}^\top \mathbf{x}) \geq 0.5 \\ 0 & \text{otherwise} \end{cases}$$
+        Since $\sigma(z) \geq 0.5 \iff z \geq 0$, this is equivalent to predicting class 1
+        when $\mathbf{w}^\top \mathbf{x} \geq 0$.
+      </div>
+
+      <div class="prose">
+        The quantity $\mathbf{w}^\top \mathbf{x}$ is called the <strong>log-odds</strong> or
+        <strong>logit</strong>. Rearranging:
+        $$\log \frac{P(y=1 \mid \mathbf{x})}{P(y=0 \mid \mathbf{x})} \;=\; \mathbf{w}^\top \mathbf{x}$$
+        Logistic regression assumes the log-odds of the positive class is a linear function
+        of the features. This is the assumption that makes it "logistic" (an S-curve) rather
+        than linear.
+      </div>
+
+      <!-- ── Section 5: Cross-entropy loss ─────────────────────────────────── -->
+      <div class="section-head" id="cross-entropy">Cross-entropy loss</div>
+
+      <div class="prose">
+        To train logistic regression, we need a loss function. The correct choice falls
+        directly out of maximum likelihood estimation.
+      </div>
+
+      <div class="prose">
+        <strong>Setting up maximum likelihood.</strong> Assume the training examples are
+        independent. For a single example $(x_i, y_i)$, the probability under our model is:
+        $$P(y_i \mid \mathbf{x}_i; \mathbf{w}) \;=\; \hat{p}_i^{y_i} (1 - \hat{p}_i)^{1-y_i}$$
+        where $\hat{p}_i = \sigma(\mathbf{w}^\top \mathbf{x}_i)$. (When $y_i = 1$ this is
+        $\hat{p}_i$; when $y_i = 0$ it is $1 - \hat{p}_i$.) The joint likelihood over all
+        $n$ examples is:
+        $$\mathcal{L}(\mathbf{w}) \;=\; \prod_{i=1}^n \hat{p}_i^{y_i}(1-\hat{p}_i)^{1-y_i}$$
+        Maximizing $\mathcal{L}$ is equivalent to maximizing its logarithm (monotone
+        transformation), which is computationally much nicer:
+        $$\log \mathcal{L}(\mathbf{w}) \;=\; \sum_{i=1}^n \bigl[y_i \log \hat{p}_i + (1-y_i)\log(1-\hat{p}_i)\bigr]$$
+        Negating (to turn maximization into minimization) and dividing by $n$:
+        $$\hat{R}(\mathbf{w}) \;=\; -\frac{1}{n}\sum_{i=1}^n \bigl[y_i \log \hat{p}_i + (1-y_i)\log(1-\hat{p}_i)\bigr]$$
+        This is the <strong>binary cross-entropy loss</strong>. Per-example:
+        $$\mathcal{L}_{\text{CE}}(y, \hat{p}) \;=\; -\bigl[y \log \hat{p} + (1-y)\log(1-\hat{p})\bigr]$$
+      </div>
+
+      <div class="prose">
+        <em>Why does this penalize confident mistakes so heavily?</em> Consider predicting
+        $\hat{p} = 0.99$ when the true label is $y = 0$:
+        $$\mathcal{L}_{\text{CE}}(0, 0.99) = -\log(1 - 0.99) = -\log(0.01) \approx 4.6$$
+        Predicting $\hat{p} = 0.6$ on the same example:
+        $$\mathcal{L}_{\text{CE}}(0, 0.6) = -\log(0.4) \approx 0.92$$
+        A confident wrong prediction incurs a loss about 5× larger than an uncertain wrong
+        prediction. This is exactly the behavior we want: the model is strongly discouraged
+        from being confidently wrong.
+      </div>
+
+      <div class="callout">
+        <strong>Cross-entropy is everywhere in deep learning.</strong> Every neural network
+        classifier — image classifiers, language models, speech recognizers — minimizes
+        cross-entropy (or a close variant). The Transformer's attention mechanism computes
+        softmax, which is the multi-class generalization of the sigmoid. When you see
+        "training loss" in a deep learning paper, it almost always means cross-entropy.
+      </div>
+
+      <!-- ── Section 6: Gradient and training ──────────────────────────────── -->
+      <div class="section-head" id="gradient">Gradient and training</div>
+
+      <div class="prose">
+        Unlike linear regression, logistic regression has no closed-form solution — the
+        sigmoid creates a nonlinearity that prevents exact inversion. We use gradient
+        descent. The gradient of the binary cross-entropy loss is:
+      </div>
+
+      <div class="proof-box">
+        <div class="proof-header">Derivation — Gradient of cross-entropy loss</div>
+        <div class="proof-body">
+          <p>For a single example, let $z = \mathbf{w}^\top \mathbf{x}$ and $\hat{p} = \sigma(z)$.</p>
+          <p>$$\frac{\partial \mathcal{L}_{\text{CE}}}{\partial w_j} = \frac{\partial}{\partial w_j}\bigl[-y\log\hat{p} - (1-y)\log(1-\hat{p})\bigr]$$</p>
+          <p>By the chain rule, $\frac{\partial \mathcal{L}}{\partial \hat{p}} \cdot \frac{\partial \hat{p}}{\partial z} \cdot \frac{\partial z}{\partial w_j}$:
+          <ul style="margin:8px 0; padding-left:1.2em;">
+            <li>$\frac{\partial \mathcal{L}}{\partial \hat{p}} = -\frac{y}{\hat{p}} + \frac{1-y}{1-\hat{p}}$</li>
+            <li>$\frac{\partial \hat{p}}{\partial z} = \hat{p}(1 - \hat{p})$ (sigmoid derivative)</li>
+            <li>$\frac{\partial z}{\partial w_j} = x_j$</li>
+          </ul></p>
+          <p>Multiplying:
+          $$= \left(-\frac{y}{\hat{p}} + \frac{1-y}{1-\hat{p}}\right)\hat{p}(1-\hat{p}) \cdot x_j = \bigl(-y(1-\hat{p}) + (1-y)\hat{p}\bigr) x_j = (\hat{p} - y)x_j$$</p>
+          <p>The gradient is beautifully simple: $(\hat{p}_i - y_i)\mathbf{x}_i$.
+          In matrix form over all $n$ examples:
+          $$\nabla_\mathbf{w} \hat{R}(\mathbf{w}) = \frac{1}{n} X^\top (\hat{\mathbf{p}} - \mathbf{y})$$
+          where $\hat{\mathbf{p}} = \sigma(X\mathbf{w})$ is the vector of predicted
+          probabilities. This is identical in structure to the linear regression gradient
+          $-\frac{2}{n}X^\top(\mathbf{y} - X\mathbf{w})$ — just replace $X\mathbf{w}$
+          with $\sigma(X\mathbf{w})$.</p>
+        </div>
+      </div>
+
+      <div class="prose">
+        The gradient descent update for logistic regression:
+        $$\mathbf{w} \;\leftarrow\; \mathbf{w} - \frac{\eta}{n} X^\top(\hat{\mathbf{p}} - \mathbf{y})$$
+        When a prediction $\hat{p}_i$ is too high (larger than $y_i$), the corresponding
+        $\mathbf{x}_i$ gets subtracted (weighted by the error). When it is too low, it gets
+        added. Exactly what you'd expect from gradient-based fitting.
+      </div>
+
+      <div class="prose">
+        The cross-entropy loss for logistic regression is convex in $\mathbf{w}$ — the
+        Hessian is positive semi-definite everywhere. This means gradient descent is
+        guaranteed to converge to the global minimum, just as for linear regression.
+      </div>
+
+      <!-- ── Section 7: Decision boundary ─────────────────────────────────── -->
+      <div class="section-head" id="decision-boundary">Decision boundaries</div>
+
+      <div class="prose">
+        Logistic regression predicts class 1 when $\mathbf{w}^\top \mathbf{x} \geq 0$.
+        The set of points where $\mathbf{w}^\top \mathbf{x} = 0$ is the
+        <strong>decision boundary</strong> — a hyperplane perpendicular to $\mathbf{w}$.
+        Points on one side get class 1; points on the other get class 0.
+      </div>
+
+      <div class="prose">
+        This is a linear decision boundary — the same limitation as all linear models.
+        Logistic regression cannot separate classes whose boundary is a circle, a curve,
+        or any non-hyperplane shape. The fix is the same as for linear regression: apply
+        a nonlinear feature map $\phi(\mathbf{x})$ first, then train logistic regression
+        in the transformed space. The decision boundary in the original space may then be
+        any shape expressible by $\phi$.
+      </div>
+
+      <div class="prose">
+        Neural networks are, at their core, a cascade of learned feature transformations
+        followed by a logistic (or softmax) output layer. The learned features $\phi(\mathbf{x})$
+        — the final hidden layer activations — are chosen by the network to make the classes
+        linearly separable in feature space. This is why deep networks can classify images
+        that no linear model could separate.
+      </div>
+
+      <!-- ── Section 8: Softmax ──────────────────────────────────────────── -->
+      <div class="section-head" id="softmax">Multi-class classification: softmax regression</div>
+
+      <div class="prose">
+        For $K > 2$ classes, logistic regression generalizes to <strong>softmax regression</strong>
+        (also called multinomial logistic regression). Instead of one weight vector, we learn
+        $K$ weight vectors $\mathbf{w}_1, \ldots, \mathbf{w}_K \in \mathbb{R}^d$ (or
+        equivalently a weight matrix $W \in \mathbb{R}^{K \times d}$). The model computes
+        a score for each class:
+        $$z_k \;=\; \mathbf{w}_k^\top \mathbf{x}, \qquad k = 1, \ldots, K$$
+        and converts scores to probabilities via the <strong>softmax function</strong>:
+        $$P(y = k \mid \mathbf{x}) \;=\; \text{softmax}(\mathbf{z})_k \;=\; \frac{e^{z_k}}{\sum_{j=1}^K e^{z_j}}$$
+      </div>
+
+      <div class="prose">
+        Properties of softmax:
+      </div>
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:8px;"><strong>Outputs sum to 1</strong>: $\sum_{k=1}^K \text{softmax}(\mathbf{z})_k = 1$ — a valid probability distribution.</li>
+        <li style="margin-bottom:8px;"><strong>All outputs positive</strong>: $e^{z_k} > 0$ always.</li>
+        <li style="margin-bottom:8px;"><strong>Amplifies differences</strong>: the class with the highest score gets
+          disproportionately high probability. If $z_1 = 5$ and $z_2 = 1$, then
+          $P(y=1) / P(y=2) = e^{5-1} = e^4 \approx 55$.</li>
+        <li><strong>Reduces to sigmoid for $K=2$</strong>: with two classes, softmax on
+          $(z_1, z_2)$ gives $P(y=1) = e^{z_1}/(e^{z_1}+e^{z_2}) = 1/(1+e^{z_2-z_1}) = \sigma(z_1-z_2)$.</li>
+      </ul>
+
+      <div class="prose">
+        <strong>Multi-class cross-entropy.</strong> The loss for a single example with true
+        class $k^*$ is:
+        $$\mathcal{L}_{\text{CE}}(\mathbf{y}, \hat{\mathbf{p}}) \;=\; -\sum_{k=1}^K y_k \log \hat{p}_k$$
+        where $\mathbf{y}$ is a <strong>one-hot vector</strong> with $y_{k^*} = 1$ and all
+        other entries 0. Since only the $k^*$ term is nonzero:
+        $$\mathcal{L}_{\text{CE}} \;=\; -\log \hat{p}_{k^*}$$
+        Minimize the negative log-probability of the true class. Equivalently, maximize
+        how probable the model thinks the true answer is.
+      </div>
+
+      <div class="callout">
+        <strong>Softmax in the Transformer.</strong> The attention mechanism in the
+        Transformer (the subject this entire cluster is building toward) computes:
+        $$\text{Attention}(Q, K, V) = \text{softmax}\!\left(\frac{QK^\top}{\sqrt{d_k}}\right)V$$
+        The softmax here converts raw attention scores (dot products between queries and
+        keys) into a probability distribution over positions, then takes a weighted average
+        of values. It is the same softmax operation from this lesson — applied to a matrix
+        of scores rather than a vector. Understanding it here makes the Transformer's
+        mechanism transparent.
+      </div>
+
+      <!-- ── Section 9: Evaluation metrics ────────────────────────────────── -->
+      <div class="section-head" id="evaluation">Evaluation metrics</div>
+
+      <div class="prose">
+        Accuracy — the fraction of correct predictions — is the most intuitive metric
+        but often the wrong one. On a dataset where 99% of examples are class 0, predicting
+        class 0 always achieves 99% accuracy while learning nothing useful. Four metrics
+        give a more complete picture.
+      </div>
+
+      <div class="prose">
+        For binary classification with a positive class ($y = 1$), define:
+      </div>
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:8px;"><strong>True Positives (TP)</strong>: correctly predicted positive.</li>
+        <li style="margin-bottom:8px;"><strong>True Negatives (TN)</strong>: correctly predicted negative.</li>
+        <li style="margin-bottom:8px;"><strong>False Positives (FP)</strong>: predicted positive, actually negative (Type I error).</li>
+        <li><strong>False Negatives (FN)</strong>: predicted negative, actually positive (Type II error).</li>
+      </ul>
+
+      <div class="prose">
+        From these:
+        $$\text{Precision} = \frac{TP}{TP + FP}, \qquad \text{Recall} = \frac{TP}{TP + FN}$$
+        <strong>Precision</strong>: of all predicted positives, how many were correct?
+        ("When we say yes, are we right?")
+        <strong>Recall</strong> (sensitivity): of all true positives, how many did we catch?
+        ("Do we find all the real positives?")
+      </div>
+
+      <div class="prose">
+        There is a fundamental tradeoff between precision and recall — lowering the
+        classification threshold catches more true positives (higher recall) but also more
+        false positives (lower precision). The <strong>F1 score</strong> is the harmonic
+        mean of the two, penalizing large imbalances:
+        $$F_1 = \frac{2 \cdot \text{Precision} \cdot \text{Recall}}{\text{Precision} + \text{Recall}}$$
+      </div>
+
+      <div class="prose">
+        <strong>ROC curve and AUC.</strong> The Receiver Operating Characteristic (ROC)
+        curve plots the True Positive Rate (= Recall = $TP/(TP+FN)$) against the False
+        Positive Rate ($FP/(FP+TN)$) as the classification threshold varies from 0 to 1.
+        A perfect classifier hugs the top-left corner; a random classifier follows the
+        diagonal. The <strong>AUC</strong> (area under the ROC curve) summarizes the
+        entire curve in a single number: AUC = 1.0 is perfect, AUC = 0.5 is random.
+      </div>
+
+      <!-- ── Worked examples ─────────────────────────────────────────────── -->
+      <div class="section-head" id="examples">Worked examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Computing the cross-entropy loss</strong></div>
+        <div class="example-problem">
+          <p>A binary classifier outputs probabilities $\hat{p}_1 = 0.9$, $\hat{p}_2 = 0.3$,
+          $\hat{p}_3 = 0.7$ for three examples with true labels $y_1 = 1$, $y_2 = 0$,
+          $y_3 = 0$. Compute the mean cross-entropy loss.</p>
+        </div>
+        <div class="example-body">
+          <p>Per-example cross-entropy: $\mathcal{L}_{\text{CE}}(y, \hat{p}) = -[y\log\hat{p} + (1-y)\log(1-\hat{p})]$.</p>
+          <p><strong>Example 1</strong> ($y=1$, $\hat{p}=0.9$): $\mathcal{L} = -\log(0.9) \approx 0.105$.
+            Correct and confident — small loss.</p>
+          <p><strong>Example 2</strong> ($y=0$, $\hat{p}=0.3$): $\mathcal{L} = -\log(1-0.3) = -\log(0.7) \approx 0.357$.
+            Correct but not very confident — moderate loss.</p>
+          <p><strong>Example 3</strong> ($y=0$, $\hat{p}=0.7$): $\mathcal{L} = -\log(1-0.7) = -\log(0.3) \approx 1.204$.
+            Wrong and somewhat confident — large loss.</p>
+          <p>Mean cross-entropy: $(0.105 + 0.357 + 1.204)/3 \approx 0.555$.</p>
+          <p>Note Example 3: even though $\hat{p} = 0.7$ is not an extreme prediction,
+          the loss is over 10× larger than Example 1. Cross-entropy strongly penalizes
+          getting the wrong class with any meaningful confidence.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Softmax computation</strong></div>
+        <div class="example-problem">
+          <p>A 3-class classifier outputs raw scores (logits) $\mathbf{z} = [3.0,\; 1.0,\; 0.2]$
+          for an input image. Compute the softmax probabilities and the cross-entropy loss
+          if the true class is 1 (the first class).</p>
+        </div>
+        <div class="example-body">
+          <p>Exponentiate the scores: $e^{3.0} \approx 20.09$, $e^{1.0} \approx 2.72$,
+          $e^{0.2} \approx 1.22$.</p>
+          <p>Sum: $20.09 + 2.72 + 1.22 = 24.03$.</p>
+          <p>Softmax probabilities:
+          $$\hat{p}_1 = \frac{20.09}{24.03} \approx 0.836, \quad \hat{p}_2 = \frac{2.72}{24.03} \approx 0.113, \quad \hat{p}_3 = \frac{1.22}{24.03} \approx 0.051$$</p>
+          <p>Verify: $0.836 + 0.113 + 0.051 \approx 1.000$. ✓</p>
+          <p>Cross-entropy loss (true class = 1): $\mathcal{L} = -\log\hat{p}_1 = -\log(0.836) \approx 0.179$.
+          Low loss — the model is assigning 83.6% probability to the correct class.</p>
+          <p><strong>Numerical stability note:</strong> In practice, $e^{3.0}$ can overflow
+          for large logits. The standard implementation subtracts the maximum logit first:
+          $\text{softmax}(\mathbf{z}) = \text{softmax}(\mathbf{z} - \max_k z_k)$, which
+          is mathematically equivalent but numerically stable since all exponents are $\leq 0$.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Precision, recall, and the threshold tradeoff</strong></div>
+        <div class="example-problem">
+          <p>A disease screening test assigns probabilities to 1,000 patients. Of the
+          1,000, 50 truly have the disease. At threshold 0.5, the classifier predicts 40
+          true positives, 10 false negatives, 50 false positives, and 900 true negatives.
+          Compute precision, recall, and F1. Should the threshold be adjusted for a
+          screening test?</p>
+        </div>
+        <div class="example-body">
+          <p>
+          $$\text{Precision} = \frac{40}{40 + 50} = \frac{40}{90} \approx 0.444$$
+          $$\text{Recall} = \frac{40}{40 + 10} = \frac{40}{50} = 0.800$$
+          $$F_1 = \frac{2 \times 0.444 \times 0.800}{0.444 + 0.800} \approx 0.571$$
+          </p>
+          <p>Accuracy: $(40 + 900)/1000 = 94\%$ — looks great, but misleadingly high
+          because the disease is rare.</p>
+          <p><strong>Should the threshold be lowered?</strong> For a disease screening test,
+          false negatives are costly — missing a sick patient who then goes untreated.
+          False positives lead to further (expensive, stressful) testing but not catastrophic
+          harm. Lowering the threshold below 0.5 will increase recall (catch more sick patients)
+          at the cost of more false positives (reduced precision). For most screening contexts,
+          high recall matters more than high precision — the goal is not to miss sick patients.
+          This is a domain-specific judgment, not a statistical one.</p>
+        </div>
+      </div>
+
+      <!-- ── Food for thought ────────────────────────────────────────────── -->
+      <div class="section-head" id="food-for-thought">Food for thought</div>
+
+      <ul class="fft-list">
+        <li class="fft-item">
+          The sigmoid derivative is $\sigma'(z) = \sigma(z)(1-\sigma(z))$, which is at
+          most $0.25$ and approaches 0 for large $|z|$. Why does this become a serious
+          problem in deep networks, and what does it have to do with learning?
+          <div class="fft-answer">
+            When training a deep network via backpropagation, gradients are multiplied
+            through each layer's derivative (chain rule). If every layer uses sigmoid
+            activations and inputs land in the saturated region ($|z|$ large), each
+            layer contributes a factor of roughly $\sigma'(z) \approx 0$ to the gradient.
+            Over 10 layers, the gradient of the loss with respect to early-layer weights
+            becomes essentially zero — those weights receive no useful learning signal.
+            This is the <em>vanishing gradient problem</em>. The ReLU activation
+            ($\max(0,z)$, derivative = 1 for $z > 0$) was largely adopted because it
+            does not saturate for positive inputs, allowing gradients to flow through
+            deep networks.
+          </div>
+        </li>
+        <li class="fft-item">
+          Softmax converts a vector of arbitrary real numbers into a probability distribution.
+          What happens to the distribution as you scale all logits by a large constant $T$
+          (i.e., compute softmax($\mathbf{z}/T$) for large $T$)? For small $T$?
+          <div class="fft-answer">
+            Large $T$ (temperature): dividing logits by large $T$ makes them all close to
+            zero before the softmax. The output distribution becomes nearly uniform — all
+            classes get roughly equal probability. High temperature = high uncertainty.
+            Small $T$: dividing by small $T$ amplifies score differences. The class with
+            the highest score gets probability approaching 1; all others approach 0.
+            Small temperature = sharp, confident distribution. The limit $T \to 0$ gives
+            a one-hot distribution on the argmax. This is called <em>temperature scaling</em>
+            and appears in language model sampling (controlling creativity vs. determinism)
+            and in knowledge distillation (Hinton et al. 2015), where a large teacher
+            network's soft predictions are distilled into a small student network.
+          </div>
+        </li>
+        <li class="fft-item">
+          Cross-entropy loss asks the model to maximize probability assigned to the true
+          class. But for well-calibrated models, we also want the assigned probability to
+          be accurate — $\hat{p} = 0.8$ should mean the model is right 80% of the time.
+          Does minimizing cross-entropy guarantee calibration?
+          <div class="fft-answer">
+            Minimizing cross-entropy is equivalent to maximizing likelihood, and under
+            infinite data with a correctly specified model, the maximum likelihood estimator
+            converges to the true probability. So in principle, yes — perfect training
+            gives perfect calibration. In practice: (1) the model class may not include
+            the true distribution; (2) on finite data, models often overfit to the training
+            set and become overconfident; (3) modern neural networks trained to very low
+            training loss tend to be overconfident — they assign probabilities near 0 or 1
+            far more often than their accuracy warrants. Calibration post-processing
+            techniques (Platt scaling, temperature scaling) correct this empirically but
+            are not automatic.
+          </div>
+        </li>
+      </ul>
+
+      <!-- ── Common pitfalls ─────────────────────────────────────────────── -->
+      <div class="section-head" id="pitfalls">Common pitfalls</div>
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:14px;">
+          <strong>Using accuracy as the only metric.</strong> For imbalanced datasets
+          (disease detection, fraud, spam), accuracy is nearly useless — always predicting
+          the majority class often achieves 99%+ accuracy while completely failing the task.
+          Always report precision, recall, and AUC in addition to accuracy.
+        </li>
+        <li style="margin-bottom:14px;">
+          <strong>Forgetting that logistic regression outputs a probability, not a class.</strong>
+          The threshold of 0.5 for class assignment is a default, not a law. Choose the
+          threshold based on the relative costs of false positives and false negatives in
+          your application.
+        </li>
+        <li style="margin-bottom:14px;">
+          <strong>Numerical overflow in softmax.</strong> Computing $e^{z_k}$ for large
+          $z_k$ overflows to infinity in floating point. Always subtract $\max_k z_k$
+          from all logits before exponentiating. Libraries do this automatically, but
+          if you implement softmax by hand, this step is mandatory.
+        </li>
+        <li style="margin-bottom:14px;">
+          <strong>Confusing softmax output with confidence.</strong> A softmax probability
+          of 0.99 does not mean the model is 99% certain it is correct. It means the
+          model assigns 99 times more score to one class than all others combined. On an
+          input far outside the training distribution, the network may still output a
+          confident softmax distribution — it has not learned to say "I don't know."
+          This is sometimes called the <em>closed-world assumption</em>.
+        </li>
+        <li>
+          <strong>Applying logistic regression to non-binary targets with MSE.</strong>
+          If labels are $\{-1, +1\}$ instead of $\{0, 1\}$, the standard cross-entropy
+          formula breaks. Either convert labels to $\{0, 1\}$, or use the appropriate
+          formulation for $\pm 1$ labels: $\mathcal{L} = \log(1 + e^{-y \cdot \hat{z}})$
+          where $\hat{z} = \mathbf{w}^\top \mathbf{x}$ is the logit and $y \in \{-1, +1\}$.
+        </li>
+      </ul>
+
+      <!-- ── Connects to ─────────────────────────────────────────────────── -->
+      <div class="section-head" id="connects-to">Connects to</div>
+
+      <div class="prose">
+        <strong>Information Theory</strong> — cross-entropy loss is the negative log-likelihood,
+        and can be written as $H(P_{\text{true}}, P_{\text{model}}) = H(P_{\text{true}}) + D_{\text{KL}}(P_{\text{true}} \| P_{\text{model}})$.
+        Minimizing cross-entropy minimizes the KL divergence between the model and the true
+        distribution. This connection is one of the deepest in machine learning theory.
+      </div>
+      <div class="prose">
+        <strong>Neural Networks (Lessons 8–10)</strong> — a neural network classifier is
+        exactly a pipeline of transformations ending in a softmax layer. The cross-entropy
+        loss developed here is the training objective for nearly every deep learning
+        classifier. The sigmoid and softmax derivatives derived here are the building blocks
+        of backpropagation.
+      </div>
+      <div class="prose">
+        <strong>Transformers (Deep Learning cluster)</strong> — softmax appears in the
+        attention mechanism not as an output layer but as a weighting function inside the
+        model. The same operation, the same formula, the same temperature sensitivity —
+        applied to attention scores rather than class logits.
+      </div>
+
+      <!-- ── Lesson nav ──────────────────────────────────────────────────── -->
+      <div class="lesson-nav">
+        <a href="linear-regression.html" class="lesson-nav-btn">← 2 · Linear Regression</a>
+        <a href="generalization.html" class="lesson-nav-btn">4 · Generalisation &amp; Regularization →</a>
+      </div>
+
+    </div><!-- /main -->
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+
+</body>
+</html>
