@@ -268,7 +268,7 @@
               "name": "Supervised Learning",
               "href": "supervised/index.html",
               "desc": "Linear and logistic regression, SVMs, decision trees, ensemble methods, and the foundations of neural networks.",
-              "lessons": 1
+              "lessons": 8
             },
             {
               "name": "Deep Learning",

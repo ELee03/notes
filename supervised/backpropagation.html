@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Backpropagation — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$',  right: '$',  display: false}
+        ],
+        throwOnError: false
+      });
+    });
+  </script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Prerequisites</div>
+        <a href="classification.html" class="nav-item">L3 · Classification &amp; Logistic Regression</a>
+        <a href="neural-networks.html" class="nav-item">L8 · Neural Networks</a>
+      </div>
+
+      <div id="cluster-nav" data-cluster="supervised" data-current="backpropagation.html"></div>
+
+      <hr class="sidebar-rule">
+
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#the-problem" class="nav-item">The problem backprop solves</a>
+        <a href="#computation-graphs" class="nav-item">Computation graphs</a>
+        <a href="#chain-rule" class="nav-item">The chain rule, precisely</a>
+        <a href="#backward-pass" class="nav-item">The backward pass</a>
+        <a href="#full-mlp" class="nav-item">Full MLP backprop</a>
+        <a href="#autodiff" class="nav-item">Automatic differentiation</a>
+        <a href="#vanishing" class="nav-item">Vanishing & exploding gradients</a>
+        <a href="#initialization" class="nav-item">Weight initialisation</a>
+        <a href="#examples" class="nav-item">Worked examples</a>
+        <a href="#food-for-thought" class="nav-item">Food for thought</a>
+        <a href="#pitfalls" class="nav-item">Common pitfalls</a>
+        <a href="#connects-to" class="nav-item">Connects to</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Supervised Learning</a>
+        <span class="sep">›</span>
+        <span>9 · Backpropagation</span>
+      </div>
+
+      <div class="lesson-title">9 · Backpropagation</div>
+      <div class="lesson-meta">Computation Graphs · Chain Rule · Backward Pass · Autodiff · Vanishing Gradients · Weight Initialisation</div>
+
+      <div class="prose">
+        We know how to compute a neural network's output (forward pass) and how to measure
+        its error (cross-entropy or MSE loss). What remains: computing the gradient of the
+        loss with respect to every weight in the network. Backpropagation is the algorithm
+        that does this, and it is efficient: it reuses intermediate computations to compute
+        all gradients in a single backward sweep, taking the same time as two forward passes
+        regardless of how many parameters the network has. Understanding backpropagation is
+        not just about implementation — the gradient flow through a network determines what
+        it can learn, and the failure modes (vanishing and exploding gradients) are central
+        to every design decision in modern deep learning.
+      </div>
+
+      <!-- ── Section 1: The problem backprop solves ─────────────────────── -->
+      <div class="section-head" id="the-problem">The problem backpropagation solves</div>
+
+      <div class="prose">
+        Training requires gradient descent: at each step, compute
+        $\nabla_\theta \mathcal{L}$ and update $\theta \leftarrow \theta - \eta \nabla_\theta \mathcal{L}$.
+        For a network with millions of parameters, the brute-force approach of computing
+        finite differences $({\mathcal{L}(\theta + \epsilon e_i) - \mathcal{L}(\theta)})/{\epsilon}$
+        for each parameter $i$ is prohibitively expensive — it requires one forward pass
+        per parameter.
+      </div>
+
+      <div class="prose">
+        Backpropagation exploits the structure of the computation: the network is a nested
+        composition of functions, and the chain rule tells us how to differentiate nested
+        compositions efficiently. The key insight: <em>compute gradients in reverse order
+        of the forward computation, reusing intermediate values already computed in the
+        forward pass</em>. This reduces the cost from $O(P)$ forward passes (where $P$ is
+        the number of parameters) to $O(1)$ backward passes — the same asymptotic cost
+        as a single forward pass.
+      </div>
+
+      <!-- ── Section 2: Computation graphs ─────────────────────────────── -->
+      <div class="section-head" id="computation-graphs">Computation graphs</div>
+
+      <div class="prose">
+        A <strong>computation graph</strong> represents an expression as a directed acyclic
+        graph (DAG) where:
+      </div>
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:8px;"><strong>Leaf nodes</strong> are inputs or parameters (the things we differentiate with respect to).</li>
+        <li style="margin-bottom:8px;"><strong>Intermediate nodes</strong> are operations: $+$, $\times$, $\exp$, $\max$, etc.</li>
+        <li><strong>The root</strong> is the final scalar output (the loss $\mathcal{L}$).</li>
+      </ul>
+
+      <div class="prose">
+        Example: the expression $\mathcal{L} = (w \cdot x - y)^2$ decomposes as:
+        $$u_1 = w \cdot x, \quad u_2 = u_1 - y, \quad \mathcal{L} = u_2^2$$
+        The graph has leaf nodes $w, x, y$; intermediate nodes $u_1, u_2$; and root $\mathcal{L}$.
+        An entire neural network layer $\mathbf{h} = \sigma(W\mathbf{x} + \mathbf{b})$ is
+        just a larger version of this pattern: matrix multiplication, addition, elementwise
+        nonlinearity.
+      </div>
+
+      <div class="prose">
+        Gradients flow <em>backward</em> through this graph, from root to leaves. Backpropagation
+        is the algorithm for computing those gradients by applying the chain rule at each
+        node.
+      </div>
+
+      <!-- ── Section 3: The chain rule ─────────────────────────────────── -->
+      <div class="section-head" id="chain-rule">The chain rule, precisely</div>
+
+      <div class="prose">
+        <strong>Scalar chain rule.</strong> If $\mathcal{L} = f(g(x))$, then
+        $$\frac{d\mathcal{L}}{dx} = \frac{d\mathcal{L}}{dg} \cdot \frac{dg}{dx}$$
+        For a chain of length $k$: $\mathcal{L} = f_k(f_{k-1}(\cdots f_1(x)\cdots))$:
+        $$\frac{d\mathcal{L}}{dx} = \frac{d\mathcal{L}}{df_k} \cdot \frac{df_k}{df_{k-1}} \cdots \frac{df_2}{df_1} \cdot \frac{df_1}{dx}$$
+      </div>
+
+      <div class="prose">
+        <strong>Vector chain rule.</strong> When inputs and outputs are vectors, derivatives
+        become Jacobians. If $\mathbf{z} = f(\mathbf{y})$ and $\mathbf{y} = g(\mathbf{x})$
+        where $\mathbf{x} \in \mathbb{R}^n$, $\mathbf{y} \in \mathbb{R}^m$,
+        $\mathbf{z} \in \mathbb{R}^p$:
+        $$\frac{\partial \mathbf{z}}{\partial \mathbf{x}} = \frac{\partial \mathbf{z}}{\partial \mathbf{y}} \cdot \frac{\partial \mathbf{y}}{\partial \mathbf{x}}$$
+        where $\frac{\partial \mathbf{z}}{\partial \mathbf{x}} \in \mathbb{R}^{p \times n}$ is the Jacobian,
+        a matrix of all partial derivatives $\left(\frac{\partial z_i}{\partial x_j}\right)$.
+      </div>
+
+      <div class="prose">
+        <strong>Gradient of a scalar with respect to a vector.</strong> When $\mathcal{L}$
+        is a scalar (as it always is — the loss), the Jacobian $\frac{\partial \mathcal{L}}{\partial \mathbf{x}}$
+        is a row vector, which we conventionally write as a column vector $\nabla_\mathbf{x} \mathcal{L}$
+        with the same shape as $\mathbf{x}$:
+        $$\nabla_\mathbf{x} \mathcal{L} = \left(\frac{\partial \mathcal{L}}{\partial \mathbf{y}}\right)^\top \cdot \frac{\partial \mathbf{y}}{\partial \mathbf{x}}$$
+        This is the <em>vector-Jacobian product</em> (VJP), and it is the core computation
+        in every backward pass.
+      </div>
+
+      <!-- ── Section 4: The backward pass ──────────────────────────────── -->
+      <div class="section-head" id="backward-pass">The backward pass</div>
+
+      <div class="prose">
+        At every node in the computation graph, we compute a local gradient (the Jacobian
+        of that node's output with respect to its input) and multiply it by the gradient
+        flowing in from downstream. The incoming gradient is called the <strong>upstream
+        gradient</strong> or <strong>error signal</strong>; the result is the
+        <strong>downstream gradient</strong>, which is passed to the node's inputs.
+      </div>
+
+      <div class="prose">
+        <strong>Key gradients for common operations:</strong>
+      </div>
+
+      <div class="prose">
+        <em>Linear layer:</em> $\mathbf{z} = W\mathbf{x} + \mathbf{b}$ where
+        $W \in \mathbb{R}^{m \times n}$, $\mathbf{x} \in \mathbb{R}^n$, $\mathbf{z} \in \mathbb{R}^m$.
+        Given upstream gradient $\boldsymbol{\delta} = \nabla_\mathbf{z} \mathcal{L} \in \mathbb{R}^m$:
+        $$\nabla_\mathbf{x} \mathcal{L} = W^\top \boldsymbol{\delta}, \qquad
+          \nabla_W \mathcal{L} = \boldsymbol{\delta} \, \mathbf{x}^\top, \qquad
+          \nabla_\mathbf{b} \mathcal{L} = \boldsymbol{\delta}$$
+        The gradient with respect to the <em>input</em> $\mathbf{x}$ is $W^\top \boldsymbol{\delta}$
+        — the upstream error is "routed back" through the transpose of $W$.
+        The gradient with respect to the <em>weights</em> $W$ is the outer product
+        $\boldsymbol{\delta} \mathbf{x}^\top$ — a rank-1 matrix formed from the upstream
+        signal and the input that produced it.
+      </div>
+
+      <div class="proof-box">
+        <div class="proof-header">Derivation — linear layer gradients</div>
+        <div class="proof-body">
+          <p>$z_i = \sum_k W_{ik} x_k + b_i$, so $\frac{\partial z_i}{\partial x_j} = W_{ij}$ and $\frac{\partial z_i}{\partial W_{ij}} = x_j$.</p>
+          <p>By chain rule:
+          $$\frac{\partial \mathcal{L}}{\partial x_j} = \sum_i \frac{\partial \mathcal{L}}{\partial z_i} \frac{\partial z_i}{\partial x_j} = \sum_i \delta_i W_{ij} = (W^\top \boldsymbol{\delta})_j$$
+          Hence $\nabla_\mathbf{x} \mathcal{L} = W^\top \boldsymbol{\delta}$.</p>
+          <p>Similarly:
+          $$\frac{\partial \mathcal{L}}{\partial W_{ij}} = \frac{\partial \mathcal{L}}{\partial z_i} \frac{\partial z_i}{\partial W_{ij}} = \delta_i \cdot x_j$$
+          So $\nabla_W \mathcal{L} = \boldsymbol{\delta} \mathbf{x}^\top$ (outer product). And
+          $\frac{\partial \mathcal{L}}{\partial b_i} = \frac{\partial \mathcal{L}}{\partial z_i} = \delta_i$,
+          giving $\nabla_\mathbf{b} \mathcal{L} = \boldsymbol{\delta}$. $\square$</p>
+        </div>
+      </div>
+
+      <div class="prose">
+        <em>Elementwise activation:</em> $\mathbf{h} = \sigma(\mathbf{z})$ applied elementwise.
+        The Jacobian is diagonal: $\frac{\partial h_i}{\partial z_j} = \sigma'(z_i) \cdot \mathbf{1}[i=j]$.
+        Given upstream $\boldsymbol{\gamma} = \nabla_\mathbf{h} \mathcal{L}$:
+        $$\nabla_\mathbf{z} \mathcal{L} = \boldsymbol{\gamma} \odot \sigma'(\mathbf{z})$$
+        where $\odot$ is elementwise multiplication. The gradient is simply scaled by
+        the local derivative of the activation function.
+      </div>
+
+      <div class="prose">
+        <em>Softmax + cross-entropy:</em> When used together (which is the standard for
+        classification), the combined gradient has a beautifully simple form. For the
+        cross-entropy loss $\mathcal{L} = -\sum_k y_k \log \hat{p}_k$ where
+        $\hat{\mathbf{p}} = \text{softmax}(\mathbf{z})$:
+        $$\nabla_\mathbf{z} \mathcal{L} = \hat{\mathbf{p}} - \mathbf{y}$$
+        The gradient at the output layer is exactly the prediction error: predicted
+        probability minus true label. This mirrors the logistic regression gradient
+        from Lesson 3.
+      </div>
+
+      <div class="proof-box">
+        <div class="proof-header">Derivation — softmax + cross-entropy gradient</div>
+        <div class="proof-body">
+          <p>Let $\hat{p}_k = \frac{e^{z_k}}{\sum_j e^{z_j}}$ and $\mathcal{L} = -\sum_k y_k \log \hat{p}_k$.</p>
+          <p>For the $i$-th logit $z_i$:
+          $$\frac{\partial \mathcal{L}}{\partial z_i} = -\sum_k y_k \frac{\partial \log \hat{p}_k}{\partial z_i} = -\sum_k y_k \frac{1}{\hat{p}_k} \frac{\partial \hat{p}_k}{\partial z_i}$$</p>
+          <p>The softmax Jacobian entries:
+          $$\frac{\partial \hat{p}_k}{\partial z_i} = \begin{cases} \hat{p}_i(1 - \hat{p}_i) & k = i \\ -\hat{p}_k \hat{p}_i & k \neq i \end{cases}$$</p>
+          <p>Substituting:
+          $$\frac{\partial \mathcal{L}}{\partial z_i} = -y_i(1-\hat{p}_i) + \sum_{k \neq i} y_k \hat{p}_i = -y_i + y_i\hat{p}_i + \hat{p}_i\sum_{k \neq i} y_k = -y_i + \hat{p}_i \sum_k y_k$$</p>
+          <p>Since labels are one-hot, $\sum_k y_k = 1$, giving $\frac{\partial \mathcal{L}}{\partial z_i} = \hat{p}_i - y_i$. In vector form: $\nabla_\mathbf{z} \mathcal{L} = \hat{\mathbf{p}} - \mathbf{y}$. $\square$</p>
+        </div>
+      </div>
+
+      <!-- ── Section 5: Full MLP backprop ───────────────────────────────── -->
+      <div class="section-head" id="full-mlp">Full MLP backpropagation</div>
+
+      <div class="prose">
+        Putting it together for a 2-hidden-layer network with ReLU activations and
+        softmax + cross-entropy output. Recall the forward pass:
+        $$\mathbf{z}^{(1)} = W^{(1)}\mathbf{x} + \mathbf{b}^{(1)}, \quad \mathbf{h}^{(1)} = \text{ReLU}(\mathbf{z}^{(1)})$$
+        $$\mathbf{z}^{(2)} = W^{(2)}\mathbf{h}^{(1)} + \mathbf{b}^{(2)}, \quad \mathbf{h}^{(2)} = \text{ReLU}(\mathbf{z}^{(2)})$$
+        $$\mathbf{z}^{(3)} = W^{(3)}\mathbf{h}^{(2)} + \mathbf{b}^{(3)}, \quad \hat{\mathbf{y}} = \text{softmax}(\mathbf{z}^{(3)}), \quad \mathcal{L} = -\mathbf{y}^\top \log \hat{\mathbf{y}}$$
+      </div>
+
+      <div class="prose">
+        The backward pass proceeds in reverse:
+      </div>
+
+      <div class="prose">
+        <strong>Output layer gradient (combined softmax + cross-entropy):</strong>
+        $$\boldsymbol{\delta}^{(3)} := \nabla_{\mathbf{z}^{(3)}} \mathcal{L} = \hat{\mathbf{y}} - \mathbf{y}$$
+      </div>
+
+      <div class="prose">
+        <strong>Gradients for layer 3 weights and biases:</strong>
+        $$\nabla_{W^{(3)}} \mathcal{L} = \boldsymbol{\delta}^{(3)} (\mathbf{h}^{(2)})^\top, \qquad \nabla_{\mathbf{b}^{(3)}} \mathcal{L} = \boldsymbol{\delta}^{(3)}$$
+      </div>
+
+      <div class="prose">
+        <strong>Backpropagate through layer 3 to get gradient at $\mathbf{h}^{(2)}$:</strong>
+        $$\nabla_{\mathbf{h}^{(2)}} \mathcal{L} = (W^{(3)})^\top \boldsymbol{\delta}^{(3)}$$
+      </div>
+
+      <div class="prose">
+        <strong>Backpropagate through ReLU at layer 2:</strong>
+        $$\boldsymbol{\delta}^{(2)} := \nabla_{\mathbf{z}^{(2)}} \mathcal{L} = \nabla_{\mathbf{h}^{(2)}} \mathcal{L} \odot \mathbf{1}[\mathbf{z}^{(2)} > 0]$$
+        The indicator $\mathbf{1}[\mathbf{z}^{(2)} > 0]$ is the ReLU derivative: 1 where the
+        pre-activation was positive, 0 where it was negative. Neurons that were "off" in
+        the forward pass receive zero gradient in the backward pass.
+      </div>
+
+      <div class="prose">
+        <strong>Gradients for layer 2 weights and biases:</strong>
+        $$\nabla_{W^{(2)}} \mathcal{L} = \boldsymbol{\delta}^{(2)} (\mathbf{h}^{(1)})^\top, \qquad \nabla_{\mathbf{b}^{(2)}} \mathcal{L} = \boldsymbol{\delta}^{(2)}$$
+      </div>
+
+      <div class="prose">
+        <strong>Continue through layer 2 and ReLU at layer 1:</strong>
+        $$\nabla_{\mathbf{h}^{(1)}} \mathcal{L} = (W^{(2)})^\top \boldsymbol{\delta}^{(2)}$$
+        $$\boldsymbol{\delta}^{(1)} = \nabla_{\mathbf{h}^{(1)}} \mathcal{L} \odot \mathbf{1}[\mathbf{z}^{(1)} > 0]$$
+        $$\nabla_{W^{(1)}} \mathcal{L} = \boldsymbol{\delta}^{(1)} \mathbf{x}^\top, \qquad \nabla_{\mathbf{b}^{(1)}} \mathcal{L} = \boldsymbol{\delta}^{(1)}$$
+      </div>
+
+      <div class="prose">
+        The complete pattern: the "delta" $\boldsymbol{\delta}^{(\ell)}$ at each layer is
+        the gradient of the loss with respect to that layer's <em>pre-activation</em>
+        $\mathbf{z}^{(\ell)}$. It is computed by: (1) routing the upstream delta back
+        through the transpose weight matrix, then (2) elementwise multiplying by the
+        activation derivative. The weight gradient at each layer is the outer product of
+        the layer's delta and its input.
+      </div>
+
+      <div class="callout">
+        <strong>Why store the forward pass?</strong> The backward pass needs the
+        pre-activations $\mathbf{z}^{(\ell)}$ (to compute the ReLU derivative
+        $\mathbf{1}[\mathbf{z}^{(\ell)} > 0]$) and the activations $\mathbf{h}^{(\ell-1)}$
+        (to form the weight gradient $\boldsymbol{\delta}^{(\ell)}(\mathbf{h}^{(\ell-1)})^\top$).
+        This is why training a neural network requires storing the entire forward pass in
+        memory — all intermediate activations — before computing any gradients. Memory
+        consumption scales with batch size and depth, which is why deep networks with large
+        batches require GPUs with large VRAM.
+      </div>
+
+      <!-- ── Section 6: Automatic differentiation ──────────────────────── -->
+      <div class="section-head" id="autodiff">Automatic differentiation</div>
+
+      <div class="prose">
+        Backpropagation by hand is tedious and error-prone for large networks. Modern deep
+        learning frameworks (PyTorch, JAX, TensorFlow) implement
+        <strong>automatic differentiation (autodiff)</strong>: the programmer writes only
+        the forward computation; the framework automatically computes gradients.
+      </div>
+
+      <div class="prose">
+        <strong>How it works.</strong> When you write <code>z = W @ x + b</code> in PyTorch,
+        the framework records the operation in a <em>tape</em> (a dynamic computation graph).
+        Each tensor tracks how it was produced. When you call <code>loss.backward()</code>,
+        PyTorch traverses the tape in reverse and applies the chain rule at each recorded
+        operation, accumulating gradients into <code>.grad</code> attributes.
+      </div>
+
+      <div class="prose">
+        <strong>Reverse-mode autodiff</strong> (used by PyTorch and TensorFlow) computes
+        the gradient of a scalar loss with respect to all parameters in one backward pass.
+        Cost: approximately 2–3× the cost of a forward pass. This is the mode used for
+        training neural networks (many parameters, one scalar loss).
+      </div>
+
+      <div class="prose">
+        <strong>Forward-mode autodiff</strong> computes the directional derivative
+        (the Jacobian-vector product) in one forward pass. Cost: one forward pass per
+        input direction. Efficient when you have few inputs and many outputs — the opposite
+        of training (where you have one scalar output and millions of parameters). Used in
+        sensitivity analysis and physics simulations.
+      </div>
+
+      <div class="prose">
+        Understanding that <code>loss.backward()</code> is executing exactly the algebra
+        in the previous section is important. When something goes wrong in training (no
+        gradient signal, NaN loss, exploding weights), the fix lies in understanding how
+        gradients flow — not in treating the framework as a black box.
+      </div>
+
+      <!-- ── Section 7: Vanishing and exploding gradients ──────────────── -->
+      <div class="section-head" id="vanishing">Vanishing and exploding gradients</div>
+
+      <div class="prose">
+        Consider the gradient flowing from the loss back to the weights in the first layer.
+        It passes through the chain rule product:
+        $$\nabla_{W^{(1)}} \mathcal{L} \;\propto\; \frac{\partial \mathcal{L}}{\partial \mathbf{h}^{(L)}} \cdot \prod_{\ell=2}^{L} \frac{\partial \mathbf{h}^{(\ell)}}{\partial \mathbf{h}^{(\ell-1)}}$$
+        Each factor $\frac{\partial \mathbf{h}^{(\ell)}}{\partial \mathbf{h}^{(\ell-1)}}$
+        is the Jacobian of one layer — roughly $W^{(\ell)} \cdot \text{diag}(\sigma'(\mathbf{z}^{(\ell)}))$.
+        This is a product of $L-1$ matrices, and its magnitude is approximately
+        $(\lambda_\sigma \bar{\sigma}')^{L-1}$ where $\lambda_\sigma$ is a typical
+        singular value of the weight matrices and $\bar{\sigma}'$ is the typical derivative
+        of the activation.
+      </div>
+
+      <div class="prose">
+        <strong>Vanishing gradients:</strong> if $\lambda_\sigma \bar{\sigma}' < 1$,
+        this product decreases exponentially with depth. The gradient signal reaching
+        early layers is essentially zero — those layers receive no learning signal and
+        remain at their initialization. For sigmoid activations, $\sigma'(z) \leq 0.25$
+        always, so even with unit weight matrices, the gradient shrinks by at least
+        $0.25^L$ — which is $6 \times 10^{-7}$ for $L = 10$.
+      </div>
+
+      <div class="prose">
+        <strong>Exploding gradients:</strong> if $\lambda_\sigma \bar{\sigma}' > 1$,
+        the product grows exponentially with depth. Gradient updates become enormous,
+        weights change violently, and training diverges. Common with RNNs (long sequences
+        = many layers = many matrix multiplications) and poorly initialized weights.
+        The fix: <strong>gradient clipping</strong> — scale the gradient by
+        $\min(1, c / \|\nabla\|)$ for a threshold $c$ (typically 1.0 or 5.0) before
+        applying the update.
+      </div>
+
+      <div class="prose">
+        <strong>Why ReLU largely solves vanishing gradients.</strong> For ReLU,
+        $\sigma'(z) = 1$ when $z > 0$ and $\sigma'(z) = 0$ when $z < 0$.
+        In the forward pass, about half the neurons are active (gradient 1) and half
+        are dead (gradient 0). The gradient magnitude through active neurons is
+        determined only by the weight matrices, not attenuated by the activation.
+        This is the main reason ReLU enabled training of 10–100 layer networks
+        where sigmoid/tanh failed.
+      </div>
+
+      <!-- ── Section 8: Weight initialization ──────────────────────────── -->
+      <div class="section-head" id="initialization">Weight initialisation</div>
+
+      <div class="prose">
+        Even with ReLU, poor initialisation causes vanishing or exploding gradients
+        from the very first step. The goal: choose initial weights so that signal
+        neither vanishes nor explodes through the forward pass, and so that gradients
+        neither vanish nor explode through the backward pass.
+      </div>
+
+      <div class="prose">
+        <strong>The variance analysis.</strong> Suppose layer $\ell$ has $n_{\ell-1}$
+        inputs. Consider the pre-activation $z_i = \sum_{j} w_{ij} h_j$. If the
+        inputs $h_j$ are i.i.d. with mean 0 and variance $v$, and weights $w_{ij}$
+        are i.i.d. with mean 0 and variance $\text{Var}(w)$:
+        $$\text{Var}(z_i) = n_{\ell-1} \cdot \text{Var}(w) \cdot v$$
+        To maintain constant variance across layers: $\text{Var}(w) = 1/n_{\ell-1}$.
+        This is the fan-in condition.
+      </div>
+
+      <div class="prose">
+        <strong>Xavier / Glorot initialisation</strong> (for sigmoid and tanh, 2010):
+        balance the fan-in condition with the analogous backward-pass condition to get:
+        $$w_{ij} \sim \mathcal{U}\!\left[-\frac{\sqrt{6}}{\sqrt{n_{\ell-1}+n_\ell}},\ \frac{\sqrt{6}}{\sqrt{n_{\ell-1}+n_\ell}}\right]$$
+        or equivalently, normal with variance $\frac{2}{n_{\ell-1} + n_\ell}$.
+      </div>
+
+      <div class="prose">
+        <strong>He initialisation</strong> (for ReLU, Kaiming He et al. 2015):
+        ReLU kills exactly half its inputs (zeroes them), which halves the effective
+        variance. To compensate, double the variance:
+        $$w_{ij} \sim \mathcal{N}\!\left(0,\ \frac{2}{n_{\ell-1}}\right)$$
+        He initialisation is the default for ReLU networks. Xavier for sigmoid/tanh.
+        Both essentially random zero-mean values scaled by $1/\sqrt{\text{fan-in}}$.
+      </div>
+
+      <div class="prose">
+        <strong>Always initialise weights randomly.</strong> All-zero initialisation causes
+        all neurons in a layer to compute the same function and receive the same gradient —
+        symmetry is never broken and the network learns no richer representation than a
+        single neuron. Random initialisation breaks this symmetry. Biases, in contrast,
+        can be initialised to zero.
+      </div>
+
+      <!-- ── Worked examples ─────────────────────────────────────────────── -->
+      <div class="section-head" id="examples">Worked examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Backprop on a tiny network by hand</strong></div>
+        <div class="example-problem">
+          <p>Single input, single hidden neuron, single output. No bias.
+          Forward: $z^{(1)} = w^{(1)} x$, $h = \sigma(z^{(1)})$,
+          $z^{(2)} = w^{(2)} h$, $\hat{y} = z^{(2)}$,
+          $\mathcal{L} = \frac{1}{2}(\hat{y} - y)^2$.
+          With $x = 1$, $y = 0$, $w^{(1)} = 0.5$, $w^{(2)} = 2$, $\sigma = \text{sigmoid}$.
+          Compute $\frac{\partial \mathcal{L}}{\partial w^{(1)}}$.</p>
+        </div>
+        <div class="example-body">
+          <p><strong>Forward pass:</strong>
+          $z^{(1)} = 0.5 \cdot 1 = 0.5$,
+          $h = \sigma(0.5) = \frac{1}{1+e^{-0.5}} \approx 0.622$,
+          $\hat{y} = 2 \times 0.622 = 1.244$,
+          $\mathcal{L} = \frac{1}{2}(1.244)^2 \approx 0.774$.</p>
+          <p><strong>Backward pass (right to left):</strong></p>
+          <p>$\frac{\partial \mathcal{L}}{\partial \hat{y}} = \hat{y} - y = 1.244 - 0 = 1.244$</p>
+          <p>$\frac{\partial \mathcal{L}}{\partial z^{(2)}} = 1.244$ (output is linear)</p>
+          <p>$\frac{\partial \mathcal{L}}{\partial w^{(2)}} = \frac{\partial \mathcal{L}}{\partial z^{(2)}} \cdot h = 1.244 \times 0.622 = 0.774$</p>
+          <p>$\frac{\partial \mathcal{L}}{\partial h} = \frac{\partial \mathcal{L}}{\partial z^{(2)}} \cdot w^{(2)} = 1.244 \times 2 = 2.488$</p>
+          <p>$\sigma'(z^{(1)}) = h(1-h) = 0.622 \times 0.378 \approx 0.235$</p>
+          <p>$\frac{\partial \mathcal{L}}{\partial z^{(1)}} = \frac{\partial \mathcal{L}}{\partial h} \cdot \sigma'(z^{(1)}) = 2.488 \times 0.235 \approx 0.585$</p>
+          <p>$\frac{\partial \mathcal{L}}{\partial w^{(1)}} = \frac{\partial \mathcal{L}}{\partial z^{(1)}} \cdot x = 0.585 \times 1 = \mathbf{0.585}$</p>
+          <p>With learning rate $\eta = 0.1$: $w^{(1)} \leftarrow 0.5 - 0.1 \times 0.585 = 0.4415$.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — The gradient of MSE loss through a linear layer</strong></div>
+        <div class="example-problem">
+          <p>A single linear layer (no activation): $\hat{\mathbf{y}} = W\mathbf{x}$,
+          loss $\mathcal{L} = \frac{1}{2}\|\hat{\mathbf{y}} - \mathbf{y}\|^2$.
+          Compute $\nabla_W \mathcal{L}$. (This should recover the linear regression
+          gradient from Lesson 2.)</p>
+        </div>
+        <div class="example-body">
+          <p>$\nabla_{\hat{\mathbf{y}}} \mathcal{L} = \hat{\mathbf{y}} - \mathbf{y} = W\mathbf{x} - \mathbf{y}$</p>
+          <p>Using the linear layer weight gradient formula with $\boldsymbol{\delta} = \hat{\mathbf{y}} - \mathbf{y}$ and input $\mathbf{x}$:
+          $$\nabla_W \mathcal{L} = \boldsymbol{\delta} \mathbf{x}^\top = (W\mathbf{x} - \mathbf{y})\mathbf{x}^\top$$
+          For a batch of $n$ examples (rows of $X$), averaging:
+          $$\nabla_W \mathcal{L} = \frac{1}{n}(X W^\top - Y)^\top X = \frac{1}{n} X^\top (X W^\top - Y)$$
+          Wait — be careful with shapes. If $\hat{Y} = XW^\top$ (standard batch convention with $X \in \mathbb{R}^{n \times d}$, $W \in \mathbb{R}^{K \times d}$), then:
+          $$\nabla_W \mathcal{L} = \frac{1}{n}(\hat{Y} - Y)^\top X$$
+          where $(\hat{Y} - Y) \in \mathbb{R}^{n \times K}$, and the result is $K \times d$, same shape as $W$.
+          For single-output regression ($K=1$, writing $\mathbf{w}$ as a vector), this is:
+          $$\nabla_\mathbf{w} \mathcal{L} = \frac{1}{n} X^\top (X\mathbf{w} - \mathbf{y})$$
+          which exactly matches the linear regression gradient from Lesson 2. Backpropagation
+          through a linear network recovers what we derived from first principles earlier.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Vanishing gradient depth analysis</strong></div>
+        <div class="example-problem">
+          <p>A network of depth $L$ uses sigmoid activations and weights initialised with
+          $\|W^{(\ell)}\| \approx 1$. Estimate the ratio of the gradient magnitude at
+          layer 1 to the gradient magnitude at the output, as a function of $L$.
+          At what depth does this become numerically negligible?</p>
+        </div>
+        <div class="example-body">
+          <p>The sigmoid derivative satisfies $|\sigma'(z)| \leq \sigma'(0) = 0.25$ for all $z$.
+          In the backward pass, each layer multiplies the gradient by approximately
+          $W^{(\ell)} \cdot \text{diag}(\sigma'(\mathbf{z}^{(\ell)}))$, whose spectral norm
+          is at most $\|W^{(\ell)}\| \cdot 0.25 \approx 0.25$.</p>
+          <p>After $L-1$ hidden layers, the gradient magnitude at layer 1 is at most
+          $0.25^{L-1}$ times the output gradient.</p>
+          <ul style="padding-left:1.2em; margin:8px 0;">
+            <li>$L = 4$: $0.25^3 \approx 0.016$ — gradient is 60× smaller at layer 1.</li>
+            <li>$L = 8$: $0.25^7 \approx 6 \times 10^{-5}$ — 16,000× smaller.</li>
+            <li>$L = 20$: $0.25^{19} \approx 4 \times 10^{-12}$ — numerically zero on float32.</li>
+          </ul>
+          <p>This explains why deep sigmoid networks could not be trained before the
+          introduction of ReLU and residual connections. GPT-3 has 96 transformer layers;
+          without architectural solutions to vanishing gradients (residual connections,
+          layer normalisation), such depths would be completely untrainable.</p>
+        </div>
+      </div>
+
+      <!-- ── Food for thought ────────────────────────────────────────────── -->
+      <div class="section-head" id="food-for-thought">Food for thought</div>
+
+      <ul class="fft-list">
+        <li class="fft-item">
+          The weight gradient is $\nabla_{W^{(\ell)}} \mathcal{L} = \boldsymbol{\delta}^{(\ell)} (\mathbf{h}^{(\ell-1)})^\top$.
+          What does this formula say, intuitively, about which weights learn most?
+          <div class="fft-answer">
+            The gradient for weight $W_{ij}^{(\ell)}$ is $\delta_i^{(\ell)} \cdot h_j^{(\ell-1)}$.
+            A weight gets a large update only if <em>both</em> conditions hold simultaneously:
+            (1) the upstream error signal $\delta_i^{(\ell)}$ is large — meaning the loss is
+            sensitive to neuron $i$ at layer $\ell$, and (2) the input activation
+            $h_j^{(\ell-1)}$ is large — meaning the previous layer neuron $j$ actually fired.
+            Weights connected to dormant neurons ($h_j \approx 0$) learn nothing, regardless
+            of how large the error signal is. This is the same principle as Hebbian learning:
+            "neurons that fire together, wire together." A weight only learns when both its
+            input and its output are active. This is also why dead ReLU neurons
+            ($h_j = 0$ for all inputs) permanently stop learning — their incoming weights
+            never get a gradient.
+          </div>
+        </li>
+        <li class="fft-item">
+          Backpropagation is just reverse-mode automatic differentiation. But the
+          original paper (Rumelhart, Hinton &amp; Williams 1986) predates formal autodiff
+          by decades and was described as an algorithm specific to neural networks.
+          Are they actually the same thing?
+          <div class="fft-answer">
+            They are mathematically identical. Reverse-mode autodiff, developed in
+            optimal control theory in the 1960s–70s (Pontryagin's maximum principle, adjoint
+            state methods), is the same computation as backpropagation. The two communities
+            developed the same algorithm independently. The neural network community called
+            it "backpropagation" and described it in terms of error signals flowing backward
+            through layers; the numerical analysis community called it "reverse-mode AD"
+            and described it in terms of Jacobian-vector products. Modern deep learning
+            frameworks formalize the connection: PyTorch's <code>.backward()</code>
+            is reverse-mode AD on a dynamically constructed computation graph. The practical
+            difference is that modern autodiff handles arbitrary Python code (loops,
+            conditionals, dynamic graphs), while the original backprop description assumed
+            a fixed layered structure.
+          </div>
+        </li>
+        <li class="fft-item">
+          The backward pass requires storing all intermediate activations from the forward
+          pass. For very deep networks or long sequences, this can exceed GPU memory.
+          How do practitioners deal with this?
+          <div class="fft-answer">
+            Several techniques: (1) <em>Gradient checkpointing</em> (also called
+            "activation recomputation"): don't store all intermediate activations — only
+            store activations at certain "checkpoint" layers, and recompute the rest
+            during the backward pass by re-running sub-sections of the forward pass.
+            This trades compute for memory: 2× compute cost but memory scales as
+            $O(\sqrt{L})$ rather than $O(L)$ for depth $L$. (2) <em>Mixed precision training</em>:
+            store activations in 16-bit floats (FP16 or BF16) rather than 32-bit,
+            halving memory. Modern hardware (NVIDIA Ampere GPUs, Google TPUs) supports
+            16-bit tensor cores with no loss in training stability when done carefully.
+            (3) <em>Model parallelism</em>: split the network across multiple GPUs,
+            each holding a subset of layers. The forward pass pipes through GPUs;
+            the backward pass pipes back. Used for very large models (GPT-3, PaLM, LLaMA)
+            where even a single model doesn't fit on one GPU.
+          </div>
+        </li>
+      </ul>
+
+      <!-- ── Common pitfalls ─────────────────────────────────────────────── -->
+      <div class="section-head" id="pitfalls">Common pitfalls</div>
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:14px;">
+          <strong>Not zeroing gradients between batches.</strong> In PyTorch, gradients
+          accumulate by default — calling <code>backward()</code> adds to existing
+          <code>.grad</code> values. Always call <code>optimizer.zero_grad()</code>
+          before each backward pass, or you're summing gradients across batches and
+          using an incorrectly large effective batch size.
+        </li>
+        <li style="margin-bottom:14px;">
+          <strong>Numerical instability from loss-activation mismatch.</strong>
+          Computing <code>log(softmax(z))</code> naively involves taking the log of a
+          very small number, causing numerical underflow. Always use
+          <code>F.cross_entropy(logits, targets)</code> (PyTorch) or equivalent fused
+          log-softmax + cross-entropy, which is numerically stable via the log-sum-exp
+          trick.
+        </li>
+        <li style="margin-bottom:14px;">
+          <strong>Gradient checking only the last layer.</strong> When debugging a custom
+          network, confirm gradients are nonzero at <em>all</em> layers, not just the output.
+          Vanishing gradients in early layers can leave a network that "trains" (loss
+          decreases) but learns trivial features because only the last layer updates.
+          Use gradient norm logging per layer.
+        </li>
+        <li style="margin-bottom:14px;">
+          <strong>In-place operations on tensors.</strong> Autograd requires storing the
+          original tensor value to compute certain gradients. In-place operations (e.g.,
+          <code>x += 1</code> instead of <code>x = x + 1</code>) overwrite those values,
+          causing PyTorch to raise a <code>RuntimeError: one of the variables needed for
+          gradient computation has been modified by an inplace operation</code>. Never
+          use in-place ops on tensors that require gradients.
+        </li>
+        <li>
+          <strong>All-zero weight initialisation.</strong> Every neuron in a layer
+          computes the same function, receives the same gradient, and updates identically.
+          Symmetry is never broken; the layer is effectively a single neuron no matter
+          its width. Always initialise with random weights (He or Xavier).
+        </li>
+      </ul>
+
+      <!-- ── Connects to ─────────────────────────────────────────────────── -->
+      <div class="section-head" id="connects-to">Connects to</div>
+
+      <div class="prose">
+        <strong>Training Neural Networks (Lesson 10)</strong> — backprop computes the
+        gradient; the optimizer decides how to use it. SGD, momentum, RMSprop, and Adam
+        are all different rules for converting a gradient to a weight update. Batch
+        normalisation and dropout are techniques that interact with gradient flow.
+      </div>
+      <div class="prose">
+        <strong>Deep Learning cluster — Residual connections</strong> (ResNets):
+        the core trick for training very deep networks (50–1000+ layers) is the skip
+        connection $\mathbf{h}^{(\ell)} = F(\mathbf{h}^{(\ell-1)}) + \mathbf{h}^{(\ell-1)}$.
+        The $+\mathbf{h}^{(\ell-1)}$ term creates a path from the output directly to
+        early layers with gradient 1 — vanishing gradients along this path are impossible.
+        The entire success of deep vision models (ResNet, VGG, EfficientNet) and
+        the Transformer (which uses residual connections in every layer) rests on this.
+      </div>
+      <div class="prose">
+        <strong>Deep Learning cluster — Transformers</strong>: the attention mechanism
+        is just a differentiable function, and backprop computes its gradients automatically.
+        Knowing how gradients flow through matrix products and softmax (both derived here)
+        fully specifies the attention backward pass. Attention is backpropagation through
+        a particular computation graph, no different in principle from a linear layer.
+      </div>
+
+      <!-- ── Lesson nav ──────────────────────────────────────────────────── -->
+      <div class="lesson-nav">
+        <a href="neural-networks.html" class="lesson-nav-btn">← 8 · Neural Networks</a>
+        <a href="training.html" class="lesson-nav-btn">10 · Training Neural Networks →</a>
+      </div>
+
+    </div><!-- /main -->
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+
+</body>
+</html>

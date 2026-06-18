@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Training Neural Networks — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$',  right: '$',  display: false}
+        ],
+        throwOnError: false
+      });
+    });
+  </script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Prerequisites</div>
+        <a href="generalization.html" class="nav-item">L4 · Generalization &amp; Regularization</a>
+        <a href="backpropagation.html" class="nav-item">L9 · Backpropagation</a>
+      </div>
+
+      <div id="cluster-nav" data-cluster="supervised" data-current="training.html"></div>
+
+      <hr class="sidebar-rule">
+
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#sgd" class="nav-item">Stochastic gradient descent</a>
+        <a href="#momentum" class="nav-item">Momentum</a>
+        <a href="#adaptive" class="nav-item">RMSprop and Adam</a>
+        <a href="#schedules" class="nav-item">Learning rate schedules</a>
+        <a href="#batch-norm" class="nav-item">Batch normalisation</a>
+        <a href="#dropout" class="nav-item">Dropout</a>
+        <a href="#early-stopping" class="nav-item">Early stopping</a>
+        <a href="#recipe" class="nav-item">The training recipe</a>
+        <a href="#examples" class="nav-item">Worked examples</a>
+        <a href="#food-for-thought" class="nav-item">Food for thought</a>
+        <a href="#pitfalls" class="nav-item">Common pitfalls</a>
+        <a href="#connects-to" class="nav-item">Connects to</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Supervised Learning</a>
+        <span class="sep">›</span>
+        <span>10 · Training Neural Networks</span>
+      </div>
+
+      <div class="lesson-title">10 · Training Neural Networks</div>
+      <div class="lesson-meta">SGD · Momentum · Adam · Batch Normalisation · Dropout · Learning Rate Schedules · The Training Recipe</div>
+
+      <div class="prose">
+        Backpropagation computes the gradient $\nabla_\theta \mathcal{L}$. The optimizer
+        decides what to do with it. This lesson covers the optimizer zoo — from vanilla SGD
+        to Adam — plus the regularization techniques that control generalization during
+        training. Together these are the practical craft of training neural networks: the
+        choices that determine whether a network converges at all, whether it generalizes,
+        and how long it takes. Modern LLMs use a specific combination of these techniques
+        (AdamW + cosine schedule + dropout + layer norm) and understanding why each piece
+        is there requires the full picture.
+      </div>
+
+      <!-- ── Section 1: SGD ─────────────────────────────────────────────── -->
+      <div class="section-head" id="sgd">Stochastic gradient descent</div>
+
+      <div class="prose">
+        Full-batch gradient descent updates weights using the gradient over the entire
+        training set:
+        $$\theta \leftarrow \theta - \eta \cdot \nabla_\theta \mathcal{L}(\theta; \mathcal{D})$$
+        This is expensive: one full pass through the data per update. For $n = 10^9$
+        examples and $P = 10^{11}$ parameters, a single update requires processing every
+        example before moving at all.
+      </div>
+
+      <div class="prose">
+        <strong>Stochastic gradient descent (SGD)</strong> uses a single randomly chosen
+        example (or, in practice, a small <em>mini-batch</em> of $B$ examples) per update:
+        $$g_t = \frac{1}{B} \sum_{i \in \mathcal{B}_t} \nabla_\theta \mathcal{L}(\theta; x_i, y_i)$$
+        $$\theta_{t+1} \leftarrow \theta_t - \eta \cdot g_t$$
+        The mini-batch gradient $g_t$ is an unbiased estimator of the true gradient:
+        $\mathbb{E}[g_t] = \nabla_\theta \mathcal{L}$. The variance comes from sampling a
+        random batch, not the entire dataset.
+      </div>
+
+      <div class="prose">
+        <strong>Why SGD works despite noisy gradients.</strong> The noise turns out to be
+        a feature, not a bug. Full-batch gradient descent is deterministic and often gets
+        stuck in sharp local minima — tiny regions where the loss is low but the surrounding
+        landscape is steep. SGD's noise allows it to escape these sharp minima and find
+        <em>flat</em> minima — regions where the loss is low and the Hessian eigenvalues
+        are small. Flat minima generalize better: a small perturbation to the weights
+        (from distribution shift) causes only a small change in loss. This connects to
+        the sharpness-aware minimization (SAM) literature and explains why "too large"
+        batch sizes often hurt generalization.
+      </div>
+
+      <div class="prose">
+        <strong>Typical batch sizes:</strong> $B = 32$–$256$ for most tasks. Very large
+        batches ($B > 10{,}000$) require proportionally increasing the learning rate
+        (linear scaling rule: $\eta \propto B$) and often still generalize less well.
+        Batch size 1 (pure stochastic) is noisiest but can be useful for online learning.
+      </div>
+
+      <!-- ── Section 2: Momentum ────────────────────────────────────────── -->
+      <div class="section-head" id="momentum">Momentum</div>
+
+      <div class="prose">
+        SGD with <strong>momentum</strong> accumulates a velocity vector that averages
+        gradients over time:
+        $$v_{t+1} = \beta v_t + g_t$$
+        $$\theta_{t+1} = \theta_t - \eta v_{t+1}$$
+        Here $\beta \in [0,1)$ is the momentum coefficient (typically 0.9). The velocity
+        $v_t$ is an exponentially weighted moving average of past gradients.
+      </div>
+
+      <div class="prose">
+        <strong>Why it helps:</strong> In the gradient direction, past gradients reinforce
+        the current gradient — the velocity builds up speed, like a ball rolling downhill.
+        In directions that oscillate (alternating positive/negative gradients), the past
+        and present gradients cancel, dampening oscillation. The net effect: faster
+        convergence along low-curvature dimensions, reduced oscillation along high-curvature
+        dimensions. The classic picture is a loss landscape with a narrow valley: vanilla
+        SGD bounces back and forth across the valley walls while moving slowly along the
+        valley floor; momentum dampens the bouncing and accelerates along the floor.
+      </div>
+
+      <div class="prose">
+        <strong>Nesterov momentum</strong> (Nesterov 1983) evaluates the gradient at
+        the "lookahead" position $\theta_t - \eta \beta v_t$ rather than at $\theta_t$:
+        $$v_{t+1} = \beta v_t + \nabla_\theta \mathcal{L}(\theta_t - \eta \beta v_t)$$
+        $$\theta_{t+1} = \theta_t - \eta v_{t+1}$$
+        Nesterov's analysis gives faster convergence rates for convex problems; empirically
+        it often converges slightly faster than standard momentum. PyTorch's SGD supports
+        both via the <code>nesterov=True</code> flag.
+      </div>
+
+      <!-- ── Section 3: RMSprop and Adam ───────────────────────────────── -->
+      <div class="section-head" id="adaptive">Adaptive learning rates: RMSprop and Adam</div>
+
+      <div class="prose">
+        Vanilla SGD uses the same learning rate $\eta$ for every parameter. Parameters
+        with consistently large gradients (the most informative directions) get large
+        updates; parameters with small gradients (relevant but rare features) get small
+        updates. Adaptive optimizers fix this by maintaining per-parameter learning rates,
+        automatically small for parameters with large recent gradients.
+      </div>
+
+      <div class="prose">
+        <strong>RMSprop</strong> (Hinton, 2012, unpublished lecture notes) maintains a
+        running estimate of the gradient's second moment:
+        $$s_{t+1} = \beta_2 s_t + (1-\beta_2) g_t^2$$
+        $$\theta_{t+1} = \theta_t - \frac{\eta}{\sqrt{s_{t+1}} + \varepsilon} \cdot g_t$$
+        where $g_t^2$ is elementwise squaring, $\beta_2 \approx 0.99$, and
+        $\varepsilon \approx 10^{-8}$ prevents division by zero. The effective learning
+        rate for parameter $i$ is $\eta / \sqrt{s_i}$: parameters with consistently large
+        gradients have large $s_i$ and small effective step size; parameters with small
+        gradients have small $s_i$ and larger steps.
+      </div>
+
+      <div class="prose">
+        <strong>Adam</strong> (Kingma &amp; Ba, 2014) combines momentum (first moment)
+        with RMSprop (second moment), adding bias correction for the initialization from zero:
+        $$m_{t+1} = \beta_1 m_t + (1-\beta_1) g_t \quad\quad\text{(first moment)}$$
+        $$v_{t+1} = \beta_2 v_t + (1-\beta_2) g_t^2 \quad\quad\text{(second moment)}$$
+        $$\hat{m}_{t+1} = \frac{m_{t+1}}{1-\beta_1^{t+1}}, \qquad \hat{v}_{t+1} = \frac{v_{t+1}}{1-\beta_2^{t+1}} \quad\quad\text{(bias correction)}$$
+        $$\theta_{t+1} = \theta_t - \eta \cdot \frac{\hat{m}_{t+1}}{\sqrt{\hat{v}_{t+1}} + \varepsilon}$$
+        Default hyperparameters: $\beta_1 = 0.9$, $\beta_2 = 0.999$, $\varepsilon = 10^{-8}$,
+        $\eta = 10^{-3}$. Adam works well with minimal tuning across a wide range of
+        architectures and tasks — it is the default optimizer for virtually all modern
+        deep learning.
+      </div>
+
+      <div class="prose">
+        <strong>Why bias correction?</strong> At $t=0$, $m_0 = 0$ and $v_0 = 0$. Without
+        correction, the first few updates use estimates heavily biased toward zero (because
+        $m_1 = (1-\beta_1)g_1 \ll g_1$). Dividing by $1 - \beta_1^t$ corrects this:
+        at $t=1$, $\hat{m}_1 = m_1 / (1-\beta_1) = g_1$, recovering the true gradient.
+        After many steps, $1 - \beta_1^t \to 1$ and the correction vanishes.
+      </div>
+
+      <div class="prose">
+        <strong>AdamW</strong> (Loshchilov &amp; Hutter 2017) separates weight decay
+        from the gradient update, applying decay directly to the weights rather than
+        folding it into the gradient:
+        $$\theta_{t+1} = \theta_t - \eta \left(\frac{\hat{m}_{t+1}}{\sqrt{\hat{v}_{t+1}} + \varepsilon} + \lambda \theta_t\right)$$
+        The difference matters because Adam's adaptive scaling affects the weight decay
+        term in standard Adam ($\nabla_\theta (\mathcal{L} + \lambda\|\theta\|^2/2)$
+        would scale the decay by $1/\sqrt{v}$). AdamW applies unscaled L2 decay,
+        which matches the intended regularization behaviour. AdamW is now the standard
+        optimizer for transformer-based LLMs.
+      </div>
+
+      <!-- ── Section 4: Learning rate schedules ────────────────────────── -->
+      <div class="section-head" id="schedules">Learning rate schedules</div>
+
+      <div class="prose">
+        The learning rate is the single most important hyperparameter. Too large: training
+        diverges or oscillates. Too small: training is uselessly slow. The key insight:
+        the <em>optimal</em> learning rate changes during training — initially large for
+        fast progress, then small for fine-tuning near a minimum.
+      </div>
+
+      <div class="prose">
+        <strong>Warmup.</strong> Start with a very small learning rate (e.g., $10^{-6}$)
+        and linearly increase to the target rate over the first few hundred to few thousand
+        steps. Motivation: at initialization, the network is far from optimal and the gradient
+        estimates are unreliable. Large initial steps can push parameters into bad regions
+        that are hard to recover from. Warmup is standard for transformers and recommended
+        for any large model.
+      </div>
+
+      <div class="prose">
+        <strong>Cosine annealing.</strong> After warmup, decay the learning rate following
+        a cosine curve from $\eta_{\max}$ to $\eta_{\min}$:
+        $$\eta_t = \eta_{\min} + \frac{1}{2}(\eta_{\max} - \eta_{\min})\left(1 + \cos\!\left(\frac{\pi t}{T}\right)\right)$$
+        where $T$ is the total number of steps. The cosine shape provides fast initial
+        descent (when far from the minimum) followed by gradual slowdown (when near).
+        Cosine annealing + warmup is the default schedule for GPT, BERT, and most modern
+        LLMs.
+      </div>
+
+      <div class="prose">
+        <strong>Step decay.</strong> Reduce $\eta$ by a fixed factor (e.g., divide by 10)
+        every $k$ epochs. Simple and effective for image classification (the original
+        ResNet training used step decay at epochs 30, 60, 90). Less smooth than cosine.
+      </div>
+
+      <div class="prose">
+        <strong>Cyclical learning rates</strong> (Smith 2017) and
+        <strong>one-cycle policy</strong> (Smith &amp; Topin 2019): vary the learning
+        rate cyclically between a minimum and maximum, often allowing <em>superconvergence</em>
+        — reaching low test error in far fewer epochs. The intuition: the high-LR phase
+        explores the loss landscape broadly; the low-LR phase refines. Used in practice
+        with fastai and similar libraries.
+      </div>
+
+      <!-- ── Section 5: Batch normalisation ───────────────────────────── -->
+      <div class="section-head" id="batch-norm">Batch normalisation</div>
+
+      <div class="prose">
+        <strong>Internal covariate shift:</strong> as the network trains, the distribution
+        of each layer's inputs changes (because the weights of preceding layers change).
+        This makes the learning problem harder — each layer must continually adapt to a
+        shifting input distribution, similar to playing a game where the rules change each
+        round.
+      </div>
+
+      <div class="prose">
+        <strong>Batch normalisation (BN)</strong> (Ioffe &amp; Szegedy 2015) normalises
+        each layer's pre-activations to zero mean and unit variance over the mini-batch,
+        then applies learned scale and shift parameters:
+        $$\hat{z}_i = \frac{z_i - \mu_{\mathcal{B}}}{\sqrt{\sigma_{\mathcal{B}}^2 + \varepsilon}}, \qquad
+          \tilde{z}_i = \gamma \hat{z}_i + \beta$$
+        where $\mu_{\mathcal{B}}$ and $\sigma_{\mathcal{B}}^2$ are the mini-batch mean
+        and variance, and $\gamma, \beta$ are learnable parameters (one per feature).
+        This normalisation is applied to each feature dimension independently.
+      </div>
+
+      <div class="prose">
+        <strong>Effects:</strong> (1) allows much larger learning rates — the gradient
+        doesn't need to deal with badly scaled inputs; (2) acts as a regularizer — the
+        noise from batch statistics has a regularizing effect, sometimes reducing the
+        need for dropout; (3) reduces sensitivity to initialization. BN was transformative:
+        it enabled training ResNets with hundreds of layers.
+      </div>
+
+      <div class="prose">
+        <strong>At inference time:</strong> batch statistics are replaced by
+        <em>running statistics</em> accumulated during training (exponential moving
+        averages of $\mu$ and $\sigma^2$). The network sees consistent normalisation
+        whether it's given a batch of 128 examples or a single example.
+      </div>
+
+      <div class="prose">
+        <strong>Layer normalisation (LN)</strong> normalises across <em>features</em> rather
+        than across the batch dimension. For input $\mathbf{z} \in \mathbb{R}^d$:
+        $$\hat{z}_j = \frac{z_j - \mu}{\sqrt{\sigma^2 + \varepsilon}}, \quad
+          \mu = \frac{1}{d}\sum_j z_j, \quad \sigma^2 = \frac{1}{d}\sum_j (z_j - \mu)^2$$
+        LN does not depend on the batch, making it suitable for variable-length sequences
+        and single-example inference. The Transformer uses layer normalisation, not batch
+        normalisation — LN is placed inside the residual stream at each layer.
+      </div>
+
+      <!-- ── Section 6: Dropout ─────────────────────────────────────────── -->
+      <div class="section-head" id="dropout">Dropout</div>
+
+      <div class="prose">
+        <strong>Dropout</strong> (Srivastava et al. 2014) is a regularization technique
+        that randomly zeroes each neuron's activation with probability $p$ during training:
+        $$\tilde{h}_i = \frac{1}{1-p} \cdot h_i \cdot \text{Bernoulli}(1-p)$$
+        The $\frac{1}{1-p}$ scaling (inverted dropout) ensures the expected value
+        $\mathbb{E}[\tilde{h}_i] = h_i$ — output scale is preserved at test time, so no
+        modification is needed at inference. At test time, dropout is turned off.
+      </div>
+
+      <div class="prose">
+        <strong>Why it works.</strong> Dropout prevents units from co-adapting: if a
+        unit knows its neighbors may be dropped, it cannot rely on them and must learn
+        features that are independently useful. Equivalently, dropout trains an ensemble
+        of $2^N$ thinned networks (one for each possible dropout mask) that share weights —
+        the full network at test time is approximately their geometric mean. This
+        ensemble interpretation explains the generalization benefit: the implicit ensemble
+        reduces variance, as in bagging (Lesson 7).
+      </div>
+
+      <div class="prose">
+        Typical dropout rates: $p = 0.5$ for fully connected layers, $p = 0.1$–$0.3$ for
+        convolutional layers and Transformers. The Transformer applies dropout to attention
+        weights and to the feedforward sub-layer outputs.
+      </div>
+
+      <!-- ── Section 7: Early stopping ─────────────────────────────────── -->
+      <div class="section-head" id="early-stopping">Early stopping and monitoring</div>
+
+      <div class="prose">
+        <strong>Early stopping</strong> halts training when the validation loss stops
+        improving, restoring the best checkpoint seen during training. It is one of the
+        most effective regularization techniques: training loss always decreases, but
+        validation loss eventually increases as the model overfits. Stopping at the
+        minimum of the validation loss finds the model that generalizes best.
+      </div>
+
+      <div class="prose">
+        Implementation: track validation loss every $k$ steps. If it has not improved
+        in $p$ consecutive evaluations (the <em>patience</em>), stop and restore the
+        best checkpoint. Typical patience: 5–20 epochs for small models, many more for
+        LLMs (where improvement is slow and noisy).
+      </div>
+
+      <div class="prose">
+        <strong>Monitoring metrics beyond loss:</strong>
+      </div>
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:8px;"><strong>Gradient norms per layer:</strong> should be
+          $O(1)$ — if they're $10^{-8}$, gradients are vanishing; if $10^4$, they're exploding.</li>
+        <li style="margin-bottom:8px;"><strong>Activation statistics:</strong> mean and
+          variance of each layer's activations should stay stable. All-zero or all-saturated
+          activations indicate pathological behaviour.</li>
+        <li style="margin-bottom:8px;"><strong>Parameter update magnitudes:</strong>
+          the update-to-parameter ratio $\|\Delta\theta\| / \|\theta\|$ should be roughly
+          $10^{-3}$ — much larger indicates too high a learning rate.</li>
+        <li><strong>Train/validation gap:</strong> if train loss is low but validation loss
+          is high and growing, the model is overfitting. If both losses are high and
+          decreasing slowly, the model is underfitting.</li>
+      </ul>
+
+      <!-- ── Section 8: The training recipe ───────────────────────────── -->
+      <div class="section-head" id="recipe">The training recipe</div>
+
+      <div class="prose">
+        A concrete checklist for training a new neural network, assembled from the preceding
+        techniques:
+      </div>
+
+      <ol class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:12px;"><strong>Initialise carefully.</strong>
+          He initialisation for ReLU, Xavier for sigmoid/tanh. Verify that forward-pass
+          activations are $O(1)$ before training begins.</li>
+        <li style="margin-bottom:12px;"><strong>Choose an optimizer.</strong>
+          Adam or AdamW for most tasks. SGD + momentum for image classification (better
+          generalization when well-tuned). Default Adam hyperparameters work for most tasks.</li>
+        <li style="margin-bottom:12px;"><strong>Set a learning rate schedule.</strong>
+          Warmup for the first 1–5% of total steps, then cosine decay to $\eta_{\min} \approx \eta_{\max}/10$.
+          Or: use a learning rate finder — sweep from $10^{-7}$ to 10 over one epoch, plot
+          loss vs. $\log(\eta)$, pick the rate just before loss starts increasing.</li>
+        <li style="margin-bottom:12px;"><strong>Normalise.</strong>
+          Batch norm for CNNs. Layer norm for Transformers and RNNs. Normalise input
+          features to zero mean, unit variance.</li>
+        <li style="margin-bottom:12px;"><strong>Regularise.</strong>
+          Start with dropout ($p = 0.1$–$0.5$ depending on layer type) and L2 weight decay
+          ($\lambda = 10^{-4}$–$10^{-2}$). Add data augmentation for vision. Use early
+          stopping with validation monitoring.</li>
+        <li style="margin-bottom:12px;"><strong>Start small.</strong>
+          Overfit a tiny batch (5–10 examples) first. If the network can't perfectly
+          memorize 5 examples, the architecture or implementation is broken. This sanity
+          check catches 90% of bugs before expensive training runs.</li>
+        <li><strong>Scale carefully.</strong>
+          Once the small experiment works, scale batch size, model size, and dataset
+          size — in that order. Log gradient norms, activation statistics, and
+          train/val gap throughout.</li>
+      </ol>
+
+      <!-- ── Worked examples ─────────────────────────────────────────────── -->
+      <div class="section-head" id="examples">Worked examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Adam update computation</strong></div>
+        <div class="example-problem">
+          <p>A single scalar parameter $\theta = 1.0$. At step $t=1$, the gradient is
+          $g_1 = 0.5$. Compute the Adam update with default hyperparameters
+          $\beta_1 = 0.9$, $\beta_2 = 0.999$, $\varepsilon = 10^{-8}$, $\eta = 10^{-3}$.
+          All moments initialised to zero.</p>
+        </div>
+        <div class="example-body">
+          <p><strong>First moment:</strong> $m_1 = 0.9 \times 0 + 0.1 \times 0.5 = 0.05$</p>
+          <p><strong>Second moment:</strong> $v_1 = 0.999 \times 0 + 0.001 \times (0.5)^2 = 0.00025$</p>
+          <p><strong>Bias-corrected first moment:</strong>
+          $\hat{m}_1 = \frac{0.05}{1 - 0.9^1} = \frac{0.05}{0.1} = 0.5$</p>
+          <p><strong>Bias-corrected second moment:</strong>
+          $\hat{v}_1 = \frac{0.00025}{1 - 0.999^1} = \frac{0.00025}{0.001} = 0.25$</p>
+          <p><strong>Update:</strong>
+          $\theta_2 = 1.0 - 10^{-3} \cdot \frac{0.5}{\sqrt{0.25} + 10^{-8}} = 1.0 - 10^{-3} \cdot \frac{0.5}{0.5} = 1.0 - 10^{-3} = 0.999$</p>
+          <p>Notice: the bias correction recovers the true gradient at $t=1$ ($\hat{m}_1 = 0.5 = g_1$,
+          $\hat{v}_1 = g_1^2 = 0.25$), so the first Adam step is effectively just
+          $\theta \leftarrow \theta - \eta \cdot \text{sign}(g_1)$. Without bias correction,
+          $m_1 / \sqrt{v_1} = 0.05 / \sqrt{0.00025} \approx 3.16$, which would give a step
+          of $3.16 \times 10^{-3}$ — a 3× overestimate of the correct normalized gradient.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Diagnosing training from curves</strong></div>
+        <div class="example-problem">
+          <p>Describe what is happening in each training scenario and what to do:
+          (a) Training loss decreases steadily but validation loss increases after epoch 5.
+          (b) Both training and validation loss plateau after epoch 2, well above target.
+          (c) Loss explodes to NaN on step 3.</p>
+        </div>
+        <div class="example-body">
+          <p><strong>(a) Classic overfitting.</strong> The model has memorized the training
+          set but not generalized. Actions: add dropout or increase dropout rate; add L2
+          weight decay; reduce model capacity (fewer layers/neurons); augment training
+          data; use early stopping at epoch 5.</p>
+          <p><strong>(b) Underfitting / training stall.</strong> The model lacks capacity
+          or is not learning. Actions: increase learning rate (the plateau may be a
+          learning rate that is too small to escape the initial region); try a different
+          optimizer (Adam instead of SGD); increase model capacity; check for bugs
+          (frozen layers, incorrect loss, labels permuted).</p>
+          <p><strong>(c) Loss explosion.</strong> Common causes: learning rate too large
+          (reduces the loss to NaN in the first few steps); exploding gradients (use
+          gradient clipping, clip norm to 1.0 or 5.0); NaN in input data or labels
+          (check for missing values, division by zero in preprocessing); bad initialisation
+          (very large initial weights). First action: reduce $\eta$ by 10×.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Batch norm forward pass</strong></div>
+        <div class="example-problem">
+          <p>A batch of 3 examples passes through a single-feature batch norm layer.
+          Pre-activations: $z_1 = 2$, $z_2 = 4$, $z_3 = 6$. Learned parameters:
+          $\gamma = 2$, $\beta = 1$, $\varepsilon = 0$. Compute the BN outputs.</p>
+        </div>
+        <div class="example-body">
+          <p>Batch mean: $\mu = (2+4+6)/3 = 4$</p>
+          <p>Batch variance: $\sigma^2 = \frac{(2-4)^2+(4-4)^2+(6-4)^2}{3} = \frac{4+0+4}{3} = \frac{8}{3}$</p>
+          <p>Normalised:
+          $$\hat{z}_1 = \frac{2-4}{\sqrt{8/3}} = \frac{-2}{1.633} \approx -1.225$$
+          $$\hat{z}_2 = 0, \qquad \hat{z}_3 \approx +1.225$$</p>
+          <p>Scaled and shifted ($\gamma=2$, $\beta=1$):
+          $$\tilde{z}_1 = 2 \times (-1.225) + 1 \approx -1.449$$
+          $$\tilde{z}_2 = 2 \times 0 + 1 = 1$$
+          $$\tilde{z}_3 \approx 2 \times 1.225 + 1 = 3.449$$</p>
+          <p>The output distribution has mean 1 and is stretched by $\gamma = 2$.
+          If $\gamma = 1$ and $\beta = 0$ (the initialisation), BN would output
+          zero-mean unit-variance activations regardless of the input scale.
+          The learned $\gamma$ and $\beta$ allow the network to undo the normalisation
+          if it is beneficial — BN does not permanently force unit-variance activations,
+          it just provides an initialisation that is much easier to optimise from.</p>
+        </div>
+      </div>
+
+      <!-- ── Food for thought ────────────────────────────────────────────── -->
+      <div class="section-head" id="food-for-thought">Food for thought</div>
+
+      <ul class="fft-list">
+        <li class="fft-item">
+          Adam uses a per-parameter adaptive learning rate. Why does this sometimes
+          generalize worse than SGD + momentum, despite converging faster?
+          <div class="fft-answer">
+            This is an active research area, but the best understanding is: Adam's
+            adaptive scaling makes the effective loss landscape smoother and easier to
+            navigate, but the minima it finds tend to be <em>sharper</em> than those
+            found by SGD. Sharp minima correspond to regions where small weight perturbations
+            cause large loss increases — which is what happens under distribution shift
+            (the model encounters slightly different inputs at test time). SGD's noisier,
+            less adaptive updates act as implicit regularization toward flatter minima.
+            Wilson et al. (2017) demonstrated this empirically on image benchmarks;
+            subsequent work (e.g., SAM, AdaHessian) has tried to give Adam SGD's flat-minima
+            preference. In practice: Adam is the default for transformers and NLP; SGD + momentum
+            (often with a cosine schedule) remains competitive on image classification.
+          </div>
+        </li>
+        <li class="fft-item">
+          Dropout at test time should be off — the full network is used. But some
+          practitioners deliberately leave dropout on at test time and average multiple
+          stochastic forward passes. Why, and when is this useful?
+          <div class="fft-answer">
+            This is called <em>MC Dropout</em> (Monte Carlo Dropout, Gal &amp; Ghahramani 2016).
+            Running multiple forward passes with different dropout masks and averaging the
+            predictions approximates Bayesian inference in a neural network: the spread
+            of predictions across masks is a measure of the model's uncertainty. Unlike
+            a standard point prediction, MC Dropout can output "I don't know" — a high
+            variance across forward passes signals that the input is unlike the training
+            distribution. This is useful in high-stakes settings (medical diagnosis,
+            autonomous driving) where knowing the model is uncertain is as important as
+            the prediction itself. The theoretical justification (dropout corresponds to a
+            variational approximation to a Gaussian process) is debated, but it's practical
+            and cheap.
+          </div>
+        </li>
+        <li class="fft-item">
+          Why is learning rate warmup particularly important for transformers but less
+          critical for CNNs?
+          <div class="fft-answer">
+            Transformers initialise with random attention weights that are initially
+            nearly uniform — every token attends equally to every other token. The gradient
+            of the loss with respect to the attention weights starts very small (because
+            attention is diffuse, the output is a nearly equal mixture of all tokens, and
+            the directional signal is weak). A large initial learning rate in this regime
+            causes arbitrary large steps to poorly-specified parameters before the
+            attention mechanism has learned to focus. CNNs, by contrast, have local
+            receptive fields — each filter sees only a small image patch — and the initial
+            gradients are more informative from the start. Additionally, transformers
+            often have many residual streams (96 layers in GPT-3) and layer normalisation;
+            without warmup, early large updates destabilise the normalisation statistics
+            and can cascade across layers.
+          </div>
+        </li>
+      </ul>
+
+      <!-- ── Common pitfalls ─────────────────────────────────────────────── -->
+      <div class="section-head" id="pitfalls">Common pitfalls</div>
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:14px;">
+          <strong>Tuning hyperparameters on the test set.</strong>
+          Every time you evaluate on the test set and use that information to make a
+          decision (change architecture, learning rate, etc.), you are overfitting to
+          the test set. The test set should be used exactly once — at the end — to
+          report final performance. Use a held-out validation set for all tuning.
+        </li>
+        <li style="margin-bottom:14px;">
+          <strong>Forgetting to call <code>model.eval()</code> at test time.</strong>
+          In PyTorch, batch normalisation uses batch statistics in training mode and
+          running statistics in eval mode. Dropout is active in training mode and off
+          in eval mode. Forgetting <code>model.eval()</code> before evaluation causes
+          incorrect BN statistics and random dropout — the "test" metrics will be wrong
+          and will vary between evaluation calls.
+        </li>
+        <li style="margin-bottom:14px;">
+          <strong>Using a learning rate that's too high for Adam.</strong>
+          Adam's default $\eta = 10^{-3}$ is a reasonable starting point for most tasks,
+          but for fine-tuning pretrained models (e.g., fine-tuning a pretrained language
+          model), use $\eta \approx 10^{-5}$–$10^{-4}$. Too high a learning rate during
+          fine-tuning causes "catastrophic forgetting" — the pretrained weights are
+          destroyed before the new task is learned.
+        </li>
+        <li style="margin-bottom:14px;">
+          <strong>Applying batch normalisation after ReLU instead of before.</strong>
+          BN before the activation (pre-activation) is more principled: normalise the
+          linear output, then apply the nonlinearity. Post-activation BN is also common
+          in practice and works fine, but the original BN paper and subsequent resnet
+          ablations find pre-activation (resnet v2 style) slightly better.
+        </li>
+        <li>
+          <strong>Not shuffling training data.</strong>
+          If the training data is sorted (all class 0 examples first, then all class 1,
+          etc.), mini-batches at the start of each epoch see only class 0, and early
+          updates will be biased. Shuffle the dataset before each epoch. PyTorch's
+          DataLoader does this with <code>shuffle=True</code>.
+        </li>
+      </ul>
+
+      <!-- ── Connects to ─────────────────────────────────────────────────── -->
+      <div class="section-head" id="connects-to">Connects to</div>
+
+      <div class="prose">
+        <strong>Probabilistic Perspectives (Lesson 11)</strong> — L2 weight decay is
+        equivalent to a Gaussian prior on the weights (MAP estimation). Dropout has a
+        Bayesian interpretation as approximate variational inference. The training
+        objective (cross-entropy or MSE) is maximum likelihood. Understanding the
+        probabilistic view unifies all these regularization techniques and explains
+        why they work.
+      </div>
+      <div class="prose">
+        <strong>Deep Learning cluster — Transformers</strong>: the standard LLM training
+        recipe is AdamW + linear warmup + cosine decay + layer norm + dropout (0.1) +
+        gradient clipping (norm 1.0) + BF16 mixed precision. Every component was covered
+        in this lesson. The only new ingredient in the Deep Learning cluster will be
+        the architecture that defines the forward pass — the attention mechanism.
+      </div>
+      <div class="prose">
+        <strong>Optimization cluster (planned)</strong>: the convergence proofs for SGD
+        (sublinear rate for convex losses, linear rate for strongly convex), the geometry
+        of loss landscapes, saddle points vs. local minima, and the theoretical guarantees
+        for Adam.
+      </div>
+
+      <!-- ── Lesson nav ──────────────────────────────────────────────────── -->
+      <div class="lesson-nav">
+        <a href="backpropagation.html" class="lesson-nav-btn">← 9 · Backpropagation</a>
+        <a href="probabilistic.html" class="lesson-nav-btn">11 · Probabilistic Perspectives →</a>
+      </div>
+
+    </div><!-- /main -->
+  </div><!-- /page-body -->
+</div><!-- /site-wrap -->
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+
+</body>
+</html>

@@ -11,20 +11,17 @@
         {
           "href": "linear-regression.html",
           "text": "2 · Linear Regression",
-          "topics": "Least squares · normal equation · gradient descent · polynomial features · ridge regression · geometry of regression",
-          "planned": true
+          "topics": "Least squares · normal equation · gradient descent · polynomial features · ridge regression · geometry of regression"
         },
         {
           "href": "classification.html",
           "text": "3 · Classification &amp; Logistic Regression",
-          "topics": "Decision boundaries · sigmoid · cross-entropy loss · gradient descent for classification · softmax · evaluation metrics",
-          "planned": true
+          "topics": "Decision boundaries · sigmoid · cross-entropy loss · gradient descent for classification · softmax · evaluation metrics"
         },
         {
           "href": "generalization.html",
           "text": "4 · Generalization &amp; Regularization",
-          "topics": "Bias-variance decomposition · cross-validation · L1/L2 regularization · learning curves · model selection",
-          "planned": true
+          "topics": "Bias-variance decomposition · cross-validation · L1/L2 regularization · learning curves · model selection"
         }
       ]
     },
@@ -57,26 +54,22 @@
         {
           "href": "neural-networks.html",
           "text": "8 · Neural Networks",
-          "topics": "Perceptron · multi-layer networks · activation functions · universal approximation theorem · forward pass",
-          "planned": true
+          "topics": "Perceptron · multi-layer networks · activation functions · universal approximation theorem · forward pass"
         },
         {
           "href": "backpropagation.html",
           "text": "9 · Backpropagation",
-          "topics": "Computation graphs · chain rule · automatic differentiation · gradient flow · vanishing gradients · weight initialisation",
-          "planned": true
+          "topics": "Computation graphs · chain rule · automatic differentiation · gradient flow · vanishing gradients · weight initialisation"
         },
         {
           "href": "training.html",
           "text": "10 · Training Neural Networks",
-          "topics": "SGD · momentum · Adam · batch normalisation · dropout · learning rate schedules · early stopping",
-          "planned": true
+          "topics": "SGD · momentum · Adam · batch normalisation · dropout · learning rate schedules · early stopping"
         },
         {
           "href": "probabilistic.html",
           "text": "11 · Probabilistic Perspectives",
-          "topics": "Maximum likelihood · MAP estimation · Bayesian view · generative vs discriminative · Naive Bayes",
-          "planned": true
+          "topics": "Maximum likelihood · MAP estimation · Bayesian view · generative vs discriminative · Naive Bayes"
         }
       ]
     }
