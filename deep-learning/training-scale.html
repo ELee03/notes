@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Training at Scale — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false}
+        ],
+        throwOnError: false
+      });
+    });
+  </script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Prerequisites</div>
+        <a href="bert-gpt.html" class="nav-item">DL7 · BERT &amp; GPT</a>
+      </div>
+
+      <div id="cluster-nav" data-cluster="deep-learning" data-current="training-scale.html"></div>
+
+      <hr class="sidebar-rule">
+
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#why-scale-matters" class="nav-item">Why scale matters</a>
+        <a href="#numerical-formats" class="nav-item">Numerical formats</a>
+        <a href="#mixed-precision" class="nav-item">Mixed precision training</a>
+        <a href="#memory-pressure" class="nav-item">Memory pressure</a>
+        <a href="#gradient-checkpointing" class="nav-item">Gradient checkpointing</a>
+        <a href="#data-parallelism" class="nav-item">Data parallelism</a>
+        <a href="#model-parallelism" class="nav-item">Tensor &amp; pipeline parallelism</a>
+        <a href="#zero-optimizer" class="nav-item">ZeRO optimizer</a>
+        <a href="#flash-attention" class="nav-item">Flash Attention</a>
+        <a href="#examples" class="nav-item">Worked examples</a>
+        <a href="#food-for-thought" class="nav-item">Food for thought</a>
+        <a href="#connects-to" class="nav-item">Connects to</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Deep Learning</a>
+        <span class="sep">›</span>
+        <span>8 · Training at Scale</span>
+      </div>
+
+      <div class="lesson-title">8 · Training at Scale</div>
+      <div class="lesson-meta">Mixed Precision · Memory Optimisation · Data / Tensor / Pipeline Parallelism · ZeRO · Flash Attention</div>
+
+      <div class="prose">
+        GPT-3 has 175 billion parameters. Training it took 3.14 × 10²³ floating-point operations,
+        required roughly 1,000 A100 GPUs for several months, and cost an estimated $4–12M in compute.
+        Modern LLMs are now 10× larger. The bottleneck is not algorithmic — we know how to train
+        transformers. The bottleneck is engineering: fitting the model and its gradients in memory,
+        moving data fast enough to keep GPUs busy, and coordinating thousands of devices without
+        stalling. This lesson covers the hardware-aware techniques that make large-scale training
+        possible: numerical format tricks (FP16/BF16), memory-reduction algorithms (gradient
+        checkpointing, ZeRO), parallelism strategies (data, tensor, pipeline), and IO-aware attention
+        (Flash Attention). These are not research curiosities — they are the standard toolkit for
+        any serious deep learning practitioner.
+      </div>
+
+      <!-- ── Section 1: Why scale matters ──────────────────────────────── -->
+      <div class="section-head" id="why-scale-matters">Why scale matters</div>
+
+      <div class="prose">
+        The empirical observation that more compute, more data, and more parameters reliably
+        improve downstream task performance is called the <strong>scaling hypothesis</strong>.
+        Formalised by Kaplan et al. (2020) as neural scaling laws and refined by Hoffmann et al.
+        (2022, "Chinchilla"), the key result is:
+        $$L(N, D) \approx L_\infty + \frac{A}{N^\alpha} + \frac{B}{D^\beta}$$
+        with $\alpha \approx 0.076$, $\beta \approx 0.095$ (for language models). For a fixed compute
+        budget $C \approx 6ND$, the optimal allocation is $N^* \approx D^* \approx \sqrt{C/6}$ —
+        equal scaling of parameters and training tokens. Most GPT-era models were under-trained
+        (too many parameters for their token budget); Chinchilla-optimal models have fewer parameters
+        but much more data.
+      </div>
+
+      <div class="prose">
+        These laws have a direct implication: to reach state-of-the-art loss, you need massive compute.
+        Maximising the amount of useful computation per second — <em>hardware utilisation</em> — is
+        therefore the central engineering challenge. The techniques in this lesson are all about
+        eliminating waste: wasted memory bandwidth, wasted DRAM footprint, wasted synchronisation time.
+      </div>
+
+      <!-- ── Section 2: Numerical formats ─────────────────────────────── -->
+      <div class="section-head" id="numerical-formats">Numerical formats</div>
+
+      <div class="prose">
+        GPUs execute arithmetic fastest in low-precision formats. The key formats:
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Format</th>
+              <th>Bits</th>
+              <th>Exponent bits</th>
+              <th>Mantissa bits</th>
+              <th>Dynamic range</th>
+              <th>Precision</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>FP32</td>
+              <td>32</td>
+              <td>8</td>
+              <td>23</td>
+              <td>~10<sup>±38</sup></td>
+              <td>~7 decimal digits</td>
+            </tr>
+            <tr>
+              <td>FP16</td>
+              <td>16</td>
+              <td>5</td>
+              <td>10</td>
+              <td>~10<sup>±4.8</sup></td>
+              <td>~3 decimal digits</td>
+            </tr>
+            <tr>
+              <td>BF16</td>
+              <td>16</td>
+              <td>8</td>
+              <td>7</td>
+              <td>~10<sup>±38</sup></td>
+              <td>~2 decimal digits</td>
+            </tr>
+            <tr>
+              <td>FP8</td>
+              <td>8</td>
+              <td>4 or 5</td>
+              <td>3 or 2</td>
+              <td>—</td>
+              <td>Used in inference/fine-tuning</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="prose">
+        <strong>BF16 vs FP16:</strong> BF16 (Brain Float 16, Google 2019) preserves the FP32 exponent
+        range by keeping all 8 exponent bits but reducing mantissa precision. This avoids the
+        <em>overflow and underflow</em> problems that plague FP16 training (gradient norms can easily
+        exceed FP16's max of ~65,504). Modern A100/H100 hardware supports BF16 natively and at the
+        same speed as FP16 — BF16 is now the default for large model training. FP16 is still used
+        in older pipelines (V100 era) and requires <em>loss scaling</em> to handle underflowing gradients.
+      </div>
+
+      <!-- ── Section 3: Mixed precision ─────────────────────────────────── -->
+      <div class="section-head" id="mixed-precision">Mixed precision training</div>
+
+      <div class="proof-box">
+        <div class="proof-header">Mixed precision training algorithm (Micikevicius et al. 2018)</div>
+        <div class="proof-body">
+          <p>Mixed precision stores the <em>master copy</em> of weights in FP32 but does forward
+          and backward passes in FP16 (or BF16). The steps per iteration:</p>
+          <ol>
+            <li><strong>Cast down:</strong> copy FP32 master weights → FP16 working copy.</li>
+            <li><strong>Forward pass:</strong> compute activations in FP16 (fast tensor cores).</li>
+            <li><strong>Compute loss:</strong> in FP32 or FP16; scale if using FP16.</li>
+            <li><strong>Backward pass:</strong> compute gradients in FP16.</li>
+            <li><strong>Cast up + update:</strong> convert FP16 gradients → FP32; add to FP32 master weights via Adam/AdamW.</li>
+          </ol>
+          <p><strong>Why keep FP32 master weights?</strong>
+          Gradient updates can be very small (e.g., $\Delta w \approx 10^{-7}$). In FP16, a weight
+          of magnitude 1.0 and an update of $10^{-7}$ cannot be represented — the update is rounded
+          to zero and weight updates stall. The FP32 master copy preserves these small updates.
+          After accumulation over many steps, the change becomes significant enough to matter.</p>
+          <p><strong>Loss scaling (FP16 only):</strong>
+          Gradients in FP16 can underflow to zero if they are very small. The fix: multiply the
+          loss by a large scalar $S$ (e.g., $S = 2^{15}$) before backward pass, so gradients are
+          also scaled by $S$. After backward, divide gradients by $S$ before updating weights.
+          The gradients are now within FP16's representable range.
+          Dynamic loss scaling: start with large $S$, halve it if a gradient is NaN or inf,
+          double it every $K$ steps if no overflow — adapts automatically.
+          BF16 avoids this entirely due to its FP32-matching exponent range.</p>
+        </div>
+      </div>
+
+      <!-- ── Section 4: Memory pressure ────────────────────────────────── -->
+      <div class="section-head" id="memory-pressure">Memory pressure during training</div>
+
+      <div class="prose">
+        Training a large model requires memory for: (1) <strong>parameters</strong> $\Theta$,
+        (2) <strong>gradients</strong> $\nabla_\Theta \mathcal{L}$ (same size as parameters),
+        (3) <strong>optimiser states</strong> (Adam keeps first and second moment estimates —
+        2× the parameter count), (4) <strong>activations</strong> stored during forward pass
+        for use in backward pass, and (5) <strong>working buffers</strong>.
+      </div>
+
+      <div class="prose">
+        For a 7B-parameter model in FP32: parameters alone take $7 \times 10^9 \times 4 \text{ bytes} = 28\text{ GB}$.
+        Gradients: another 28 GB. Adam moments (2 per parameter): 56 GB. Total optimizer state + weights:
+        ~112 GB. An A100 has 80 GB of HBM. Even in BF16, the mixed-precision recipe stores FP32 master weights
+        and optimizer states: $7 \times 10^9 \times (2 + 4 + 4 \times 2) \text{ bytes} = 98\text{ GB}$.
+        Plus activations during training. This is why distributed training is unavoidable above ~7B parameters.
+      </div>
+
+      <!-- ── Section 5: Gradient checkpointing ─────────────────────────── -->
+      <div class="section-head" id="gradient-checkpointing">Gradient checkpointing (activation recomputation)</div>
+
+      <div class="proof-box">
+        <div class="proof-header">Gradient checkpointing — memory vs. compute tradeoff</div>
+        <div class="proof-body">
+          <p>Standard backpropagation stores all intermediate activations from the forward pass.
+          For a Transformer with $L$ layers and sequence length $S$, this costs
+          $O(L \cdot S \cdot d_\text{model})$ memory — e.g., GPT-3 with $L=96$, $S=2048$, $d=12288$:
+          $\approx 2.4 \times 10^9$ activation values = ~9.6 GB in FP32. This dominates memory
+          for long sequences.</p>
+
+          <p><strong>Idea:</strong> Instead of storing all activations, only keep checkpoints at
+          certain layers. During backpropagation, when the gradient at a non-checkpointed layer
+          is needed, recompute the forward pass from the nearest checkpoint.</p>
+
+          <p><strong>Full recomputation (most aggressive):</strong> Store only layer inputs
+          (not intermediate activations within each layer). Recompute each layer's internals
+          during backward. Memory: $O(L)$ for checkpoints + $O(1)$ per layer during recomputation.
+          Cost: one extra forward pass per batch — roughly 33% more compute. Total FLOPs becomes
+          $4/3$ of standard backpropagation.</p>
+
+          <p><strong>Selective checkpointing:</strong> Store only computationally cheap activations
+          (e.g., LayerNorm outputs, softmax outputs) and recompute expensive ones (attention QKV
+          projections). FlashAttention uses this internally — it recomputes attention matrices
+          during backward rather than storing them, saving the $O(S^2)$ attention weight matrix.
+          Most implementations offer granularity: full, selective, or per-transformer-block checkpointing.</p>
+        </div>
+      </div>
+
+      <!-- ── Section 6: Data parallelism ───────────────────────────────── -->
+      <div class="section-head" id="data-parallelism">Data parallelism</div>
+
+      <div class="prose">
+        In <strong>data parallelism</strong> (DP), each device holds a complete copy of the model
+        and processes a different mini-batch. After each backward pass, gradients are averaged
+        across all devices with an <code>AllReduce</code> operation. Each device then applies
+        the same gradient update to its local copy, keeping all replicas in sync.
+        Data parallelism scales the effective batch size linearly with the number of devices.
+        It is simple, widely supported (PyTorch <code>DistributedDataParallel</code>), and
+        sufficient when the model fits in a single device's memory.
+      </div>
+
+      <div class="prose">
+        <strong>AllReduce communication:</strong> Summing gradients across $N$ devices naively
+        requires $O(N)$ peer-to-peer communication from a coordinator. <em>Ring AllReduce</em>
+        (Baidu 2017) arranges devices in a ring: each device passes its gradients to the next,
+        accumulating the sum. Each gradient element is communicated exactly twice (reduce-scatter
+        + all-gather), giving $O(1/N)$ communication per device-pair — communication scales
+        independently of $N$ in total data terms. This is why data parallelism can scale to
+        thousands of GPUs.
+      </div>
+
+      <!-- ── Section 7: Model parallelism ──────────────────────────────── -->
+      <div class="section-head" id="model-parallelism">Tensor parallelism and pipeline parallelism</div>
+
+      <div class="prose">
+        When the model itself does not fit in a single device, we must split it across devices.
+        Two complementary approaches:
+      </div>
+
+      <div class="prose">
+        <strong>Tensor parallelism (Megatron-LM, 2019).</strong> Split individual tensors across
+        devices. For the FFN sublayer in a Transformer: the first linear layer weight
+        $W_1 \in \mathbb{R}^{d \times d_\text{ff}}$ is column-split across $k$ GPUs, each holding
+        $W_1^{(i)} \in \mathbb{R}^{d \times d_\text{ff}/k}$. The second layer $W_2$ is row-split
+        correspondingly. The forward pass is: each GPU computes part of the FFN output, then an
+        AllReduce sums the partial results. Attention heads are naturally split across GPUs (each
+        GPU handles $h/k$ attention heads). Tensor parallelism requires synchronisation after every
+        layer — it operates within a node (fast NVLink interconnect) to keep communication overhead low.
+      </div>
+
+      <div class="prose">
+        <strong>Pipeline parallelism (GPipe, PipeDream).</strong> Assign different <em>layers</em>
+        to different devices: device 1 runs layers 1–$L/k$, device 2 runs layers $L/k+1$–$2L/k$,
+        etc. The forward pass of mini-batch $m$ moves from device 1 → 2 → ... → $k$, each device
+        receiving activations from the previous. The naive pipeline has <em>bubble</em> overhead:
+        while device 2 is computing for batch $m$, device 1 is idle waiting for its next input.
+        <strong>Micro-batching</strong> (GPipe): split each mini-batch into $b$ micro-batches.
+        Device 1 processes micro-batch 1, then passes it to device 2 and processes micro-batch 2,
+        and so on — devices run in parallel on different micro-batches. The bubble fraction is
+        $(k-1)/(b+k-1)$, which becomes small for large $b$.
+      </div>
+
+      <!-- ── Section 8: ZeRO ─────────────────────────────────────────────── -->
+      <div class="section-head" id="zero-optimizer">ZeRO optimizer (Zero Redundancy Optimizer)</div>
+
+      <div class="proof-box">
+        <div class="proof-header">ZeRO memory analysis (Rajbhandari et al. 2020)</div>
+        <div class="proof-body">
+          <p>In standard data parallelism with $N_d$ GPUs, every GPU holds a full copy of:
+          parameters ($\Psi$), gradients ($\Psi$), and Adam moments ($2\Psi$). Total: $4\Psi$
+          bytes (BF16) + $8\Psi$ bytes (FP32 master + 2 moments) = $16\Psi$ bytes per GPU,
+          with complete redundancy: all $N_d$ GPUs hold the same data.</p>
+
+          <p>ZeRO eliminates this redundancy by <em>sharding</em> each of the three state types
+          across GPUs, retrieving the shard needed for each operation via AllGather / ReduceScatter:</p>
+
+          <p><strong>ZeRO-1:</strong> Shard optimizer states only.
+          Memory per GPU: $4\Psi + \frac{8\Psi}{N_d}$.
+          For $N_d = 64$: savings of roughly $8 \times (1 - 1/64)\Psi \approx 7.9\Psi$.
+          Communication: same as vanilla DP (AllReduce = ReduceScatter + AllGather).</p>
+
+          <p><strong>ZeRO-2:</strong> Shard optimizer states + gradients.
+          Memory per GPU: $2\Psi + \frac{10\Psi}{N_d}$.
+          Gradients are reduced on-the-fly via ReduceScatter; each GPU only accumulates its shard.</p>
+
+          <p><strong>ZeRO-3:</strong> Shard optimizer states + gradients + parameters.
+          Memory per GPU: $\frac{16\Psi}{N_d}$.
+          For a 175B parameter model at $N_d = 1024$ GPUs: $16 \times 175\text{B} / 1024 \approx 2.7\text{ GB}$
+          per GPU — fits in a 40 GB A100 with room for activations.
+          Communication overhead: AllGather before each layer's forward pass and after backward —
+          roughly 3× the communication of vanilla DP, but the memory savings are essential at 100B+ scale.</p>
+
+          <p><strong>ZeRO-Infinity:</strong> extends ZeRO-3 to offload parameters, gradients, and
+          optimizer states to CPU memory and even NVMe SSDs, enabling training of models larger
+          than total GPU memory at the cost of more communication latency.</p>
+        </div>
+      </div>
+
+      <!-- ── Section 9: Flash Attention ─────────────────────────────────── -->
+      <div class="section-head" id="flash-attention">Flash Attention</div>
+
+      <div class="proof-box">
+        <div class="proof-header">Flash Attention — IO-aware exact attention (Dao et al. 2022)</div>
+        <div class="proof-body">
+          <p>The bottleneck in self-attention for long sequences is not FLOPs but <em>memory
+          bandwidth</em>. Standard attention materialises the full $S \times S$ attention weight
+          matrix $A = \text{softmax}(QK^\top / \sqrt{d_k})$, which requires reading/writing
+          $O(S^2)$ elements to HBM (GPU high-bandwidth memory). For $S = 4096$ and $d_k = 64$:
+          the attention matrix alone takes $4096^2 \times 2\text{ bytes} = 32\text{ MB}$ in FP16
+          — and must be read/written multiple times during the forward and backward passes.
+          HBM bandwidth on an A100 is 2 TB/s vs. SRAM (on-chip) bandwidth of ~19 TB/s — a 10×
+          difference. Attention is bandwidth-bound, not compute-bound.</p>
+
+          <p><strong>FlashAttention idea:</strong> Tile $Q$, $K$, $V$ into blocks that fit in
+          SRAM. Compute attention block-by-block, accumulating the output without ever materialising
+          the full $S \times S$ matrix in HBM. The softmax normalisation requires special handling
+          because softmax is not decomposable — you need the full row sum. FlashAttention uses the
+          online softmax trick (Milakov &amp; Gimelshein 2018) to update the running max and sum
+          incrementally as each $K$ block is processed:
+          $$m_\text{new} = \max(m_\text{old}, \max_j e_{ij})$$
+          $$\ell_\text{new} = e^{m_\text{old} - m_\text{new}} \ell_\text{old} + \sum_j e^{e_{ij} - m_\text{new}}$$
+          $$O_\text{new} = \frac{1}{\ell_\text{new}}\left(e^{m_\text{old}-m_\text{new}} \ell_\text{old} O_\text{old} + \sum_j e^{e_{ij}-m_\text{new}} V_j\right)$$</p>
+
+          <p><strong>Results:</strong> FlashAttention performs exactly the same computation as
+          standard attention (no approximation). HBM reads/writes are $O(S^2 d / M_\text{SRAM})$
+          instead of $O(S^2)$. For a 4-block tile: 5–8× faster than standard attention in practice;
+          memory footprint is $O(S)$ instead of $O(S^2)$, enabling much longer context windows.
+          FlashAttention-2 and -3 add further optimisations (warp-level parallelism, async memory
+          copies, Hopper-specific instructions) pushing hardware utilisation to 70–75% of theoretical
+          peak on A100/H100.</p>
+
+          <p>FlashAttention also enables gradient checkpointing of attention for free: the attention
+          weights never exist in HBM, so there is nothing to store or reload — the backward pass
+          recomputes the tiles from $Q$, $K$, $V$ (which are small and already in SRAM).</p>
+        </div>
+      </div>
+
+      <!-- ── 3D Parallelism note ─────────────────────────────────────────── -->
+      <div class="prose">
+        <strong>3D parallelism in practice.</strong> Production training systems (Megatron-LM,
+        DeepSpeed, FSDP) combine all three strategies: <em>data parallelism</em> across node
+        groups, <em>tensor parallelism</em> within each node (fast NVLink), and
+        <em>pipeline parallelism</em> across nodes. Each dimension is tuned for the specific
+        model size, hardware topology, and interconnect bandwidth. The optimal configuration
+        depends on the ratio of compute to communication — there is no universal answer, and
+        practitioners profile the configuration on the target hardware.
+      </div>
+
+      <!-- ── Worked examples ──────────────────────────────────────────── -->
+      <div class="section-head" id="examples">Worked examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Memory footprint of a 7B model</strong></div>
+        <div class="example-problem">
+          <p>Estimate the memory required to train a 7B-parameter model from scratch using
+          mixed precision (BF16 forward/backward, FP32 master weights + Adam optimiser).
+          Ignore activations. How many 80 GB A100s are needed just for the model state?</p>
+        </div>
+        <div class="example-body">
+          <p><strong>Memory breakdown (per GPU with vanilla DP — all replicated):</strong></p>
+          <ul>
+            <li>FP32 master weights: $7 \times 10^9 \times 4\text{ B} = 28\text{ GB}$</li>
+            <li>BF16 working weights: $7 \times 10^9 \times 2\text{ B} = 14\text{ GB}$</li>
+            <li>BF16 gradients: $7 \times 10^9 \times 2\text{ B} = 14\text{ GB}$</li>
+            <li>Adam first moment (FP32): $7 \times 10^9 \times 4\text{ B} = 28\text{ GB}$</li>
+            <li>Adam second moment (FP32): $7 \times 10^9 \times 4\text{ B} = 28\text{ GB}$</li>
+          </ul>
+          <p>Total: $28 + 14 + 14 + 28 + 28 = 112\text{ GB}$ — exceeds a single 80 GB A100.</p>
+
+          <p><strong>With ZeRO-3 across $N_d = 8$ GPUs:</strong>
+          Everything is sharded: $112\text{ GB} / 8 = 14\text{ GB}$ per GPU.
+          Plenty of headroom for activations and buffers in 80 GB. 8 GPUs suffice for
+          the model state — in practice, you'd want 16 for comfort.
+          At 70B parameters: $16\times$ more, so $\sim 1120\text{ GB}$ total → requires
+          ZeRO-3 across at least $1120/80 \approx 14$ GPUs.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Pipeline bubble overhead</strong></div>
+        <div class="example-problem">
+          <p>A model is split across $k = 4$ pipeline stages. A mini-batch is split into $b$
+          micro-batches. What is the bubble fraction? How many micro-batches do you need to
+          reduce the bubble below 5%?</p>
+        </div>
+        <div class="example-body">
+          <p>Bubble fraction: $\frac{k-1}{b+k-1} = \frac{3}{b+3}$.</p>
+          <p>Solve $\frac{3}{b+3} < 0.05$:
+          $3 < 0.05(b+3) = 0.05b + 0.15$
+          $2.85 < 0.05b$
+          $b > 57$.</p>
+          <p>You need at least 58 micro-batches. In practice $b = 4k$ is common: $b = 16$ gives
+          $3/19 \approx 16\%$ bubble. To get below 5% you need $b \geq 58$, which means a very
+          large effective batch size — $58 \times (\text{micro-batch size})$.
+          This is why pipeline parallelism is typically combined with data parallelism: the large
+          effective batch size from many micro-batches is acceptable when you have many devices
+          doing data-parallel replications.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Flash Attention memory savings</strong></div>
+        <div class="example-problem">
+          <p>Compare the attention weight matrix memory for standard vs. Flash Attention,
+          given: sequence length $S = 32{,}768$, number of heads $h = 32$, $d_k = 128$, BF16 (2 bytes).
+          How much memory is saved?</p>
+        </div>
+        <div class="example-body">
+          <p><strong>Standard attention</strong> stores the $S \times S$ attention matrix per head:
+          Memory $= h \times S^2 \times 2\text{ B} = 32 \times 32768^2 \times 2 \approx 68.7\text{ GB}$.</p>
+
+          <p><strong>Flash Attention</strong> never stores the full attention matrix. It stores
+          the tile-local running statistics (scalars $m$ and $\ell$, one per query position):
+          Memory for statistics $= h \times S \times 2 \times 2\text{ B} = 32 \times 32768 \times 4 \approx 4\text{ MB}$.
+          The $Q$, $K$, $V$ tensors themselves: $3 \times h \times S \times d_k \times 2\text{ B}
+          = 3 \times 32 \times 32768 \times 128 \times 2 \approx 768\text{ MB}$.</p>
+
+          <p><strong>Savings:</strong> 68.7 GB → ~772 MB — roughly 90× reduction. This is what
+          enables 32K-token (and longer) context windows, which would be impossible with standard
+          attention on a single GPU.</p>
+        </div>
+      </div>
+
+      <!-- ── Food for thought ────────────────────────────────────────────── -->
+      <div class="section-head" id="food-for-thought">Food for thought</div>
+
+      <ul class="fft-list">
+        <li class="fft-item">
+          Mixed precision training keeps FP32 master weights specifically to preserve small gradient
+          updates. Could you avoid this overhead by changing the optimiser instead of the weight format?
+          What kind of optimiser property would allow using FP16 throughout?
+          <div class="fft-answer">
+            The core problem is that FP16 cannot represent relative updates smaller than ~$6 \times 10^{-5}$
+            relative to the weight magnitude (limited mantissa precision). An optimiser that avoids tiny
+            relative updates could, in principle, stay in FP16.
+            One approach: use a higher learning rate with heavy momentum (so each update is larger).
+            But this risks instability, and the fundamental precision limit doesn't change.
+            A more principled approach: <em>stochastic rounding</em>, where updates that are too small
+            to represent exactly are rounded stochastically to the nearest representable value with
+            probability proportional to the fractional part. In expectation, this preserves the true
+            gradient signal. Some hardware (Intel Habana, some custom TPU variants) implements stochastic
+            rounding at the hardware level, enabling full FP16 or BF16 throughout without FP32 master weights.
+            Alternatively, quantisation-aware optimisers (e.g., 8-bit Adam) use FP32 for momentum
+            statistics but quantise to INT8 at rest, reducing memory by storing them quantised rather than
+            casting during computation.
+          </div>
+        </li>
+        <li class="fft-item">
+          ZeRO-3 shards parameters across all data-parallel ranks and uses AllGather to reconstruct
+          each layer before its forward/backward pass. Does this mean that ZeRO-3 communication
+          overhead is roughly proportional to the number of layers? What determines whether ZeRO-3
+          is worth the overhead compared to pipeline parallelism?
+          <div class="fft-answer">
+            Yes — in ZeRO-3, for each layer in the forward pass, you need one AllGather (to reconstruct
+            the parameters) and one ReduceScatter (to accumulate gradients in the backward pass).
+            Communication volume per training step is proportional to $2 \times L \times \Psi / N_d$
+            where $L$ is the number of layers, $\Psi$ is total parameters, and $N_d$ is the number of GPUs.
+            Compare to vanilla DP: one AllReduce per step over all gradients at once, with better
+            overlap opportunity with compute.
+            Whether ZeRO-3 or pipeline parallelism is better depends on:
+            (1) <em>Interconnect topology:</em> ZeRO's AllGather/ReduceScatter are all-to-all operations
+            — they require high-bandwidth inter-node connections (InfiniBand HDR/HDR100 or NVLINK). If
+            nodes are connected only by 100 GbE, pipeline parallelism (point-to-point between adjacent
+            stages) has lower communication volume.
+            (2) <em>Memory vs. compute balance:</em> ZeRO-3 shards everything — it's a pure memory
+            reduction technique with no change to the computational graph. Pipeline parallelism
+            partitions layers, which also distributes the compute. For very compute-limited problems
+            (big batch, fast network), ZeRO-3 is preferred. For memory-limited problems with slow
+            inter-node links, pipeline is better.
+            (3) <em>Bubble overhead:</em> pipeline parallelism has inherent bubble inefficiency that
+            ZeRO-3 avoids. In practice, Megatron-LM/DeepSpeed uses 3D parallelism: tensor-parallel
+            within a node (fast NVLink), ZeRO within a node group, pipeline across node groups.
+          </div>
+        </li>
+        <li class="fft-item">
+          Flash Attention achieves exact computation (not an approximation) while being much faster
+          and more memory-efficient than standard attention. Why isn't this obviously the right way
+          to implement attention? What does this example tell you about the relationship between
+          algorithmic complexity and practical performance?
+          <div class="fft-answer">
+            Flash Attention has the <em>same</em> $O(S^2 d)$ FLOPs as standard attention. Its speedup
+            is entirely from reduced HBM bandwidth use, not fewer operations. Standard complexity
+            analysis (Big-O in FLOPs) would not predict any difference between the two.
+            This illustrates a critical gap between theoretical algorithmic complexity and empirical
+            performance on real hardware. For GPU computation, the bottleneck is often:
+            (1) <em>Memory bandwidth:</em> moving data between HBM (TB/s) and SRAM (tens of TB/s)
+            dominates when the compute per byte is low. Attention has low arithmetic intensity
+            (FLOPs per byte) for large $S$, making it bandwidth-bound.
+            (2) <em>Occupancy and latency hiding:</em> kernels that issue many small HBM reads
+            have poor hardware utilisation because HBM latency (~100ns) stalls warps.
+            FlashAttention's tiling increases arithmetic intensity by doing more compute per HBM
+            access — a standard GPU optimisation technique (cache tiling, loop reordering).
+            The broader lesson: for modern deep learning, <em>roofline analysis</em> (is this
+            operation compute-bound or memory-bound, and what is the implied bottleneck hardware
+            throughput?) is more predictive of actual runtime than asymptotic FLOP counts.
+            Many recent DL systems improvements (FlashAttention, fused kernels in cuDNN, PyTorch
+            compile, Triton) are primarily about hitting the hardware arithmetic intensity limit,
+            not algorithmic innovation.
+          </div>
+        </li>
+      </ul>
+
+      <!-- ── Connects to ──────────────────────────────────────────────── -->
+      <div class="section-head" id="connects-to">Connects to</div>
+
+      <div class="prose">
+        <strong>The Transformer (DL6)</strong> and <strong>BERT/GPT (DL7)</strong> — training
+        at scale is what made BERT and GPT-3 achievable. Flash Attention specifically enables
+        the long-context variants (GPT-4-128k, Claude 200k, Gemini 1M) by removing the $O(S^2)$
+        attention memory wall.
+      </div>
+      <div class="prose">
+        <strong>Generative Models (DL9)</strong> — diffusion model training on billions of
+        image-text pairs (LAION-5B) uses the same mixed precision, Flash Attention, and
+        distributed training infrastructure developed for LLMs.
+      </div>
+
+      <div class="lesson-nav">
+        <a href="bert-gpt.html" class="lesson-nav-btn">← 7 · BERT &amp; GPT</a>
+        <a href="generative-models.html" class="lesson-nav-btn">9 · Generative Models →</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+
+</body>
+</html>

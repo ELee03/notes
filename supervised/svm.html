@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Support Vector Machines — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false}
+        ],
+        throwOnError: false
+      });
+    });
+  </script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Prerequisites</div>
+        <a href="classification.html" class="nav-item">SL3 · Classification &amp; Logistic Regression</a>
+        <a href="generalisation.html" class="nav-item">SL4 · Generalisation &amp; Regularisation</a>
+      </div>
+
+      <div id="cluster-nav" data-cluster="supervised" data-current="svm.html"></div>
+
+      <hr class="sidebar-rule">
+
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#motivation" class="nav-item">Why maximum margin?</a>
+        <a href="#hard-margin" class="nav-item">Hard-margin SVM (primal)</a>
+        <a href="#lagrangian-dual" class="nav-item">Lagrangian dual</a>
+        <a href="#kkt" class="nav-item">KKT conditions &amp; support vectors</a>
+        <a href="#kernel-trick" class="nav-item">The kernel trick</a>
+        <a href="#kernels" class="nav-item">Common kernels</a>
+        <a href="#soft-margin" class="nav-item">Soft-margin SVM</a>
+        <a href="#svr" class="nav-item">Support vector regression</a>
+        <a href="#examples" class="nav-item">Worked examples</a>
+        <a href="#food-for-thought" class="nav-item">Food for thought</a>
+        <a href="#pitfalls" class="nav-item">Common pitfalls</a>
+        <a href="#connects-to" class="nav-item">Connects to</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Supervised Learning</a>
+        <span class="sep">›</span>
+        <span>5 · Support Vector Machines</span>
+      </div>
+
+      <div class="lesson-title">5 · Support Vector Machines</div>
+      <div class="lesson-meta">Maximum Margin · Lagrangian Duality · Kernel Trick · Soft-Margin · SVR</div>
+
+      <div class="prose">
+        The Support Vector Machine (Boser, Guyon, Vapnik 1992; Cortes &amp; Vapnik 1995)
+        is a classification algorithm built on one geometric principle: among all hyperplanes
+        that correctly separate two classes, choose the one with the <em>largest margin</em>.
+        This single idea leads to a convex quadratic programme whose dual reveals a
+        remarkable structure — the decision boundary depends only on a small subset of
+        training points (the "support vectors") — and to the <strong>kernel trick</strong>,
+        which allows SVMs to implicitly work in infinite-dimensional feature spaces at
+        no extra computational cost. SVMs were the dominant classification method in the
+        late 1990s and 2000s, and understanding them is essential for understanding kernels,
+        duality, and the structural risk minimisation framework that underlies much of
+        classical machine learning theory.
+      </div>
+
+      <!-- ── Section 1: Why maximum margin ──────────────────────────────── -->
+      <div class="section-head" id="motivation">Why maximum margin?</div>
+
+      <div class="prose">
+        Consider a binary classification problem with labels $y \in \{-1, +1\}$ and
+        linearly separable data. Many hyperplanes correctly separate the two classes.
+        Which should we pick?
+      </div>
+
+      <div class="prose">
+        The <strong>margin</strong> of a hyperplane $\mathbf{w} \cdot \mathbf{x} + b = 0$
+        with respect to a training set is the distance from the hyperplane to the nearest
+        training point. Intuitively, a large margin means the classifier is "confident"
+        — a new test point must be far from the boundary to be misclassified.
+        The SVM principle is: maximise the margin. This is not just intuitive — it is
+        theoretically motivated. The Vapnik-Chervonenkis (VC) theory shows that for a
+        margin-$\gamma$ classifier, the generalisation error bound depends on $1/\gamma^2$:
+        larger margin implies a smaller effective hypothesis class and better generalisation.
+      </div>
+
+      <!-- ── Section 2: Hard-margin SVM ─────────────────────────────────── -->
+      <div class="section-head" id="hard-margin">Hard-margin SVM (primal problem)</div>
+
+      <div class="prose">
+        A hyperplane in $\mathbb{R}^n$ is $\{x : \mathbf{w} \cdot \mathbf{x} + b = 0\}$
+        where $\mathbf{w} \in \mathbb{R}^n$ is the normal vector and $b$ is the bias.
+        The signed distance from a point $\mathbf{x}_i$ to this hyperplane is
+        $(\mathbf{w} \cdot \mathbf{x}_i + b) / \|\mathbf{w}\|$.
+      </div>
+
+      <div class="proof-box">
+        <div class="proof-header">Hard-margin SVM — primal derivation</div>
+        <div class="proof-body">
+          <p>For a correctly classified point: $y_i(\mathbf{w} \cdot \mathbf{x}_i + b) > 0$.
+          Without loss of generality, scale $\mathbf{w}$ so that the nearest points satisfy:
+          $$y_i(\mathbf{w} \cdot \mathbf{x}_i + b) \geq 1 \quad \forall i$$
+          (this is the canonical scaling — points are at functional distance $\geq 1$).</p>
+          <p>The geometric margin to the boundary from the nearest points is
+          $1/\|\mathbf{w}\|$ on each side, so the total margin is $2/\|\mathbf{w}\|$.</p>
+          <p>Maximising $2/\|\mathbf{w}\|$ is equivalent to minimising $\|\mathbf{w}\|^2/2$
+          (the $1/2$ is for algebraic convenience). The hard-margin SVM primal is:
+          $$\min_{\mathbf{w}, b} \frac{1}{2}\|\mathbf{w}\|^2 \quad \text{subject to} \quad y_i(\mathbf{w} \cdot \mathbf{x}_i + b) \geq 1 \quad \forall i$$
+          This is a convex quadratic programme with $n + 1$ variables ($\mathbf{w}$ and $b$)
+          and $N$ linear inequality constraints (one per training point). It is solvable in
+          polynomial time.</p>
+        </div>
+      </div>
+
+      <!-- ── Section 3: Lagrangian dual ─────────────────────────────────── -->
+      <div class="section-head" id="lagrangian-dual">Lagrangian dual</div>
+
+      <div class="proof-box">
+        <div class="proof-header">Lagrangian dual of the hard-margin SVM</div>
+        <div class="proof-body">
+          <p>Introduce Lagrange multipliers $\alpha_i \geq 0$ (one per constraint):
+          $$\mathcal{L}(\mathbf{w}, b, \boldsymbol{\alpha}) = \frac{1}{2}\|\mathbf{w}\|^2 - \sum_{i=1}^N \alpha_i \big[y_i(\mathbf{w} \cdot \mathbf{x}_i + b) - 1\big]$$</p>
+          <p>Stationarity conditions (set derivatives to zero):
+          $$\frac{\partial \mathcal{L}}{\partial \mathbf{w}} = 0 \implies \mathbf{w} = \sum_{i=1}^N \alpha_i y_i \mathbf{x}_i$$
+          $$\frac{\partial \mathcal{L}}{\partial b} = 0 \implies \sum_{i=1}^N \alpha_i y_i = 0$$</p>
+          <p>Substituting $\mathbf{w} = \sum_i \alpha_i y_i \mathbf{x}_i$ back into $\mathcal{L}$ and simplifying:
+          $$\frac{1}{2}\|\mathbf{w}\|^2 = \frac{1}{2}\sum_{i,j} \alpha_i \alpha_j y_i y_j \mathbf{x}_i \cdot \mathbf{x}_j$$
+          $$\sum_i \alpha_i y_i (\mathbf{w} \cdot \mathbf{x}_i + b) = \sum_{i,j} \alpha_i \alpha_j y_i y_j \mathbf{x}_i \cdot \mathbf{x}_j + b\sum_i \alpha_i y_i = \sum_{i,j} \alpha_i \alpha_j y_i y_j \mathbf{x}_i \cdot \mathbf{x}_j$$
+          (using $\sum_i \alpha_i y_i = 0$).</p>
+          <p>The dual objective becomes:
+          $$\max_{\boldsymbol{\alpha}} \sum_{i=1}^N \alpha_i - \frac{1}{2}\sum_{i=1}^N\sum_{j=1}^N \alpha_i \alpha_j y_i y_j (\mathbf{x}_i \cdot \mathbf{x}_j)$$
+          $$\text{subject to} \quad \alpha_i \geq 0, \quad \sum_{i=1}^N \alpha_i y_i = 0$$</p>
+          <p><strong>Key observation:</strong> the dual depends on the data only through inner products $\mathbf{x}_i \cdot \mathbf{x}_j$ — not the data points themselves. This is the gateway to the kernel trick.</p>
+          <p>Once $\boldsymbol{\alpha}^*$ is found:
+          $$\mathbf{w}^* = \sum_{i=1}^N \alpha_i^* y_i \mathbf{x}_i$$
+          $$\text{Prediction: } \hat{y} = \text{sign}\!\left(\sum_{i=1}^N \alpha_i^* y_i (\mathbf{x}_i \cdot \mathbf{x}) + b^*\right)$$
+          Again, prediction uses only inner products $\mathbf{x}_i \cdot \mathbf{x}$.</p>
+        </div>
+      </div>
+
+      <!-- ── Section 4: KKT conditions ───────────────────────────────────── -->
+      <div class="section-head" id="kkt">KKT conditions &amp; support vectors</div>
+
+      <div class="proof-box">
+        <div class="proof-header">KKT conditions and the support vector structure</div>
+        <div class="proof-body">
+          <p>For the optimum $(\mathbf{w}^*, b^*, \boldsymbol{\alpha}^*)$, the KKT conditions require:
+          <ol>
+            <li>Primal feasibility: $y_i(\mathbf{w}^* \cdot \mathbf{x}_i + b^*) \geq 1$</li>
+            <li>Dual feasibility: $\alpha_i^* \geq 0$</li>
+            <li>Complementary slackness: $\alpha_i^* \big[y_i(\mathbf{w}^* \cdot \mathbf{x}_i + b^*) - 1\big] = 0$</li>
+          </ol></p>
+          <p>Complementary slackness says: either $\alpha_i^* = 0$ or the constraint is active ($y_i(\mathbf{w}^* \cdot \mathbf{x}_i + b^*) = 1$).</p>
+          <p><strong>Support vectors</strong>: the points with $\alpha_i^* > 0$ are exactly those that lie on the margin boundary ($y_i(\mathbf{w}^* \cdot \mathbf{x}_i + b^*) = 1$). All other points have $\alpha_i^* = 0$ and contribute nothing to $\mathbf{w}^*$ or the prediction. The entire model is determined by the small subset of support vectors.</p>
+          <p>Recover $b^*$ from any support vector $i$ (with $\alpha_i^* > 0$):
+          $$b^* = y_i - \mathbf{w}^* \cdot \mathbf{x}_i = y_i - \sum_{j} \alpha_j^* y_j (\mathbf{x}_j \cdot \mathbf{x}_i)$$
+          In practice, average over all support vectors for numerical stability.</p>
+        </div>
+      </div>
+
+      <div class="prose">
+        The support vector structure has a profound consequence: if you add or remove
+        non-support-vector training points (those far from the boundary with $\alpha_i = 0$),
+        the decision boundary does not change at all. The SVM is <em>sparse</em> in the
+        training data — only the points closest to the boundary matter.
+      </div>
+
+      <!-- ── Section 5: Kernel trick ─────────────────────────────────────── -->
+      <div class="section-head" id="kernel-trick">The kernel trick</div>
+
+      <div class="prose">
+        The dual formulation depends on the data only through inner products. If we map
+        data to a higher-dimensional feature space via $\phi: \mathbb{R}^n \to \mathcal{F}$,
+        all inner products $\mathbf{x}_i \cdot \mathbf{x}_j$ become $\phi(\mathbf{x}_i) \cdot \phi(\mathbf{x}_j)$.
+        The kernel trick: if we can compute
+        $K(\mathbf{x}_i, \mathbf{x}_j) = \phi(\mathbf{x}_i) \cdot \phi(\mathbf{x}_j)$
+        directly without computing $\phi$, we can work in feature space implicitly at the
+        same cost as working in input space.
+      </div>
+
+      <div class="proof-box">
+        <div class="proof-header">Mercer's theorem — when does a kernel correspond to an inner product?</div>
+        <div class="proof-body">
+          <p>A function $K: \mathcal{X} \times \mathcal{X} \to \mathbb{R}$ is a <strong>valid Mercer kernel</strong>
+          (i.e., corresponds to an inner product in some feature space $\mathcal{F}$) if and only if it is
+          <strong>symmetric positive semi-definite</strong>: for any finite set of points $\mathbf{x}_1, \ldots, \mathbf{x}_N$,
+          the Gram matrix $K_{ij} = K(\mathbf{x}_i, \mathbf{x}_j)$ is positive semi-definite:
+          $$\mathbf{c}^\top K \mathbf{c} \geq 0 \quad \forall \mathbf{c} \in \mathbb{R}^N$$</p>
+          <p>When this holds, there exists a Hilbert space $\mathcal{H}$ and a map $\phi: \mathcal{X} \to \mathcal{H}$
+          such that $K(\mathbf{x}, \mathbf{z}) = \langle \phi(\mathbf{x}), \phi(\mathbf{z}) \rangle_\mathcal{H}$.
+          The space $\mathcal{H}$ may be infinite-dimensional — but we never need to compute in it explicitly.</p>
+        </div>
+      </div>
+
+      <div class="prose">
+        With a kernel, the dual SVM becomes:
+        $$\max_{\boldsymbol{\alpha}} \sum_i \alpha_i - \frac{1}{2}\sum_{i,j} \alpha_i \alpha_j y_i y_j K(\mathbf{x}_i, \mathbf{x}_j)$$
+        and prediction:
+        $$\hat{y} = \text{sign}\!\left(\sum_i \alpha_i^* y_i K(\mathbf{x}_i, \mathbf{x}) + b^*\right)$$
+        The only change from the linear SVM is replacing $\mathbf{x}_i \cdot \mathbf{x}_j$ with $K(\mathbf{x}_i, \mathbf{x}_j)$.
+        We never explicitly compute $\phi$ — just the kernel function.
+      </div>
+
+      <!-- ── Section 6: Common kernels ───────────────────────────────────── -->
+      <div class="section-head" id="kernels">Common kernels</div>
+
+      <div style="overflow-x:auto;margin:16px 0;">
+        <table style="width:100%;border-collapse:collapse;font-size:0.875rem;">
+          <tr style="background:#e8f0f5;color:#1a2840;">
+            <th style="padding:8px 12px;text-align:left;border:1px solid #c4d4df;">Kernel</th>
+            <th style="padding:8px 12px;text-align:left;border:1px solid #c4d4df;">Formula</th>
+            <th style="padding:8px 12px;text-align:left;border:1px solid #c4d4df;">Feature space</th>
+            <th style="padding:8px 12px;text-align:left;border:1px solid #c4d4df;">Hyperparameters</th>
+          </tr>
+          <tr>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">Linear</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">$K(\mathbf{x},\mathbf{z}) = \mathbf{x} \cdot \mathbf{z}$</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">$\mathbb{R}^n$ (no expansion)</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">None</td>
+          </tr>
+          <tr style="background:#f9fafb;">
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">Polynomial</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">$K(\mathbf{x},\mathbf{z}) = (\mathbf{x} \cdot \mathbf{z} + c)^d$</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">All monomials up to degree $d$</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">$d$ (degree), $c \geq 0$</td>
+          </tr>
+          <tr>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">RBF / Gaussian</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">$K(\mathbf{x},\mathbf{z}) = \exp\!\left(-\frac{\|\mathbf{x}-\mathbf{z}\|^2}{2\sigma^2}\right)$</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">$\infty$-dimensional (Gaussian RKHS)</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">$\sigma$ (width)</td>
+          </tr>
+          <tr style="background:#f9fafb;">
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">Sigmoid</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">$K(\mathbf{x},\mathbf{z}) = \tanh(\kappa\,\mathbf{x}\cdot\mathbf{z} + \theta)$</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">Not always a valid Mercer kernel</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">$\kappa, \theta$</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="prose">
+        <strong>RBF kernel.</strong> The RBF kernel is the most widely used. It is equivalent to an
+        inner product in an infinite-dimensional space (expanded as a Taylor series
+        of $\exp(-\|\mathbf{x}\|^2/2\sigma^2)\exp(\mathbf{x}\cdot\mathbf{z}/\sigma^2)$).
+        With small $\sigma$, the kernel drops off steeply — only very similar points
+        have high kernel value, giving very local decision boundaries. With large $\sigma$,
+        the kernel is nearly constant — approaching a linear SVM. The $\sigma$ (or
+        equivalently $\gamma = 1/2\sigma^2$) is chosen by cross-validation.
+      </div>
+
+      <!-- ── Section 7: Soft-margin SVM ─────────────────────────────────── -->
+      <div class="section-head" id="soft-margin">Soft-margin SVM</div>
+
+      <div class="prose">
+        The hard-margin SVM fails when data is not linearly separable (in the current
+        feature space). The <strong>soft-margin SVM</strong> (C-SVM, Cortes &amp; Vapnik 1995)
+        introduces slack variables $\xi_i \geq 0$ allowing some points to violate the margin:
+      </div>
+
+      <div class="proof-box">
+        <div class="proof-header">Soft-margin SVM primal and dual</div>
+        <div class="proof-body">
+          <p><strong>Primal (soft margin):</strong>
+          $$\min_{\mathbf{w}, b, \boldsymbol{\xi}} \frac{1}{2}\|\mathbf{w}\|^2 + C\sum_{i=1}^N \xi_i$$
+          $$\text{subject to} \quad y_i(\mathbf{w}\cdot\mathbf{x}_i + b) \geq 1 - \xi_i, \quad \xi_i \geq 0 \quad \forall i$$</p>
+          <p>$\xi_i = 0$: point is correctly classified with margin $\geq 1$.
+          $0 < \xi_i \leq 1$: point is inside the margin but correctly classified.
+          $\xi_i > 1$: point is misclassified.
+          $C > 0$ is a regularisation parameter: large $C$ = small slack allowed = hard margin (low bias, high variance); small $C$ = large slack allowed = soft margin (high bias, low variance).</p>
+
+          <p><strong>Dual (soft margin):</strong>
+          $$\max_{\boldsymbol{\alpha}} \sum_i \alpha_i - \frac{1}{2}\sum_{i,j} \alpha_i \alpha_j y_i y_j K(\mathbf{x}_i, \mathbf{x}_j)$$
+          $$\text{subject to} \quad 0 \leq \alpha_i \leq C, \quad \sum_i \alpha_i y_i = 0$$</p>
+          <p>The only change from the hard-margin dual: $\alpha_i \leq C$ (bounded above by $C$, not just $\geq 0$).
+          Support vectors: $\alpha_i^* > 0$. Points on the margin: $0 < \alpha_i^* < C$. Points inside or beyond the margin: $\alpha_i^* = C$.</p>
+          <p>The hinge loss equivalence: the soft-margin primal objective can be rewritten as
+          $$\frac{1}{C}\sum_i \max(0, 1 - y_i(\mathbf{w}\cdot\mathbf{x}_i + b)) + \frac{1}{2}\|\mathbf{w}\|^2$$
+          showing that soft-margin SVM minimises hinge loss + L2 regularisation.</p>
+        </div>
+      </div>
+
+      <!-- ── Section 8: SVR ──────────────────────────────────────────────── -->
+      <div class="section-head" id="svr">Support vector regression</div>
+
+      <div class="prose">
+        SVMs extend to regression via the <strong>$\varepsilon$-insensitive loss</strong>:
+        $$L_\varepsilon(y, \hat{y}) = \max(0, |y - \hat{y}| - \varepsilon)$$
+        Errors within a tube of radius $\varepsilon$ around the prediction incur zero loss;
+        errors outside the tube are penalised linearly. The SVR primal:
+        $$\min_{\mathbf{w},b,\boldsymbol{\xi},\hat{\boldsymbol{\xi}}} \frac{1}{2}\|\mathbf{w}\|^2 + C\sum_i(\xi_i + \hat{\xi}_i)$$
+        subject to $y_i - \mathbf{w}\cdot\mathbf{x}_i - b \leq \varepsilon + \xi_i$ (upper tube wall),
+        $\mathbf{w}\cdot\mathbf{x}_i + b - y_i \leq \varepsilon + \hat{\xi}_i$ (lower tube wall),
+        $\xi_i, \hat{\xi}_i \geq 0$.
+        The dual has the same structure as classification SVM with $K$ replacing inner products.
+        The kernel trick applies identically.
+      </div>
+
+      <!-- ── Worked examples ──────────────────────────────────────────── -->
+      <div class="section-head" id="examples">Worked examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Hard-margin SVM by hand (2D)</strong></div>
+        <div class="example-problem">
+          <p>Two positive points: $\mathbf{x}_1 = [1, 1]^\top$, $\mathbf{x}_2 = [2, 2]^\top$ ($y = +1$).
+          Two negative points: $\mathbf{x}_3 = [-1, -1]^\top$, $\mathbf{x}_4 = [-2, -2]^\top$ ($y = -1$).
+          Find the maximum-margin separating hyperplane.</p>
+        </div>
+        <div class="example-body">
+          <p>By symmetry, the optimal hyperplane passes through the origin ($b = 0$) and is perpendicular
+          to the data's direction. The nearest positive point to any hyperplane through the origin is
+          $\mathbf{x}_1 = [1,1]^\top$ (at distance $\sqrt{2}$ from origin); the nearest negative point
+          is $\mathbf{x}_3 = [-1,-1]^\top$.</p>
+          <p>For the canonical scaling, $y_i(\mathbf{w}\cdot\mathbf{x}_i + b) = 1$ at the support vectors.
+          By symmetry, $\mathbf{w} = [w, w]^\top$ and $b = 0$.
+          $\mathbf{w}\cdot\mathbf{x}_1 = w + w = 2w = 1 \implies w = 1/2$.</p>
+          <p>So $\mathbf{w}^* = [1/2, 1/2]^\top$, $b^* = 0$.
+          Margin: $2/\|\mathbf{w}^*\| = 2/\sqrt{1/4 + 1/4} = 2/(\sqrt{2}/2) = 2\sqrt{2}$.
+          Decision: $\hat{y} = \text{sign}(x_1/2 + x_2/2) = \text{sign}(x_1 + x_2)$.</p>
+          <p>Support vectors: $\mathbf{x}_1$ and $\mathbf{x}_3$ (nearest to boundary). $\mathbf{x}_2$
+          and $\mathbf{x}_4$ have $\alpha_i^* = 0$ and could be removed without changing the boundary.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Kernel SVM: XOR is linearly separable in feature space</strong></div>
+        <div class="example-problem">
+          <p>The XOR problem: $(+1,+1) \to -1$; $(+1,-1) \to +1$; $(-1,+1) \to +1$; $(-1,-1) \to -1$.
+          This is not linearly separable in $\mathbb{R}^2$. Show that with the polynomial kernel
+          $K(\mathbf{x},\mathbf{z}) = (\mathbf{x}\cdot\mathbf{z})^2$, the data becomes linearly separable.</p>
+        </div>
+        <div class="example-body">
+          <p>The polynomial kernel $K(\mathbf{x},\mathbf{z}) = (\mathbf{x}\cdot\mathbf{z})^2$ corresponds
+          to the feature map $\phi([x_1,x_2]) = [x_1^2, x_2^2, \sqrt{2}x_1 x_2]^\top$.</p>
+          <p>Compute $\phi$ for each point:
+          <ul>
+            <li>$(+1,+1)$: $\phi = [1, 1, \sqrt{2}]^\top$, label $-1$</li>
+            <li>$(+1,-1)$: $\phi = [1, 1, -\sqrt{2}]^\top$, label $+1$</li>
+            <li>$(-1,+1)$: $\phi = [1, 1, -\sqrt{2}]^\top$, label $+1$</li>
+            <li>$(-1,-1)$: $\phi = [1, 1, \sqrt{2}]^\top$, label $-1$</li>
+          </ul></p>
+          <p>In feature space, the decision is now determined purely by the third coordinate
+          $\sqrt{2}x_1 x_2$: positive points have $x_1 x_2 < 0$ (i.e., $\sqrt{2}x_1x_2 < 0$);
+          negative points have $x_1 x_2 > 0$.
+          The hyperplane $w_3 \cdot \phi_3 = 0$ (i.e., $x_1 x_2 = 0$) separates them perfectly.
+          This corresponds to the nonlinear boundary $x_1 x_2 = 0$ in the original space — the
+          XOR boundary, which is two diagonals. The kernel "lifted" the data to make it linearly separable.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Effect of C on the soft-margin boundary</strong></div>
+        <div class="example-problem">
+          <p>You have a 1D dataset: positive points at $x = \{1, 2\}$, negative points at $x = \{-1, -2, 100\}$
+          (note: the point at $x = 100$ is a mislabelled outlier).
+          Qualitatively describe how the decision boundary changes as $C \to \infty$ vs. $C \to 0$.</p>
+        </div>
+        <div class="example-body">
+          <p><strong>$C \to \infty$ (hard margin limit):</strong> The SVM tries to correctly classify all
+          points including the outlier at $x = 100$. But no linear boundary can correctly classify $\{1, 2\}$
+          as positive and $\{-1, -2, 100\}$ as negative (since 100 > 2). The hard-margin SVM is infeasible —
+          no separating hyperplane exists. If we relax slightly, a very large $C$ will push the boundary far
+          right, near $x = 50$ say, and misclassify positive points 1 and 2. The boundary is dominated by
+          the outlier.</p>
+          <p><strong>$C \to 0$ (soft margin limit):</strong> Constraint violations are nearly free — the
+          SVM regularises heavily and pays almost no attention to any individual point. The boundary approaches
+          $x = 0$ (the symmetric midpoint between the bulk of positive and negative points), ignoring the
+          outlier at 100 entirely. Essentially the SVM becomes a margin maximiser over the entire training
+          set treated as infinitely flexible.</p>
+          <p><strong>Moderate $C$:</strong> The boundary is at approximately $x = 0$ (between the two clusters),
+          the outlier is allowed to be a slack violation (with $\xi_{100} = $ large), and the margin is
+          determined by $x = 1$ and $x = -1$. The soft-margin SVM correctly handles the outlier by allowing
+          one violation rather than distorting the entire boundary.</p>
+        </div>
+      </div>
+
+      <!-- ── Food for thought ────────────────────────────────────────────── -->
+      <div class="section-head" id="food-for-thought">Food for thought</div>
+
+      <ul class="fft-list">
+        <li class="fft-item">
+          The dual SVM objective depends on the data only through inner products $K(\mathbf{x}_i, \mathbf{x}_j)$.
+          Suppose you train an SVM and then want to make predictions on a new point $\mathbf{x}$.
+          Does $\mathbf{x}$ need to be in $\mathbb{R}^n$? What does the kernel really require?
+          <div class="fft-answer">
+            The prediction is $\hat{y} = \text{sign}(\sum_i \alpha_i^* y_i K(\mathbf{x}_i, \mathbf{x}) + b^*)$.
+            This requires computing $K(\mathbf{x}_i, \mathbf{x})$ for each support vector $\mathbf{x}_i$.
+            The kernel function only requires that $\mathbf{x}$ lies in the same domain $\mathcal{X}$ as the
+            training data — it does not require an explicit vector representation, as long as $K(\cdot, \cdot)$
+            is defined. This is what makes kernels so general: $\mathcal{X}$ can be strings, graphs, trees,
+            or any structured object, as long as we define a valid Mercer kernel on it. For example, the
+            string kernel counts common substrings between two sequences — you never need a vector representation.
+            The SVM (and any kernel method) works natively with any type of data for which a kernel is defined.
+            This is the "kernel trick" in its most general form.
+          </div>
+        </li>
+        <li class="fft-item">
+          The SVM dual involves $O(N^2)$ terms (all pairwise kernel evaluations) and solving a QP
+          with $N$ variables. For $N = 10^6$ data points, this is clearly impractical. How does the
+          SMO algorithm (Sequential Minimal Optimisation) work around this, and what does it exploit?
+          <div class="fft-answer">
+            The naive QP solver for the SVM dual requires storing the full $N \times N$ kernel matrix
+            (quadratic in $N$ memory) and takes $O(N^3)$ time. For $N = 10^6$, this is completely intractable.
+            SMO (Platt 1998) exploits the structure of the dual: at the optimum, each pair $(\alpha_i, \alpha_j)$
+            satisfies a two-variable QP with a simple analytic solution (because the constraint $\sum \alpha_i y_i = 0$
+            means that when you fix all but two $\alpha$s, the remaining two satisfy a 1D constrained problem).
+            SMO iteratively selects the two "most violating" variables (largest KKT violation), solves their
+            two-variable sub-problem analytically, and repeats until convergence. This means:
+            (1) no large matrix to store — only the kernel values for the selected pair need to be evaluated,
+            (2) each step is $O(N)$ (computing kernel values for one pair against all $N$ points),
+            (3) the algorithm converges in practice in $O(N)$ to $O(N^2)$ steps total.
+            For very large $N$, even SMO is slow — modern practice often uses stochastic gradient descent
+            on the primal (hinge loss + L2 regularisation) via LibLinear, or uses approximate kernel methods
+            (Nyström approximation) rather than exact kernels.
+          </div>
+        </li>
+        <li class="fft-item">
+          The soft-margin SVM objective with a linear kernel is equivalent to minimising hinge loss plus
+          L2 regularisation. Logistic regression minimises cross-entropy plus L2 regularisation. Both are
+          binary classifiers with L2 regularisation — what is the fundamental difference between them, and
+          why do they sometimes give different results?
+          <div class="fft-answer">
+            The loss functions differ fundamentally. Hinge loss $\max(0, 1 - y\hat{f})$ is zero for points
+            correctly classified with margin $\geq 1$ — it ignores "easy" points completely. Cross-entropy loss
+            $\log(1 + e^{-y\hat{f}})$ is always positive but exponentially small for well-classified points —
+            it never completely ignores any point.
+            Consequence 1 — sparsity: SVM solutions are sparse in training data (only support vectors matter);
+            logistic regression uses all training points.
+            Consequence 2 — calibration: logistic regression outputs calibrated probabilities ($\sigma(\hat{f})$
+            estimates $p(y=1|\mathbf{x})$). The SVM does not — its score $\hat{f}$ is not a calibrated probability
+            (Platt scaling is needed to calibrate SVM outputs).
+            Consequence 3 — tail behaviour: for points far from the boundary (large margin), hinge loss is exactly 0;
+            logistic loss is $\approx e^{-y\hat{f}} \to 0$ exponentially. Both ignore such points, but hinge does
+            so exactly. This makes SVM sensitive to outliers in the support vector zone (those with $\alpha_i = C$)
+            but robust to outliers far from the boundary.
+            In practice on balanced datasets with good features, the two give similar results. Logistic regression
+            is preferred when probabilities are needed; SVMs (with kernels) are preferred when the feature space
+            needs to be nonlinearly expanded.
+          </div>
+        </li>
+      </ul>
+
+      <!-- ── Common pitfalls ─────────────────────────────────────────────── -->
+      <div class="section-head" id="pitfalls">Common pitfalls</div>
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:14px;">
+          <strong>Not normalising features.</strong> The SVM margin is a geometric distance — it depends
+          on the scale of features. A feature with values in $[0, 1000]$ will dominate a feature in
+          $[0, 1]$. Always standardise features (zero mean, unit variance) before training an SVM.
+        </li>
+        <li style="margin-bottom:14px;">
+          <strong>Using the wrong kernel for the problem.</strong> The RBF kernel works well in general
+          but is not always optimal. For text (bag-of-words features), the linear kernel often outperforms
+          RBF because the feature space is already high-dimensional and sparse. For image patches, RBF or
+          polynomial may be better. Always cross-validate the kernel choice and its hyperparameters.
+        </li>
+        <li style="margin-bottom:14px;">
+          <strong>Confusing $C$ and $\gamma$ in RBF-SVM.</strong> Scikit-learn's SVC has two key hyperparameters:
+          $C$ (soft-margin tradeoff) and $\gamma = 1/2\sigma^2$ (RBF width). Large $\gamma$ = narrow kernel =
+          very local decisions = low bias, high variance. Small $\gamma$ = wide kernel = smooth decisions =
+          high bias, low variance. These interact: large $C$ + large $\gamma$ is always at risk of overfitting;
+          small $C$ + small $\gamma$ always underfits. Grid search both jointly.
+        </li>
+        <li>
+          <strong>Using SVMs for large datasets without approximations.</strong>
+          Kernel SVM training is $O(N^2)$ to $O(N^3)$ in the number of training points. For $N > 10^5$,
+          exact kernel SVMs are too slow. Use LinearSVC (primal SGD on hinge loss, $O(N)$ per epoch)
+          for linear problems, or Nyström kernel approximation (randomly approximate the kernel with
+          a low-rank matrix) for nonlinear problems.
+        </li>
+      </ul>
+
+      <!-- ── Connects to ─────────────────────────────────────────────────── -->
+      <div class="section-head" id="connects-to">Connects to</div>
+
+      <div class="prose">
+        <strong>Generalisation &amp; Regularisation (SL4)</strong> — the soft-margin SVM is a
+        regularised classifier: $C$ controls the L2 regularisation strength. The margin-based
+        generalisation bound (VC theory) is an alternative to the bias-variance framework for
+        bounding generalisation error.
+      </div>
+      <div class="prose">
+        <strong>Probabilistic Perspectives (SL11)</strong> — the SVM does not naturally produce
+        probabilities. Platt scaling fits a sigmoid $\sigma(As_i + B)$ to the SVM scores $s_i$
+        on a held-out validation set to obtain calibrated probabilities. This is a post-hoc
+        calibration step, not inherent to the SVM.
+      </div>
+      <div class="prose">
+        <strong>Ensemble Methods (SL7)</strong> — kernel SVMs and ensembles (Random Forests,
+        Gradient Boosting) are the two dominant classical ML approaches. Ensembles generally
+        require less hyperparameter tuning and scale better; SVMs are theoretically cleaner
+        and work well in high-dimensional sparse spaces (text).
+      </div>
+
+      <div class="lesson-nav">
+        <a href="generalisation.html" class="lesson-nav-btn">← 4 · Generalisation &amp; Regularisation</a>
+        <a href="decision-trees.html" class="lesson-nav-btn">6 · Decision Trees →</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+
+</body>
+</html>

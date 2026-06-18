@@ -268,13 +268,13 @@
               "name": "Supervised Learning",
               "href": "supervised/index.html",
               "desc": "Linear and logistic regression, SVMs, decision trees, ensemble methods, and the foundations of neural networks.",
-              "lessons": 8
+              "lessons": 11
             },
             {
               "name": "Deep Learning",
               "href": "deep-learning/index.html",
               "desc": "Backpropagation, CNNs, recurrent networks, attention and transformers, and the practical craft of training large models.",
-              "lessons": 7
+              "lessons": 9
             },
             {
               "name": "Unsupervised &amp; Generative Models",

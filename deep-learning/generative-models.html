@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generative Models — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false}
+        ],
+        throwOnError: false
+      });
+    });
+  </script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Prerequisites</div>
+        <a href="bert-gpt.html" class="nav-item">DL7 · BERT &amp; GPT</a>
+        <a href="training-scale.html" class="nav-item">DL8 · Training at Scale</a>
+      </div>
+
+      <div id="cluster-nav" data-cluster="deep-learning" data-current="generative-models.html"></div>
+
+      <hr class="sidebar-rule">
+
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#taxonomy" class="nav-item">Taxonomy of generative models</a>
+        <a href="#vaes" class="nav-item">Variational Autoencoders</a>
+        <a href="#elbo" class="nav-item">ELBO derivation</a>
+        <a href="#gans" class="nav-item">Generative Adversarial Networks</a>
+        <a href="#gan-training" class="nav-item">GAN training &amp; mode collapse</a>
+        <a href="#diffusion" class="nav-item">Diffusion models (DDPM)</a>
+        <a href="#score-matching" class="nav-item">Score matching</a>
+        <a href="#cfg" class="nav-item">Classifier-free guidance</a>
+        <a href="#ldm" class="nav-item">Latent diffusion (Stable Diffusion)</a>
+        <a href="#examples" class="nav-item">Worked examples</a>
+        <a href="#food-for-thought" class="nav-item">Food for thought</a>
+        <a href="#connects-to" class="nav-item">Connects to</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Deep Learning</a>
+        <span class="sep">›</span>
+        <span>9 · Generative Models</span>
+      </div>
+
+      <div class="lesson-title">9 · Generative Models</div>
+      <div class="lesson-meta">VAEs · GANs · Diffusion (DDPM) · Score Matching · Classifier-Free Guidance · Latent Diffusion</div>
+
+      <div class="prose">
+        Discriminative models answer "given data $\mathbf{x}$, what is the label $y$?"
+        Generative models answer "given a latent variable or noise, how do I produce new data $\mathbf{x}$
+        that looks like it came from the same distribution as the training set?"
+        This is a harder problem: you need to model the full density $p(\mathbf{x})$ rather than
+        the conditional $p(y | \mathbf{x})$. Modern generative models for images — the most visible
+        being Stable Diffusion (2022) and DALL-E — are the result of twenty years of progress through
+        three distinct paradigms: VAEs (latent variable models with variational inference),
+        GANs (game-theoretic implicit density models), and diffusion models (iterative denoising).
+        This lesson derives each from first principles, explains why diffusion models have largely
+        displaced VAEs and GANs for image generation, and traces how classifier-free guidance
+        and latent compression make large-scale text-to-image systems tractable.
+      </div>
+
+      <!-- ── Section 1: Taxonomy ─────────────────────────────────────────── -->
+      <div class="section-head" id="taxonomy">Taxonomy of generative models</div>
+
+      <div class="prose">
+        Generative models can be classified by how they represent and sample from $p(\mathbf{x})$:
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Paradigm</th>
+              <th>How $p(\mathbf{x})$ is represented</th>
+              <th>Exact likelihood?</th>
+              <th>Sampling speed</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>VAE</td>
+              <td>Variational lower bound on $\log p(\mathbf{x})$; latent $\mathbf{z}$</td>
+              <td>No (ELBO)</td>
+              <td>One forward pass</td>
+            </tr>
+            <tr>
+              <td>Normalising flows</td>
+              <td>Exact via change of variables (invertible transforms)</td>
+              <td>Yes</td>
+              <td>One forward pass</td>
+            </tr>
+            <tr>
+              <td>GAN</td>
+              <td>Implicit (discriminator-trained generator); no explicit density</td>
+              <td>No</td>
+              <td>One forward pass</td>
+            </tr>
+            <tr>
+              <td>Autoregressive (GPT)</td>
+              <td>Product of conditionals $\prod_t p(x_t | x_{&lt;t})$</td>
+              <td>Yes</td>
+              <td>Sequential (slow)</td>
+            </tr>
+            <tr>
+              <td>Diffusion (DDPM)</td>
+              <td>Iterative denoising; tractable ELBO</td>
+              <td>No (ELBO)</td>
+              <td>Many steps (but distillable)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ── Section 2: VAEs ─────────────────────────────────────────────── -->
+      <div class="section-head" id="vaes">Variational Autoencoders</div>
+
+      <div class="prose">
+        A VAE (Kingma &amp; Welling 2013) is a latent variable model: we posit a prior $p(\mathbf{z})$
+        (usually $\mathcal{N}(\mathbf{0}, \mathbf{I})$) and a decoder $p_\theta(\mathbf{x} | \mathbf{z})$
+        (a neural network). We want to maximise the log-likelihood $\log p_\theta(\mathbf{x})$, but
+        marginalising out $\mathbf{z}$:
+        $$\log p_\theta(\mathbf{x}) = \log \int p_\theta(\mathbf{x} | \mathbf{z}) p(\mathbf{z})\, d\mathbf{z}$$
+        is intractable for high-dimensional $\mathbf{z}$. The key idea: introduce an <em>encoder</em>
+        $q_\phi(\mathbf{z} | \mathbf{x})$ (the approximate posterior, also called the recognition model)
+        to make this tractable.
+      </div>
+
+      <!-- ── Section 3: ELBO ─────────────────────────────────────────────── -->
+      <div class="section-head" id="elbo">ELBO derivation</div>
+
+      <div class="proof-box">
+        <div class="proof-header">Evidence Lower BOund (ELBO) derivation</div>
+        <div class="proof-body">
+          <p>Starting from the log-likelihood, add and subtract $\log q_\phi(\mathbf{z} | \mathbf{x})$
+          inside the expectation over $q_\phi$:</p>
+          $$\log p_\theta(\mathbf{x}) = \log \int p_\theta(\mathbf{x}, \mathbf{z})\, d\mathbf{z} = \log \mathbb{E}_{q_\phi(\mathbf{z}|\mathbf{x})}\left[\frac{p_\theta(\mathbf{x}, \mathbf{z})}{q_\phi(\mathbf{z}|\mathbf{x})}\right]$$
+          <p>By Jensen's inequality ($\log \mathbb{E}[X] \geq \mathbb{E}[\log X]$, since $\log$ is concave):</p>
+          $$\log p_\theta(\mathbf{x}) \geq \mathbb{E}_{q_\phi(\mathbf{z}|\mathbf{x})}\left[\log \frac{p_\theta(\mathbf{x}, \mathbf{z})}{q_\phi(\mathbf{z}|\mathbf{x})}\right] = \mathcal{L}(\theta, \phi; \mathbf{x})$$
+          <p>Expanding $\log p_\theta(\mathbf{x}, \mathbf{z}) = \log p_\theta(\mathbf{x} | \mathbf{z}) + \log p(\mathbf{z})$:</p>
+          $$\mathcal{L} = \underbrace{\mathbb{E}_{q_\phi(\mathbf{z}|\mathbf{x})}[\log p_\theta(\mathbf{x}|\mathbf{z})]}_{\text{reconstruction}} - \underbrace{D_\text{KL}(q_\phi(\mathbf{z}|\mathbf{x}) \,\|\, p(\mathbf{z}))}_{\text{regularisation}}$$
+          <p>The gap between $\log p_\theta(\mathbf{x})$ and $\mathcal{L}$ is exactly
+          $D_\text{KL}(q_\phi \| p_\theta(\mathbf{z}|\mathbf{x})) \geq 0$.
+          Maximising the ELBO both increases the marginal likelihood and forces the approximate
+          posterior $q_\phi$ toward the true posterior $p_\theta(\mathbf{z}|\mathbf{x})$.</p>
+
+          <p><strong>Encoder choice:</strong> $q_\phi(\mathbf{z}|\mathbf{x}) = \mathcal{N}(\boldsymbol{\mu}_\phi(\mathbf{x}), \text{diag}(\boldsymbol{\sigma}^2_\phi(\mathbf{x})))$.
+          The KL term is then analytic:
+          $$D_\text{KL}(\mathcal{N}(\boldsymbol{\mu}, \boldsymbol{\sigma}^2) \| \mathcal{N}(\mathbf{0}, \mathbf{I})) = \frac{1}{2}\sum_j \left(\mu_j^2 + \sigma_j^2 - \log \sigma_j^2 - 1\right)$$</p>
+
+          <p><strong>Reparameterisation trick:</strong> Sampling $\mathbf{z} \sim q_\phi(\mathbf{z}|\mathbf{x})$
+          is not differentiable w.r.t. $\phi$. Reparametrise: $\mathbf{z} = \boldsymbol{\mu}_\phi(\mathbf{x}) + \boldsymbol{\sigma}_\phi(\mathbf{x}) \odot \boldsymbol{\epsilon}$
+          where $\boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \mathbf{I})$. Now $\mathbf{z}$
+          is a deterministic function of $(\phi, \boldsymbol{\epsilon})$, so gradients flow through
+          $\boldsymbol{\mu}_\phi$ and $\boldsymbol{\sigma}_\phi$.</p>
+        </div>
+      </div>
+
+      <div class="prose">
+        <strong>VAE properties and limitations.</strong> VAEs produce blurry reconstructions because
+        the reconstruction term $\mathbb{E}[\log p_\theta(\mathbf{x}|\mathbf{z})]$ with a Gaussian
+        decoder reduces to pixel-wise MSE, which averages over uncertainty — sharp details are
+        "averaged out." The KL regularisation forces the posterior toward a smooth Gaussian prior,
+        limiting the amount of information the latent can carry. Posterior collapse (entire dimensions
+        of $\mathbf{z}$ ignored by the decoder) is a common failure mode. VAEs are excellent as
+        <em>encoders</em> for downstream tasks, but their image generation quality was consistently
+        surpassed by GANs and later diffusion models.
+      </div>
+
+      <!-- ── Section 4: GANs ─────────────────────────────────────────────── -->
+      <div class="section-head" id="gans">Generative Adversarial Networks</div>
+
+      <div class="proof-box">
+        <div class="proof-header">GAN minimax objective (Goodfellow et al. 2014)</div>
+        <div class="proof-body">
+          <p>Two networks: a <strong>generator</strong> $G_\theta: \mathcal{Z} \to \mathcal{X}$
+          mapping noise $\mathbf{z} \sim p(\mathbf{z})$ to generated samples, and a
+          <strong>discriminator</strong> $D_\phi: \mathcal{X} \to [0,1]$ estimating the probability
+          that a sample is real. The objective:</p>
+          $$\min_\theta \max_\phi\; \mathcal{V}(G_\theta, D_\phi) = \mathbb{E}_{\mathbf{x} \sim p_\text{data}}[\log D_\phi(\mathbf{x})] + \mathbb{E}_{\mathbf{z} \sim p(\mathbf{z})}[\log(1 - D_\phi(G_\theta(\mathbf{z})))]$$
+          <p>For fixed $G$, the optimal discriminator is:
+          $$D^*(\mathbf{x}) = \frac{p_\text{data}(\mathbf{x})}{p_\text{data}(\mathbf{x}) + p_G(\mathbf{x})}$$
+          Substituting back, the generator objective becomes:
+          $$\mathcal{V}(G, D^*) = -\log 4 + 2\, D_\text{JS}(p_\text{data} \| p_G)$$
+          where $D_\text{JS}$ is the Jensen-Shannon divergence. The global minimum is at $p_G = p_\text{data}$,
+          where $D_\text{JS} = 0$ and $D^*(\mathbf{x}) = 1/2$ everywhere — the discriminator can no
+          longer distinguish real from generated.</p>
+          <p><strong>Practical training:</strong>
+          <ol>
+            <li>Update discriminator: maximise $\mathcal{V}$ w.r.t. $\phi$ for $k$ steps (real vs. fake classification).</li>
+            <li>Update generator: minimise $\log(1 - D_\phi(G_\theta(\mathbf{z})))$ w.r.t. $\theta$.
+            In practice, maximise $\log D_\phi(G_\theta(\mathbf{z}))$ instead ("non-saturating" loss)
+            to avoid vanishing gradients when the discriminator is strong.</li>
+          </ol></p>
+        </div>
+      </div>
+
+      <!-- ── Section 5: GAN training ────────────────────────────────────── -->
+      <div class="section-head" id="gan-training">GAN training dynamics and failure modes</div>
+
+      <div class="prose">
+        <strong>Mode collapse</strong> is the canonical GAN failure: the generator learns to produce
+        only a few high-quality samples (or even just one) that fool the discriminator, ignoring
+        most of the data distribution. From the divergence perspective: minimising $D_\text{JS}$
+        does not penalise the generator for missing modes, only for generating distinguishable samples.
+        <strong>Wasserstein GAN</strong> (WGAN, Arjovsky et al. 2017) replaces $D_\text{JS}$ with the
+        Wasserstein-1 distance, which measures the minimum "earth mover's cost" to transform one
+        distribution into another. The Wasserstein distance has well-defined gradients everywhere —
+        even when $p_G$ and $p_\text{data}$ have disjoint support (which causes $D_\text{JS}$
+        gradients to vanish). WGAN-GP (Gulrajani et al. 2017) enforces the 1-Lipschitz constraint
+        needed for WGAN with a gradient penalty instead of weight clipping.
+      </div>
+
+      <div class="prose">
+        <strong>StyleGAN, BigGAN, and progressive growing</strong> refined GAN training with
+        architectural innovations: progressive growing (start at low resolution, add layers),
+        style injection via AdaIN (StyleGAN), spectral normalisation, and truncation tricks
+        for quality/diversity tradeoffs. Peak GAN quality (StyleGAN2, 2020) was stunning
+        but required careful per-dataset tuning. Training instability and mode collapse were
+        persistent problems that diffusion models largely eliminated.
+      </div>
+
+      <!-- ── Section 6: Diffusion models ───────────────────────────────── -->
+      <div class="section-head" id="diffusion">Diffusion models (DDPM)</div>
+
+      <div class="proof-box">
+        <div class="proof-header">DDPM — Denoising Diffusion Probabilistic Models (Ho et al. 2020)</div>
+        <div class="proof-body">
+          <p>A diffusion model defines a Markov chain that <em>adds</em> noise to data over $T$ steps
+          (the <em>forward process</em>), then trains a neural network to reverse that process
+          (the <em>reverse process</em>).</p>
+
+          <p><strong>Forward process</strong> (fixed, not learned):
+          $$q(\mathbf{x}_t | \mathbf{x}_{t-1}) = \mathcal{N}(\mathbf{x}_t;\, \sqrt{1-\beta_t}\,\mathbf{x}_{t-1},\, \beta_t \mathbf{I})$$
+          Each step adds Gaussian noise with variance schedule $\beta_1, \ldots, \beta_T$.
+          Let $\alpha_t = 1 - \beta_t$ and $\bar{\alpha}_t = \prod_{s=1}^t \alpha_s$. Then the
+          distribution of $\mathbf{x}_t$ given $\mathbf{x}_0$ is analytic (by reparameterisation):
+          $$q(\mathbf{x}_t | \mathbf{x}_0) = \mathcal{N}(\mathbf{x}_t;\, \sqrt{\bar{\alpha}_t}\,\mathbf{x}_0,\, (1-\bar{\alpha}_t)\mathbf{I})$$
+          So $\mathbf{x}_t = \sqrt{\bar{\alpha}_t}\,\mathbf{x}_0 + \sqrt{1-\bar{\alpha}_t}\,\boldsymbol{\epsilon}$
+          where $\boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \mathbf{I})$.
+          For $T = 1000$ with an appropriate schedule, $\mathbf{x}_T \approx \mathcal{N}(\mathbf{0}, \mathbf{I})$
+          (pure noise).</p>
+
+          <p><strong>Reverse process</strong> (learned):
+          $$p_\theta(\mathbf{x}_{t-1} | \mathbf{x}_t) = \mathcal{N}(\mathbf{x}_{t-1};\, \boldsymbol{\mu}_\theta(\mathbf{x}_t, t),\, \sigma_t^2 \mathbf{I})$$
+          We train a neural network $\epsilon_\theta(\mathbf{x}_t, t)$ to predict the noise
+          $\boldsymbol{\epsilon}$ that was added. The ELBO simplifies to a mean-squared error in noise space:
+          $$\mathcal{L}_\text{simple} = \mathbb{E}_{t, \mathbf{x}_0, \boldsymbol{\epsilon}}\left[\|\boldsymbol{\epsilon} - \epsilon_\theta(\sqrt{\bar{\alpha}_t}\mathbf{x}_0 + \sqrt{1-\bar{\alpha}_t}\boldsymbol{\epsilon},\, t)\|^2\right]$$
+          At inference, start from $\mathbf{x}_T \sim \mathcal{N}(\mathbf{0}, \mathbf{I})$ and
+          iteratively denoise: $\mathbf{x}_{t-1} = \frac{1}{\sqrt{\alpha_t}}\left(\mathbf{x}_t - \frac{\beta_t}{\sqrt{1-\bar{\alpha}_t}}\epsilon_\theta(\mathbf{x}_t, t)\right) + \sigma_t \mathbf{z}$
+          where $\mathbf{z} \sim \mathcal{N}(\mathbf{0}, \mathbf{I})$ (or $\mathbf{z} = 0$ at final step).</p>
+        </div>
+      </div>
+
+      <!-- ── Section 7: Score matching ──────────────────────────────────── -->
+      <div class="section-head" id="score-matching">Score matching and DDIM</div>
+
+      <div class="prose">
+        <strong>Score function connection.</strong> The <em>score function</em> of a distribution
+        is $\nabla_\mathbf{x} \log p(\mathbf{x})$ — the gradient of the log-density.
+        The noise prediction $\epsilon_\theta(\mathbf{x}_t, t)$ is directly related to the
+        score of the noisy distribution $p_t(\mathbf{x}_t)$:
+        $$\nabla_{\mathbf{x}_t} \log p_t(\mathbf{x}_t) = -\frac{\boldsymbol{\epsilon}}{\sqrt{1-\bar{\alpha}_t}}$$
+        Denoising score matching (Vincent 2011; Song &amp; Ermon 2019) shows that training
+        $\epsilon_\theta$ to predict added noise is equivalent to learning the score function
+        of the noise-perturbed data distribution. This connects diffusion models to a deep
+        family of energy-based models and stochastic differential equations (SDEs).
+        Song et al. (2020) formulated both the forward and reverse processes as SDEs, giving
+        a continuous-time framework that unifies DDPM, SMLD (noise-conditional score networks),
+        and many other approaches.
+      </div>
+
+      <div class="prose">
+        <strong>DDIM — deterministic sampling (Song et al. 2020).</strong> DDPM's reverse process
+        is stochastic (adds Gaussian noise at each step). DDIM (Denoising Diffusion Implicit Models)
+        derives a non-Markovian variant whose reverse process is deterministic:
+        $$\mathbf{x}_{t-1} = \sqrt{\bar{\alpha}_{t-1}}\underbrace{\left(\frac{\mathbf{x}_t - \sqrt{1-\bar{\alpha}_t}\epsilon_\theta}{\sqrt{\bar{\alpha}_t}}\right)}_{\text{predicted } \mathbf{x}_0} + \sqrt{1-\bar{\alpha}_{t-1}}\,\epsilon_\theta$$
+        Since the process is deterministic, you can skip steps: instead of $T = 1000$ steps,
+        use $T' = 20$–$50$ steps by subsampling the timestep schedule. DDIM gives the same
+        trained model faster generation at the cost of slightly different sample quality —
+        a quality/speed tradeoff controlled by the number of steps.
+      </div>
+
+      <!-- ── Section 8: CFG ─────────────────────────────────────────────── -->
+      <div class="section-head" id="cfg">Classifier-free guidance</div>
+
+      <div class="proof-box">
+        <div class="proof-header">Classifier-free guidance (Ho &amp; Salimans 2021)</div>
+        <div class="proof-body">
+          <p>Text-to-image generation requires conditioning the model on a text prompt $\mathbf{c}$.
+          The conditional model $\epsilon_\theta(\mathbf{x}_t, t, \mathbf{c})$ generates images
+          from the conditional distribution $p(\mathbf{x} | \mathbf{c})$.
+          But conditioning alone often produces images that match the prompt loosely.
+          We want to generate from a "sharpened" distribution that strongly matches $\mathbf{c}$.</p>
+
+          <p><strong>Classifier guidance</strong> (Dhariwal &amp; Nichol 2021): use a separately
+          trained classifier $p_\phi(c | \mathbf{x})$ to steer the sampling via:
+          $$\tilde{\epsilon}(\mathbf{x}_t, t) = \epsilon_\theta(\mathbf{x}_t, t) - \sqrt{1-\bar{\alpha}_t}\nabla_{\mathbf{x}_t} \log p_\phi(c | \mathbf{x}_t)$$
+          The gradient of the classifier w.r.t. the noisy image pushes the denoising trajectory
+          toward regions that the classifier predicts as matching $c$. This requires a separate
+          noisy-domain classifier — inconvenient.</p>
+
+          <p><strong>Classifier-free guidance</strong> (CFG) eliminates the need for an explicit
+          classifier by jointly training the model with and without conditioning:
+          with probability $p_\text{uncond}$ (e.g., 0.1), replace $\mathbf{c}$ with a null token $\emptyset$.
+          The model learns both $\epsilon_\theta(\mathbf{x}_t, t, \mathbf{c})$ and $\epsilon_\theta(\mathbf{x}_t, t, \emptyset)$.
+          At inference, use a convex combination:
+          $$\tilde{\epsilon} = \epsilon_\theta(\mathbf{x}_t, t, \emptyset) + w \cdot [\epsilon_\theta(\mathbf{x}_t, t, \mathbf{c}) - \epsilon_\theta(\mathbf{x}_t, t, \emptyset)]$$
+          The guidance scale $w > 1$ amplifies the conditional signal beyond what the model would
+          generate with conditioning alone. By the implicit score representation:
+          $$\tilde{\epsilon} \propto -\nabla_{\mathbf{x}_t} \log p(\mathbf{x}_t | \mathbf{c})^w p(\mathbf{x}_t)^{1-w}$$
+          — the sampled distribution is $p(\mathbf{x} | \mathbf{c})$ raised to the power $w$,
+          a sharpened conditional. Typical values: $w = 7$–$12$ for text-to-image.
+          Large $w$ gives images that strongly match the prompt but sacrifice diversity and sometimes
+          realism (over-saturation, artifacts). Small $w$ gives more diversity but looser adherence.</p>
+        </div>
+      </div>
+
+      <!-- ── Section 9: Latent diffusion ───────────────────────────────── -->
+      <div class="section-head" id="ldm">Latent diffusion models (Stable Diffusion)</div>
+
+      <div class="prose">
+        Running diffusion in pixel space for 512×512 images is extremely expensive — each denoising
+        step operates on a $512 \times 512 \times 3 = 786{,}432$-dimensional tensor, and you need
+        hundreds of steps. <strong>Latent diffusion models</strong> (Rombach et al. 2022, "High-Resolution
+        Image Synthesis with Latent Diffusion Models") solve this with a two-stage approach:
+      </div>
+
+      <div class="prose">
+        <strong>Stage 1 — perceptual compression</strong> (pre-trained, not updated during diffusion training):
+        Train a VAE encoder $\mathcal{E}$ to compress images to a low-dimensional latent space:
+        $\mathbf{z} = \mathcal{E}(\mathbf{x}) \in \mathbb{R}^{h/f \times w/f \times c}$
+        where $f$ is the downsampling factor (e.g., $f=8$: a 512×512 image → 64×64×4 latent).
+        A decoder $\mathcal{D}$ reconstructs: $\hat{\mathbf{x}} = \mathcal{D}(\mathbf{z})$.
+        The VAE is regularised with a KL penalty (small regularisation keeps latent close to a Gaussian)
+        plus a perceptual loss and patch-based adversarial loss to prevent blur.
+        This latent space is 48× smaller in total dimensionality than pixel space.
+      </div>
+
+      <div class="prose">
+        <strong>Stage 2 — diffusion in latent space:</strong>
+        The diffusion model $\epsilon_\theta$ is a U-Net that operates entirely in the compressed
+        latent space $\mathbf{z}$. Cross-attention layers in the U-Net integrate the text conditioning:
+        text is encoded by CLIP (or a text encoder) into embeddings, which serve as keys and values
+        in the cross-attention ($Q$ from the U-Net spatial features, $K$/$V$ from the text encoder).
+        Generation: sample $\mathbf{z}_T \sim \mathcal{N}(\mathbf{0}, \mathbf{I})$, iteratively
+        denoise with $\epsilon_\theta(\mathbf{z}_t, t, \mathbf{c})$ using DDIM, then decode with
+        $\mathcal{D}$. The full pipeline: noise → latent → pixel.
+      </div>
+
+      <div class="prose">
+        This architecture is used by Stable Diffusion (open-source, ~860M parameters), DALL-E 2
+        (the second stage, prior + diffusion decoder), and Imagen (pixel-space cascaded diffusion, different).
+        The key insight: most of the "semantic" work happens in the low-dimensional latent space;
+        the decoder handles pixel-level reconstruction independently. This separation of semantic
+        generation from perceptual rendering is what makes training tractable.
+      </div>
+
+      <!-- ── Worked examples ──────────────────────────────────────────── -->
+      <div class="section-head" id="examples">Worked examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — VAE ELBO decomposition by hand</strong></div>
+        <div class="example-problem">
+          <p>A VAE has a 2D latent space. After encoding input $\mathbf{x}$, the encoder produces
+          $\boldsymbol{\mu} = [1.0, 0.5]$ and $\log \boldsymbol{\sigma}^2 = [0.0, -1.0]$
+          (so $\sigma_1 = 1.0$, $\sigma_2 = e^{-0.5} \approx 0.607$).
+          Compute the KL term. The decoder's reconstruction loss is $-\log p_\theta(\mathbf{x}|\mathbf{z}) = 12.3$.
+          What is the total ELBO loss?</p>
+        </div>
+        <div class="example-body">
+          <p><strong>KL divergence:</strong>
+          $D_\text{KL} = \frac{1}{2}\sum_{j=1}^2 (\mu_j^2 + \sigma_j^2 - \log \sigma_j^2 - 1)$</p>
+
+          <p>Dimension 1 ($\mu=1.0$, $\sigma^2=1.0$, $\log \sigma^2 = 0.0$):
+          $\frac{1}{2}(1.0^2 + 1.0 - 0.0 - 1) = \frac{1}{2}(1.0) = 0.5$</p>
+
+          <p>Dimension 2 ($\mu=0.5$, $\sigma^2 = e^{-1.0} \approx 0.368$, $\log \sigma^2 = -1.0$):
+          $\frac{1}{2}(0.25 + 0.368 - (-1.0) - 1) = \frac{1}{2}(0.618) = 0.309$</p>
+
+          <p>$D_\text{KL} = 0.5 + 0.309 = 0.809$.</p>
+
+          <p><strong>Total ELBO loss</strong> (to minimise, so negative ELBO):
+          $\mathcal{L} = \underbrace{12.3}_{\text{reconstruction}} + \underbrace{0.809}_{\text{KL}} = 13.109$</p>
+
+          <p>Note: dimension 1 has $\mu=1.0$, pulling the posterior mean away from the prior,
+          contributing KL of 0.5 — this is the cost of encoding meaningful information in that dimension.
+          If $\mu=0$, $\sigma^2=1$ (exactly the prior), KL $= 0$ and that dimension carries no
+          information about $\mathbf{x}$ — this is posterior collapse for that dimension.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — DDPM forward process</strong></div>
+        <div class="example-problem">
+          <p>At timestep $t=500$ with $\bar{\alpha}_{500} = 0.1$, a clean image $\mathbf{x}_0$
+          has pixel value 0.8 at one location.
+          (a) What is the mean and variance of $\mathbf{x}_{500}$ at that location?
+          (b) Compute $\mathbf{x}_{500}$ for a specific noise sample $\epsilon = 1.2$.
+          (c) What does the model need to predict at this timestep?</p>
+        </div>
+        <div class="example-body">
+          <p>(a) $q(\mathbf{x}_{500} | \mathbf{x}_0) = \mathcal{N}(\sqrt{\bar{\alpha}_{500}}\,\mathbf{x}_0,\, (1-\bar{\alpha}_{500}))$
+          $= \mathcal{N}(\sqrt{0.1} \times 0.8,\, 0.9)$
+          $= \mathcal{N}(0.253,\, 0.9)$
+          Mean $= \sqrt{0.1} \times 0.8 = 0.316 \times 0.8 = 0.253$.
+          Variance $= 1 - 0.1 = 0.9$, so $\sigma = 0.949$.</p>
+
+          <p>(b) $\mathbf{x}_{500} = \sqrt{\bar{\alpha}_{500}}\mathbf{x}_0 + \sqrt{1-\bar{\alpha}_{500}}\,\epsilon
+          = 0.253 + 0.949 \times 1.2 = 0.253 + 1.138 = 1.391$</p>
+
+          <p>(c) The model $\epsilon_\theta(\mathbf{x}_{500}, 500)$ must predict $\epsilon = 1.2$
+          — the noise that was added. The training target is this specific $\epsilon$ drawn from
+          $\mathcal{N}(\mathbf{0}, \mathbf{I})$. At $t=500$, the signal has been heavily corrupted:
+          the original value of 0.8 contributes only 0.253, while noise contributes 1.138.
+          The model must learn to recover the noise pattern from this noisy observation, which
+          is then subtracted in the reverse step to recover a slightly less noisy $\mathbf{x}_{499}$.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Classifier-free guidance tradeoff</strong></div>
+        <div class="example-problem">
+          <p>A diffusion model produces two noise predictions for prompt $\mathbf{c}$ = "a red apple":
+          conditional $\epsilon_c = [0.3, -0.5, 0.8]$ and unconditional $\epsilon_u = [0.1, -0.1, 0.2]$.
+          Compute the guided prediction for $w = 1$ (no guidance), $w = 3$, and $w = 7$.
+          What happens as $w$ increases?</p>
+        </div>
+        <div class="example-body">
+          <p>$\tilde{\epsilon} = \epsilon_u + w(\epsilon_c - \epsilon_u)$</p>
+          <p>Difference: $\epsilon_c - \epsilon_u = [0.2, -0.4, 0.6]$.</p>
+
+          <p><strong>$w=1$:</strong> $\tilde{\epsilon} = [0.1, -0.1, 0.2] + 1 \times [0.2, -0.4, 0.6] = [0.3, -0.5, 0.8]$ — same as conditional prediction, no amplification.</p>
+          <p><strong>$w=3$:</strong> $\tilde{\epsilon} = [0.1, -0.1, 0.2] + 3 \times [0.2, -0.4, 0.6] = [0.7, -1.3, 2.0]$ — amplified toward "apple-ness".</p>
+          <p><strong>$w=7$:</strong> $\tilde{\epsilon} = [0.1, -0.1, 0.2] + 7 \times [0.2, -0.4, 0.6] = [1.5, -2.9, 4.4]$ — strongly amplified.</p>
+
+          <p>As $w$ increases: the guided noise prediction increasingly diverges from what the
+          model "naturally" predicts. The resulting image will more strongly match the prompt —
+          brighter reds, more prototypical apple shape — but at the cost of diversity
+          (all samples will look similar) and sometimes realism (over-saturated, hallucinated
+          textures that maximally activate the "apple" direction in latent space). The guidance
+          scale is effectively a temperature parameter: high $w$ = confident, low diversity;
+          low $w$ = more varied, weaker prompt adherence.</p>
+        </div>
+      </div>
+
+      <!-- ── Food for thought ────────────────────────────────────────────── -->
+      <div class="section-head" id="food-for-thought">Food for thought</div>
+
+      <ul class="fft-list">
+        <li class="fft-item">
+          GANs use implicit density estimation (no explicit $p(\mathbf{x})$) and can produce extremely
+          sharp, high-fidelity images from a single forward pass. Diffusion models have explicit
+          training objectives and stable training but require hundreds of steps for generation.
+          What structural property of diffusion models removes GAN training instabilities?
+          Why hasn't a GAN model competitive with modern diffusion models emerged since 2022?
+          <div class="fft-answer">
+            GAN instabilities stem from two structural problems:
+            (1) <em>Non-convergence of the minimax game.</em> Generator and discriminator are
+            simultaneously optimised, which is a two-player game that has no guaranteed equilibrium
+            under gradient descent. Local gradients can spiral, oscillate, or diverge — even when
+            both individually have well-behaved loss surfaces.
+            (2) <em>Mode collapse from the loss geometry.</em> When the generator produces samples
+            from a distribution disjoint from real data, the JS divergence gradient is 0 (the
+            distributions don't overlap). The generator receives no useful gradient signal to
+            fix this — it is already "winning" by fooling a confused discriminator. WGAN
+            partially addresses this, but mode-seeking behaviour is inherent to adversarial losses.
+            Diffusion models are immune to both: there is only one network (the denoiser), trained
+            with a regression-style MSE loss against a fixed target (the added noise). The loss is
+            always well-defined and non-zero. Training is stable because it reduces to a supervised
+            regression problem at each timestep independently.
+            Why haven't GANs caught up? Diffusion model quality is driven largely by scale
+            (more parameters, more data, more compute). Scaling diffusion models improves
+            sample quality predictably (scaling laws). GANs are harder to scale: training
+            instabilities compound at scale, and mode collapse becomes harder to avoid.
+            Consistency Models (Song et al. 2023) and flow matching (Lipman et al. 2022)
+            have further improved diffusion sampling speed, narrowing the only remaining
+            advantage of GANs (single-step generation).
+          </div>
+        </li>
+        <li class="fft-item">
+          Latent diffusion compresses images by a factor of $f=8$ in each spatial dimension before
+          running diffusion. This means the diffusion model never directly models pixel values —
+          it models latent codes from a pre-trained VAE. Does this change what the model can generate?
+          What are the potential failure modes of this compression?
+          <div class="fft-answer">
+            Yes — the fundamental quality ceiling of a latent diffusion model is determined by
+            the reconstruction quality of the VAE decoder, not by the diffusion model itself.
+            If the VAE cannot reconstruct fine details (e.g., sharp text, complex textures,
+            individual blades of grass), the diffusion model cannot produce them — regardless
+            of how perfect the latent it generates.
+            This is an explicit design choice: latent diffusion trades pixel-level fidelity
+            for computational tractability. The assumption is that the VAE captures all
+            perceptually relevant variation in the latent space, and that pixel-level details
+            are "mere rendering" that the decoder can handle.
+            Failure modes:
+            (1) <em>Text in images:</em> character-level detail at small scales is extremely
+            sensitive to VAE compression. Until very recently, all diffusion models (Stable
+            Diffusion 1.x, 2.x) failed to generate readable text — the latent code at $f=8$
+            simply cannot represent individual characters. SDXL and later models use $f=8$ with
+            much larger VAE capacity (more channels, better training) and improved text encoders
+            to partially address this.
+            (2) <em>Fine-grained detail at high resolution:</em> tiling artifacts, blurry
+            textures in smooth regions, visible seams.
+            (3) <em>Color drift:</em> the VAE mean-field posterior can systematically shift
+            colors (known as "pink shift" in early Stable Diffusion).
+            The choice of $f$ is a tradeoff: lower $f$ = better reconstruction quality but
+            higher diffusion dimensionality and cost. $f=8$ with 4 latent channels ($64 \times 64 \times 4$
+            for 512×512) was a pragmatic choice validated empirically. FLUX, Stable Diffusion 3, and
+            DALL-E 3 all use architectural improvements to the VAE and higher-capacity latent spaces.
+          </div>
+        </li>
+        <li class="fft-item">
+          The DDPM noise prediction objective trains the model to estimate $\epsilon$ (the noise).
+          But the same training objective can be re-parameterised to predict $\mathbf{x}_0$ (the
+          clean image) or the velocity $v = \sqrt{\bar{\alpha}_t}\boldsymbol{\epsilon} - \sqrt{1-\bar{\alpha}_t}\mathbf{x}_0$.
+          These are mathematically equivalent given the diffusion equations. Does it matter which
+          parameterisation the network predicts?
+          <div class="fft-answer">
+            Mathematically equivalent means they produce the same distribution over generated samples
+            in the limit of perfect optimisation. But in practice, different parameterisations differ in:
+            (1) <em>Loss weighting across timesteps.</em> Predicting $\epsilon$ weights all timesteps
+            equally by default. Predicting $\mathbf{x}_0$ gives larger gradients at high-noise
+            timesteps (where the noisy image is mostly noise and the clean image prediction is very
+            uncertain). Predicting $v$ (velocity parameterisation, Salimans &amp; Ho 2022) was
+            motivated by improved gradient signal at $t \to T$ (where $\sqrt{\bar{\alpha}_T} \to 0$
+            and $\epsilon$-prediction gradients vanish). $v$-prediction is empirically better for
+            high-resolution generation and is used in SDXL, SD3, and Imagen Video.
+            (2) <em>Numerical stability at boundaries.</em> At $t=0$ ($\bar{\alpha}_t = 1$, no noise),
+            $\mathbf{x}_0$-prediction is easy but $\epsilon$-prediction is undefined.
+            At $t=T$ ($\bar{\alpha}_t \to 0$, pure noise), $\epsilon$-prediction is straightforward
+            but $\mathbf{x}_0$-prediction faces high variance. $v$-prediction is well-behaved at both.
+            (3) <em>Distillation and fast sampling.</em> Consistency models and flow matching methods
+            use specific parameterisations ($\mathbf{x}_0$ and velocity respectively) because they
+            have nicer properties for the consistency mapping needed to make single-step generation work.
+            The practical takeaway: parameterisation choice is a hyperparameter that affects training
+            dynamics, not the final distribution. For modern high-resolution, high-quality models,
+            $v$-prediction is the preferred choice.
+          </div>
+        </li>
+      </ul>
+
+      <!-- ── Connects to ──────────────────────────────────────────────── -->
+      <div class="section-head" id="connects-to">Connects to</div>
+
+      <div class="prose">
+        <strong>The Transformer (DL6) and BERT/GPT (DL7)</strong> — DALL-E 2 and Imagen use
+        powerful language models (CLIP, T5) as the text encoder feeding cross-attention in
+        the diffusion U-Net. The quality of text-image alignment scales directly with the
+        text encoder's capability. GPT-4V, Gemini, and Claude are multimodal models that integrate
+        vision encoders trained with contrastive or generative objectives.
+      </div>
+      <div class="prose">
+        <strong>Training at Scale (DL8)</strong> — training Stable Diffusion required ~50,000 A100-hours
+        on LAION-5B (5 billion image-text pairs). All the techniques of DL8 — Flash Attention,
+        mixed precision, data parallelism, ZeRO — are used. The diffusion U-Net also uses Flash
+        Attention in its self-attention and cross-attention layers, which is critical for batch size.
+      </div>
+      <div class="prose">
+        <strong>Reinforcement Learning from Human Feedback (DL7, RLHF)</strong> — InstructPix2Pix
+        and DreamBooth fine-tune diffusion models on human feedback, paralleling RLHF in language.
+        RLHF-trained reward models score generated images, and the diffusion model is fine-tuned
+        to maximise reward while staying close to the base model — the same KL-constrained
+        optimisation used for InstructGPT.
+      </div>
+
+      <div class="lesson-nav">
+        <a href="training-scale.html" class="lesson-nav-btn">← 8 · Training at Scale</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+
+</body>
+</html>

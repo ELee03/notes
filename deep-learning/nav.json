@@ -56,14 +56,12 @@
         {
           "href": "training-scale.html",
           "text": "8 · Training at Scale",
-          "topics": "Mixed precision · gradient checkpointing · distributed training · scaling laws · RLHF",
-          "planned": true
+          "topics": "Mixed precision · gradient checkpointing · distributed training · scaling laws · RLHF"
         },
         {
           "href": "generative-models.html",
           "text": "9 · Generative Models",
-          "topics": "VAEs · GANs · diffusion models · score matching · DDPM · classifier-free guidance",
-          "planned": true
+          "topics": "VAEs · GANs · diffusion models · score matching · DDPM · classifier-free guidance"
         }
       ]
     }

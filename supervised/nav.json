@@ -31,20 +31,17 @@
         {
           "href": "svm.html",
           "text": "5 · Support Vector Machines",
-          "topics": "Maximum margin · support vectors · dual problem · kernel trick · soft margin · RBF and polynomial kernels",
-          "planned": true
+          "topics": "Maximum margin · support vectors · dual problem · kernel trick · soft margin · RBF and polynomial kernels"
         },
         {
           "href": "decision-trees.html",
           "text": "6 · Decision Trees",
-          "topics": "Information gain · entropy · Gini impurity · CART algorithm · pruning · regression trees",
-          "planned": true
+          "topics": "Information gain · entropy · Gini impurity · CART algorithm · pruning · regression trees"
         },
         {
           "href": "ensembles.html",
           "text": "7 · Ensemble Methods",
-          "topics": "Bagging · random forests · AdaBoost · gradient boosting · XGBoost · variance reduction",
-          "planned": true
+          "topics": "Bagging · random forests · AdaBoost · gradient boosting · XGBoost · variance reduction"
         }
       ]
     },

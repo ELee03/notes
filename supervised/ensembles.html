@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ensemble Methods — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false}
+        ],
+        throwOnError: false
+      });
+    });
+  </script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Prerequisites</div>
+        <a href="decision-trees.html" class="nav-item">SL6 · Decision Trees</a>
+      </div>
+
+      <div id="cluster-nav" data-cluster="supervised" data-current="ensembles.html"></div>
+
+      <hr class="sidebar-rule">
+
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#why-combine" class="nav-item">Why combine models?</a>
+        <a href="#bias-variance-revisited" class="nav-item">Bias-variance decomposition</a>
+        <a href="#bagging" class="nav-item">Bagging</a>
+        <a href="#random-forests" class="nav-item">Random forests</a>
+        <a href="#boosting" class="nav-item">Boosting — the idea</a>
+        <a href="#adaboost" class="nav-item">AdaBoost</a>
+        <a href="#gradient-boosting" class="nav-item">Gradient boosting</a>
+        <a href="#xgboost" class="nav-item">XGBoost</a>
+        <a href="#stacking" class="nav-item">Stacking</a>
+        <a href="#examples" class="nav-item">Worked examples</a>
+        <a href="#food-for-thought" class="nav-item">Food for thought</a>
+        <a href="#pitfalls" class="nav-item">Common pitfalls</a>
+        <a href="#connects-to" class="nav-item">Connects to</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Supervised Learning</a>
+        <span class="sep">›</span>
+        <span>7 · Ensemble Methods</span>
+      </div>
+
+      <div class="lesson-title">7 · Ensemble Methods</div>
+      <div class="lesson-meta">Bagging · Random Forests · AdaBoost · Gradient Boosting · XGBoost · Stacking</div>
+
+      <div class="prose">
+        Ensemble methods combine many weak models into one strong model.
+        The idea is simple: individual predictors make different errors, and if those
+        errors are uncorrelated, averaging cancels them out. The same principle explains
+        why asking 100 independent people to estimate a quantity is better than asking one.
+        This lesson derives the variance-reduction guarantee of bagging from first
+        principles, explains Random Forests as decorrelated bagging, derives AdaBoost
+        as an exponential loss minimiser, and develops gradient boosting as functional
+        gradient descent in prediction space. Together, these methods — especially
+        gradient-boosted decision trees (XGBoost, LightGBM, CatBoost) — are the most
+        consistently strong performers on structured tabular data in practical ML,
+        routinely winning Kaggle competitions and industrial deployments.
+      </div>
+
+      <!-- ── Section 1: Why combine models ──────────────────────────────── -->
+      <div class="section-head" id="why-combine">Why combine models?</div>
+
+      <div class="prose">
+        A single complex model faces a fundamental tension: high capacity models
+        fit the training data well (low bias) but vary wildly across different training
+        sets (high variance). The ensemble approach breaks this tradeoff. If you can
+        train many models that are collectively <em>diverse</em> (their errors are
+        not all the same), their average is more stable and more accurate than any
+        individual.
+      </div>
+
+      <!-- ── Section 2: Bias-variance decomposition ─────────────────────── -->
+      <div class="section-head" id="bias-variance-revisited">Bias-variance decomposition for ensembles</div>
+
+      <div class="proof-box">
+        <div class="proof-header">Variance reduction by averaging</div>
+        <div class="proof-body">
+          <p>Suppose we train $M$ independent models $f_1, \ldots, f_M$, each with bias $B$,
+          variance $\sigma^2$, and pairwise correlation $\rho = \text{Corr}(f_i(\mathbf{x}), f_j(\mathbf{x}))$
+          for $i \neq j$. The ensemble prediction is $\bar{f} = \frac{1}{M}\sum_m f_m$.</p>
+          <p><strong>Bias of ensemble:</strong> $\text{Bias}(\bar{f}) = B$ (averaging does not change bias).</p>
+          <p><strong>Variance of ensemble:</strong>
+          $$\text{Var}(\bar{f}) = \frac{1}{M^2}\text{Var}\!\left(\sum_m f_m\right) = \frac{1}{M^2}\left[M\sigma^2 + M(M-1)\rho\sigma^2\right] = \frac{\sigma^2}{M} + \frac{(M-1)}{M}\rho\sigma^2$$</p>
+          <p>As $M \to \infty$:
+          $$\text{Var}(\bar{f}) \to \rho\sigma^2$$
+          If models are uncorrelated ($\rho = 0$): variance $\to 0$ as $M \to \infty$ — perfect variance elimination.
+          If models are perfectly correlated ($\rho = 1$): variance $= \sigma^2$ — averaging does nothing.</p>
+          <p><strong>The fundamental requirement:</strong> ensemble members must be diverse (low $\rho$).
+          High-variance, diverse models are the best candidates for ensembling. Bagging achieves diversity
+          through training set randomness; Random Forests add feature randomness; boosting achieves
+          a different kind of diversity by sequentially correcting residuals.</p>
+        </div>
+      </div>
+
+      <!-- ── Section 3: Bagging ─────────────────────────────────────────── -->
+      <div class="section-head" id="bagging">Bagging (Bootstrap Aggregating)</div>
+
+      <div class="prose">
+        <strong>Bagging</strong> (Breiman 1994) achieves diversity via <strong>bootstrap
+        sampling</strong>: draw $M$ training sets of size $N$ by sampling with replacement
+        from the original $N$ training points. Each bootstrap set omits (on average) $1 - (1-1/N)^N \approx 1 - e^{-1} \approx 36.8\%$ of original training points and includes duplicates of others.
+        Train one model on each bootstrap set. The ensemble prediction is the average
+        (regression) or majority vote (classification).
+      </div>
+
+      <div class="prose">
+        <strong>Out-of-bag (OOB) error.</strong> Each model was trained without seeing
+        the $\approx 36.8\%$ of examples that were not included in its bootstrap set.
+        These out-of-bag examples act as a built-in validation set. For each training
+        point $i$, average the predictions only of the models whose bootstrap set did
+        not include point $i$. This gives an OOB prediction for every training point
+        without any held-out set — an essentially free cross-validation estimate.
+        OOB error is almost as accurate as 5-fold cross-validation.
+      </div>
+
+      <!-- ── Section 4: Random forests ─────────────────────────────────── -->
+      <div class="section-head" id="random-forests">Random forests</div>
+
+      <div class="prose">
+        The key problem with bagging trees: the bootstrap samples are highly correlated
+        (they all come from the same distribution), so the trees are correlated. From the
+        variance formula, $\rho$ is bounded away from 0 — variance reduction is limited.
+        <strong>Random Forests</strong> (Breiman 2001) add a second source of randomness:
+        at each split in each tree, only a random subset of $m$ features (out of $p$ total)
+        are considered as candidates for the split. This <em>feature subsampling</em>
+        decorrelates the trees, reducing $\rho$ significantly.
+      </div>
+
+      <div class="callout">
+        <strong>Feature subsampling rule of thumb:</strong>
+        Classification: $m = \lfloor\sqrt{p}\rfloor$. Regression: $m = \lfloor p/3 \rfloor$.
+        These are starting points — tune as a hyperparameter. Smaller $m$ = more decorrelation
+        = lower variance, but higher bias (each tree sees less information). The optimal $m$
+        balances this tradeoff.
+      </div>
+
+      <div class="prose">
+        <strong>Feature importance in Random Forests.</strong> Two measures:
+        (1) <em>Mean decrease in impurity (MDI)</em>: sum the impurity reductions for splits
+        using each feature, averaged over all trees. Fast to compute (already available from
+        training), but biased toward high-cardinality continuous features.
+        (2) <em>Permutation importance</em>: for each feature, randomly permute its values
+        in the OOB set, measure the decrease in OOB accuracy, and average over trees.
+        Model-agnostic and unbiased, but requires one OOB evaluation per feature.
+      </div>
+
+      <div class="prose">
+        <strong>Random Forests are robust and easy to tune.</strong> They require minimal
+        preprocessing (no feature scaling, handle mixed types, robust to outliers), rarely
+        overfit with more trees, and are embarrassingly parallelisable (each tree is independent).
+        The main hyperparameter to tune is $m$ (feature subset size); $M$ (number of trees)
+        is essentially "more is better" up to computational limits.
+      </div>
+
+      <!-- ── Section 5: Boosting ─────────────────────────────────────────── -->
+      <div class="section-head" id="boosting">Boosting — the idea</div>
+
+      <div class="prose">
+        Bagging reduces variance by averaging parallel models. <strong>Boosting</strong>
+        reduces both bias and variance by training models <em>sequentially</em>, each one
+        correcting the residual errors of the ensemble so far. Where bagging works by
+        averaging, boosting works by addition: the final model is an additive combination
+        $F(\mathbf{x}) = \sum_{m=1}^M \beta_m h_m(\mathbf{x})$ where each $h_m$ is a
+        "weak learner" (typically a shallow tree) fitted to the current errors.
+      </div>
+
+      <!-- ── Section 6: AdaBoost ─────────────────────────────────────────── -->
+      <div class="section-head" id="adaboost">AdaBoost</div>
+
+      <div class="proof-box">
+        <div class="proof-header">AdaBoost derivation (Freund &amp; Schapire 1997)</div>
+        <div class="proof-body">
+          <p>Binary classification: $y_i \in \{-1, +1\}$. AdaBoost builds a model
+          $F_M(\mathbf{x}) = \sum_{m=1}^M \alpha_m h_m(\mathbf{x})$
+          where each $h_m$ is a binary classifier.</p>
+
+          <p><strong>Algorithm:</strong>
+          Initialise sample weights $w_i^{(1)} = 1/N$ for all $i$.
+          For $m = 1, \ldots, M$:
+          <ol>
+            <li>Train weak classifier $h_m$ on training data with weights $w_i^{(m)}$
+              (minimise weighted 0-1 loss: $\sum_i w_i^{(m)} \mathbf{1}[h_m(\mathbf{x}_i) \neq y_i]$).</li>
+            <li>Compute weighted error rate: $\varepsilon_m = \sum_{i: h_m(\mathbf{x}_i) \neq y_i} w_i^{(m)}$</li>
+            <li>Compute classifier weight: $\alpha_m = \frac{1}{2}\ln\frac{1-\varepsilon_m}{\varepsilon_m}$</li>
+            <li>Update sample weights: $w_i^{(m+1)} \propto w_i^{(m)} \exp(-\alpha_m y_i h_m(\mathbf{x}_i))$
+              (normalise so they sum to 1)</li>
+          </ol></p>
+          <p>Weights increase for misclassified examples ($y_i h_m = -1 \to e^{\alpha_m}$);
+          decrease for correctly classified ($y_i h_m = +1 \to e^{-\alpha_m}$).
+          Subsequent weak learners must focus on the hard examples — those misclassified by earlier learners.</p>
+
+          <p><strong>Loss function interpretation.</strong> AdaBoost minimises the
+          <strong>exponential loss</strong>:
+          $$\mathcal{L}(F) = \frac{1}{N}\sum_i \exp(-y_i F(\mathbf{x}_i))$$
+          The greedy forward stagewise algorithm exactly minimises this loss at each step.
+          Proof: at stage $m$, adding $\alpha h$ to $F_{m-1}$ minimises:
+          $$\sum_i e^{-y_i F_{m-1}(\mathbf{x}_i)} e^{-\alpha y_i h(\mathbf{x}_i)} = \sum_{y_i h = +1} w_i e^{-\alpha} + \sum_{y_i h = -1} w_i e^{\alpha}$$
+          where $w_i = e^{-y_i F_{m-1}(\mathbf{x}_i)}$. Setting the derivative to zero gives $\alpha_m = \frac{1}{2}\ln\frac{1-\varepsilon}{\varepsilon}$ and the minimum $h$ minimises the weighted error $\varepsilon = \sum_{y_i \neq h_i} w_i / \sum w_i$ — exactly the AdaBoost update.</p>
+        </div>
+      </div>
+
+      <!-- ── Section 7: Gradient boosting ───────────────────────────────── -->
+      <div class="section-head" id="gradient-boosting">Gradient boosting</div>
+
+      <div class="proof-box">
+        <div class="proof-header">Gradient boosting — functional gradient descent (Friedman 2001)</div>
+        <div class="proof-body">
+          <p>Gradient boosting generalises AdaBoost to arbitrary differentiable loss functions
+          by viewing boosting as gradient descent in the space of functions.</p>
+          <p>The additive model is $F_M(\mathbf{x}) = \sum_{m=0}^M h_m(\mathbf{x})$
+          (note: no separate $\alpha_m$ — the step size is absorbed into $h_m$).</p>
+          <p>At step $m$, we want to add $h_m$ to reduce the empirical risk:
+          $$\mathcal{L}(F) = \sum_{i=1}^N \ell(y_i, F(\mathbf{x}_i))$$
+          The direction of steepest descent in function space is the negative functional gradient:
+          $$r_i^{(m)} = -\frac{\partial \ell(y_i, F(\mathbf{x}_i))}{\partial F(\mathbf{x}_i)}\bigg|_{F = F_{m-1}}$$
+          These are called <strong>pseudo-residuals</strong>.</p>
+          <p>Since we can't follow the functional gradient directly (it's only defined at training points,
+          not everywhere), we fit a regression tree $T_m$ to the pseudo-residuals:
+          $$T_m = \arg\min_{T} \sum_i (r_i^{(m)} - T(\mathbf{x}_i))^2$$
+          Update: $F_m = F_{m-1} + \eta T_m$ where $\eta$ is the learning rate (shrinkage).</p>
+
+          <p><strong>Loss function → pseudo-residuals:</strong>
+          <ul>
+            <li>MSE ($\ell = (y-F)^2/2$): $r_i = y_i - F(\mathbf{x}_i)$ — actual residuals.</li>
+            <li>MAE ($\ell = |y-F|$): $r_i = \text{sign}(y_i - F(\mathbf{x}_i))$</li>
+            <li>Log-loss ($\ell = \log(1+e^{-yF})$): $r_i = y_i - \sigma(F(\mathbf{x}_i))$ — probability residuals.</li>
+            <li>Huber (robust): interpolates between MSE for small residuals and MAE for large ones.</li>
+          </ul></p>
+
+          <p><strong>Algorithm:</strong>
+          Initialise $F_0 = \arg\min_c \sum_i \ell(y_i, c)$ (constant predictor: mean for MSE, log-odds for log-loss).
+          For $m = 1, \ldots, M$:
+          <ol>
+            <li>Compute pseudo-residuals $r_i^{(m)}$ for each training point.</li>
+            <li>Fit a regression tree $T_m$ with $J$ leaves to $\{(\mathbf{x}_i, r_i^{(m)})\}$.</li>
+            <li>Compute optimal leaf values: for each leaf $j$, set $\gamma_{jm} = \arg\min_\gamma \sum_{i \in \text{leaf}_j} \ell(y_i, F_{m-1}(\mathbf{x}_i) + \gamma)$.</li>
+            <li>Update: $F_m(\mathbf{x}) = F_{m-1}(\mathbf{x}) + \eta \sum_j \gamma_{jm} \mathbf{1}[\mathbf{x} \in \text{leaf}_j]$.</li>
+          </ol></p>
+        </div>
+      </div>
+
+      <div class="prose">
+        <strong>Regularisation in gradient boosting:</strong>
+        <ul style="padding-left:1.4em; margin-top:8px;">
+          <li style="margin-bottom:6px;"><strong>Shrinkage (learning rate $\eta$)</strong>: smaller $\eta$ requires more trees but better generalises. Typical: $\eta \in [0.01, 0.3]$.</li>
+          <li style="margin-bottom:6px;"><strong>Subsampling (stochastic GBT)</strong>: fit each tree on a random subsample of training points (fraction $s \in (0.5, 1)$). Reduces variance and speeds training.</li>
+          <li><strong>Tree depth</strong>: shallow trees ($J = 3$–$8$ leaves) are standard. Depth controls the order of feature interactions captured.</li>
+        </ul>
+      </div>
+
+      <!-- ── Section 8: XGBoost ──────────────────────────────────────────── -->
+      <div class="section-head" id="xgboost">XGBoost</div>
+
+      <div class="prose">
+        <strong>XGBoost</strong> (Chen &amp; Guestrin 2016) extends gradient boosting with
+        a second-order Taylor expansion of the loss, which gives a closed-form optimal
+        leaf value and a principled regularised structure score:
+        $$\mathcal{L}^{(m)} \approx \sum_i \left[g_i f_m(\mathbf{x}_i) + \frac{1}{2}h_i f_m(\mathbf{x}_i)^2\right] + \Omega(f_m)$$
+        where $g_i = \partial_F \ell(y_i, F(\mathbf{x}_i))$ (first derivative — the pseudoresidual),
+        $h_i = \partial^2_F \ell(y_i, F(\mathbf{x}_i))$ (second derivative — Hessian),
+        and $\Omega(f) = \gamma |T| + \frac{\lambda}{2}\sum_j w_j^2$ is the regularisation term
+        (penalising tree size and leaf weights).
+      </div>
+
+      <div class="prose">
+        The optimal leaf weight for leaf $j$ is $w_j^* = -G_j / (H_j + \lambda)$
+        where $G_j = \sum_{i \in \text{leaf}_j} g_i$ and $H_j = \sum_{i \in \text{leaf}_j} h_i$.
+        The gain for a particular split is:
+        $$\text{Gain} = \frac{1}{2}\left[\frac{G_L^2}{H_L+\lambda} + \frac{G_R^2}{H_R+\lambda} - \frac{(G_L+G_R)^2}{H_L+H_R+\lambda}\right] - \gamma$$
+        This analytical formula makes split finding much faster (no line search needed per split).
+        XGBoost also uses approximate quantile-based sketching for even faster split finding on large datasets,
+        column subsampling (like Random Forests), and sparsity-aware algorithms for missing values.
+        These engineering improvements made it 10–50× faster than vanilla gradient boosting
+        and the dominant method on tabular Kaggle competitions from 2015–2022.
+      </div>
+
+      <!-- ── Section 9: Stacking ─────────────────────────────────────────── -->
+      <div class="section-head" id="stacking">Stacking (Stacked Generalisation)</div>
+
+      <div class="prose">
+        Bagging and boosting combine models of the same type. <strong>Stacking</strong>
+        (Wolpert 1992) combines models of different types using a learned meta-model.
+        The procedure:
+        <ol style="padding-left:1.4em; margin-top:8px;">
+          <li style="margin-bottom:6px;"><strong>Train level-0 models</strong> (e.g., Random Forest, SVM, GBT, logistic regression) on the training set using cross-validation to generate out-of-fold predictions.</li>
+          <li style="margin-bottom:6px;"><strong>Build a meta-feature matrix</strong>: each column is the out-of-fold predictions of one level-0 model. This has the same number of rows as the training set, with one column per level-0 model.</li>
+          <li><strong>Train a meta-model</strong> (level-1) on the meta-feature matrix to predict the true targets. The meta-model learns how to best combine the level-0 predictions.</li>
+        </ol>
+        Stacking typically outperforms any individual model because different models make different
+        errors, and the meta-model learns to exploit this. The cross-validation step is essential:
+        without it, level-0 models have seen their own training targets and the meta-features are
+        overfit, leading to a degenerate meta-model.
+      </div>
+
+      <!-- ── Worked examples ──────────────────────────────────────────── -->
+      <div class="section-head" id="examples">Worked examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Variance reduction by averaging independent trees</strong></div>
+        <div class="example-problem">
+          <p>You train $M = 100$ decision trees on bootstrap samples. Each tree has bias $B = 0.2$
+          and variance $\sigma^2 = 4.0$. After bootstrap sampling, the inter-tree correlation is
+          $\rho = 0.5$. Compute the ensemble's bias, variance, and approximate MSE.
+          Compare to a single tree and to hypothetically uncorrelated trees.</p>
+        </div>
+        <div class="example-body">
+          <p><strong>Single tree:</strong> MSE $\approx B^2 + \sigma^2 = 0.04 + 4.0 = 4.04$.</p>
+
+          <p><strong>Ensemble ($M=100$, $\rho=0.5$):</strong>
+          Bias unchanged: $B = 0.2$.
+          Variance: $\frac{\sigma^2}{M} + \frac{M-1}{M}\rho\sigma^2 = \frac{4.0}{100} + \frac{99}{100}(0.5)(4.0) = 0.04 + 1.98 = 2.02$.
+          MSE $\approx B^2 + 2.02 = 0.04 + 2.02 = 2.06$ — roughly halved.</p>
+
+          <p><strong>Hypothetically uncorrelated trees ($\rho=0$):</strong>
+          Variance: $\sigma^2/M = 4.0/100 = 0.04$.
+          MSE $\approx 0.04 + 0.04 = 0.08$ — 50× reduction vs. single tree.
+          This is the ceiling that Random Forests approach by decorrelating trees via feature subsampling.</p>
+
+          <p>The gap between $\rho=0.5$ (plain bagging) and $\rho=0$ shows why feature subsampling matters:
+          reducing tree correlation from 0.5 to near 0 reduces variance from 2.02 to 0.04 — a 50× reduction
+          in the variance contribution.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — AdaBoost iteration by hand</strong></div>
+        <div class="example-problem">
+          <p>4 training points: $(\mathbf{x}_1, +1), (\mathbf{x}_2, +1), (\mathbf{x}_3, -1), (\mathbf{x}_4, -1)$.
+          Weak learner $h_1$ classifies: $h_1(\mathbf{x}_1)=+1$ ✓, $h_1(\mathbf{x}_2)=+1$ ✓,
+          $h_1(\mathbf{x}_3)=-1$ ✓, $h_1(\mathbf{x}_4)=+1$ ✗ (misclassified).
+          Run one AdaBoost iteration.</p>
+        </div>
+        <div class="example-body">
+          <p><strong>Initial weights:</strong> $w_i^{(1)} = 1/4$ for all $i$.</p>
+
+          <p><strong>Weighted error:</strong> Only $\mathbf{x}_4$ is misclassified.
+          $\varepsilon_1 = w_4^{(1)} = 1/4 = 0.25$.</p>
+
+          <p><strong>Classifier weight:</strong>
+          $\alpha_1 = \frac{1}{2}\ln\frac{1-0.25}{0.25} = \frac{1}{2}\ln(3) \approx 0.549$.</p>
+
+          <p><strong>Update weights:</strong>
+          $w_i^{(2)} \propto w_i^{(1)} \exp(-\alpha_1 y_i h_1(\mathbf{x}_i))$
+          <ul>
+            <li>$\mathbf{x}_1$: $y_1 h_1 = +1$. $w_1^{(2)} \propto (1/4)e^{-0.549} \propto 0.144$</li>
+            <li>$\mathbf{x}_2$: $y_2 h_1 = +1$. $w_2^{(2)} \propto 0.144$</li>
+            <li>$\mathbf{x}_3$: $y_3 h_1 = +1$. $w_3^{(2)} \propto 0.144$</li>
+            <li>$\mathbf{x}_4$: $y_4 h_1 = -1$. $w_4^{(2)} \propto (1/4)e^{+0.549} \propto 0.433$</li>
+          </ul>
+          Normalise: total $= 0.144 \times 3 + 0.433 = 0.865$. Normalised: $w_{1,2,3}^{(2)} = 0.167$, $w_4^{(2)} = 0.5$.</p>
+
+          <p>The misclassified point $\mathbf{x}_4$ now has weight 0.5 (half the total weight, up from 0.25).
+          The next weak learner trained on these weights must focus on $\mathbf{x}_4$ — it will make a large
+          error if it ignores this heavy point. This is AdaBoost's sequential correction mechanism.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Gradient boosting step for regression</strong></div>
+        <div class="example-problem">
+          <p>Regression with MSE loss. Current model $F_0(\mathbf{x}) = 5$ (constant, the mean of $y = [3, 5, 7, 9]$).
+          $\eta = 0.5$. Show the first boosting step and compute the new predictions.</p>
+        </div>
+        <div class="example-body">
+          <p>Targets: $y = [3, 5, 7, 9]$. Initial model: $F_0 = \bar{y} = 6$. (mean of all 4 targets = 24/4 = 6)</p>
+
+          <p><strong>Pseudo-residuals (for MSE: $r_i = y_i - F_0$):</strong>
+          $r = [3-6, 5-6, 7-6, 9-6] = [-3, -1, +1, +3]$</p>
+
+          <p><strong>Fit regression tree $T_1$ to residuals:</strong>
+          Suppose $T_1$ perfectly fits the residuals: $T_1(\mathbf{x}_i) = r_i = [-3, -1, +1, +3]$
+          (or in a real problem, finds the best split on the feature values).</p>
+
+          <p><strong>Update:</strong> $F_1(\mathbf{x}_i) = F_0 + \eta \cdot T_1(\mathbf{x}_i)$
+          $= 6 + 0.5 \cdot [-3, -1, +1, +3] = [4.5, 5.5, 6.5, 7.5]$</p>
+
+          <p><strong>New residuals for step 2:</strong>
+          $r^{(2)} = y - F_1 = [3-4.5, 5-5.5, 7-6.5, 9-7.5] = [-1.5, -0.5, +0.5, +1.5]$</p>
+
+          <p>The residuals halved after one step (due to $\eta = 0.5$). After $M$ steps with $\eta = 0.5$
+          and a perfect tree, residuals are $(1-\eta)^M = 0.5^M$ of the original — exponential decay.
+          Smaller $\eta$ requires more steps but generalises better (the slow decay regularises).</p>
+        </div>
+      </div>
+
+      <!-- ── Food for thought ────────────────────────────────────────────── -->
+      <div class="section-head" id="food-for-thought">Food for thought</div>
+
+      <ul class="fft-list">
+        <li class="fft-item">
+          Gradient boosting with MSE loss fits each tree to the residuals $y_i - F_{m-1}(\mathbf{x}_i)$.
+          This is the same as what a neural network does when trained with gradient descent on MSE.
+          What's the key difference in how they represent and update the model?
+          <div class="fft-answer">
+            In gradient boosting, the model is an <em>additive tree ensemble</em>: each step adds a
+            whole new tree $T_m$. The model grows in discrete units (trees). Each tree has $O(2^J)$
+            parameters (leaf values and split structure), and once added, a tree's split structure is
+            fixed — only the leaf values could be further tuned.
+            In a neural network, gradient descent updates <em>all</em> parameters $\theta$ simultaneously
+            via $\theta \leftarrow \theta - \eta \nabla_\theta \mathcal{L}$. Every weight changes at every
+            step. The model is differentiable everywhere (with smooth activations), enabling fine-grained,
+            coordinated updates across all layers.
+            Key differences: (1) Gradient boosting parameters are discrete trees — you can't differentiate
+            through a tree to compute the globally optimal next tree, only through individual leaves.
+            (2) Boosting is a coordinate-wise approach in function space (each tree is one coordinate);
+            neural network SGD is a gradient step in weight space. (3) Trees are piece-wise constant
+            functions; neural networks with smooth activations approximate smooth functions. Neural networks
+            excel on unstructured data (images, text) where smoothness is natural; GBDTs excel on
+            structured tabular data where individual features may have non-smooth effects.
+          </div>
+        </li>
+        <li class="fft-item">
+          Random Forests are trained in parallel (each tree independently) and are easy to parallelise.
+          Gradient Boosting is sequential (tree $m$ depends on the residuals of tree $m-1$). Is there
+          any way to parallelise gradient boosting?
+          <div class="fft-answer">
+            The sequential dependency in gradient boosting is between trees (each tree depends on the
+            previous ones to compute residuals). You cannot train tree $m+1$ until tree $m$ is done.
+            However, two types of parallelism are still available:
+            (1) <em>Within-tree parallelism:</em> Building each tree is embarrassingly parallel — each
+            candidate split can be evaluated independently across features and thresholds. XGBoost, LightGBM,
+            and CatBoost all parallelise the split-finding inner loop across CPU/GPU cores. Building a single
+            tree of depth $J$ with $N$ points can scale nearly linearly with cores.
+            (2) <em>Approximate methods:</em> Some algorithms (DART — Dropouts meet Multiple Additive
+            Regression Trees) randomly drop trees during training, which reduces their mutual dependence
+            and can be partially parallelised. Feature-parallel and data-parallel implementations of
+            gradient boosting (LightGBM uses histogram-based approximate splits in a distributed setting)
+            scale to very large datasets.
+            But fundamentally, the sequential tree dependency limits total parallelism more than Random
+            Forests. For very large training jobs (100M+ examples), Random Forests scale more cleanly;
+            gradient boosting requires careful distributed implementation.
+          </div>
+        </li>
+        <li class="fft-item">
+          Neural networks have largely supplanted tree ensembles on unstructured data (images, audio, text).
+          Yet tree ensembles (especially XGBoost and LightGBM) still dominate on structured tabular data,
+          even where deep learning is applied. Why do trees have such a persistent advantage on tabular data?
+          <div class="fft-answer">
+            This is an empirically observed fact confirmed across many benchmarks (Grinsztajn et al. 2022,
+            "Why do tree-based models still outperform deep learning on tabular data?"). Several explanations
+            are offered:
+            (1) Tabular data often contains uninformative features: GBDTs naturally ignore useless features
+            via their feature importance mechanism (irrelevant features rarely get split on). Neural networks
+            have no such natural selection and must learn to ignore irrelevant inputs via regularisation,
+            which requires more data and careful tuning.
+            (2) Rotational invariance: neural networks are typically invariant to rotations of the input
+            space. Tabular features are often meaningful as individual variables (age, income), not as
+            linear combinations. Trees are not rotationally invariant — they respect individual feature
+            thresholds natively.
+            (3) Sample efficiency: GBDT convergence is typically rapid in the number of boosting rounds.
+            Neural networks require more data and epochs to reach comparable performance on small datasets.
+            (4) Robustness: GBDTs handle missing values, mixed data types, and class imbalance robustly.
+            Neural networks require preprocessing (encoding, normalisation, imputation) that introduces
+            additional choices and potential errors.
+            Deep learning approaches that add table-specific inductive biases (TabNet, SAINT, FT-Transformer)
+            have narrowed the gap but not consistently closed it.
+          </div>
+        </li>
+      </ul>
+
+      <!-- ── Common pitfalls ─────────────────────────────────────────────── -->
+      <div class="section-head" id="pitfalls">Common pitfalls</div>
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:14px;">
+          <strong>Not using early stopping in gradient boosting.</strong> Unlike Random Forests
+          (more trees = better until compute runs out), gradient boosting can overfit if the
+          number of trees is too large. Always use early stopping: monitor validation loss and
+          stop when it stops improving. XGBoost and LightGBM have native early stopping support.
+        </li>
+        <li style="margin-bottom:14px;">
+          <strong>Treating feature importances as causal.</strong> Both MDI (mean decrease in
+          impurity) and permutation importances measure predictive contribution, not causal effect.
+          A feature that is correlated with the target but not causal (e.g., hospital ward predicts
+          mortality because sicker patients are routed there) will have high importance. Use
+          causal inference methods (instrumental variables, DoWhy) for causal questions.
+        </li>
+        <li style="margin-bottom:14px;">
+          <strong>Using the same data for OOB evaluation and final performance reporting.</strong>
+          OOB error is a valid cross-validation estimate for Random Forests. But it uses the
+          training set — if you select hyperparameters based on OOB error, the OOB estimate is
+          no longer unbiased. For final performance reporting, always hold out a separate test set
+          that was not used for any part of model selection.
+        </li>
+        <li>
+          <strong>Not tuning learning rate and number of trees jointly in gradient boosting.</strong>
+          The optimal number of trees $M$ depends heavily on $\eta$ (learning rate). Small $\eta$
+          requires large $M$ to achieve the same fit; large $\eta$ converges in fewer trees but may
+          overfit. The right procedure: set $\eta$ small (e.g., 0.05–0.1), use early stopping to
+          find $M$, then tune other hyperparameters. Do not tune $M$ as a standalone parameter.
+        </li>
+      </ul>
+
+      <!-- ── Connects to ─────────────────────────────────────────────────── -->
+      <div class="section-head" id="connects-to">Connects to</div>
+
+      <div class="prose">
+        <strong>Decision Trees (SL6)</strong> — this lesson is the direct extension. Every
+        ensemble method here (bagging, random forests, gradient boosting) uses trees as
+        the base learner. The CART algorithm, Gini impurity, and tree variance are prerequisites.
+      </div>
+      <div class="prose">
+        <strong>Training Neural Networks (SL10)</strong> — gradient boosting uses the same
+        loss functions, pseudo-residual concepts, and regularisation principles (learning rate,
+        early stopping) as neural network training. The functional gradient descent view of
+        boosting and parameter-space gradient descent in neural networks are parallel ideas.
+      </div>
+      <div class="prose">
+        <strong>Deep Learning (DL cluster)</strong> — the distinction between ensemble methods
+        and deep learning is the primary fork in modern ML practice: tabular data → GBDTs;
+        unstructured data (images, audio, text) → deep networks. Understanding both is necessary
+        for choosing the right tool and for understanding the ongoing research into tabular deep learning.
+      </div>
+
+      <div class="lesson-nav">
+        <a href="decision-trees.html" class="lesson-nav-btn">← 6 · Decision Trees</a>
+        <a href="neural-networks.html" class="lesson-nav-btn">8 · Neural Networks →</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+
+</body>
+</html>

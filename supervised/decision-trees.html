@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Decision Trees — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false}
+        ],
+        throwOnError: false
+      });
+    });
+  </script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="supervised" data-current="decision-trees.html"></div>
+
+      <hr class="sidebar-rule">
+
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#intuition" class="nav-item">Intuition</a>
+        <a href="#impurity" class="nav-item">Impurity measures</a>
+        <a href="#cart" class="nav-item">CART algorithm</a>
+        <a href="#splitting" class="nav-item">Finding the best split</a>
+        <a href="#regression-trees" class="nav-item">Regression trees</a>
+        <a href="#stopping-pruning" class="nav-item">Stopping &amp; pruning</a>
+        <a href="#bias-variance" class="nav-item">Bias-variance of trees</a>
+        <a href="#examples" class="nav-item">Worked examples</a>
+        <a href="#food-for-thought" class="nav-item">Food for thought</a>
+        <a href="#pitfalls" class="nav-item">Common pitfalls</a>
+        <a href="#connects-to" class="nav-item">Connects to</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Supervised Learning</a>
+        <span class="sep">›</span>
+        <span>6 · Decision Trees</span>
+      </div>
+
+      <div class="lesson-title">6 · Decision Trees</div>
+      <div class="lesson-meta">Information Gain · Gini Impurity · CART · Regression Trees · Pruning · Bias-Variance</div>
+
+      <div class="prose">
+        A decision tree is a piecewise-constant function over the feature space, built
+        by a sequence of axis-aligned binary splits. The appeal is immediate:
+        a well-trained tree is human-readable — you can trace the path from root to leaf
+        and explain exactly why a prediction was made. The construction is algorithmic
+        and elegant: at each node, find the feature and threshold that most reduces an
+        impurity measure, recurse on each half, and stop when a termination criterion is
+        met. Trees are the building blocks of the most powerful classical ML methods:
+        Random Forests (Lesson 7) are ensembles of randomised trees, and Gradient
+        Boosting (also Lesson 7) fits a sequence of regression trees to residuals.
+        Understanding a single tree well is prerequisite for understanding both.
+      </div>
+
+      <!-- ── Section 1: Intuition ───────────────────────────────────────── -->
+      <div class="section-head" id="intuition">Intuition</div>
+
+      <div class="prose">
+        A decision tree partitions the feature space $\mathbb{R}^p$ into rectangular
+        regions (axis-aligned boxes) and assigns a constant prediction to each region.
+        Each internal node tests one feature against one threshold: "Is $x_j \leq t$?"
+        Left branch = yes; right branch = no. Leaves contain predictions: the majority
+        class (classification) or the mean of training targets (regression).
+      </div>
+
+      <div class="prose">
+        Example: predict whether a loan will default, given features age, income, and
+        debt ratio. A tree might learn: "If income $> \$50$k and debt ratio $< 0.3$,
+        predict no default. If income $\leq \$50$k and age $< 30$, predict default.
+        Otherwise, predict no default." This is fully interpretable — a human can
+        verify the logic. A trained neural network on the same task gives a number
+        with no explanation.
+      </div>
+
+      <!-- ── Section 2: Impurity measures ──────────────────────────────── -->
+      <div class="section-head" id="impurity">Impurity measures</div>
+
+      <div class="prose">
+        The guiding principle of tree construction: at each node, choose the split
+        that maximally reduces <strong>impurity</strong> — a measure of how mixed
+        the class labels are in a node. A pure node (all one class) has zero impurity.
+      </div>
+
+      <div class="proof-box">
+        <div class="proof-header">Entropy, information gain, and Gini impurity</div>
+        <div class="proof-body">
+          <p>Let a node contain $N$ examples with class proportions $p_1, \ldots, p_K$
+          (so $\sum_k p_k = 1$).</p>
+
+          <p><strong>Entropy (used by ID3 and C4.5):</strong>
+          $$H(p) = -\sum_{k=1}^K p_k \log_2 p_k$$
+          Maximum for uniform distribution ($H = \log_2 K$), zero for pure node.
+          Information gain of splitting on feature $j$ at threshold $t$ (splitting $N$ points into
+          left set $N_L$ and right set $N_R$):
+          $$\text{IG}(j, t) = H(\text{parent}) - \frac{N_L}{N} H(\text{left}) - \frac{N_R}{N} H(\text{right})$$
+          Choose the $(j, t)$ that maximises information gain.</p>
+
+          <p><strong>Gini impurity (used by CART):</strong>
+          $$G(p) = 1 - \sum_{k=1}^K p_k^2 = \sum_{k \neq k'} p_k p_{k'}$$
+          This is the probability that two randomly drawn examples from the node have different labels.
+          Zero for a pure node; $1 - 1/K$ for a uniform distribution.
+          Gini split criterion: minimise the weighted Gini impurity of the children:
+          $$\Delta G(j, t) = G(\text{parent}) - \frac{N_L}{N} G(\text{left}) - \frac{N_R}{N} G(\text{right})$$</p>
+
+          <p><strong>Relationship:</strong> entropy and Gini are both concave impurity measures that
+          are zero when $p_k \in \{0,1\}$ and maximum when $p_k = 1/K$. In the binary case:
+          Gini $= 2p(1-p)$; entropy $= -p\log p - (1-p)\log(1-p)$.
+          They give similar splits in practice. Gini is slightly cheaper to compute (no log); entropy
+          is the theoretically principled information-theoretic choice.</p>
+        </div>
+      </div>
+
+      <!-- ── Section 3: CART algorithm ─────────────────────────────────── -->
+      <div class="section-head" id="cart">CART algorithm</div>
+
+      <div class="prose">
+        <strong>CART</strong> (Classification and Regression Trees; Breiman, Friedman,
+        Olshen &amp; Stone 1984) is the standard algorithm used by scikit-learn and
+        most modern implementations. It builds a binary tree via greedy recursive splitting:
+      </div>
+
+      <div class="callout">
+        <strong>CART tree construction (recursive algorithm):</strong>
+        <ol style="margin:8px 0 0 1.2em; padding:0;">
+          <li style="margin-bottom:6px;"><strong>At the current node</strong>, if a stopping criterion is met (see below), make this a leaf node with prediction = majority class (or mean of targets). Stop.</li>
+          <li style="margin-bottom:6px;"><strong>Else</strong>, search over all features $j \in \{1, \ldots, p\}$ and all possible thresholds $t$ for that feature. For each $(j, t)$, compute the impurity reduction of splitting the node's data into $\{\mathbf{x} : x_j \leq t\}$ and $\{\mathbf{x} : x_j > t\}$.</li>
+          <li style="margin-bottom:6px;"><strong>Select</strong> the $(j^*, t^*)$ that maximises impurity reduction.</li>
+          <li><strong>Split</strong> the node's data into left and right child nodes. Recurse on each child (go to step 1).</li>
+        </ol>
+      </div>
+
+      <!-- ── Section 4: Finding the best split ──────────────────────────── -->
+      <div class="section-head" id="splitting">Finding the best split</div>
+
+      <div class="prose">
+        The inner loop over all $(j, t)$ pairs is the computational bottleneck. For
+        a continuous feature $j$, the possible thresholds are the midpoints between
+        consecutive sorted values of that feature in the current node. If the node
+        contains $N'$ points, there are $N' - 1$ candidate thresholds per feature,
+        and $p$ features, for $O(N' p)$ candidate splits at each node.
+      </div>
+
+      <div class="prose">
+        <strong>Efficient computation.</strong> Sort the training data by feature $j$
+        (once, upfront). Then sweep through the sorted values, maintaining running
+        counts of classes on each side of the split. The Gini or entropy can be updated
+        in $O(1)$ per threshold (updating counts and re-computing the sum). Total time
+        to find the best split at one node: $O(N' p)$ after $O(N \log N)$ pre-sorting.
+        Total tree training time for a balanced tree of depth $L$: $O(N p \log N)$ —
+        each training point appears in $O(\log N)$ nodes on the path to its leaf.
+      </div>
+
+      <div class="prose">
+        <strong>Categorical features.</strong> For a categorical feature with $K$ values,
+        the possible binary splits are all $2^K - 2$ ways to partition the values into
+        two non-empty groups. For $K = 2$ (binary), one split. For large $K$, this is
+        exponential. CART uses a greedy search: for classification, sort categories by
+        class proportion and use the resulting ordering to sweep (optimal for binary
+        classification); for regression, exhaustive search or heuristics.
+      </div>
+
+      <!-- ── Section 5: Regression trees ──────────────────────────────── -->
+      <div class="section-head" id="regression-trees">Regression trees</div>
+
+      <div class="prose">
+        For regression (continuous target $y_i \in \mathbb{R}$), replace the impurity
+        measure with <strong>mean squared error</strong>:
+        $$\text{MSE}(\text{node}) = \frac{1}{N'}\sum_{i \in \text{node}} (y_i - \bar{y})^2$$
+        where $\bar{y}$ is the mean of targets in the node.
+        The split criterion: maximise the MSE reduction:
+        $$\Delta\text{MSE}(j, t) = \text{MSE}(\text{parent}) - \frac{N_L}{N}\text{MSE}(\text{left}) - \frac{N_R}{N}\text{MSE}(\text{right})$$
+        The leaf prediction is $\hat{y} = \bar{y}$ (sample mean of training targets at that leaf).
+      </div>
+
+      <div class="prose">
+        <strong>MAE criterion.</strong> For robustness to outliers, use mean absolute error
+        instead. The leaf prediction becomes the median (not mean). MAE trees are less common
+        because the efficient sorting trick still works but is slightly more complex, and
+        because gradient boosting algorithms usually handle outliers via loss function choice
+        rather than changing the tree criterion.
+      </div>
+
+      <!-- ── Section 6: Stopping and pruning ───────────────────────────── -->
+      <div class="section-head" id="stopping-pruning">Stopping criteria &amp; pruning</div>
+
+      <div class="prose">
+        A tree grown until every leaf is pure (or contains one training point) perfectly
+        fits the training data — zero training error, but severe overfitting. Two approaches
+        to control complexity:
+      </div>
+
+      <div class="prose">
+        <strong>Pre-pruning (stopping criteria).</strong> Stop splitting when any of:
+        <ul style="padding-left:1.4em;margin-top:8px;">
+          <li style="margin-bottom:6px;">Node has fewer than $\text{min\_samples\_split}$ examples</li>
+          <li style="margin-bottom:6px;">Depth reaches $\text{max\_depth}$</li>
+          <li style="margin-bottom:6px;">Best impurity reduction is below $\text{min\_impurity\_decrease}$</li>
+          <li>Leaf would have fewer than $\text{min\_samples\_leaf}$ examples</li>
+        </ul>
+        Pre-pruning is greedy: once we decide not to split, we cannot later discover that a deeper
+        split would have been beneficial.
+      </div>
+
+      <div class="prose">
+        <strong>Post-pruning (cost-complexity pruning).</strong> Grow the full tree first, then
+        prune bottom-up. The CART cost-complexity criterion defines:
+        $$R_\alpha(T) = R(T) + \alpha |T|$$
+        where $R(T)$ is the total training impurity (weighted leaf MSE or misclassification rate),
+        $|T|$ is the number of leaves, and $\alpha \geq 0$ is the complexity penalty.
+        For a given $\alpha$, the optimal subtree minimising $R_\alpha$ can be found efficiently.
+        Vary $\alpha$ and cross-validate to select the best subtree. scikit-learn implements this
+        as <code>ccp_alpha</code>.
+      </div>
+
+      <!-- ── Section 7: Bias-variance ────────────────────────────────────── -->
+      <div class="section-head" id="bias-variance">Bias-variance of trees</div>
+
+      <div class="prose">
+        Decision trees are high-variance learners. A small change in the training data
+        (one outlier added or removed) can change which split is chosen at the root,
+        fundamentally changing the entire tree structure. This instability is the key
+        weakness of single trees.
+      </div>
+
+      <div class="prose">
+        <strong>Bias:</strong> a deep tree has low bias — it can approximate any continuous
+        function to arbitrary accuracy given enough depth (the partition gets fine enough).
+        A shallow tree has high bias — it can only capture simple structures.
+      </div>
+
+      <div class="prose">
+        <strong>Variance:</strong> deep trees have high variance — they memorise the training
+        data and change dramatically across different training sets. Shallow trees have lower
+        variance.
+      </div>
+
+      <div class="callout">
+        <strong>Why trees are the perfect base learner for ensembles.</strong> Because
+        trees are high-variance and low-bias (when deep), their errors are primarily from
+        noise sensitivity, not from systematic mis-modelling. Averaging many trees
+        (bagging) reduces variance substantially while preserving the low bias. This is
+        why Random Forests and Gradient Boosted Trees (both ensembles of trees) are among
+        the best-performing classical ML methods — they get the best of both worlds.
+      </div>
+
+      <!-- ── Worked examples ──────────────────────────────────────────── -->
+      <div class="section-head" id="examples">Worked examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Computing information gain for a split</strong></div>
+        <div class="example-problem">
+          <p>A node contains 10 examples: 6 positive ($+$), 4 negative ($-$).
+          We consider splitting on feature $x_1$ at threshold $t = 5$:
+          Left child: 4 positive, 1 negative. Right child: 2 positive, 3 negative.
+          Compute the information gain of this split.</p>
+        </div>
+        <div class="example-body">
+          <p><strong>Parent entropy:</strong>
+          $p_+ = 6/10 = 0.6$, $p_- = 4/10 = 0.4$.
+          $H(\text{parent}) = -0.6\log_2(0.6) - 0.4\log_2(0.4) = 0.971$ bits.</p>
+
+          <p><strong>Left child (5 examples: 4+, 1-):</strong>
+          $p_+ = 4/5 = 0.8$, $p_- = 1/5 = 0.2$.
+          $H(\text{left}) = -0.8\log_2(0.8) - 0.2\log_2(0.2) = 0.722$ bits.</p>
+
+          <p><strong>Right child (5 examples: 2+, 3-):</strong>
+          $p_+ = 2/5 = 0.4$, $p_- = 3/5 = 0.6$.
+          $H(\text{right}) = -0.4\log_2(0.4) - 0.6\log_2(0.6) = 0.971$ bits.</p>
+
+          <p><strong>Information gain:</strong>
+          $\text{IG} = H(\text{parent}) - \frac{5}{10}H(\text{left}) - \frac{5}{10}H(\text{right})$
+          $= 0.971 - 0.5(0.722) - 0.5(0.971) = 0.971 - 0.361 - 0.486 = 0.124$ bits.</p>
+
+          <p>This split gains 0.124 bits of information. To determine whether it is the best split,
+          compute IG for all other $(j, t)$ pairs and select the maximum.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Regression tree split criterion</strong></div>
+        <div class="example-problem">
+          <p>A node has 6 data points with targets $y = [1, 2, 3, 8, 9, 10]$ and a single feature
+          $x = [1, 2, 3, 4, 5, 6]$. Evaluate the MSE reduction for splitting at $x = 3.5$ (between points 3 and 4).</p>
+        </div>
+        <div class="example-body">
+          <p><strong>Parent node</strong> ($N = 6$): mean $\bar{y} = 33/6 = 5.5$.
+          MSE $= [(1-5.5)^2 + (2-5.5)^2 + (3-5.5)^2 + (8-5.5)^2 + (9-5.5)^2 + (10-5.5)^2]/6$
+          $= [20.25 + 12.25 + 6.25 + 6.25 + 12.25 + 20.25]/6 = 77.5/6 \approx 12.92$.</p>
+
+          <p><strong>Left child</strong> ($N_L = 3$, $y = [1,2,3]$): mean $= 2$.
+          MSE $= [(1-2)^2 + (2-2)^2 + (3-2)^2]/3 = 2/3 \approx 0.67$.</p>
+
+          <p><strong>Right child</strong> ($N_R = 3$, $y = [8,9,10]$): mean $= 9$.
+          MSE $= [(8-9)^2 + (9-9)^2 + (10-9)^2]/3 = 2/3 \approx 0.67$.</p>
+
+          <p><strong>MSE reduction:</strong> $12.92 - \frac{3}{6}(0.67) - \frac{3}{6}(0.67) = 12.92 - 0.67 = 12.25$.</p>
+
+          <p>This split almost perfectly separates the two clusters $\{1,2,3\}$ and $\{8,9,10\}$,
+          reducing MSE from 12.92 to 0.67 (the residual within-cluster variance). Any other split point
+          would give worse MSE reduction, as the data has a clear gap at $x = 3.5$.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Tracing the bias-variance tradeoff via depth</strong></div>
+        <div class="example-problem">
+          <p>You train a classification tree on a 1000-point dataset (500 train, 500 test) at depths 1, 5, 10, and unlimited.
+          The train/test accuracies are: depth 1 → 65%/63%; depth 5 → 88%/84%; depth 10 → 98%/81%; unlimited → 100%/75%.
+          Diagnose what's happening and what depth to use.</p>
+        </div>
+        <div class="example-body">
+          <p><strong>Depth 1 (stump):</strong> Train 65%, test 63%. Train ≈ test — underfitting. Both low because the tree
+          is too shallow to capture the decision boundary. High bias, low variance.</p>
+
+          <p><strong>Depth 5:</strong> Train 88%, test 84%. Train − test gap = 4%. Reasonable generalisation.
+          Good balance of bias and variance.</p>
+
+          <p><strong>Depth 10:</strong> Train 98%, test 81%. Train − test gap = 17%. Beginning to overfit —
+          the tree is memorising training noise. High variance starting to dominate.</p>
+
+          <p><strong>Unlimited depth:</strong> Train 100%, test 75%. Perfect training accuracy, worst test accuracy.
+          Severe overfitting — the tree has memorised every training example, creating tiny leaf regions that
+          contain only training points with no generalisation.</p>
+
+          <p><strong>Diagnosis:</strong> Use depth 5 or tune via cross-validation between depths 4–7. The train-test gap
+          of 4% at depth 5 is acceptable. The unlimited tree's gap of 25% is the cost of overfitting — a real signal
+          in the data has been drowned out by fitting to noise. This pattern (train monotonically improves; test first
+          improves then degrades) is the bias-variance tradeoff made concrete.</p>
+        </div>
+      </div>
+
+      <!-- ── Food for thought ────────────────────────────────────────────── -->
+      <div class="section-head" id="food-for-thought">Food for thought</div>
+
+      <ul class="fft-list">
+        <li class="fft-item">
+          CART always makes axis-aligned splits: "Is $x_j \leq t$?" A diagonal split like
+          "$x_1 + x_2 \leq 3$" is never considered. What problem does this create, and can
+          it be fixed?
+          <div class="fft-answer">
+            Axis-aligned splits create decision boundaries that are always parallel to the feature
+            axes — rectangular step-function approximations to the true boundary. When the true
+            boundary is diagonal (e.g., class A is above the line $x_1 + x_2 = c$ in 2D), a tree
+            must approximate this with many small steps, requiring many splits to capture what is
+            geometrically a single linear boundary.
+            This is called the "axis-alignment problem" or the "staircase effect." It means trees
+            are inefficient at learning linear or diagonal relationships in the original feature space.
+            Two fixes: (1) feature engineering — add the combined feature $x_1 + x_2$ as an input;
+            (2) oblique trees — allow splits of the form $\mathbf{w}\cdot\mathbf{x} \leq t$ with
+            arbitrary $\mathbf{w}$. Oblique trees are more expressive but much harder to optimise
+            (the split search is no longer a 1D sweep; it becomes a high-dimensional search problem).
+            In practice, feature engineering is the standard remedy. For Random Forests and GBDTs,
+            the combination of many axis-aligned trees can approximate oblique boundaries well enough
+            through their ensemble averaging.
+          </div>
+        </li>
+        <li class="fft-item">
+          The greedy CART algorithm builds each split by looking at the immediate impurity gain,
+          without considering future splits. Could a split that looks bad at the current node
+          enable much better splits at later nodes, making it globally optimal despite being
+          locally suboptimal? Is there a way to fix this?
+          <div class="fft-answer">
+            Yes — this is a real limitation of greedy tree induction. Consider a dataset where
+            feature $x_1$ provides zero information by itself (all classes are mixed), but
+            perfectly splits the data when paired with $x_2$: knowing ($x_1 > 0$ AND $x_2 > 0$)
+            determines class perfectly. A greedy algorithm would never split on $x_1$ first (zero
+            information gain), missing the interaction. Only a look-ahead of 2 levels would discover it.
+            Fixes: (1) look-ahead tree induction — consider all possible 2-level (or $k$-level)
+            subtrees rather than single splits. This has exponential cost in the look-ahead depth.
+            (2) Feature engineering — create interaction features $x_1 \cdot x_2$ explicitly.
+            (3) Use a different algorithm: Neural networks learn interactions naturally; GBDTs
+            approximate global solutions by fitting residuals; both avoid the local-greedy problem.
+            In practice, interaction detection in trees relies on the ensemble (many trees catch
+            different aspects of the interaction) rather than fixing the greedy split.
+          </div>
+        </li>
+        <li class="fft-item">
+          Decision tree predictions are piecewise-constant functions. A very deep tree can
+          approximate any function to any desired accuracy. Does this mean decision trees
+          are universal function approximators in the same sense as neural networks?
+          <div class="fft-answer">
+            Formally yes: given enough data and depth, axis-aligned CART trees are universal
+            function approximators — they can approximate any measurable function on a compact
+            domain to arbitrary precision. But the comparison to neural networks is misleading
+            in two important ways.
+            First, sample complexity: to approximate a smooth function $f$ on $[0,1]^d$ to accuracy
+            $\varepsilon$, a tree needs $O((1/\varepsilon)^d)$ leaves (the curse of dimensionality
+            applies directly to piecewise-constant approximation). A neural network with smooth
+            activations can exploit smoothness of $f$ and typically requires far fewer parameters.
+            Second, extrapolation: a decision tree assigns the mean of the training points in each
+            leaf. A point outside the convex hull of the training data falls into a leaf that
+            contains training points at the boundary — the tree cannot extrapolate beyond the
+            training range. A neural network can (though whether that extrapolation is correct
+            is a different question). These two limitations are the core reasons trees alone
+            (vs. ensembles) are rarely competitive with neural networks on high-dimensional problems.
+          </div>
+        </li>
+      </ul>
+
+      <!-- ── Common pitfalls ─────────────────────────────────────────────── -->
+      <div class="section-head" id="pitfalls">Common pitfalls</div>
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:14px;">
+          <strong>Using a single deep tree as a model.</strong> A single deep tree has
+          very high variance — it changes dramatically with small perturbations to the
+          data and rarely generalises well. In practice, always prefer Random Forest or
+          Gradient Boosted Trees over a single tree whenever prediction performance matters.
+          Use a single tree only for interpretability, where you need a human-readable
+          decision path.
+        </li>
+        <li style="margin-bottom:14px;">
+          <strong>Not checking feature importances for information leak.</strong>
+          CART feature importances sum the impurity reduction for each feature across all
+          nodes. High importance does not mean the feature is causally meaningful — it
+          means the feature strongly correlates with the target in the training set, which
+          could be due to data leakage (a feature that encodes the target), temporal
+          leakage (future information in a time-series split), or confounding.
+        </li>
+        <li style="margin-bottom:14px;">
+          <strong>Interpreting a tree trained on imbalanced data.</strong>
+          If the training set has 95% class A and 5% class B, a stump that always predicts
+          A achieves 95% accuracy. Tree training with default Gini impurity will be dominated
+          by the majority class. Fix: use class-weighted training ($\text{class\_weight='balanced'}$
+          in scikit-learn), which upweights minority class examples in the impurity calculation.
+        </li>
+        <li>
+          <strong>Reporting training impurity or depth as the model description.</strong>
+          A tree with $\text{max\_depth}=5$ may have vastly different complexity depending on
+          the dataset size, number of features, and class balance. Always report generalisation
+          performance on a held-out set, not training accuracy or tree structure.
+        </li>
+      </ul>
+
+      <!-- ── Connects to ─────────────────────────────────────────────────── -->
+      <div class="section-head" id="connects-to">Connects to</div>
+
+      <div class="prose">
+        <strong>Ensemble Methods (SL7)</strong> — this is the direct prerequisite. Random
+        Forests extend trees by training many randomised copies and averaging. Gradient
+        Boosting fits additive models where each component is a shallow regression tree.
+        Understanding CART tree construction is required to understand both.
+      </div>
+      <div class="prose">
+        <strong>Generalisation &amp; Regularisation (SL4)</strong> — the depth, min-samples,
+        and pruning hyperparameters of a tree are all regularisation mechanisms. The
+        train-test accuracy gap as depth increases is a perfect illustration of the
+        bias-variance tradeoff.
+      </div>
+      <div class="prose">
+        <strong>Probabilistic Perspectives (SL11)</strong> — the leaf prediction (majority
+        class or class proportions) of a tree is a non-parametric estimate of the
+        conditional distribution $p(y | \mathbf{x} \in \text{leaf})$. The Gini impurity
+        is the Bayes error of a classifier that picks the most probable class in each leaf.
+      </div>
+
+      <div class="lesson-nav">
+        <a href="svm.html" class="lesson-nav-btn">← 5 · Support Vector Machines</a>
+        <a href="ensembles.html" class="lesson-nav-btn">7 · Ensemble Methods →</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+
+</body>
+</html>
