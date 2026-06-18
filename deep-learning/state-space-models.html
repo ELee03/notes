@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>State Space Models — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false}
+        ],
+        throwOnError: false
+      });
+    });
+  </script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Prerequisites</div>
+        <a href="lstms.html" class="nav-item">DL4 · LSTMs &amp; GRUs</a>
+        <a href="transformer.html" class="nav-item">DL6 · The Transformer</a>
+      </div>
+
+      <div id="cluster-nav" data-cluster="deep-learning" data-current="state-space-models.html"></div>
+
+      <hr class="sidebar-rule">
+
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#the-problem" class="nav-item">The problem with transformers</a>
+        <a href="#classical-ssm" class="nav-item">Classical state space model</a>
+        <a href="#discretisation" class="nav-item">Discretisation</a>
+        <a href="#hippo" class="nav-item">HiPPO initialisation</a>
+        <a href="#s4" class="nav-item">S4 — structured SSM</a>
+        <a href="#mamba" class="nav-item">Mamba — selective state spaces</a>
+        <a href="#mamba2" class="nav-item">Mamba-2 and SSD</a>
+        <a href="#comparison" class="nav-item">SSMs vs. Transformers</a>
+        <a href="#examples" class="nav-item">Worked examples</a>
+        <a href="#food-for-thought" class="nav-item">Food for thought</a>
+        <a href="#connects-to" class="nav-item">Connects to</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Deep Learning</a>
+        <span class="sep">›</span>
+        <span>10 · State Space Models</span>
+      </div>
+
+      <div class="lesson-title">10 · State Space Models</div>
+      <div class="lesson-meta">Classical SSM · HiPPO · S4 · Mamba · Selective Scan · SSM–Transformer Duality</div>
+
+      <div class="prose">
+        Transformers are the dominant sequence model, but they have a fundamental bottleneck:
+        self-attention is quadratic in sequence length. Processing a sequence of $S$ tokens
+        requires $O(S^2)$ memory and $O(S^2 d)$ computation. Flash Attention reduces the
+        constant factor, but the quadratic scaling remains. For genomics (sequences of
+        millions of base pairs), audio (16 kHz for seconds = tens of thousands of timesteps),
+        and long-context language modeling, quadratic attention becomes impractical.
+        State space models (SSMs) are a class of sequence models derived from classical
+        linear systems theory that achieve linear-time, constant-memory autoregressive
+        inference. The S4 model (Gu et al. 2022) showed that SSMs could match transformers
+        on long-range benchmarks; Mamba (Gu &amp; Dao 2023) added input-dependent (selective)
+        state spaces that outperform transformers on language modeling at comparable parameter
+        counts. This lesson derives the SSM from first principles, explains the computational
+        challenges, and develops the key innovations in S4 and Mamba.
+      </div>
+
+      <!-- ── Section 1: The problem with transformers ─────────────────── -->
+      <div class="section-head" id="the-problem">The problem with quadratic attention</div>
+
+      <div class="prose">
+        At sequence length $S$, the attention weight matrix $A \in \mathbb{R}^{S \times S}$
+        requires $O(S^2)$ memory and $O(S^2 d)$ compute. For $S = 1{,}000{,}000$
+        (human genome context), the matrix alone takes $10^{12} \times 2\text{ bytes} = 2\text{ TB}$.
+        Flash Attention reduces the HBM footprint to $O(S)$ by tiling, but the underlying
+        algorithm still performs $O(S^2)$ floating-point operations. The wall is algorithmic,
+        not just engineering.
+      </div>
+
+      <div class="prose">
+        Recurrent models (LSTMs, GRUs) are $O(1)$ in memory and $O(S)$ in total compute
+        for autoregressive generation. But they have a different problem: sequential computation.
+        Each step depends on the previous hidden state, so you cannot parallelise the forward
+        pass over sequence positions during training. This makes training LSTMs slow on modern
+        GPU hardware, which thrives on parallel operations.
+        The ideal sequence model would be: <strong>parallelisable for training</strong> (like transformers)
+        <em>and</em> <strong>$O(1)$ memory for inference</strong> (like RNNs). State space models achieve both.
+      </div>
+
+      <!-- ── Section 2: Classical SSM ─────────────────────────────────── -->
+      <div class="section-head" id="classical-ssm">Classical linear state space model</div>
+
+      <div class="prose">
+        A continuous-time linear state space model relates an input signal $u(t)$
+        to an output $y(t)$ through a hidden state $\mathbf{h}(t) \in \mathbb{R}^N$:
+        $$\dot{\mathbf{h}}(t) = \mathbf{A}\mathbf{h}(t) + \mathbf{B}u(t)$$
+        $$y(t) = \mathbf{C}\mathbf{h}(t) + Du(t)$$
+        The matrices $\mathbf{A} \in \mathbb{R}^{N \times N}$, $\mathbf{B} \in \mathbb{R}^{N \times 1}$,
+        $\mathbf{C} \in \mathbb{R}^{1 \times N}$, and $D \in \mathbb{R}$ are the system parameters.
+        (In control theory, this is the standard SISO state-space form from DL6 prerequisite
+        material; $D$ is the feedthrough term and is usually set to 0 in SSM sequence models.)
+        The state $\mathbf{h}(t)$ compresses the entire history of the input $u(\tau)$ for
+        $\tau \leq t$ — it is the "memory" of the system. The key question is: what structure
+        of $\mathbf{A}$ makes this a useful sequence model?
+      </div>
+
+      <!-- ── Section 3: Discretisation ──────────────────────────────────── -->
+      <div class="section-head" id="discretisation">Discretisation</div>
+
+      <div class="proof-box">
+        <div class="proof-header">Discretisation via the bilinear (Tustin) transform</div>
+        <div class="proof-body">
+          <p>Neural networks process discrete sequences $\{u_1, u_2, \ldots, u_S\}$, not continuous
+          signals. We discretise the continuous SSM with step size $\Delta$ (the sampling period).</p>
+
+          <p><strong>Zero-order hold (ZOH):</strong> Assume $u(t)$ is constant over each interval
+          $[k\Delta, (k+1)\Delta)$. The exact discretisation is:
+          $$\bar{\mathbf{A}} = e^{\mathbf{A}\Delta}, \quad \bar{\mathbf{B}} = (\mathbf{A}^{-1}(e^{\mathbf{A}\Delta} - I))\mathbf{B}$$
+          The matrix exponential $e^{\mathbf{A}\Delta}$ is expensive to compute for large $N$.</p>
+
+          <p><strong>Bilinear (Tustin) approximation:</strong> Approximate
+          $e^{\mathbf{A}\Delta} \approx (I - \frac{\Delta}{2}\mathbf{A})^{-1}(I + \frac{\Delta}{2}\mathbf{A})$:
+          $$\bar{\mathbf{A}} = (I - \frac{\Delta}{2}\mathbf{A})^{-1}(I + \frac{\Delta}{2}\mathbf{A}), \quad \bar{\mathbf{B}} = (I - \frac{\Delta}{2}\mathbf{A})^{-1}\Delta\mathbf{B}$$
+          The discrete-time recurrence is then:
+          $$\mathbf{h}_k = \bar{\mathbf{A}}\mathbf{h}_{k-1} + \bar{\mathbf{B}}u_k$$
+          $$y_k = \mathbf{C}\mathbf{h}_k$$</p>
+
+          <p>For inference, this is a linear RNN: at each step, multiply the state by $\bar{\mathbf{A}}$
+          and add $\bar{\mathbf{B}}u_k$. This is $O(N^2)$ per step (matrix-vector product) or $O(N)$ per
+          step if $\bar{\mathbf{A}}$ is diagonal. For training, we need a smarter approach.</p>
+        </div>
+      </div>
+
+      <!-- ── Section 4: Convolution view ────────────────────────────────── -->
+      <div class="prose">
+        <strong>The global convolution view.</strong> Because the discrete SSM is a linear time-invariant
+        (LTI) system, it can be expressed as a convolution. The output is:
+        $$y_k = \sum_{j=0}^{k} \mathbf{C}\bar{\mathbf{A}}^{k-j}\bar{\mathbf{B}}\, u_j$$
+        Define the <em>convolution kernel</em> $\bar{\mathbf{K}} \in \mathbb{R}^S$:
+        $$\bar{K}_i = \mathbf{C}\bar{\mathbf{A}}^i\bar{\mathbf{B}}, \quad i = 0, 1, \ldots, S-1$$
+        Then the full output sequence $\mathbf{y} = \bar{\mathbf{K}} * \mathbf{u}$, computable in
+        $O(S \log S)$ using the fast Fourier transform (FFT). This gives the training parallelism we need:
+        the entire sequence can be processed in one FFT convolution. For inference, we use the recurrent
+        form (one step at a time, $O(1)$ memory). One model, two execution modes.
+      </div>
+
+      <!-- ── Section 5: HiPPO ────────────────────────────────────────────── -->
+      <div class="section-head" id="hippo">HiPPO — memorising history optimally</div>
+
+      <div class="proof-box">
+        <div class="proof-header">HiPPO: High-order Polynomial Projection Operators (Gu et al. 2020)</div>
+        <div class="proof-body">
+          <p>The matrix $\mathbf{A}$ determines which aspects of the past input the state
+          $\mathbf{h}(t)$ retains. A random $\mathbf{A}$ has no reason to preserve long-range
+          information. HiPPO provides a principled construction based on orthogonal polynomials.</p>
+
+          <p><strong>Idea:</strong> At time $t$, maintain the best approximation of the history
+          $u(\tau)$ for $\tau \leq t$ as a polynomial of degree $\leq N-1$ with respect to
+          a measure $\omega_t$ on $(-\infty, t]$. As $t$ increases, update the polynomial
+          coefficients incrementally.</p>
+
+          <p><strong>LegT (Legendre, translated) measure:</strong> Uniform measure on $[t-\theta, t]$
+          (sliding window). The HiPPO matrix is:
+          $$A_{nk} = -\begin{cases}(2n+1)^{1/2}(2k+1)^{1/2} & k < n \\ n+1 & k = n \\ 0 & k > n \end{cases}$$
+          $$B_n = (2n+1)^{1/2}$$
+          This lower-triangular structure ensures that $\mathbf{h}(t)$ encodes the $N$ Legendre
+          polynomial coefficients of the windowed history. Higher-order coefficients capture
+          fine-grained temporal structure; lower-order capture coarser trends.</p>
+
+          <p><strong>LegS (Legendre, scaled) measure:</strong> Scale by $1/t$ (all history equally weighted).
+          The HiPPO-LegS matrix is:
+          $$A_{nk} = -\begin{cases}\sqrt{(2n+1)(2k+1)} & k < n \\ n+1 & k = n \\ 0 & k > n \end{cases}, \quad B_n = \sqrt{2n+1}$$
+          This variant is the most commonly used in S4.</p>
+
+          <p>Initialising $\mathbf{A}$ with the HiPPO matrix — rather than randomly — gives the
+          SSM a strong inductive bias toward remembering long-range history. This was the key
+          empirical finding of the HiPPO paper: randomly-initialised RNNs forget history quickly;
+          HiPPO-initialised models remember it polynomially.</p>
+        </div>
+      </div>
+
+      <!-- ── Section 6: S4 ───────────────────────────────────────────────── -->
+      <div class="section-head" id="s4">S4 — Structured State Space Sequence Model</div>
+
+      <div class="proof-box">
+        <div class="proof-header">S4 computational challenge and solution (Gu et al. 2022)</div>
+        <div class="proof-body">
+          <p><strong>The problem with the convolution view:</strong> Computing the kernel
+          $\bar{K}_i = \mathbf{C}\bar{\mathbf{A}}^i\bar{\mathbf{B}}$ for $i = 0, \ldots, S-1$
+          requires $S$ matrix-vector products with $\bar{\mathbf{A}} \in \mathbb{R}^{N \times N}$
+          — a total of $O(SN^2)$ operations. For $N = 64$ and $S = 16{,}000$: $65{,}536 \times 16{,}000 \approx 10^9$
+          operations, just for the kernel. Then the FFT convolution costs $O(SN\log S)$.
+          The bottleneck is computing the kernel.</p>
+
+          <p><strong>S4 idea:</strong> If $\mathbf{A}$ is <em>diagonal</em> (or normal — unitarily
+          diagonalisable), $\mathbf{A} = \text{diag}(\lambda_1, \ldots, \lambda_N)$, then
+          $\bar{K}_i = \mathbf{C}\bar{\mathbf{A}}^i\bar{\mathbf{B}} = \sum_n C_n \bar{A}_n^i \bar{B}_n$
+          — a sum of $N$ geometric sequences. This is the formula for a (generalised) Cauchy/Vandermonde
+          matrix-vector product, computable in $O(N + S)$ via Horner's method or $O((N+S)\log^2 N)$
+          via dedicated algorithms.</p>
+
+          <p><strong>DPLR (Diagonal Plus Low-Rank) structure:</strong> The HiPPO-LegS matrix is not
+          diagonal but can be written as $\mathbf{A} = \mathbf{\Lambda} - \mathbf{P}\mathbf{Q}^*$
+          where $\mathbf{\Lambda}$ is diagonal and $\mathbf{P}, \mathbf{Q} \in \mathbb{C}^{N \times r}$
+          is a rank-$r$ correction. S4 uses this DPLR structure: the diagonal part is handled efficiently,
+          and the rank-1 correction uses the Woodbury matrix identity. Total kernel computation:
+          $O(N + S\log S)$ — independent of $N$ in the dominant term for long sequences.</p>
+
+          <p><strong>What S4 learns:</strong> $\mathbf{A}$ is initialised to HiPPO-LegS but the diagonal
+          part $\mathbf{\Lambda}$ (complex numbers) is trainable, as are $\mathbf{B}$, $\mathbf{C}$, and $\Delta$.
+          The model learns per-sequence-position input–output mappings; stacking multiple SSM layers with
+          non-linearities and skip connections gives the full S4 network.</p>
+
+          <p><strong>Diagonal-S4 / DSS:</strong> Later work showed that simply initialising a
+          <em>diagonal</em> $\mathbf{A}$ with HiPPO-inspired eigenvalues (complex-valued, on or near the
+          unit circle in discrete time) matches S4 performance while being much simpler to implement.
+          The key insight: the DPLR structure was largely solving the problem created by the dense
+          HiPPO matrix; if you diagonalise from the start, the whole apparatus is unnecessary.</p>
+        </div>
+      </div>
+
+      <!-- ── Section 7: Mamba ────────────────────────────────────────────── -->
+      <div class="section-head" id="mamba">Mamba — selective state spaces</div>
+
+      <div class="prose">
+        S4 and all prior SSMs are <strong>linear time-invariant (LTI)</strong>: the matrices
+        $\mathbf{A}$, $\mathbf{B}$, $\mathbf{C}$ are fixed (learned once) and applied uniformly
+        to every position in every sequence. This is exactly the property that enables the global
+        convolution view and $O(S \log S)$ training. But it is also a fundamental limitation.
+        A fixed $\mathbf{A}$ means the model transitions the state the same way regardless of
+        the content of the current input — the state cannot selectively remember or forget based
+        on what it has seen. Contrast this with the attention mechanism, which computes
+        input-dependent weights over all previous positions.
+        <strong>Mamba</strong> (Gu &amp; Dao 2023) introduces <em>selective state spaces</em>:
+        $\mathbf{B}$, $\mathbf{C}$, and $\Delta$ are functions of the input $u_k$.
+      </div>
+
+      <div class="proof-box">
+        <div class="proof-header">Selective SSM — the Mamba mechanism</div>
+        <div class="proof-body">
+          <p>In Mamba, the parameters that vary per input token are:
+          $$\mathbf{B}_k = \text{Linear}(u_k) \in \mathbb{R}^N$$
+          $$\mathbf{C}_k = \text{Linear}(u_k) \in \mathbb{R}^N$$
+          $$\Delta_k = \text{softplus}(\text{Linear}(u_k)) \in \mathbb{R}^{d_\text{inner}}$$
+          (broadcast to $N$ via a learned projection)
+          while $\mathbf{A}$ remains fixed (shared, initialised as a diagonal negative-real matrix
+          so that $e^{\mathbf{A}\Delta}$ is stable for any $\Delta > 0$).
+          The discrete recurrence for each channel:
+          $$h_k = \bar{A}_k h_{k-1} + \bar{B}_k u_k, \quad \bar{A}_k = e^{\Delta_k A}, \quad \bar{B}_k = (\Delta_k A)^{-1}(e^{\Delta_k A}-1)\Delta_k B_k$$
+          $$y_k = C_k h_k$$</p>
+
+          <p><strong>Selective forgetting via $\Delta_k$:</strong> When $\Delta_k \to 0$
+          (small step), $\bar{A}_k \to 1$ and $\bar{B}_k \to 0$ — the state is preserved unchanged,
+          ignoring the new input ($u_k$ has no effect on $h_k$). When $\Delta_k \to \infty$
+          (large step), $\bar{A}_k \to 0$ and $\bar{B}_k \to B_k$ — the state resets to the new
+          input, forgetting the past. By making $\Delta_k$ input-dependent, the model learns
+          to selectively decide, token by token, whether to absorb new information or preserve
+          the existing state. This is the discrete analogue of the forget/input gate mechanism
+          in LSTMs, but derived from a principled continuous-time dynamical systems framework.</p>
+
+          <p><strong>Loss of LTI ⟹ Loss of global convolution.</strong> Since $\mathbf{B}$, $\mathbf{C}$,
+          and $\Delta$ vary with position, the system is no longer time-invariant, and the
+          convolution trick no longer applies. Mamba cannot be trained as a global FFT convolution.
+          The training algorithm instead uses a <strong>parallel scan</strong> (also called prefix scan or
+          scan operation): a classical parallel algorithms primitive that computes all prefix products
+          $h_1, h_2, \ldots, h_S$ in $O(\log S)$ parallel steps (vs. $O(S)$ sequential steps).
+          On GPU with thousands of cores, the parallel scan achieves near-maximal hardware utilisation.
+          The parallel scan over the recurrence is implemented as a custom CUDA kernel (hardware-aware).
+          Training speed is comparable to Transformer training despite the non-LTI recurrence.</p>
+        </div>
+      </div>
+
+      <!-- ── Section 8: Mamba architecture ──────────────────────────────── -->
+      <div class="prose">
+        <strong>The Mamba block.</strong> A Mamba layer is more than just the SSM. Each Mamba block applies:
+        (1) layer normalisation, (2) two parallel projections of the input to dimension $d_\text{inner} = 2d$,
+        (3) one branch goes through the selective SSM; the other goes through a SiLU-activated gate,
+        (4) the branches are multiplied (gating), (5) projected back to $d$, and added to the residual.
+        This gated structure is borrowed from gated MLPs (Dauphin et al. 2017, "Gating" / GLU).
+        The full Mamba model stacks these blocks with alternating layer normalisation,
+        similar to a transformer stack without attention.
+      </div>
+
+      <!-- ── Section 9: Mamba-2 ──────────────────────────────────────────── -->
+      <div class="section-head" id="mamba2">Mamba-2 and the state space duality</div>
+
+      <div class="prose">
+        <strong>Mamba-2</strong> (Dao &amp; Gu 2024) unifies selective SSMs and transformers under the
+        <em>Structured State Space Duality</em> (SSD): a restricted class of selective SSMs (where the
+        state matrix $\mathbf{A}$ is a scalar times identity, equivalent to uniform decay) can be
+        computed equivalently as a masked attention over a structured attention matrix. Specifically,
+        the SSD layer with scalar $\mathbf{A} = a_k I$ (one scalar per token) corresponds to attention
+        with an attention bias equal to $\sum_{j=k}^{t-1} \log a_j$ — a "causal decay" bias.
+        This bidirectional view means:
+        (1) SSMs can inherit attention-optimisation tricks (block decomposition, tensor cores, Flash Attention variants).
+        (2) Transformers can be enhanced with SSM-style gating and decay.
+        Mamba-2 trains 2–8× faster than Mamba-1 due to better hardware utilisation via the
+        SSD matrix form, while matching or exceeding Mamba-1's language modelling performance.
+      </div>
+
+      <!-- ── Section 10: Comparison table ───────────────────────────────── -->
+      <div class="section-head" id="comparison">SSMs vs. Transformers vs. LSTMs</div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Property</th>
+              <th>Transformer</th>
+              <th>LSTM/GRU</th>
+              <th>S4 (LTI SSM)</th>
+              <th>Mamba (Selective SSM)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Training FLOPs</td>
+              <td>$O(S^2 d)$</td>
+              <td>$O(Sd^2)$ sequential</td>
+              <td>$O(Sd\log S)$ via FFT</td>
+              <td>$O(SdN)$ via parallel scan</td>
+            </tr>
+            <tr>
+              <td>Training parallelism</td>
+              <td>Full</td>
+              <td>Sequential (poor)</td>
+              <td>Full (FFT)</td>
+              <td>Full (parallel scan)</td>
+            </tr>
+            <tr>
+              <td>Inference memory</td>
+              <td>$O(Sd)$ KV cache</td>
+              <td>$O(d)$ constant</td>
+              <td>$O(Nd)$ constant</td>
+              <td>$O(Nd)$ constant</td>
+            </tr>
+            <tr>
+              <td>Inference per-token cost</td>
+              <td>$O(Sd)$ (grows)</td>
+              <td>$O(d^2)$ constant</td>
+              <td>$O(Nd)$ constant</td>
+              <td>$O(Nd)$ constant</td>
+            </tr>
+            <tr>
+              <td>Input-dependent processing</td>
+              <td>Yes (attention weights)</td>
+              <td>Yes (gates)</td>
+              <td>No (LTI)</td>
+              <td>Yes (selective)</td>
+            </tr>
+            <tr>
+              <td>Exact long-range lookup</td>
+              <td>Yes</td>
+              <td>Limited</td>
+              <td>Limited</td>
+              <td>Partial (compression)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ── Worked examples ─────────────────────────────────────────────── -->
+      <div class="section-head" id="examples">Worked examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Discretising a 1D SSM by ZOH</strong></div>
+        <div class="example-problem">
+          <p>Scalar SSM: $\dot{h}(t) = -0.5 h(t) + u(t)$, $y(t) = h(t)$.
+          So $A = -0.5$, $B = 1$, $C = 1$, $D = 0$.
+          Discretise with $\Delta = 0.1$ using exact ZOH.
+          Given $h_0 = 0$ and inputs $u_1 = 2$, $u_2 = 0$,
+          compute $h_1$ and $h_2$.</p>
+        </div>
+        <div class="example-body">
+          <p><strong>ZOH discretisation:</strong>
+          $\bar{A} = e^{A\Delta} = e^{-0.5 \times 0.1} = e^{-0.05} \approx 0.9512$.
+          $\bar{B} = A^{-1}(e^{A\Delta}-1)B = \frac{1}{-0.5}(0.9512 - 1)(1) = \frac{-0.0488}{-0.5} = 0.0976$.</p>
+
+          <p><strong>Step 1:</strong> $h_1 = \bar{A} h_0 + \bar{B} u_1 = 0.9512 \times 0 + 0.0976 \times 2 = 0.1952$
+          $y_1 = C h_1 = 0.1952$</p>
+
+          <p><strong>Step 2:</strong> $h_2 = \bar{A} h_1 + \bar{B} u_2 = 0.9512 \times 0.1952 + 0.0976 \times 0 = 0.1857$
+          $y_2 = C h_2 = 0.1857$</p>
+
+          <p>The state decays exponentially when no input is present (time constant = $1/0.5 = 2$ continuous-time units,
+          or $2/0.1 = 20$ discrete steps to lose $e^{-1} \approx 63\%$ of the state). This is the fundamental
+          "memory" of the SSM — controlled by $A$. In S4/Mamba, the learnable $\Delta$ adjusts how quickly
+          the state responds: small $\Delta$ = slow response (long memory), large $\Delta$ = fast response (short memory).</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — The convolution kernel and long-range dependency</strong></div>
+        <div class="example-problem">
+          <p>A scalar SSM has $\bar{A} = 0.99$, $\bar{B} = 1$, $C = 1$.
+          Compute the convolution kernel $\bar{K}_i$ for $i = 0, 1, \ldots, 4$.
+          What is $\bar{K}_{100}$? What does this tell you about the model's long-range memory?</p>
+        </div>
+        <div class="example-body">
+          <p>$\bar{K}_i = C \bar{A}^i \bar{B} = 1 \times 0.99^i \times 1 = 0.99^i$</p>
+          <p>$\bar{K}_0 = 1$, $\bar{K}_1 = 0.99$, $\bar{K}_2 = 0.980$, $\bar{K}_3 = 0.970$, $\bar{K}_4 = 0.961$.</p>
+          <p>$\bar{K}_{100} = 0.99^{100} = e^{100\ln 0.99} = e^{-1.005} \approx 0.366$.</p>
+
+          <p>After 100 steps, the output still has a 37% contribution from that position's input. Compare to an LSTM:
+          if the forget gate outputs $f = 0.99$ constantly, the cell state also decays at rate $0.99^k$.
+          The difference is that the SSM's $\bar{A} = 0.99$ is a global parameter fixed after training,
+          so <em>every input at every position</em> contributes exactly $0.99^{k-j}$ to output $k$.
+          The LSTM's forget gate is input-dependent, so it can choose to forget or remember based on content.
+          This is the core limitation of LTI SSMs (S4) that Mamba addresses with selective state spaces:
+          the decay rate is fixed for S4, but input-dependent for Mamba.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Mamba's selective forgetting</strong></div>
+        <div class="example-problem">
+          <p>A Mamba model is processing a sequence. At position $k=5$, the network computes
+          $\Delta_5 = 0.01$ (very small, near-zero step). At position $k=10$, it computes
+          $\Delta_{10} = 100$ (very large step). Explain intuitively what happens to the
+          hidden state at each of these positions.</p>
+        </div>
+        <div class="example-body">
+          <p><strong>At position $k=5$ ($\Delta_5 = 0.01$):</strong>
+          $\bar{A}_5 = e^{A \times 0.01} \approx e^{-0.01} \approx 0.99 \approx 1$ (state barely changes).
+          $\bar{B}_5 \approx 0$ (very small, since $\bar{B} \approx (A\Delta)^{-1}(e^{A\Delta}-1)\Delta B \approx \Delta B \approx 0.01B$ for small $\Delta$).
+          Effect: $h_5 \approx 1 \times h_4 + 0 \times u_5 \approx h_4$.
+          The state is <em>preserved</em>, and the new input $u_5$ is largely <em>ignored</em>.
+          The model is saying: "this token is not important; carry forward what I had."</p>
+
+          <p><strong>At position $k=10$ ($\Delta_{10} = 100$):</strong>
+          $\bar{A}_{10} = e^{A \times 100} \approx 0$ (very close to zero for $A < 0$).
+          $\bar{B}_{10} = (A\Delta)^{-1}(e^{A\Delta}-1)\Delta B \approx -A^{-1}B$ (saturates as $\Delta \to \infty$).
+          Effect: $h_{10} \approx 0 \times h_9 + \bar{B}_{10} u_{10}$.
+          The state is essentially <em>reset</em> to the new input, forgetting all previous history.
+          The model is saying: "this token is critical; discard the past and start fresh from here."</p>
+
+          <p>This is input-dependent selectivity: the model learns, via gradient descent on $\Delta$,
+          which positions in a sequence deserve to reset the state vs. which should be ignored.
+          For language modeling, a sentence boundary or topic shift might trigger $\Delta \to \infty$
+          (reset), while a function word like "the" might trigger $\Delta \to 0$ (ignore).</p>
+        </div>
+      </div>
+
+      <!-- ── Food for thought ────────────────────────────────────────────── -->
+      <div class="section-head" id="food-for-thought">Food for thought</div>
+
+      <ul class="fft-list">
+        <li class="fft-item">
+          S4 achieves parallelisable training via the global convolution (FFT) trick, but Mamba
+          cannot use this because its parameters are input-dependent (non-LTI). Mamba instead uses
+          a parallel scan. Why is a parallel scan fundamentally different from the FFT convolution?
+          What mathematical property does LTI give you that is lost with selective state spaces?
+          <div class="fft-answer">
+            The FFT convolution works because a LTI system's output is the convolution of its
+            impulse response with the input: $y = K * u$. Convolution is defined in terms of
+            a <em>fixed</em> kernel $K$ applied to all positions uniformly — it's the mathematical
+            operation that exploits time-invariance. The DFT transforms a convolution to a pointwise
+            product in frequency space, enabling $O(S\log S)$ computation.
+            In Mamba, the "kernel" at each position is different (because $B_k$, $C_k$, $\Delta_k$
+            depend on $u_k$). This is a <em>state-varying linear system</em> — mathematically, it
+            computes a product of matrices that vary with the input: $h_k = \prod_{j=1}^k \bar{A}_j \cdot h_0 + \ldots$
+            This is no longer a convolution (which requires identical kernels) — it's an associative
+            prefix product of varying matrices. The parallel scan works because matrix (or scalar)
+            multiplication is <em>associative</em>, which is all that's needed: you can compute prefix
+            products in a tree structure with $O(\log S)$ parallel depth. LTI gives you convolution
+            (FFT-able, very fast for large $S$). Selectivity breaks LTI, giving you a prefix product
+            (parallel-scan-able, still efficiently parallelisable but without the FFT's multiplicative
+            speedup from the DFT).
+          </div>
+        </li>
+        <li class="fft-item">
+          Transformers can attend directly to any position in the context with a single operation
+          (the attention mechanism retrieves a specific key-value pair exactly). Mamba compresses
+          the entire history into a fixed-size state vector $\mathbf{h} \in \mathbb{R}^N$. What
+          tasks would you expect Mamba to struggle with relative to transformers? What tasks might
+          it excel at?
+          <div class="fft-answer">
+            <strong>Mamba struggles with:</strong>
+            Tasks requiring <em>exact retrieval</em> from specific past positions. If a document
+            contains a specific fact at position 5000 that must be verbatim retrieved at position
+            10000, Mamba must have compressed that fact into its $N$-dimensional state at every
+            intermediate step. The compression is lossy; transformers with explicit attention can
+            retrieve it exactly (assuming the key-value cache holds the relevant token).
+            Tasks with <em>arbitrary random-access lookups</em> (e.g., "what was word 3 of this document?")
+            or in-context few-shot tasks that require the model to scan the context for specific examples.
+            Benchmarks like MQAR (Multi-Query Associative Recall) were specifically designed to test
+            this and Mamba-1 struggled there; Mamba-2 improved via the SSD formulation.
+
+            <strong>Mamba excels at:</strong>
+            Tasks where the relevant signal is <em>local</em> or <em>recent</em> — language modeling,
+            audio waveforms, genomic sequences where local structure dominates. Tasks where
+            constant-memory inference matters: streaming audio, real-time sensor processing,
+            auto-regressive generation with very long contexts (Mamba's per-step inference cost
+            is $O(Nd)$ regardless of the context length, whereas a transformer's cost grows as
+            $O(Sd)$ where $S$ is the total context). Domains where quadratic attention is prohibitive:
+            million-base-pair genomics, long-form audio.
+            The current (2025) practical answer: hybrid architectures (e.g., Jamba — interleaving
+            Mamba and transformer layers) outperform either alone on most tasks, suggesting complementary
+            strengths rather than a clear winner.
+          </div>
+        </li>
+        <li class="fft-item">
+          The HiPPO initialisation for $\mathbf{A}$ is based on polynomial approximation theory —
+          it ensures the state $\mathbf{h}(t)$ maintains the optimal polynomial approximation of
+          the input history. Why is this a better initialisation than random Gaussian or zeros,
+          even if the matrix is later fine-tuned?
+          <div class="fft-answer">
+            All neural network parameters are fine-tuned from an initial value. The question is
+            whether the gradient signal during fine-tuning is strong enough to reach a good solution
+            from a given initialisation. For SSMs, the gradient through a sequence of $S$ recurrent
+            steps is a product of $S$ Jacobians — exactly the exploding/vanishing gradient problem.
+            A random $\mathbf{A}$ has eigenvalues scattered arbitrarily: eigenvalues with magnitude
+            $> 1$ explode, $< 1$ vanish, and the network converges slowly or not at all on long-range
+            tasks. HiPPO constructs $\mathbf{A}$ to have a specific eigenstructure:
+            (1) Eigenvalues are designed so that the polynomial coefficients update stably — neither
+            exploding nor vanishing — as the input evolves.
+            (2) The orthogonal polynomial basis is an optimal compression of the history: it minimises
+            the approximation error for any function that can be represented with $N$ coefficients.
+            (3) This means the gradient signal for long-range dependencies is non-vanishing from the start.
+            Empirically, S4 models trained with HiPPO initialisation converge much faster and reach
+            better performance on long-range benchmarks than random-init models, even with the same
+            final fine-tuning. Initialisation matters because it sets the geometry of the loss
+            landscape the optimiser must navigate — a good initialisation starts in a basin of
+            attraction for a good solution.
+          </div>
+        </li>
+      </ul>
+
+      <!-- ── Connects to ──────────────────────────────────────────────── -->
+      <div class="section-head" id="connects-to">Connects to</div>
+
+      <div class="prose">
+        <strong>LSTMs &amp; GRUs (DL4)</strong> — LSTMs and Mamba are both gated recurrences,
+        both solvable with a sequential recurrence at inference. Mamba's selective $\Delta$ plays
+        the role of the LSTM's forget gate, but derives from a principled SSM framework rather than
+        an ad hoc gating intuition. The parallel scan that trains Mamba efficiently has no analogue
+        for LSTMs (whose gates are multiplicative non-linear functions, not associative products).
+      </div>
+      <div class="prose">
+        <strong>The Transformer (DL6)</strong> — S4 and Mamba were designed as alternatives to
+        transformer self-attention. The state space duality (Mamba-2) reveals a formal equivalence
+        between a restricted class of SSMs and structured linear attention, suggesting these
+        architectures are not as different as they appear. Hybrid architectures (Jamba, Zamba) mix
+        attention and SSM layers.
+      </div>
+      <div class="prose">
+        <strong>Control Theory</strong> — The SSM equations $\dot{h} = Ah + Bu$, $y = Ch + Du$ are
+        exactly the continuous-time state space form used in classical control theory. The
+        discretisation methods (ZOH, bilinear/Tustin transform) are standard in digital control.
+        The HiPPO framework draws on approximation theory and operator semigroups. The two fields
+        have been largely separate, but SSM sequence models have brought them into direct contact.
+      </div>
+
+      <div class="lesson-nav">
+        <a href="generative-models.html" class="lesson-nav-btn">← 9 · Generative Models</a>
+        <a href="normalizing-flows.html" class="lesson-nav-btn">11 · Normalizing Flows →</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+
+</body>
+</html>

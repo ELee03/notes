@@ -62,6 +62,16 @@
           "href": "generative-models.html",
           "text": "9 · Generative Models",
           "topics": "VAEs · GANs · diffusion models · score matching · DDPM · classifier-free guidance"
+        },
+        {
+          "href": "state-space-models.html",
+          "text": "10 · State Space Models",
+          "topics": "Classical SSM · HiPPO · S4 · Mamba selective scan · parallel scan · SSM–Transformer duality"
+        },
+        {
+          "href": "normalizing-flows.html",
+          "text": "11 · Normalizing Flows",
+          "topics": "Change of variables · coupling layers · NICE · RealNVP · GLOW · autoregressive flows · flow matching"
         }
       ]
     }

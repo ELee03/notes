@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Normalizing Flows — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false}
+        ],
+        throwOnError: false
+      });
+    });
+  </script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Prerequisites</div>
+        <a href="generative-models.html" class="nav-item">DL9 · Generative Models</a>
+      </div>
+
+      <div id="cluster-nav" data-cluster="deep-learning" data-current="normalizing-flows.html"></div>
+
+      <hr class="sidebar-rule">
+
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#change-of-variables" class="nav-item">Change of variables</a>
+        <a href="#log-det" class="nav-item">Log-determinant and volume</a>
+        <a href="#planar-flows" class="nav-item">Planar &amp; radial flows</a>
+        <a href="#coupling-layers" class="nav-item">Coupling layers (NICE, RealNVP)</a>
+        <a href="#glow" class="nav-item">GLOW — 1×1 convolutions</a>
+        <a href="#autoregressive" class="nav-item">Autoregressive flows (MAF, IAF)</a>
+        <a href="#cnf" class="nav-item">Continuous normalizing flows</a>
+        <a href="#flow-matching" class="nav-item">Flow matching</a>
+        <a href="#connection-diffusion" class="nav-item">Connection to diffusion</a>
+        <a href="#examples" class="nav-item">Worked examples</a>
+        <a href="#food-for-thought" class="nav-item">Food for thought</a>
+        <a href="#connects-to" class="nav-item">Connects to</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Deep Learning</a>
+        <span class="sep">›</span>
+        <span>11 · Normalizing Flows</span>
+      </div>
+
+      <div class="lesson-title">11 · Normalizing Flows</div>
+      <div class="lesson-meta">Change of Variables · Coupling Layers · NICE · RealNVP · GLOW · Autoregressive Flows · Flow Matching</div>
+
+      <div class="prose">
+        Every generative model in DL9 — VAEs, GANs, diffusion — approximates the data density
+        $p(\mathbf{x})$ in some indirect way: VAEs use a lower bound, GANs use an implicit
+        discriminator, diffusion uses a Markov chain of denoising steps. Normalizing flows take
+        a different route: transform a simple, tractable density (a standard Gaussian) via a
+        sequence of <em>invertible</em> mappings until it matches the complex data distribution —
+        and compute the resulting density <em>exactly</em> using the change-of-variables formula.
+        This exact likelihood is the defining feature: you can evaluate $\log p_\theta(\mathbf{x})$
+        for any $\mathbf{x}$ without approximation, and generate samples in one forward pass by
+        transforming Gaussian noise. This lesson derives the theory, then builds up the architecture
+        sequence that made flows practical: from planar flows → NICE coupling layers → RealNVP →
+        GLOW → autoregressive flows → continuous flows and flow matching (the framework behind
+        Stable Diffusion 3 and Flux).
+      </div>
+
+      <!-- ── Section 1: Change of variables ─────────────────────────────── -->
+      <div class="section-head" id="change-of-variables">Change of variables formula</div>
+
+      <div class="proof-box">
+        <div class="proof-header">Exact density under an invertible transformation</div>
+        <div class="proof-body">
+          <p>Let $\mathbf{z} \sim p_Z(\mathbf{z})$ (e.g., $\mathcal{N}(\mathbf{0}, \mathbf{I})$)
+          and let $f: \mathbb{R}^d \to \mathbb{R}^d$ be a differentiable, invertible function.
+          Define $\mathbf{x} = f(\mathbf{z})$. The density of $\mathbf{x}$ is given by the
+          <strong>change of variables formula</strong>:
+          $$p_X(\mathbf{x}) = p_Z(f^{-1}(\mathbf{x})) \left|\det J_{f^{-1}}(\mathbf{x})\right|$$
+          where $J_{f^{-1}}$ is the Jacobian matrix of $f^{-1}$.
+          Taking logarithms:
+          $$\log p_X(\mathbf{x}) = \log p_Z(f^{-1}(\mathbf{x})) + \log\left|\det J_{f^{-1}}(\mathbf{x})\right|$$
+          Using $J_{f^{-1}} = J_f^{-1}$ and $\det(J_f^{-1}) = 1/\det(J_f)$:
+          $$\log p_X(\mathbf{x}) = \log p_Z(\mathbf{z}) - \log\left|\det J_f(\mathbf{z})\right|$$
+          where $\mathbf{z} = f^{-1}(\mathbf{x})$.</p>
+
+          <p><strong>Intuition.</strong> If $f$ stretches a region of $\mathbf{z}$-space
+          (large $|\det J_f|$), points in that region of $\mathbf{x}$-space are spread out —
+          the density decreases. If $f$ compresses a region (small $|\det J_f|$), the density
+          increases. The log-determinant term exactly corrects for this volume change.</p>
+
+          <p><strong>Composition of flows.</strong> If $f = f_K \circ f_{K-1} \circ \cdots \circ f_1$
+          (a sequence of $K$ invertible transforms), the log-density becomes:
+          $$\log p_X(\mathbf{x}) = \log p_Z(\mathbf{z}) - \sum_{k=1}^K \log\left|\det J_{f_k}(\mathbf{z}_{k-1})\right|$$
+          where $\mathbf{z}_0 = \mathbf{z}$, $\mathbf{z}_k = f_k(\mathbf{z}_{k-1})$, $\mathbf{x} = \mathbf{z}_K$.
+          Each $f_k$ must be invertible and have a tractable (cheap to compute) Jacobian determinant.
+          These are the two design constraints every flow architecture must satisfy.</p>
+        </div>
+      </div>
+
+      <!-- ── Section 2: Log-det and volume ──────────────────────────────── -->
+      <div class="section-head" id="log-det">The log-determinant bottleneck</div>
+
+      <div class="prose">
+        The general Jacobian determinant of an $d \times d$ matrix costs $O(d^3)$ to compute
+        (Gaussian elimination). For image data with $d = 64 \times 64 \times 3 = 12{,}288$,
+        this is completely intractable. Every practical flow architecture is designed to make
+        $\log |\det J_f|$ either <em>analytically simple</em> (triangular Jacobian)
+        or <em>efficiently computable</em> (e.g., a sum of diagonal terms).
+        The key identity: if $J_f$ is <em>triangular</em> (upper or lower), then
+        $\det J_f = \prod_i (J_f)_{ii}$ — the product of its diagonal entries.
+        This is $O(d)$ to compute.
+        Designing flows with triangular Jacobians is the central architectural challenge.
+      </div>
+
+      <!-- ── Section 3: Planar flows ─────────────────────────────────────── -->
+      <div class="section-head" id="planar-flows">Planar and radial flows</div>
+
+      <div class="prose">
+        <strong>Planar flows</strong> (Rezende &amp; Mohamed 2015) are the simplest: $f(\mathbf{z}) = \mathbf{z} + \mathbf{u}\,h(\mathbf{w}^\top\mathbf{z} + b)$ where $h$ is a smooth activation and $\mathbf{u}, \mathbf{w} \in \mathbb{R}^d$.
+        The Jacobian determinant is $1 + h'(\mathbf{w}^\top\mathbf{z}+b)\mathbf{u}^\top\mathbf{w}$ — scalar,
+        $O(d)$ via the matrix determinant lemma. Each layer perturbs the distribution along a hyperplane.
+        Stacking many layers can approximate complex distributions. But these flows are weak in practice:
+        each layer can only bend the distribution in one direction, so many layers are needed.
+        They remain pedagogically important as the simplest illustration of the flow framework.
+      </div>
+
+      <!-- ── Section 4: Coupling layers ─────────────────────────────────── -->
+      <div class="section-head" id="coupling-layers">Coupling layers — NICE and RealNVP</div>
+
+      <div class="proof-box">
+        <div class="proof-header">Affine coupling layer (Dinh et al. 2014/2016)</div>
+        <div class="proof-body">
+          <p><strong>NICE</strong> (Non-linear Independent Components Estimation, Dinh et al. 2014)
+          introduced the <em>additive coupling layer</em>. Partition the $d$-dimensional input
+          $\mathbf{z}$ into two halves $\mathbf{z}_{1:m}$ and $\mathbf{z}_{m+1:d}$:
+          $$\mathbf{x}_{1:m} = \mathbf{z}_{1:m}$$
+          $$\mathbf{x}_{m+1:d} = \mathbf{z}_{m+1:d} + t(\mathbf{z}_{1:m})$$
+          where $t: \mathbb{R}^m \to \mathbb{R}^{d-m}$ is an arbitrary neural network (the
+          "translation network"). The Jacobian of this transformation is triangular:
+          $$J_f = \begin{pmatrix} I_m & 0 \\ \frac{\partial \mathbf{x}_{m+1:d}}{\partial \mathbf{z}_{1:m}} & I_{d-m} \end{pmatrix}$$
+          $\det J_f = \det(I_m)\det(I_{d-m}) = 1$. The transformation is <em>volume-preserving</em>:
+          $\log|\det J_f| = 0$. No volume correction needed!</p>
+
+          <p><strong>Inverse:</strong> $\mathbf{z}_{1:m} = \mathbf{x}_{1:m}$ (unchanged),
+          $\mathbf{z}_{m+1:d} = \mathbf{x}_{m+1:d} - t(\mathbf{x}_{1:m})$ (subtract instead of add).
+          Only one forward pass of $t$ needed in either direction. $t$ never needs to be inverted —
+          it can be any architecture (deep MLP, ResNet, etc.).</p>
+
+          <p><strong>RealNVP</strong> (Real-valued Non-Volume Preserving, Dinh et al. 2016)
+          generalises to <em>affine coupling</em>:
+          $$\mathbf{x}_{m+1:d} = \mathbf{z}_{m+1:d} \odot \exp(s(\mathbf{z}_{1:m})) + t(\mathbf{z}_{1:m})$$
+          The Jacobian is now triangular with diagonal entries $\exp(s_i(\mathbf{z}_{1:m}))$:
+          $$\log|\det J_f| = \sum_{i=m+1}^d s_i(\mathbf{z}_{1:m})$$
+          This is $O(d)$ and adds expressive power via the scale $s$. Inverse:
+          $\mathbf{z}_{m+1:d} = (\mathbf{x}_{m+1:d} - t(\mathbf{x}_{1:m})) \odot \exp(-s(\mathbf{x}_{1:m}))$.
+          Again, $s$ and $t$ are never inverted — only evaluated forward.</p>
+
+          <p><strong>Stacking layers with alternating masks:</strong> In a single coupling layer,
+          the first half $\mathbf{z}_{1:m}$ is unchanged. To transform all dimensions, alternate
+          which half is the "identity" half and which is the "coupling" half in successive layers.
+          After two layers, all dimensions have been transformed at least once. This is the key to
+          expressive multi-layer flows.</p>
+        </div>
+      </div>
+
+      <!-- ── Section 5: GLOW ─────────────────────────────────────────────── -->
+      <div class="section-head" id="glow">GLOW — invertible 1×1 convolutions</div>
+
+      <div class="prose">
+        <strong>GLOW</strong> (Generative Flow, Kingma &amp; Dhariwal 2018) stacks three operations
+        per flow step, forming a highly expressive flow for images:
+      </div>
+      <ol style="padding-left:1.6em; line-height:1.9;" class="prose">
+        <li><strong>Actnorm</strong> (activation normalisation): per-channel scale and bias,
+        initialised from the first minibatch so that activations are unit-variance zero-mean.
+        Replaces batch normalisation (which is not invertible in general). Log-det: sum of
+        log-scales, $O(d)$.</li>
+        <li><strong>Invertible 1×1 convolution</strong>: replaces the fixed channel-permutation
+        in RealNVP. A learnable $W \in \mathbb{R}^{c \times c}$ matrix (where $c$ is the number
+        of channels) is applied to each spatial position. This is a $1\times1$ convolution and
+        amounts to a learned linear mixing of channels. Log-det: $h \cdot w \cdot \log|\det W|$
+        (height × width × log-determinant of the mixing matrix). Computing $\det W$ for small
+        $c$ is cheap ($O(c^3)$, tiny); GLOW uses the LU decomposition $W = PLU$ (permutation ×
+        lower triangular × upper triangular) for $O(c^3)$ once and $O(c^2)$ per forward pass.</li>
+        <li><strong>Affine coupling layer</strong> (RealNVP-style, with checkerboard masking and
+        channel-halving at different scales).</li>
+      </ol>
+      <div class="prose">
+        GLOW trained on CelebA-HQ produced the first photorealistic face interpolation in latent
+        space: because the flow is invertible and exact, you can encode two real images to their
+        latent codes $\mathbf{z}_1$, $\mathbf{z}_2$ and linearly interpolate in $\mathbf{z}$-space —
+        the resulting decoded images smoothly blend the two faces, with the intermediate images being
+        perceptually meaningful rather than blurry averages (a common artifact in pixel-space interpolation).
+      </div>
+
+      <!-- ── Section 6: Autoregressive flows ───────────────────────────────────── -->
+      <div class="section-head" id="autoregressive">Autoregressive flows — MAF and IAF</div>
+
+      <div class="prose">
+        Coupling layers only condition each half on the other — information flow is limited.
+        Autoregressive flows condition each output on all previous outputs, achieving maximum
+        expressiveness for a triangular Jacobian.
+        <strong>MAF</strong> (Masked Autoregressive Flow, Papamakarios et al. 2017):
+        $$x_i = \mu_i(\mathbf{x}_{1:i-1}) + \sigma_i(\mathbf{x}_{1:i-1}) \cdot z_i$$
+        Each dimension $x_i$ is an affine function of the latent $z_i$ with mean and scale
+        conditioned on all previous dimensions. The Jacobian is triangular (each $x_i$ only
+        depends on $z_i$ and earlier $x_j$), so $\log|\det J| = \sum_i \log \sigma_i$.
+        The parameters $\mu_i$ and $\sigma_i$ are computed by a masked autoencoder (MADE),
+        which evaluates all $\mu_i, \sigma_i$ in one forward pass by masking the weight
+        matrices to enforce the autoregressive order.
+        <strong>Generating</strong> from MAF is sequential: sample $z_1, \ldots, z_d$ i.i.d.,
+        then compute $x_1 = \mu_1 + \sigma_1 z_1$, then $x_2 = \mu_2(\mathbf{x}_1) + \sigma_2(\mathbf{x}_1) z_2$, etc. — $O(d)$ sequential steps.
+        <strong>Evaluating</strong> $\log p(\mathbf{x})$ for a known $\mathbf{x}$ can be done in
+        one masked forward pass: all $\mu_i(\mathbf{x}_{1:i-1})$ computed in parallel.
+      </div>
+
+      <div class="prose">
+        <strong>IAF</strong> (Inverse Autoregressive Flow, Kingma et al. 2016) is MAF with
+        the sampling and density-evaluation roles swapped:
+        $$z_i = \frac{x_i - \mu_i(\mathbf{z}_{1:i-1})}{\sigma_i(\mathbf{z}_{1:i-1})}$$
+        Sampling is one masked forward pass (fast). Density evaluation is sequential (slow).
+        MAF and IAF are inverses of each other — literally: a MAF layer with parameters
+        computed from $\mathbf{x}$ is the same as an IAF layer with parameters computed from
+        $\mathbf{z}$. The duality is: fast density evaluation (MAF) vs. fast sampling (IAF).
+        This tradeoff is fundamental and mirrors the autoregressive generation tradeoff in
+        language models (fast evaluation via teacher-forcing; slow sampling via sequential decode).
+      </div>
+
+      <!-- ── Section 7: Continuous normalizing flows ─────────────────────── -->
+      <div class="section-head" id="cnf">Continuous normalizing flows</div>
+
+      <div class="proof-box">
+        <div class="proof-header">Continuous normalizing flows and the instantaneous change of variables (Chen et al. 2018)</div>
+        <div class="proof-body">
+          <p>The composition of $K$ discrete flow layers can be taken to the limit as $K \to \infty$,
+          giving a continuous-time flow governed by an ODE:
+          $$\frac{d\mathbf{z}(t)}{dt} = f_\theta(\mathbf{z}(t), t)$$
+          where $f_\theta$ is a neural network (the "dynamics"). The flow maps the initial
+          state $\mathbf{z}(0) \sim p_Z$ to the data $\mathbf{z}(1) = \mathbf{x}$.
+          This is called a <strong>neural ODE</strong> (Chen et al. 2018).</p>
+
+          <p><strong>Instantaneous change of variables:</strong> The log-density changes continuously
+          along the trajectory according to the <em>Liouville equation</em>:
+          $$\frac{d\log p(\mathbf{z}(t))}{dt} = -\text{tr}\left(\frac{\partial f_\theta}{\partial \mathbf{z}(t)}\right)$$
+          where $\text{tr}$ is the trace (sum of diagonal of the Jacobian).
+          This is much cheaper than the full log-determinant: for random projection estimates,
+          $\text{tr}(J) \approx \mathbf{\epsilon}^\top J \mathbf{\epsilon}$ for $\mathbf{\epsilon} \sim \mathcal{N}(\mathbf{0}, \mathbf{I})$,
+          giving an unbiased estimator in $O(d)$ per sample. The full density is:
+          $$\log p_X(\mathbf{x}) = \log p_Z(\mathbf{z}(0)) - \int_0^1 \text{tr}\left(\frac{\partial f_\theta}{\partial \mathbf{z}(t)}\right) dt$$
+          Training maximises $\log p_X(\mathbf{x})$; the integral is computed by an ODE solver
+          (e.g., Dormand-Prince RK45) with the adjoint method for gradient computation through
+          the ODE trajectory.</p>
+
+          <p><strong>Limitations:</strong> CNFs are flexible but computationally expensive:
+          ODE solvers require many function evaluations, and the adjoint method has high memory
+          cost. Training is much slower than discrete flows or diffusion models at scale.</p>
+        </div>
+      </div>
+
+      <!-- ── Section 8: Flow matching ────────────────────────────────────── -->
+      <div class="section-head" id="flow-matching">Flow matching</div>
+
+      <div class="proof-box">
+        <div class="proof-header">Conditional flow matching (Lipman et al. 2022; Liu et al. 2022)</div>
+        <div class="proof-body">
+          <p>Training CNFs by maximising the log-likelihood via ODE solvers is expensive.
+          Flow matching provides a simpler, scalable training objective that bypasses the
+          ODE solver entirely during training.</p>
+
+          <p><strong>Setup:</strong> Define a flow $\phi_t: \mathbb{R}^d \to \mathbb{R}^d$ that
+          transforms the base distribution $p_0 = \mathcal{N}(\mathbf{0}, \mathbf{I})$ into the
+          data distribution $p_1 = p_\text{data}$. The velocity field $u_t(\mathbf{x})$ generates
+          this flow via $\frac{d\phi_t(\mathbf{x})}{dt} = u_t(\phi_t(\mathbf{x}))$.</p>
+
+          <p><strong>Conditional construction:</strong> For each data point $\mathbf{x}_1$,
+          define a simple conditional flow from noise $\mathbf{x}_0 \sim \mathcal{N}(\mathbf{0}, \mathbf{I})$
+          to $\mathbf{x}_1$: the simplest choice is the <em>optimal transport (OT) path</em>
+          (straight line in latent space):
+          $$\mathbf{x}_t = (1-t)\mathbf{x}_0 + t\mathbf{x}_1, \quad t \in [0, 1]$$
+          The conditional velocity field is then $u_t(\mathbf{x}_t | \mathbf{x}_1) = \mathbf{x}_1 - \mathbf{x}_0$.
+          This is constant along each trajectory — just the direction from noise to data.</p>
+
+          <p><strong>Conditional flow matching loss:</strong>
+          $$\mathcal{L}_\text{CFM}(\theta) = \mathbb{E}_{t, \mathbf{x}_0, \mathbf{x}_1}\left[\|v_\theta(\mathbf{x}_t, t) - u_t(\mathbf{x}_t|\mathbf{x}_1)\|^2\right]$$
+          Train a neural network $v_\theta$ to predict the velocity at each $(\mathbf{x}_t, t)$.
+          This is a pure regression objective, no ODE solver needed during training.
+          At inference, use an ODE solver from $t=0$ (pure noise) to $t=1$ (data).</p>
+
+          <p><strong>Connection to diffusion (DDIM):</strong> The DDIM sampler defines a
+          <em>probability flow ODE</em> for DDPM:
+          $$\frac{d\mathbf{x}}{dt} = -\frac{1}{2}\beta(t)[\mathbf{x} + \nabla_\mathbf{x} \log p_t(\mathbf{x})]$$
+          This is a CNF with a specific velocity field defined by the score function.
+          Flow matching with straight-line OT paths (Rectified Flow / Stable Diffusion 3 / Flux)
+          is empirically better: the straight paths are shorter (lower curvature), so fewer
+          ODE solver steps are needed at inference — a major practical advantage. SD3, FLUX, and
+          Stable Video Diffusion all use flow matching rather than DDPM for this reason.</p>
+        </div>
+      </div>
+
+      <!-- ── Section 9: Connection to diffusion ─────────────────────────── -->
+      <div class="section-head" id="connection-diffusion">Connections and the bigger picture</div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Model</th>
+              <th>Exact likelihood?</th>
+              <th>Training</th>
+              <th>Inference</th>
+              <th>Architecture constraint</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Normalizing flow (discrete)</td>
+              <td>Yes</td>
+              <td>MLE on $\log p(\mathbf{x})$</td>
+              <td>One pass ($f$)</td>
+              <td>Invertible, triangular Jacobian</td>
+            </tr>
+            <tr>
+              <td>CNF / neural ODE</td>
+              <td>Yes (trace estimator)</td>
+              <td>ODE solve + adjoint</td>
+              <td>ODE solve</td>
+              <td>Invertible ODE dynamics</td>
+            </tr>
+            <tr>
+              <td>Flow matching (OT paths)</td>
+              <td>Approx. (regression)</td>
+              <td>Velocity regression</td>
+              <td>ODE solve (few steps)</td>
+              <td>None</td>
+            </tr>
+            <tr>
+              <td>DDPM / DDIM</td>
+              <td>No (ELBO)</td>
+              <td>Noise prediction regression</td>
+              <td>ODE solve (many steps)</td>
+              <td>None</td>
+            </tr>
+            <tr>
+              <td>VAE</td>
+              <td>No (ELBO)</td>
+              <td>ELBO maximisation</td>
+              <td>One decoder pass</td>
+              <td>Gaussian posterior</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ── Worked examples ─────────────────────────────────────────────── -->
+      <div class="section-head" id="examples">Worked examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Change of variables in 2D</strong></div>
+        <div class="example-problem">
+          <p>Let $\mathbf{z} = (z_1, z_2)^\top \sim \mathcal{N}(\mathbf{0}, \mathbf{I})$.
+          Define a flow $f: \mathbf{z} \mapsto \mathbf{x}$:
+          $$x_1 = 2z_1, \quad x_2 = z_1 + z_2$$
+          Compute the Jacobian $J_f$, its determinant, and $\log p_X(\mathbf{x})$ at $\mathbf{x} = (2, 2)^\top$.</p>
+        </div>
+        <div class="example-body">
+          <p><strong>Jacobian:</strong>
+          $J_f = \begin{pmatrix}\frac{\partial x_1}{\partial z_1} & \frac{\partial x_1}{\partial z_2} \\ \frac{\partial x_2}{\partial z_1} & \frac{\partial x_2}{\partial z_2}\end{pmatrix} = \begin{pmatrix}2 & 0 \\ 1 & 1\end{pmatrix}$ (lower triangular)</p>
+
+          <p><strong>Determinant:</strong> Product of diagonal = $2 \times 1 = 2$.</p>
+
+          <p><strong>Inverse mapping:</strong> $z_1 = x_1/2$, $z_2 = x_2 - z_1 = x_2 - x_1/2$.
+          At $\mathbf{x} = (2, 2)$: $z_1 = 1$, $z_2 = 2 - 1 = 1$.</p>
+
+          <p><strong>Log-density:</strong>
+          $\log p_Z(\mathbf{z}) = -\frac{1}{2}(z_1^2 + z_2^2) - \log(2\pi) = -\frac{1}{2}(1 + 1) - \log(2\pi) = -1 - \log(2\pi)$
+          $\log p_X(\mathbf{x}) = \log p_Z(\mathbf{z}) - \log|\det J_f| = -1 - \log(2\pi) - \log 2$</p>
+
+          <p>The $-\log|\det J_f| = -\log 2$ penalty reflects that $f$ stretches volume by a factor of 2
+          (the $x_1$ axis is scaled by 2), so the density at $\mathbf{x}$ is lower than at the
+          corresponding $\mathbf{z}$ by exactly this factor.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — RealNVP coupling layer forward and inverse</strong></div>
+        <div class="example-problem">
+          <p>A RealNVP coupling layer partitions $\mathbf{z} = (z_1, z_2, z_3, z_4)$ into
+          $\mathbf{z}_A = (z_1, z_2)$ and $\mathbf{z}_B = (z_3, z_4)$.
+          The scale and translation networks output:
+          $s(\mathbf{z}_A) = (0.5, -0.5)$ and $t(\mathbf{z}_A) = (1.0, 2.0)$.
+          Given input $\mathbf{z} = (1, 2, 3, 4)$, compute the output $\mathbf{x}$ and the log-det term.
+          Verify the inverse.</p>
+        </div>
+        <div class="example-body">
+          <p><strong>Forward pass:</strong>
+          $\mathbf{x}_A = \mathbf{z}_A = (1, 2)$ (identity).
+          $x_3 = z_3 \cdot e^{s_1} + t_1 = 3 \cdot e^{0.5} + 1.0 = 3 \times 1.649 + 1.0 = 5.946$
+          $x_4 = z_4 \cdot e^{s_2} + t_2 = 4 \cdot e^{-0.5} + 2.0 = 4 \times 0.607 + 2.0 = 4.426$
+          Output: $\mathbf{x} = (1, 2, 5.946, 4.426)$</p>
+
+          <p><strong>Log-det:</strong> $\log|\det J| = s_1 + s_2 = 0.5 + (-0.5) = 0$.
+          This particular choice of scales happens to be volume-preserving. In general $\log|\det J| = \sum s_i$.</p>
+
+          <p><strong>Inverse:</strong>
+          $\mathbf{z}_A = \mathbf{x}_A = (1, 2)$ (same, since $\mathbf{x}_A$ is the identity pass).
+          Recompute $s$ and $t$ using $\mathbf{x}_A$: $s = (0.5, -0.5)$, $t = (1.0, 2.0)$.
+          $z_3 = (x_3 - t_1) \cdot e^{-s_1} = (5.946 - 1.0) \cdot e^{-0.5} = 4.946 \times 0.607 = 3.000$ ✓
+          $z_4 = (x_4 - t_2) \cdot e^{-s_2} = (4.426 - 2.0) \cdot e^{0.5} = 2.426 \times 1.649 = 4.000$ ✓</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Flow matching OT path</strong></div>
+        <div class="example-problem">
+          <p>A flow matching model uses straight-line OT paths. Data point $\mathbf{x}_1 = (3, 4)$,
+          noise sample $\mathbf{x}_0 = (-1, 2)$, time $t = 0.3$.
+          (a) Compute the interpolated point $\mathbf{x}_t$.
+          (b) What is the conditional velocity $u_t(\mathbf{x}_t | \mathbf{x}_1)$?
+          (c) What does the network $v_\theta$ need to predict at this point during training?</p>
+        </div>
+        <div class="example-body">
+          <p>(a) $\mathbf{x}_t = (1-t)\mathbf{x}_0 + t\mathbf{x}_1 = 0.7 \times (-1, 2) + 0.3 \times (3, 4) = (-0.7, 1.4) + (0.9, 1.2) = (0.2, 2.6)$</p>
+
+          <p>(b) The conditional velocity is:
+          $u_t(\mathbf{x}_t | \mathbf{x}_1) = \mathbf{x}_1 - \mathbf{x}_0 = (3 - (-1), 4 - 2) = (4, 2)$
+          This is constant along the trajectory — the velocity doesn't change over time for OT paths.
+          The network just needs to learn the direction of each path.</p>
+
+          <p>(c) The network $v_\theta(\mathbf{x}_t, t) = v_\theta((0.2, 2.6), 0.3)$ must predict $(4, 2)$.
+          At training time, this is the target in the CFM regression loss. Note that the network sees
+          only $\mathbf{x}_t$ and $t$ — it doesn't see $\mathbf{x}_0$ or $\mathbf{x}_1$ directly.
+          Over many training examples, the network learns the average velocity field that, when
+          integrated from $t=0$ to $t=1$, transforms the noise distribution into the data distribution.
+          The marginal velocity (averaged over all possible $\mathbf{x}_0$ paired with each $\mathbf{x}_1$)
+          is the target for the learned velocity field.</p>
+        </div>
+      </div>
+
+      <!-- ── Food for thought ────────────────────────────────────────────── -->
+      <div class="section-head" id="food-for-thought">Food for thought</div>
+
+      <ul class="fft-list">
+        <li class="fft-item">
+          Normalizing flows have exact likelihoods, fast single-step sampling, and invertible
+          latent representations. These sound like advantages over VAEs (lower bound only) and
+          diffusion (many sampling steps). Yet as of 2025, diffusion and flow matching models
+          (not discrete normalizing flows) dominate image generation. Why?
+          <div class="fft-answer">
+            Three structural reasons:
+            (1) <strong>Architecture constraint vs. expressiveness tradeoff.</strong> Discrete flows
+            must have invertible, tractable-Jacobian architectures. This severely limits the design
+            space: coupling layers fix half the dimensions at each step; autoregressive flows are
+            sequential at generation time; invertible 1×1 convolutions can only mix channels, not
+            spatial structure. These constraints prevent using the most powerful modern architectures
+            (standard deep ResNets, attention mechanisms with arbitrary masking). Diffusion models
+            use U-Nets and transformers with no invertibility constraints — they can be as expressive
+            as any discriminative model.
+            (2) <strong>The mode-covering vs. mode-seeking tradeoff.</strong> Training with maximum
+            likelihood ($\log p(\mathbf{x})$) is mode-covering: the model tries to assign non-zero
+            probability everywhere in the data distribution, including in low-probability regions.
+            This leads to blurry samples or wasted model capacity on rare examples. Diffusion models
+            with score matching are also mode-covering, but their iterative sampling and conditioning
+            techniques (classifier-free guidance) allow sharpening the distribution at inference time.
+            (3) <strong>The exact-likelihood trap.</strong> High log-likelihood does not correlate with
+            sample quality. GLOW achieves high log-likelihood on ImageNet but generates blurry,
+            unrealistic images. The log-likelihood metric penalises unlikely regions, but humans judge
+            sample quality on typical samples. Models optimised purely for log-likelihood can assign
+            high probability to a set of samples that looks nothing like natural images.
+            Flow matching avoids the first problem (no architecture constraint) while keeping the fast
+            sampling advantage (fewer ODE steps with straight paths). This is why SD3 and Flux use
+            flow matching rather than discrete normalizing flows.
+          </div>
+        </li>
+        <li class="fft-item">
+          The MAF (density evaluation fast) and IAF (sampling fast) are mathematical inverses of each
+          other. Can you use both directions simultaneously to get fast density evaluation AND fast
+          sampling? What system would you need, and does it exist?
+          <div class="fft-answer">
+            This is the fundamental insight behind <strong>Parallel WaveNet</strong> (Oord et al.
+            2017) and the <strong>WaveGlow</strong> architecture, and more generally the training
+            paradigm called <strong>probability density distillation</strong>.
+            The basic idea: train a MAF (density-evaluation-fast) as the "teacher" using maximum
+            likelihood on real data. Then train an IAF (sampling-fast) "student" to minimize the
+            KL divergence between the student's distribution and the teacher's distribution:
+            $D_\text{KL}(p_\text{student} \| p_\text{teacher})$.
+            Computing this KL requires evaluating $\log p_\text{teacher}(\mathbf{x})$ for samples
+            $\mathbf{x}$ from the student — which is fast because the teacher is a MAF. The student
+            gets trained to match the teacher without needing sequential decoding at training time.
+            At inference, only the fast-sampling IAF student is used.
+            This approach achieves near-real-time speech synthesis (Parallel WaveNet ran at 500 kHz
+            on a single GPU vs. 1500 steps per second for the sequential WaveNet teacher).
+            The general principle — train a slow exact model, distill into a fast sampling model —
+            also motivates consistency distillation for diffusion models: use a multi-step DDIM as
+            the teacher, train a one-step consistency model to match it. The dual-speed tradeoff
+            is not a fundamental limitation; it is an architectural choice resolved by distillation.
+          </div>
+        </li>
+        <li class="fft-item">
+          Flow matching with OT (straight-line) paths trains the network to predict a constant
+          velocity $\mathbf{x}_1 - \mathbf{x}_0$ along each trajectory. The DDPM noise-prediction
+          objective trains the network to predict the noise $\boldsymbol{\epsilon}$ that was added.
+          These seem quite different, yet both train a generative model by regression. What is the
+          relationship between "predict the velocity" and "predict the noise"? Can you convert one
+          to the other?
+          <div class="fft-answer">
+            They are the same model viewed through different parameterisations. In DDPM, the noisy
+            image at time $t$ is:
+            $\mathbf{x}_t = \sqrt{\bar{\alpha}_t}\mathbf{x}_1 + \sqrt{1-\bar{\alpha}_t}\boldsymbol{\epsilon}$
+            where $\boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \mathbf{I})$ is the added noise.
+            In flow matching with OT paths:
+            $\mathbf{x}_t = (1-t)\mathbf{x}_0 + t\mathbf{x}_1$
+            In both cases, $\mathbf{x}_t$ is a linear interpolation between noise and data, just with
+            different scheduling functions. The velocity in OT flow matching is $\mathbf{x}_1 - \mathbf{x}_0$.
+            The velocity at time $t$ in the DDPM probability flow ODE is:
+            $v = \frac{d\mathbf{x}_t}{dt} = \frac{d}{dt}[\sqrt{\bar{\alpha}_t}\mathbf{x}_1 + \sqrt{1-\bar{\alpha}_t}\boldsymbol{\epsilon}]$
+            which is a function of $\dot{\bar{\alpha}}_t$, $\mathbf{x}_1$, and $\boldsymbol{\epsilon}$.
+            The $v$-parameterisation of diffusion (DL9 FFT: "predicting velocity") is exactly this
+            conversion: $v_\theta(\mathbf{x}_t, t)$ is trained to predict the velocity of the DDPM
+            probability flow ODE. Converting from noise prediction ($\epsilon_\theta$) to velocity
+            ($v_\theta$) is just a change of variables:
+            $v_\theta = \sqrt{\bar{\alpha}_t}\epsilon_\theta - \sqrt{1-\bar{\alpha}_t}\hat{\mathbf{x}}_0$
+            where $\hat{\mathbf{x}}_0 = (\mathbf{x}_t - \sqrt{1-\bar{\alpha}_t}\epsilon_\theta)/\sqrt{\bar{\alpha}_t}$.
+            The practical advantage of OT/rectified flow is that straight paths have <em>lower
+            curvature</em> than DDPM's curved probability flow ODE trajectories. Lower curvature means
+            fewer ODE steps needed at inference for the same quality. This is the primary reason SD3
+            and Flux moved to flow matching.
+          </div>
+        </li>
+      </ul>
+
+      <!-- ── Connects to ──────────────────────────────────────────────── -->
+      <div class="section-head" id="connects-to">Connects to</div>
+
+      <div class="prose">
+        <strong>Generative Models (DL9)</strong> — Normalizing flows complete the major generative
+        model paradigms: VAEs (approximate ELBO), GANs (adversarial), diffusion/DDPM (iterative
+        denoising), and flows (exact invertible transformation). Flow matching unifies flows and
+        diffusion under the CNF framework.
+      </div>
+      <div class="prose">
+        <strong>State Space Models (DL10)</strong> — Both flows and SSMs are motivated by the same
+        desire to go beyond architectures forced to approximate: flows give exact likelihoods;
+        SSMs give exact recurrence without the quadratic attention cost. Both represent the ongoing
+        effort to find architectures that are simultaneously expressive, tractable, and efficient.
+      </div>
+      <div class="prose">
+        <strong>Variational autoencoders (DL9 ELBO)</strong> — The ELBO in a VAE is tight when
+        the approximate posterior $q_\phi(\mathbf{z}|\mathbf{x})$ exactly matches the true
+        posterior. Using a normalizing flow as the approximate posterior (instead of a diagonal
+        Gaussian) closes this gap: flow-based posteriors can match complex multi-modal posteriors
+        exactly. This combination, "flow posterior VAE", achieves higher log-likelihoods than
+        standard VAEs while retaining the VAE's structured latent space.
+      </div>
+
+      <div class="lesson-nav">
+        <a href="state-space-models.html" class="lesson-nav-btn">← 10 · State Space Models</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+
+</body>
+</html>

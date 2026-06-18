@@ -274,7 +274,7 @@
               "name": "Deep Learning",
               "href": "deep-learning/index.html",
               "desc": "Backpropagation, CNNs, recurrent networks, attention and transformers, and the practical craft of training large models.",
-              "lessons": 9
+              "lessons": 11
             },
             {
               "name": "Unsupervised &amp; Generative Models",
