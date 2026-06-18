@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Transformer — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false}
+        ],
+        throwOnError: false
+      });
+    });
+  </script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Prerequisites</div>
+        <a href="../supervised/backpropagation.html" class="nav-item">SL9 · Backpropagation</a>
+        <a href="../supervised/training.html" class="nav-item">SL10 · Training Neural Nets</a>
+        <a href="sequence-models.html" class="nav-item">DL3 · Sequence Models &amp; RNNs</a>
+        <a href="lstms.html" class="nav-item">DL4 · LSTMs &amp; GRUs</a>
+        <a href="attention.html" class="nav-item">DL5 · Attention Mechanisms</a>
+      </div>
+
+      <div id="cluster-nav" data-cluster="deep-learning" data-current="transformer.html"></div>
+
+      <hr class="sidebar-rule">
+
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#the-paper" class="nav-item">The paper</a>
+        <a href="#overview" class="nav-item">Architecture overview</a>
+        <a href="#sdpa" class="nav-item">Scaled dot-product attention</a>
+        <a href="#multihead" class="nav-item">Multi-head attention</a>
+        <a href="#positional-encoding" class="nav-item">Positional encoding</a>
+        <a href="#encoder-block" class="nav-item">Encoder block</a>
+        <a href="#decoder-block" class="nav-item">Decoder block</a>
+        <a href="#full-architecture" class="nav-item">Full architecture</a>
+        <a href="#why-transformers" class="nav-item">Why Transformers beat RNNs</a>
+        <a href="#training" class="nav-item">Training details</a>
+        <a href="#examples" class="nav-item">Worked examples</a>
+        <a href="#food-for-thought" class="nav-item">Food for thought</a>
+        <a href="#pitfalls" class="nav-item">Common pitfalls</a>
+        <a href="#connects-to" class="nav-item">Connects to</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Deep Learning</a>
+        <span class="sep">›</span>
+        <span>6 · The Transformer</span>
+      </div>
+
+      <div class="lesson-title">6 · The Transformer</div>
+      <div class="lesson-meta">Scaled Dot-Product Attention · Multi-Head Attention · Positional Encoding · Encoder · Decoder · Masked Attention</div>
+
+      <div class="prose">
+        In 2017, Vaswani, Shazeer, Parmar, Uszkoreit, Jones, Gomez, Kaiser, and
+        Polosukhin published "Attention Is All You Need." The title was a provocation:
+        recurrence, they argued, was unnecessary. Convolutions were unnecessary. The
+        entire model could be built from attention and feed-forward layers, stacked
+        identically. The result was the <strong>Transformer</strong> — an architecture
+        that achieved state of the art in machine translation with a fraction of the
+        training time, and that would go on to underpin every major language model
+        released in the seven years that followed: BERT, GPT-2/3/4, T5, LLaMA, Claude,
+        Gemini, and GPT-4o are all Transformers. This lesson builds the Transformer
+        from scratch, component by component, exactly as Vaswani et al. specified it.
+        By the end you will be able to read the original paper directly.
+      </div>
+
+      <!-- ── Section 1: The paper ────────────────────────────────────────── -->
+      <div class="section-head" id="the-paper">The paper</div>
+
+      <div class="prose">
+        "Attention Is All You Need" targets machine translation: translating a source
+        sentence into a target sentence of a different language. The prior state of the
+        art (Wu et al. 2016's Google Neural Machine Translation system) used deep LSTM
+        encoder-decoders with attention. The Transformer matches and exceeds its quality
+        on WMT English-German and English-French benchmarks while training 8× faster.
+        The key properties of the Transformer that make this possible:
+      </div>
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:8px;"><strong>No recurrence.</strong> Processing is
+          fully parallel across sequence positions. All positions are processed
+          simultaneously — no sequential dependency.</li>
+        <li style="margin-bottom:8px;"><strong>Constant path length.</strong> Any two
+          positions can interact directly in a single layer via attention. In an RNN,
+          positions $i$ and $j$ must communicate through $|i - j|$ hidden state
+          transitions — a path length of $O(n)$. In the Transformer, the path length
+          is $O(1)$, regardless of distance.</li>
+        <li><strong>Stacked identical blocks.</strong> The architecture is clean and
+          regularised: stack $N$ identical encoder blocks and $N$ identical decoder
+          blocks. Each block contains the same types of sublayers. This simplicity
+          made scaling straightforward.</li>
+      </ul>
+
+      <!-- ── Section 2: Architecture overview ───────────────────────────── -->
+      <div class="section-head" id="overview">Architecture overview</div>
+
+      <div class="prose">
+        The Transformer follows the encoder-decoder structure from seq2seq:
+      </div>
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:8px;"><strong>Encoder</strong>: reads the full source
+          sentence and produces a sequence of contextualised representations — one
+          vector per source token. All source tokens are processed in parallel.</li>
+        <li><strong>Decoder</strong>: generates the target sentence one token at a time.
+          At each step it attends to the encoder's output (cross-attention) and to the
+          previously generated tokens (causal self-attention).</li>
+      </ul>
+
+      <div class="prose">
+        <strong>Baseline hyperparameters</strong> from the paper (the "base model"):
+      </div>
+
+      <div style="overflow-x:auto;margin:16px 0;">
+        <table style="width:100%;border-collapse:collapse;font-size:0.875rem;">
+          <tr style="background:#e8f0f5;color:#1a2840;">
+            <th style="padding:8px 12px;text-align:left;border:1px solid #c4d4df;">Parameter</th>
+            <th style="padding:8px 12px;text-align:left;border:1px solid #c4d4df;">Symbol</th>
+            <th style="padding:8px 12px;text-align:left;border:1px solid #c4d4df;">Base model</th>
+            <th style="padding:8px 12px;text-align:left;border:1px solid #c4d4df;">Big model</th>
+          </tr>
+          <tr>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">Model dimension</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">$d_{\text{model}}$</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">512</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">1024</td>
+          </tr>
+          <tr style="background:#f9fafb;">
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">Number of attention heads</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">$h$</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">8</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">16</td>
+          </tr>
+          <tr>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">Head dimension</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">$d_k = d_v = d_{\text{model}}/h$</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">64</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">64</td>
+          </tr>
+          <tr style="background:#f9fafb;">
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">Feed-forward inner dim</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">$d_{ff}$</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">2048</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">4096</td>
+          </tr>
+          <tr>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">Encoder layers</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">$N$</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">6</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">6</td>
+          </tr>
+          <tr style="background:#f9fafb;">
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">Decoder layers</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">$N$</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">6</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">6</td>
+          </tr>
+          <tr>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">Dropout</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">$p_{\text{drop}}$</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">0.1</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">0.3</td>
+          </tr>
+          <tr style="background:#f9fafb;">
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">Total parameters</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">—</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">65M</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">213M</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- ── Section 3: Scaled dot-product attention ─────────────────────── -->
+      <div class="section-head" id="sdpa">Scaled dot-product attention</div>
+
+      <div class="prose">
+        The atomic operation in the Transformer (derived fully in Lesson 5). Summary here
+        for reference:
+        $$\text{Attention}(Q, K, V) = \text{softmax}\!\left(\frac{QK^\top}{\sqrt{d_k}}\right) V$$
+        Inputs: $Q \in \mathbb{R}^{n_q \times d_k}$, $K \in \mathbb{R}^{n_k \times d_k}$,
+        $V \in \mathbb{R}^{n_k \times d_v}$.
+        Output: $\mathbb{R}^{n_q \times d_v}$ — one contextualised vector per query position.
+        The $n_q \times n_k$ matrix $QK^\top / \sqrt{d_k}$ gives all pairwise compatibility
+        scores; softmax normalises each row to a distribution over keys; that distribution
+        weights the values.
+      </div>
+
+      <!-- ── Section 4: Multi-head attention ───────────────────────────────── -->
+      <div class="section-head" id="multihead">Multi-head attention</div>
+
+      <div class="prose">
+        A single attention head computes one weighted mixture. But a sentence has many
+        simultaneous relationships: syntactic dependencies, semantic similarity, coreference,
+        positional adjacency, topic coherence. <strong>Multi-head attention</strong> runs
+        $h$ attention heads in parallel, each with its own projections, then concatenates
+        and projects the results:
+      </div>
+
+      <div class="proof-box">
+        <div class="proof-header">Multi-head attention — full specification</div>
+        <div class="proof-body">
+          <p>For each head $i \in \{1, \ldots, h\}$, define projection matrices:
+          $W_i^Q \in \mathbb{R}^{d_{\text{model}} \times d_k}$,
+          $W_i^K \in \mathbb{R}^{d_{\text{model}} \times d_k}$,
+          $W_i^V \in \mathbb{R}^{d_{\text{model}} \times d_v}$.
+          For the base model: $d_k = d_v = d_{\text{model}}/h = 64$.</p>
+
+          <p>Compute each head independently:</p>
+          $$\text{head}_i = \text{Attention}(Q W_i^Q,\; K W_i^K,\; V W_i^V)$$
+          <p>Each head is $\in \mathbb{R}^{n \times d_v}$.</p>
+
+          <p>Concatenate all heads along the feature dimension:</p>
+          $$\text{MultiHead}(Q, K, V) = \text{Concat}(\text{head}_1, \ldots, \text{head}_h)\, W^O$$
+          <p>where $W^O \in \mathbb{R}^{h d_v \times d_{\text{model}}}$ is a final output projection.
+          The concatenated vector is $\in \mathbb{R}^{n \times hd_v} = \mathbb{R}^{n \times d_{\text{model}}}$;
+          the output projection maps it back to $\mathbb{R}^{n \times d_{\text{model}}}$.</p>
+
+          <p><strong>Parameter count for multi-head attention:</strong></p>
+          <ul>
+            <li>Q projections: $h \cdot d_{\text{model}} \cdot d_k = h \cdot d_{\text{model}} \cdot (d_{\text{model}}/h) = d_{\text{model}}^2$</li>
+            <li>K projections: $d_{\text{model}}^2$ (same reasoning)</li>
+            <li>V projections: $d_{\text{model}}^2$</li>
+            <li>Output projection $W^O$: $h d_v \cdot d_{\text{model}} = d_{\text{model}}^2$</li>
+            <li><strong>Total:</strong> $4 d_{\text{model}}^2 = 4 \times 512^2 \approx 1.05\text{M}$ per attention layer</li>
+          </ul>
+
+          <p><strong>Computational cost.</strong> Each of the $h$ heads independently computes $QK^\top$,
+          where $Q \in \mathbb{R}^{n \times d_k}$ and $K \in \mathbb{R}^{n \times d_k}$.
+          The $h$ heads together compute the same total as one attention with $d_k \cdot h = d_{\text{model}}$.
+          Cost: $O(n^2 d_{\text{model}})$ for the attention weights plus $O(n d_{\text{model}}^2)$
+          for the projections. For $n < d_{\text{model}}$ (short sequences), projections dominate;
+          for $n > d_{\text{model}}$ (long sequences), the $n^2$ attention term dominates.</p>
+        </div>
+      </div>
+
+      <div class="prose">
+        <strong>What different heads learn.</strong> Visualisations of trained Transformers
+        (Vaswani et al. 2017, Clark et al. 2019, Kovaleva et al. 2019) reveal that different
+        attention heads specialise. Some heads track syntactic dependencies (subject-verb
+        agreement). Some head track positional adjacency (attend to the immediate neighbour).
+        Some track coreference. Some are "global" heads that attend uniformly across all
+        positions. No two heads are identical — the different projections push them to
+        different subspaces and hence different relationship types. This specialisation
+        emerges from gradient descent without any supervision about what each head should
+        attend to.
+      </div>
+
+      <!-- ── Section 5: Positional encoding ─────────────────────────────── -->
+      <div class="section-head" id="positional-encoding">Positional encoding</div>
+
+      <div class="prose">
+        Attention is <strong>permutation-equivariant</strong>: if you shuffle the input
+        sequence, the output is shuffled in exactly the same way. In other words, there
+        is no notion of order in the attention mechanism itself. The model cannot
+        distinguish "dog bites man" from "man bites dog" based on attention alone. This
+        is in stark contrast to RNNs, which process tokens sequentially and therefore
+        implicitly encode position via recurrence.
+      </div>
+
+      <div class="prose">
+        The fix: add a <strong>positional encoding</strong> to each input embedding before
+        the first layer. The positional encoding is a vector of the same dimension
+        $d_{\text{model}}$ that uniquely identifies each position. Vaswani et al. use
+        fixed sine and cosine encodings:
+      </div>
+
+      <div class="proof-box">
+        <div class="proof-header">Sinusoidal positional encoding</div>
+        <div class="proof-body">
+          <p>For position $\text{pos} \in \{0, 1, \ldots, n-1\}$ and dimension
+          $i \in \{0, 1, \ldots, d_{\text{model}}-1\}$:</p>
+          $$\text{PE}(\text{pos}, 2i) = \sin\!\left(\frac{\text{pos}}{10000^{2i/d_{\text{model}}}}\right)$$
+          $$\text{PE}(\text{pos}, 2i+1) = \cos\!\left(\frac{\text{pos}}{10000^{2i/d_{\text{model}}}}\right)$$
+
+          <p>Even dimensions use sine; odd dimensions use cosine. The frequency decreases
+          geometrically with dimension index: dimension 0 has the highest frequency
+          (period $2\pi \approx 6.28$ steps), dimension $d_{\text{model}} - 2$ has the lowest
+          (period $10000 \cdot 2\pi \approx 62{,}832$ steps).</p>
+
+          <p>The input to the first layer is the sum of the word embedding and the positional encoding:
+          $$\mathbf{x}'_{\text{pos}} = \mathbf{x}_{\text{pos}} + \text{PE}(\text{pos})$$</p>
+
+          <p><strong>Why sinusoids?</strong> Three properties make them useful:
+          <ol>
+            <li><strong>Unique per position:</strong> the vector $\text{PE}(\text{pos}) \in \mathbb{R}^{d_{\text{model}}}$
+              is distinct for every position, providing an identity.</li>
+            <li><strong>Relative position information:</strong> by the angle addition formula,
+              $\text{PE}(\text{pos} + k)$ is a fixed linear function of $\text{PE}(\text{pos})$
+              for any fixed offset $k$. Specifically:
+              $\sin(\text{pos} + k) = \sin(\text{pos})\cos(k) + \cos(\text{pos})\sin(k)$
+              — a linear combination of $\sin(\text{pos})$ and $\cos(\text{pos})$.
+              This means the model can, in principle, learn to attend to "position $+k$
+              relative to position $\text{pos}$" via linear operations on the encodings.</li>
+            <li><strong>Generalises to unseen lengths:</strong> sinusoids are defined for any
+              position, so the model can generalise to sequences longer than those seen during
+              training (within limits).</li>
+          </ol></p>
+
+          <p><strong>Alternative: learned positional embeddings.</strong> Instead of fixed
+          sinusoids, learn a separate embedding for each position (a lookup table, like word
+          embeddings). Vaswani et al. find nearly identical results for both approaches.
+          GPT-2, BERT, and many subsequent models use learned positional embeddings for
+          simplicity. More recent models use relative positional encodings (RoPE, ALiBi)
+          which embed position information directly into the attention score computation
+          rather than the input, giving better length generalisation — but that is beyond
+          the original Transformer specification.</p>
+        </div>
+      </div>
+
+      <!-- ── Section 6: Encoder block ─────────────────────────────────────── -->
+      <div class="section-head" id="encoder-block">Encoder block</div>
+
+      <div class="prose">
+        The Transformer encoder is a stack of $N = 6$ identical blocks. Each block
+        contains exactly two sublayers:
+      </div>
+
+      <div class="proof-box">
+        <div class="proof-header">Transformer encoder block</div>
+        <div class="proof-body">
+          <p>Input to block $l$: $X \in \mathbb{R}^{n \times d_{\text{model}}}$ (one row per token).</p>
+
+          <p><strong>Sublayer 1 — Multi-head self-attention with residual + LayerNorm:</strong></p>
+          $$Z = X + \text{Dropout}\big(\text{MultiHead}(X, X, X)\big)$$
+          $$X' = \text{LayerNorm}(Z)$$
+          <p>The queries, keys, and values all come from the same matrix $X$ — this is
+          self-attention. Every token attends to every other token in the source sequence.</p>
+
+          <p><strong>Sublayer 2 — Position-wise feed-forward network with residual + LayerNorm:</strong></p>
+          $$F = X' + \text{Dropout}\big(\text{FFN}(X')\big)$$
+          $$X'' = \text{LayerNorm}(F)$$
+          <p>where the FFN is applied identically and independently to each position:
+          $$\text{FFN}(\mathbf{x}) = W_2 \,\text{ReLU}(W_1 \mathbf{x} + \mathbf{b}_1) + \mathbf{b}_2$$
+          with $W_1 \in \mathbb{R}^{d_{ff} \times d_{\text{model}}}$, $W_2 \in \mathbb{R}^{d_{\text{model}} \times d_{ff}}$,
+          $d_{ff} = 2048$. The FFN expands dimension 4× (to 2048), applies ReLU, then projects
+          back to $d_{\text{model}} = 512$.</p>
+
+          <p><strong>Parameter count per encoder block:</strong></p>
+          <ul>
+            <li>Multi-head attention: $4 d_{\text{model}}^2 = 4 \times 512^2 \approx 1.05\text{M}$</li>
+            <li>FFN: $2 \times d_{\text{model}} \times d_{ff} = 2 \times 512 \times 2048 \approx 2.10\text{M}$</li>
+            <li>LayerNorm (2×): $2 \times 2 \times d_{\text{model}} = 2048$ parameters (negligible)</li>
+            <li><strong>Total per block</strong>: ≈3.15M. For 6 blocks: ≈18.9M</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="prose">
+        <strong>Why LayerNorm, not BatchNorm?</strong> BatchNorm normalises across the
+        batch dimension: for a given feature, it normalises using the batch mean and
+        variance. This requires a large batch size (statistics are noisy for small
+        batches) and doesn't work at test time for single-example inference unless running
+        statistics are maintained. <strong>LayerNorm</strong> normalises across the
+        feature dimension: for a given token, it normalises across the $d_{\text{model}}$
+        features using that token's own mean and variance. It is independent of batch
+        size and works identically at train and test time.
+
+        For a token representation $\mathbf{x} \in \mathbb{R}^{d}$:
+        $$\text{LayerNorm}(\mathbf{x}) = \gamma \odot \frac{\mathbf{x} - \mu}{\sigma + \epsilon} + \beta$$
+        where $\mu = \frac{1}{d}\sum_i x_i$ and $\sigma^2 = \frac{1}{d}\sum_i (x_i - \mu)^2$
+        are scalar statistics of that specific token's representation, and $\gamma, \beta \in \mathbb{R}^d$
+        are learned scale and shift parameters.
+      </div>
+
+      <div class="prose">
+        <strong>The "Add &amp; Norm" shorthand.</strong> In the paper, each sublayer is
+        described as $\text{LayerNorm}(x + \text{Sublayer}(x))$. This is the
+        <em>post-layer norm</em> convention: apply the sublayer, add the residual, then
+        normalise. Modern practice often uses <em>pre-layer norm</em>:
+        $x + \text{Sublayer}(\text{LayerNorm}(x))$ — apply LayerNorm to the input before
+        the sublayer. Pre-LN trains more stably for very deep models (GPT-2 uses pre-LN)
+        because the gradient flows through the residual stream without passing through
+        the LayerNorm normalisation — recall the analysis of pre-activation ResNets from
+        Lesson 1.
+      </div>
+
+      <!-- ── Section 7: Decoder block ─────────────────────────────────────── -->
+      <div class="section-head" id="decoder-block">Decoder block</div>
+
+      <div class="prose">
+        The decoder is also a stack of $N = 6$ identical blocks, but each block has
+        <em>three</em> sublayers instead of two:
+      </div>
+
+      <div class="proof-box">
+        <div class="proof-header">Transformer decoder block</div>
+        <div class="proof-body">
+          <p>Input to decoder block $l$: $Y \in \mathbb{R}^{m \times d_{\text{model}}}$
+          (the target tokens seen so far), and encoder output
+          $\text{Enc} \in \mathbb{R}^{n \times d_{\text{model}}}$.</p>
+
+          <p><strong>Sublayer 1 — Masked causal self-attention:</strong></p>
+          $$Z_1 = Y + \text{Dropout}\big(\text{MaskedMultiHead}(Y, Y, Y)\big)$$
+          $$Y_1 = \text{LayerNorm}(Z_1)$$
+          <p>"Masked" means the attention score matrix has the upper triangle set to $-\infty$
+          before softmax — token $t$ cannot attend to tokens at positions $t+1, t+2, \ldots$
+          This enforces autoregressive generation: the decoder can only use what it has
+          already generated.</p>
+
+          <p><strong>Sublayer 2 — Cross-attention (encoder-decoder attention):</strong></p>
+          $$Z_2 = Y_1 + \text{Dropout}\big(\text{MultiHead}(Y_1, \text{Enc}, \text{Enc})\big)$$
+          $$Y_2 = \text{LayerNorm}(Z_2)$$
+          <p>Queries come from the decoder state $Y_1$; keys and values come from the encoder
+          output $\text{Enc}$. This is where the decoder "reads" the source sentence:
+          each decoder position selectively attends to source encoder positions, deciding
+          which source words are relevant to generating the current target word. There is
+          no causal mask here — the decoder can attend to any source position.</p>
+
+          <p><strong>Sublayer 3 — Feed-forward (same as encoder):</strong></p>
+          $$Z_3 = Y_2 + \text{Dropout}\big(\text{FFN}(Y_2)\big)$$
+          $$Y_3 = \text{LayerNorm}(Z_3)$$
+          <p>Identical to the encoder FFN: position-wise, independent across positions,
+          $d_{\text{model}} \to d_{ff} \to d_{\text{model}}$.</p>
+
+          <p><strong>Parameter count per decoder block:</strong>
+          Three attention sublayers (causal self-attention, cross-attention, each $\approx 1.05\text{M}$)
+          + FFN ($\approx 2.10\text{M}$) = ≈4.2M. For 6 blocks: ≈25.2M.</p>
+        </div>
+      </div>
+
+      <div class="prose">
+        <strong>Intuition for the three sublayers.</strong>
+        <ol style="padding-left:1.4em; margin-top:8px;">
+          <li style="margin-bottom:8px;"><em>Causal self-attention</em>: integrate information from all previously generated target tokens. "Given what I've generated so far, what context do I have?"</li>
+          <li style="margin-bottom:8px;"><em>Cross-attention</em>: use that context as a query to retrieve relevant information from the source. "Given my current decoding context, which source tokens are relevant?"</li>
+          <li><em>FFN</em>: process the retrieved information with position-wise transformations. "Given what I retrieved, what is the right output?"</li>
+        </ol>
+      </div>
+
+      <!-- ── Section 8: Full architecture ───────────────────────────────── -->
+      <div class="section-head" id="full-architecture">Full architecture</div>
+
+      <div class="prose">
+        Putting it all together:
+      </div>
+
+      <ol class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:10px;"><strong>Input embedding + positional encoding</strong>:
+          tokenise the source sentence into token IDs, look up a learned embedding for each
+          ($W_{\text{emb}} \in \mathbb{R}^{V \times d_{\text{model}}}$, where $V$ is vocabulary size),
+          add sinusoidal positional encodings. In the paper, the embedding weights are also
+          scaled: $\mathbf{e} \leftarrow \mathbf{e} \sqrt{d_{\text{model}}}$ to keep the
+          embedding scale comparable to the positional encoding.</li>
+        <li style="margin-bottom:10px;"><strong>Encoder stack</strong>: pass the embedded
+          source sequence through $N = 6$ encoder blocks. Output: contextualised source
+          representations $\text{Enc} \in \mathbb{R}^{n \times d_{\text{model}}}$.</li>
+        <li style="margin-bottom:10px;"><strong>Decoder stack</strong>: at each generation
+          step $t$, pass the target tokens generated so far ($y_0, \ldots, y_{t-1}$, embedded
+          and position-encoded) through $N = 6$ decoder blocks, with each block receiving
+          $\text{Enc}$ for cross-attention.</li>
+        <li style="margin-bottom:10px;"><strong>Output projection</strong>: project the
+          decoder's last-layer output at position $t$ to vocabulary logits:
+          $W_{\text{out}} \in \mathbb{R}^{d_{\text{model}} \times V}$ (in the paper,
+          $W_{\text{out}} = W_{\text{emb}}^\top$ — the embedding and output weight matrices
+          are tied, halving the parameter count here).
+          Apply softmax to get $p(y_t \mid y_{<t}, \mathbf{x})$.</li>
+        <li><strong>Training</strong>: teacher forcing — all $m$ decoder positions are
+          processed simultaneously with the causal mask, producing all $m$ target token
+          predictions in one forward pass. Cross-entropy loss averaged over all target positions.</li>
+      </ol>
+
+      <div class="prose">
+        <strong>Total parameter count</strong> (base model):
+        Encoder 6 blocks ≈18.9M + Decoder 6 blocks ≈25.2M + Embedding $37,000 \times 512 \approx 19\text{M}$
+        (shared with output projection) ≈ 65M total. This is small by modern standards —
+        GPT-2 has 1.5B parameters, GPT-3 has 175B, LLaMA-3-70B has 70B — but the architecture
+        is identical in principle.
+      </div>
+
+      <!-- ── Section 9: Why Transformers beat RNNs ───────────────────────── -->
+      <div class="section-head" id="why-transformers">Why Transformers beat RNNs</div>
+
+      <div class="prose">
+        Vaswani et al. provide a systematic comparison across four criteria:
+      </div>
+
+      <div style="overflow-x:auto;margin:16px 0;">
+        <table style="width:100%;border-collapse:collapse;font-size:0.875rem;">
+          <tr style="background:#e8f0f5;color:#1a2840;">
+            <th style="padding:8px 12px;text-align:left;border:1px solid #c4d4df;">Criterion</th>
+            <th style="padding:8px 12px;text-align:left;border:1px solid #c4d4df;">Self-attention</th>
+            <th style="padding:8px 12px;text-align:left;border:1px solid #c4d4df;">RNN</th>
+            <th style="padding:8px 12px;text-align:left;border:1px solid #c4d4df;">Conv ($k$ window)</th>
+          </tr>
+          <tr>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;"><strong>Layer complexity</strong></td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">$O(n^2 d)$</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">$O(n d^2)$</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">$O(n k d^2)$</td>
+          </tr>
+          <tr style="background:#f9fafb;">
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;"><strong>Sequential ops</strong></td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">$O(1)$</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">$O(n)$</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">$O(1)$</td>
+          </tr>
+          <tr>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;"><strong>Max path length</strong></td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">$O(1)$</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">$O(n)$</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">$O(n/k)$</td>
+          </tr>
+          <tr style="background:#f9fafb;">
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;"><strong>Long-range dependencies</strong></td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">direct in 1 layer</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">through recurrence ($n$ steps)</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">through stacking ($n/k$ layers)</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="prose">
+        <strong>Path length</strong> is the key metric. The path between two positions
+        $i$ and $j$ is the number of operations through which the gradient must flow
+        for position $i$ to affect position $j$'s prediction. In an RNN, information
+        at position 1 must travel through $n-1$ hidden state transitions to reach
+        position $n$ — path length $O(n)$. In the Transformer, any two positions
+        interact directly in one attention operation regardless of distance — path
+        length $O(1)$.
+      </div>
+
+      <div class="prose">
+        Short path length has two benefits: (1) <strong>gradient signal is stronger</strong>
+        — no exponential decay through $n$ recurrent steps; (2) <strong>optimization is
+        easier</strong> — the model learns what to attend to rather than learning to
+        preserve information through $n$ recurrent state transitions.
+      </div>
+
+      <div class="prose">
+        <strong>Parallelism.</strong> Because the Transformer has $O(1)$ sequential
+        operations (all positions are processed simultaneously in each layer), it can
+        exploit GPU/TPU parallelism fully. The RNN's $O(n)$ sequential operations are
+        a fundamental bottleneck — you cannot compute $\mathbf{h}_t$ until
+        $\mathbf{h}_{t-1}$ is ready. For $n = 100$ tokens on a GPU with 1000 parallel
+        cores, the RNN uses 1 core per step and takes 100 time steps; the Transformer
+        uses all 1000 cores simultaneously and completes in a handful of matrix multiplications.
+        This difference in training speed is why GPT-3 (175B parameters) can be trained
+        at all — training an equivalently sized LSTM would be prohibitively slow.
+      </div>
+
+      <!-- ── Section 10: Training details ───────────────────────────────── -->
+      <div class="section-head" id="training">Training details</div>
+
+      <div class="prose">
+        Vaswani et al. introduce several training choices that matter for Transformer stability:
+      </div>
+
+      <div class="prose">
+        <strong>Adam optimiser with custom learning rate schedule.</strong> The original
+        Transformer uses Adam ($\beta_1 = 0.9$, $\beta_2 = 0.98$, $\epsilon = 10^{-9}$)
+        with a warmup-then-decay learning rate schedule:
+        $$\text{lr} = d_{\text{model}}^{-0.5} \cdot \min\!\left(\text{step}^{-0.5},\; \text{step} \cdot \text{warmup\_steps}^{-1.5}\right)$$
+        For $\text{warmup\_steps} = 4000$. This increases linearly from 0 for the first 4000
+        steps, then decreases proportionally to the inverse square root of step number.
+        Warmup is critical for Transformers trained from scratch — at the start of training,
+        the Adam second-moment estimate $v_t$ is near zero, causing the effective step size
+        to be large. Warmup keeps the LR low while Adam accumulates reliable gradient statistics.
+      </div>
+
+      <div class="prose">
+        <strong>Label smoothing.</strong> Instead of training with hard targets (0 or 1),
+        use $\epsilon_{ls} = 0.1$ label smoothing: the target distribution assigns probability
+        $1 - \epsilon_{ls} = 0.9$ to the correct token and $\epsilon_{ls} / (V - 1)$ to all
+        others. This reduces the model's confidence (it can never achieve zero cross-entropy
+        loss), which acts as a regulariser and improves calibration.
+      </div>
+
+      <div class="prose">
+        <strong>Dropout.</strong> Applied after every sublayer before the residual addition
+        ($p = 0.1$). Also applied to attention weights ("attention dropout") and to the
+        sum of embeddings + positional encodings.
+      </div>
+
+      <div class="prose">
+        <strong>Decoding.</strong> At test time, the decoder generates autoregressively.
+        Greedy decoding: take the argmax at each step. <strong>Beam search</strong> (beam
+        size 4–6) maintains the top-$k$ partial hypotheses, expanding each and keeping the
+        top-$k$ at every step. Beam search consistently produces higher BLEU scores than
+        greedy decoding.
+      </div>
+
+      <!-- ── Worked examples ──────────────────────────────────────────── -->
+      <div class="section-head" id="examples">Worked examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Multi-head attention: dimension flow</strong></div>
+        <div class="example-problem">
+          <p>Walk through the dimension transformation for multi-head attention in the base Transformer ($d_{\text{model}} = 512$, $h = 8$, $d_k = d_v = 64$) for a batch of 1 sequence of length $n = 10$ tokens. Trace input and output shapes through every step.</p>
+        </div>
+        <div class="example-body">
+          <p><strong>Input:</strong> $X \in \mathbb{R}^{10 \times 512}$ (10 tokens, each embedded to 512 dimensions)</p>
+          <p><strong>For head $i$, compute projections:</strong></p>
+          <ul>
+            <li>$Q_i = X W_i^Q$: $(10 \times 512) \times (512 \times 64) = \mathbb{R}^{10 \times 64}$</li>
+            <li>$K_i = X W_i^K$: $\mathbb{R}^{10 \times 64}$</li>
+            <li>$V_i = X W_i^V$: $\mathbb{R}^{10 \times 64}$</li>
+          </ul>
+          <p><strong>Attention scores:</strong> $Q_i K_i^\top / \sqrt{64}$: $(10 \times 64) \times (64 \times 10) = \mathbb{R}^{10 \times 10}$</p>
+          <p><strong>Softmax + weighted values:</strong> $\text{softmax}(\ldots) \times V_i$: $(10 \times 10) \times (10 \times 64) = \mathbb{R}^{10 \times 64}$. This is $\text{head}_i$.</p>
+          <p><strong>Concatenate 8 heads:</strong> $[\text{head}_1; \ldots; \text{head}_8] \in \mathbb{R}^{10 \times 512}$</p>
+          <p><strong>Output projection:</strong> $\mathbb{R}^{10 \times 512} \times W^O \in \mathbb{R}^{512 \times 512} = \mathbb{R}^{10 \times 512}$</p>
+          <p>The output is the same shape as the input: $\mathbb{R}^{10 \times 512}$. This is the residual-compatible shape — we can add it back to the input in the skip connection.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Positional encoding values</strong></div>
+        <div class="example-problem">
+          <p>For $d_{\text{model}} = 4$, compute the positional encoding vectors for positions 0, 1, and 2.</p>
+        </div>
+        <div class="example-body">
+          <p>With $d_{\text{model}} = 4$, the dimensions are $i \in \{0, 1\}$ giving pairs $(2i, 2i+1) \in \{(0,1), (2,3)\}$.</p>
+          <p>Frequencies: dimension pair 0 → frequency $= 10000^{0/4} = 1$; dimension pair 1 → frequency $= 10000^{2/4} = 100$.</p>
+
+          <p><strong>Position 0:</strong>
+          $[sin(0), cos(0), sin(0), cos(0)] = [0, 1, 0, 1]$</p>
+          <p><strong>Position 1:</strong>
+          $[sin(1), cos(1), sin(0.01), cos(0.01)] \approx [0.841, 0.540, 0.010, 1.000]$</p>
+          <p><strong>Position 2:</strong>
+          $[sin(2), cos(2), sin(0.02), cos(0.02)] \approx [0.909, -0.416, 0.020, 1.000]$</p>
+
+          <p>Observe: dimensions 0–1 (high frequency) change rapidly between positions — they encode fine-grained positional distinctions. Dimensions 2–3 (low frequency) change slowly — for these positions they are nearly constant, but at much larger position values (e.g., position 1000: $\sin(10) \approx -0.544$) they will have changed significantly. Different dimensions encode different resolution levels — together they uniquely identify every position.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Information flow in encoder-decoder cross-attention</strong></div>
+        <div class="example-problem">
+          <p>When translating "The cat sat" (3 source tokens) to "Le chat s'est assis" (4 target tokens), describe what cross-attention computes at decoder step 3 (generating "s'est"). Which encoder states does the decoder query, and what Q/K/V roles do encoder and decoder play?</p>
+        </div>
+        <div class="example-body">
+          <p>At decoder step 3, the causal self-attention sublayer has already integrated information from generated tokens "Le" (pos 0), "chat" (pos 1), and "s'est" is about to be generated. The decoder's hidden state at position 2 (0-indexed) encodes the query: "given that I've generated 'Le chat', what source information do I need to generate the next word?"</p>
+          <p>In cross-attention:</p>
+          <ul>
+            <li><strong>Q</strong> (decoder): $Y_2 W^Q$ — the decoder's self-attention output at position 2. This is the query: "what am I looking for?" It encodes the current decoding context ("generating a reflexive past tense verb in French").</li>
+            <li><strong>K</strong> (encoder): $\text{Enc}_j W^K$ for each source position $j$. The encoder's contextualised representation of each source token acts as a key: "what I offer." Position 2 in the encoder ("sat") has a key that should score high with the decoder query for the verb.</li>
+            <li><strong>V</strong> (encoder): $\text{Enc}_j W^V$ — what gets retrieved. If "sat" scores high, its value representation flows to the decoder.</li>
+          </ul>
+          <p>The expected attention pattern: $\alpha_{2,2} \approx$ high (attending to "sat"), low attention to "The" and "cat" (already handled). The decoder retrieves semantic content about the source verb, which helps predict "s'est" (the reflexive auxiliary that corresponds to "sat" in this French translation).</p>
+          <p>No positional constraint is imposed on cross-attention — the decoder position 2 can attend to any source position 0, 1, or 2 freely.</p>
+        </div>
+      </div>
+
+      <!-- ── Food for thought ────────────────────────────────────────────── -->
+      <div class="section-head" id="food-for-thought">Food for thought</div>
+
+      <ul class="fft-list">
+        <li class="fft-item">
+          The Transformer encoder is "bidirectional" in the sense that every token attends
+          to every other token (past and future) simultaneously. The Transformer decoder
+          is "unidirectional" (causal mask). BERT uses only an encoder (bidirectional);
+          GPT uses only a decoder (causal). Why would you choose one over the other?
+          <div class="fft-answer">
+            The choice depends on the task. Bidirectional encoding (BERT-style) is ideal
+            when you need to produce a representation of the full input, and the full input
+            is available at inference time — e.g., classification, named entity recognition,
+            question answering, reading comprehension. Every token sees its full context,
+            so representations are maximally informative. You cannot use a bidirectional
+            encoder for generation because generation is inherently sequential: you must
+            produce token $t$ before you know token $t+1$.
+            Causal decoding (GPT-style) is necessary when you need to generate sequences
+            autoregressively — language modelling, text generation, code completion, dialogue.
+            The causal mask enforces the autoregressive constraint. The downside: each
+            position's representation is built from only left context, which is less
+            informative than full context for classification tasks.
+            A full encoder-decoder (original Transformer) is used for seq2seq tasks where
+            input and output are different sequences: translation, summarisation, T5-style
+            text-to-text. The encoder reads the full source bidirectionally; the decoder
+            generates the target causally, reading the encoder's output via cross-attention.
+          </div>
+        </li>
+        <li class="fft-item">
+          The positional encoding is <em>added</em> to the embedding: $\mathbf{x}'_{\text{pos}} = \mathbf{x}_{\text{pos}} + \text{PE}(\text{pos})$. Why add rather than concatenate? Concatenation would preserve them separately; addition mixes them. Is this a problem?
+          <div class="fft-answer">
+            Adding mixes positional and semantic information into a single $d_{\text{model}}$-dimensional
+            vector. This means the model cannot explicitly disentangle "what this token means"
+            from "where this token appears." At first this seems problematic — ideally the query
+            "what does this token mean at this position?" should use both components without
+            conflating them. Concatenation would give $2d_{\text{model}}$ dimensions and preserve
+            the separation.
+            In practice, addition works for several reasons: (1) the Q/K/V projection matrices
+            $W^Q$, $W^K$, $W^V$ have learned to project the sum into a subspace where positional
+            and semantic information can be recovered via the linear projection; (2) the model
+            has many heads and layers to recover this information; (3) concatenation doubles the
+            dimension and quadruples the attention computation cost ($O(n^2 \cdot 2d)$ instead of $O(n^2 \cdot d)$).
+            Addition is the cheaper choice and works well enough empirically.
+            More recent models (RoPE, ALiBi) address the conceptual awkwardness by not adding
+            positional encodings to the input at all — instead they modify the attention score
+            computation directly (multiplying $Q$ and $K$ by rotation matrices based on position,
+            for RoPE). This is theoretically cleaner: content and position are never mixed in the
+            representation; position only affects how queries and keys interact.
+          </div>
+        </li>
+        <li class="fft-item">
+          The FFN sublayer applies the same MLP independently to each position:
+          $\text{FFN}(\mathbf{x}_i) = W_2\,\text{ReLU}(W_1 \mathbf{x}_i + \mathbf{b}_1) + \mathbf{b}_2$.
+          If attention already mixes information across positions, what role does the FFN
+          serve? Why not use all-attention?
+          <div class="fft-answer">
+            This is an important and not entirely settled question. The most compelling
+            interpretation (Geva et al. 2021, "Transformer Feed-Forward Layers Are Key-Value Memories")
+            is that FFN layers function as memories for factual knowledge. The first layer of the
+            FFN can be seen as a key-value store: each row of $W_1$ is a "key" that pattern-matches
+            against the current token's representation; when a row has high inner product with
+            the input (so its ReLU is active), the corresponding column of $W_2$ ("value") is
+            added to the output. This gives the FFN a role complementary to attention:
+            attention routes and contextualises information across positions; FFN recalls
+            and refines at the single-token level using stored patterns.
+            Practically, models without FFN sublayers ("attention-only Transformers") perform
+            significantly worse. The FFN's larger inner dimension ($d_{ff} = 4 d_{\text{model}}$)
+            provides extra capacity to store associations. The all-attention alternative would
+            require larger attention layers (more heads or larger $d_k$), increasing the
+            $O(n^2)$ term — the FFN cost scales as $O(n d^2)$ rather than $O(n^2 d)$, which
+            is better for long sequences.
+          </div>
+        </li>
+      </ul>
+
+      <!-- ── Common pitfalls ─────────────────────────────────────────────── -->
+      <div class="section-head" id="pitfalls">Common pitfalls</div>
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:14px;">
+          <strong>Applying the causal mask in the wrong place.</strong>
+          The mask must zero out positions $j > i$ by setting $e_{ij} = -\infty$ before
+          the softmax. Post-softmax masking (setting $\alpha_{ij} = 0$ then re-normalising,
+          or not renormalising) is incorrect and produces different (wrong) distributions.
+          The correct implementation: add a matrix of zeros and $-\infty$ to the score
+          matrix before calling softmax.
+        </li>
+        <li style="margin-bottom:14px;">
+          <strong>Using post-LN instead of pre-LN for deep Transformers.</strong>
+          The original paper uses post-LN ($\text{LayerNorm}(x + \text{Sublayer}(x))$).
+          For the original 6-layer model, this trains fine. For $\geq 24$-layer models
+          (e.g., large language models), post-LN causes instability and requires very
+          careful warmup. GPT-2, GPT-3, LLaMA, and most modern models use pre-LN.
+          If training loss explodes early in training for deep models, switch to pre-LN
+          before changing anything else.
+        </li>
+        <li style="margin-bottom:14px;">
+          <strong>Forgetting the $\sqrt{d_k}$ scaling.</strong>
+          Without it, large $d_k$ (64 or larger) causes peaky softmax and near-zero
+          gradients. This was covered in Lesson 5 but bears repeating — it is the most
+          common bug in hand-coded attention.
+        </li>
+        <li style="margin-bottom:14px;">
+          <strong>Not sharing encoder/decoder embedding weights.</strong>
+          The paper ties the source embedding, target embedding, and output projection
+          matrix ($W_{\text{emb}} = W_{\text{out}}^\top$), saving ≈19M parameters for
+          the 37K-token vocabulary. If you forget this tie and train three separate
+          matrices, the model is overcapacitated and may not match reported results
+          (the tied version provides implicit regularisation).
+        </li>
+        <li>
+          <strong>Evaluating generation quality only on perplexity.</strong>
+          The Transformer is trained to minimise perplexity (cross-entropy on next-token
+          prediction). Lower perplexity does not guarantee better text quality. Use BLEU
+          (for translation), ROUGE (for summarisation), human evaluation, or downstream
+          task accuracy as the final quality metric. BLEU has its own well-known
+          limitations (not sensitive to fluency, heavily n-gram-based), but it is the
+          standard for MT comparison.
+        </li>
+      </ul>
+
+      <!-- ── Connects to ─────────────────────────────────────────────────── -->
+      <div class="section-head" id="connects-to">Connects to</div>
+
+      <div class="prose">
+        <strong>BERT &amp; GPT (Lesson 7)</strong> — both are direct descendants of the
+        Transformer. BERT uses only the encoder stack with bidirectional self-attention,
+        pretrained via masked language modelling. GPT uses only the decoder stack with
+        causal self-attention, pretrained via autoregressive language modelling. Lesson 7
+        covers what happens when you scale these pretraining recipes.
+      </div>
+      <div class="prose">
+        <strong>Deep Networks &amp; Residual Connections (Lesson 1)</strong> — the
+        Transformer's "Add &amp; Norm" is exactly the pre/post-activation residual block.
+        The residual stream through the stacked blocks provides gradient highways in the
+        depth direction. Layer normalisation plays the same stabilising role that batch
+        normalisation played in ResNets, adapted to the sequence setting.
+      </div>
+      <div class="prose">
+        <strong>Training Neural Networks (SL10)</strong> — the Adam optimiser, warmup
+        schedules, dropout, and label smoothing are all covered there. The Transformer's
+        training recipe is a specific instance of those general techniques, with the
+        inverse-square-root LR schedule being the distinctive addition.
+      </div>
+
+      <div class="lesson-nav">
+        <a href="attention.html" class="lesson-nav-btn">← 5 · Attention Mechanisms</a>
+        <a href="bert-gpt.html" class="lesson-nav-btn">7 · BERT &amp; GPT →</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+
+</body>
+</html>

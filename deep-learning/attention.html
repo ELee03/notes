@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Attention Mechanisms — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false}
+        ],
+        throwOnError: false
+      });
+    });
+  </script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Prerequisites</div>
+        <a href="sequence-models.html" class="nav-item">DL3 · Sequence Models &amp; RNNs</a>
+        <a href="lstms.html" class="nav-item">DL4 · LSTMs &amp; GRUs</a>
+      </div>
+
+      <div id="cluster-nav" data-cluster="deep-learning" data-current="attention.html"></div>
+
+      <hr class="sidebar-rule">
+
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#bottleneck" class="nav-item">The information bottleneck</a>
+        <a href="#bahdanau" class="nav-item">Bahdanau attention</a>
+        <a href="#general-attention" class="nav-item">General attention framework</a>
+        <a href="#qkv" class="nav-item">The Q/K/V abstraction</a>
+        <a href="#score-functions" class="nav-item">Score functions</a>
+        <a href="#self-attention" class="nav-item">Self-attention</a>
+        <a href="#attention-as-retrieval" class="nav-item">Attention as soft retrieval</a>
+        <a href="#examples" class="nav-item">Worked examples</a>
+        <a href="#food-for-thought" class="nav-item">Food for thought</a>
+        <a href="#pitfalls" class="nav-item">Common pitfalls</a>
+        <a href="#connects-to" class="nav-item">Connects to</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Deep Learning</a>
+        <span class="sep">›</span>
+        <span>5 · Attention Mechanisms</span>
+      </div>
+
+      <div class="lesson-title">5 · Attention Mechanisms</div>
+      <div class="lesson-meta">Seq2Seq Bottleneck · Bahdanau Attention · Q/K/V Framework · Self-Attention</div>
+
+      <div class="prose">
+        In 2015, Bahdanau, Cho, and Bengio published a paper that would change sequence
+        modelling forever. The fix they proposed was simple to state: instead of
+        compressing the entire input sentence into one vector, let the decoder
+        <em>look back</em> at all encoder states and decide, at each decoding step,
+        which input tokens to focus on. This idea — allocating a learned, dynamic
+        weight to each memory slot — is <strong>attention</strong>. It solved the
+        seq2seq translation bottleneck, became the core operation of the Transformer
+        (Lesson 6), and is now the fundamental computation in every modern large
+        language model. This lesson derives attention from first principles — starting
+        from the bottleneck problem, building up Bahdanau attention, then
+        generalising to the abstract Q/K/V framework and self-attention that the
+        Transformer uses.
+      </div>
+
+      <!-- ── Section 1: The bottleneck ─────────────────────────────────── -->
+      <div class="section-head" id="bottleneck">The information bottleneck</div>
+
+      <div class="prose">
+        Recall the seq2seq architecture from Lesson 3: an encoder RNN reads the source
+        sentence and compresses it into a single fixed-size context vector
+        $\mathbf{c} = \mathbf{h}_S^{\text{enc}}$. The decoder is initialised with this
+        vector and generates the target sentence token by token.
+      </div>
+
+      <div class="prose">
+        The empirical problem is sharp: BLEU scores for English→French translation with
+        seq2seq models (Sutskever et al. 2014) peak for sentences of ~20 words and then
+        degrade rapidly. For 50+ word sentences, the model performs near-randomly.
+        The bottleneck is the fixed-dimension context vector: it must encode the entire
+        semantic content of the source sentence, regardless of sentence length. A 5-word
+        sentence and a 50-word sentence both collapse to a vector of the same size $d$.
+        This is like asking someone to summarise both a haiku and a novel in the same
+        number of words — one has too much space, the other not nearly enough.
+      </div>
+
+      <div class="prose">
+        A second, subtler problem: the context vector is computed by the encoder
+        <em>before</em> knowing what the decoder will need. When translating
+        "The animal didn't cross the street because it was too tired," the pronoun
+        resolution ("it" = "animal" not "street") is critical. But the encoder compresses
+        the sentence without knowing that the decoder will later need to resolve this
+        coreference. The encoder must guess what to preserve.
+      </div>
+
+      <div class="callout">
+        <strong>The key insight of attention:</strong> don't compress the source into a
+        single vector before decoding. Instead, keep <em>all</em> encoder hidden states
+        $\{\mathbf{h}_1^{\text{enc}}, \ldots, \mathbf{h}_S^{\text{enc}}\}$ available
+        to the decoder. At each decoder step $t$, compute a <em>weighted sum</em> of
+        these encoder states — the weights determined by how relevant each encoder
+        position is to the current decoding step. The context vector is no longer
+        fixed; it is recomputed dynamically at every step.
+      </div>
+
+      <!-- ── Section 2: Bahdanau attention ─────────────────────────────── -->
+      <div class="section-head" id="bahdanau">Bahdanau attention</div>
+
+      <div class="prose">
+        Bahdanau et al. (2015) introduce the following mechanism, using a bidirectional
+        encoder LSTM and a decoder LSTM. Let $\mathbf{h}_i \in \mathbb{R}^{2d}$ be the
+        $i$-th encoder hidden state (bidirectional, hence double the size) and
+        $\mathbf{s}_{t-1} \in \mathbb{R}^d$ be the decoder hidden state at the previous
+        step. The attention mechanism proceeds in three steps:
+      </div>
+
+      <div class="proof-box">
+        <div class="proof-header">Bahdanau (additive) attention — full derivation</div>
+        <div class="proof-body">
+          <p><strong>Step 1 — Score function.</strong> For each source position $i$ and
+          current decoder state $\mathbf{s}_{t-1}$, compute an alignment score:</p>
+          $$e_{t,i} = \mathbf{v}_a^\top \tanh(W_a \mathbf{s}_{t-1} + U_a \mathbf{h}_i)$$
+          <p>where $W_a \in \mathbb{R}^{d_a \times d}$, $U_a \in \mathbb{R}^{d_a \times 2d}$,
+          and $\mathbf{v}_a \in \mathbb{R}^{d_a}$ are learned parameters. This is a small
+          one-hidden-layer MLP that takes the decoder state and each encoder state as inputs
+          and outputs a scalar. Intuitively: "how relevant is encoder position $i$ to what
+          the decoder is currently generating at step $t$?"</p>
+
+          <p><strong>Step 2 — Normalise to attention weights.</strong> Apply softmax over
+          all source positions:</p>
+          $$\alpha_{t,i} = \text{softmax}(e_{t,i}) = \frac{\exp(e_{t,i})}{\sum_{j=1}^S \exp(e_{t,j})}$$
+          <p>The result is a probability distribution over source positions:
+          $\alpha_{t,i} \geq 0$ and $\sum_i \alpha_{t,i} = 1$.
+          These are the <strong>attention weights</strong> — how much the decoder at step
+          $t$ "attends to" each source position.</p>
+
+          <p><strong>Step 3 — Compute context vector.</strong> The context vector is the
+          weighted average of encoder hidden states:</p>
+          $$\mathbf{c}_t = \sum_{i=1}^S \alpha_{t,i} \mathbf{h}_i$$
+          <p>This is a <em>dynamic</em> context vector: it changes at every decoder step
+          as the attention weights change. If $\alpha_{t,3} \approx 1$ and all others $\approx 0$,
+          then $\mathbf{c}_t \approx \mathbf{h}_3$ — the decoder is attending almost exclusively
+          to source position 3. If attention is spread uniformly, $\mathbf{c}_t$ is the
+          average of all encoder states.</p>
+
+          <p><strong>Decoder update with attention:</strong></p>
+          $$\mathbf{s}_t = f_{\text{dec}}(\mathbf{s}_{t-1}, y_{t-1}, \mathbf{c}_t)$$
+          $$p(y_t \mid y_{<t}, \mathbf{x}) = \text{softmax}(W_o [\mathbf{s}_t; \mathbf{c}_t])$$
+          <p>The context vector $\mathbf{c}_t$ is concatenated with the decoder hidden state
+          before predicting the output distribution.</p>
+
+          <p><strong>What attention learns.</strong> Bahdanau et al. visualise the attention
+          matrices $\{\alpha_{t,i}\}$ for English→French translation. The learned alignment
+          is largely monotone (French roughly follows English word order) but handles
+          phrase-level reorderings correctly — "European Economic Area" maps to
+          "zone économique européenne" with the adjectives reordered, and the attention
+          matrix shows a visible non-monotone block for those positions. This alignment
+          emerges purely from gradient descent, with no explicit alignment supervision.</p>
+        </div>
+      </div>
+
+      <!-- ── Section 3: General attention framework ─────────────────────── -->
+      <div class="section-head" id="general-attention">General attention framework</div>
+
+      <div class="prose">
+        Bahdanau attention is a specific instance of a more general pattern. Abstracting:
+      </div>
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:8px;">A set of <strong>memory slots</strong> (the encoder
+          hidden states $\{\mathbf{h}_i\}$) that store information.</li>
+        <li style="margin-bottom:8px;">A <strong>query</strong> (the current decoder state
+          $\mathbf{s}_{t-1}$) that expresses "what I currently need."</li>
+        <li style="margin-bottom:8px;">A <strong>score function</strong> that measures
+          relevance between the query and each memory slot.</li>
+        <li>A <strong>softmax + weighted sum</strong> that retrieves a weighted combination
+          of memory slots proportional to their relevance.</li>
+      </ul>
+
+      <div class="prose">
+        This three-step pattern — score, normalise, aggregate — is the general attention
+        mechanism. The specific design choices are: (1) what to use as query and memory,
+        (2) which score function to use, and (3) whether query/memory are the same sequence
+        (self-attention) or different sequences (cross-attention).
+      </div>
+
+      <!-- ── Section 4: Q/K/V ────────────────────────────────────────────── -->
+      <div class="section-head" id="qkv">The Q/K/V abstraction</div>
+
+      <div class="prose">
+        The Transformer paper (Vaswani et al. 2017) introduces a clean parameterisation
+        that separates the three roles of the input into distinct learned projections.
+        For each input vector, project it into three separate spaces:
+      </div>
+
+      <div class="proof-box">
+        <div class="proof-header">Q/K/V decomposition</div>
+        <div class="proof-body">
+          <p>Given input vectors $\mathbf{x}_1, \ldots, \mathbf{x}_n$ (each $\in \mathbb{R}^{d_{\text{model}}}$),
+          and learned projection matrices $W^Q, W^K \in \mathbb{R}^{d_k \times d_{\text{model}}}$,
+          $W^V \in \mathbb{R}^{d_v \times d_{\text{model}}}$:</p>
+
+          <p>For each position $i$, compute:</p>
+          $$\mathbf{q}_i = W^Q \mathbf{x}_i \qquad \text{(Query — what am I looking for?)}$$
+          $$\mathbf{k}_i = W^K \mathbf{x}_i \qquad \text{(Key — what do I have to offer?)}$$
+          $$\mathbf{v}_i = W^V \mathbf{x}_i \qquad \text{(Value — what I'll give if selected)}$$
+
+          <p>Compute attention scores between query $i$ and all keys $j$:</p>
+          $$e_{ij} = \frac{\mathbf{q}_i \cdot \mathbf{k}_j}{\sqrt{d_k}}$$
+
+          <p>The $\sqrt{d_k}$ scaling factor is crucial: without it, the dot products grow
+          in magnitude as $d_k$ increases (variance of dot product is $d_k$ for unit-variance inputs),
+          pushing the softmax into regions of near-zero gradient. Dividing by $\sqrt{d_k}$
+          keeps the variance at approximately 1.</p>
+
+          <p>Normalise and aggregate:</p>
+          $$\alpha_{ij} = \text{softmax}_j(e_{ij}) = \frac{\exp(e_{ij})}{\sum_{j'} \exp(e_{ij'})}$$
+          $$\text{Attention}(\mathbf{q}_i) = \sum_j \alpha_{ij} \mathbf{v}_j$$
+
+          <p>Written in matrix form for all queries simultaneously (the efficient form):</p>
+          $$\text{Attention}(Q, K, V) = \text{softmax}\!\left(\frac{QK^\top}{\sqrt{d_k}}\right) V$$
+          <p>where $Q \in \mathbb{R}^{n \times d_k}$ stacks all query vectors row-wise,
+          and similarly for $K, V$. The matrix $QK^\top \in \mathbb{R}^{n \times n}$
+          gives all pairwise dot-product scores in one matrix multiply.</p>
+        </div>
+      </div>
+
+      <div class="prose">
+        <strong>Why separate Q, K, and V?</strong> In Bahdanau attention, the same encoder
+        state $\mathbf{h}_i$ serves both as the "thing being compared" (the key) and
+        "what gets retrieved" (the value). The Q/K/V split gives more flexibility: the
+        keys determine <em>when</em> a position is attended to (what query is compatible),
+        while the values determine <em>what information flows</em> to the attending
+        position. These can be optimised independently. For example, the key might be
+        a compressed representation of syntactic role ("I am a subject noun"), while the
+        value is the semantic content ("cat") — a query for "who did the action?" can
+        match the key without the value needing to carry syntactic metadata.
+      </div>
+
+      <!-- ── Section 5: Score functions ─────────────────────────────────── -->
+      <div class="section-head" id="score-functions">Score functions</div>
+
+      <div class="prose">
+        Different choices of score function correspond to different variants of attention:
+      </div>
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:12px;">
+          <strong>Dot-product (Luong, 2015):</strong>
+          $e_{ij} = \mathbf{q}_i^\top \mathbf{k}_j$
+          — requires $d_q = d_k$. Fast (one matrix multiply), no parameters.
+        </li>
+        <li style="margin-bottom:12px;">
+          <strong>Scaled dot-product (Vaswani et al. 2017):</strong>
+          $e_{ij} = \mathbf{q}_i^\top \mathbf{k}_j / \sqrt{d_k}$
+          — standard for Transformers. Addresses the vanishing softmax gradient problem.
+        </li>
+        <li style="margin-bottom:12px;">
+          <strong>Additive / MLP (Bahdanau, 2015):</strong>
+          $e_{ij} = \mathbf{v}_a^\top \tanh(W_a \mathbf{q}_i + U_a \mathbf{k}_j)$
+          — more expressive (learns arbitrary score function), more parameters, slower.
+          Also called "additive attention" because Q and K are combined by addition inside
+          the tanh.
+        </li>
+        <li>
+          <strong>Cosine similarity:</strong>
+          $e_{ij} = \mathbf{q}_i^\top \mathbf{k}_j / (\|\mathbf{q}_i\| \cdot \|\mathbf{k}_j\|)$
+          — normalises for vector magnitude differences. Rarely used in Transformers but
+          appears in some retrieval systems.
+        </li>
+      </ul>
+
+      <div class="prose">
+        Empirically, scaled dot-product attention performs as well as additive attention
+        on most tasks while being much faster (no extra learned parameters, fits into
+        highly optimised matrix multiplication kernels). This is why the Transformer
+        uses scaled dot-product attention.
+      </div>
+
+      <!-- ── Section 6: Self-attention ──────────────────────────────────── -->
+      <div class="section-head" id="self-attention">Self-attention</div>
+
+      <div class="prose">
+        In Bahdanau attention, queries come from one sequence (decoder states) and
+        keys/values from another (encoder states). This is <strong>cross-attention</strong>:
+        one sequence attends to another. <strong>Self-attention</strong> is the special
+        case where all three — queries, keys, and values — come from the <em>same</em>
+        sequence. Every position attends to every other position in the same sequence.
+      </div>
+
+      <div class="prose">
+        For a sequence $\mathbf{x}_1, \ldots, \mathbf{x}_n$ (e.g., a sentence), project
+        each $\mathbf{x}_i$ to $(\mathbf{q}_i, \mathbf{k}_i, \mathbf{v}_i)$ using the
+        same projections as before. Then:
+        $$\text{output}_i = \sum_{j=1}^n \alpha_{ij} \mathbf{v}_j \qquad \text{where} \quad \alpha_{ij} = \text{softmax}_j\!\left(\frac{\mathbf{q}_i \cdot \mathbf{k}_j}{\sqrt{d_k}}\right)$$
+        Position $i$ attends to all positions $j$ (including itself). The output at
+        position $i$ is a weighted mixture of all values, where the weights encode how
+        relevant each other position is to $i$.
+      </div>
+
+      <div class="prose">
+        <strong>What self-attention computes.</strong> For the sentence
+        "The animal didn't cross the street because it was tired," the self-attention
+        at the position of "it" should have high weight on "animal" and low weight on
+        "street" (because "it" refers to "animal"). No recurrence, no specific architectural
+        inductive bias — just learned projection matrices and dot-product scores.
+        Visualisations of trained Transformer attention heads confirm this: many heads
+        learn to track syntactic dependencies, coreference, and positional relationships.
+      </div>
+
+      <div class="prose">
+        <strong>Complexity.</strong> Self-attention over a sequence of length $n$
+        computes an $n \times n$ attention matrix. This is $O(n^2)$ in both time and memory.
+        For $n = 512$ tokens this is fine; for $n = 100{,}000$ tokens (long documents)
+        it becomes expensive. Many recent architectures address this: sparse attention
+        (attending only to nearby + a few distant positions), linear attention (kernel
+        approximations), and sliding window attention (Longformer).
+      </div>
+
+      <div class="prose">
+        <strong>Causal (masked) self-attention.</strong> For autoregressive generation —
+        where each token is predicted given only prior tokens — position $i$ must not
+        attend to positions $j > i$ (future tokens). This is enforced by setting
+        $e_{ij} = -\infty$ for $j > i$ before the softmax, which makes
+        $\alpha_{ij} = 0$ for all $j > i$ (since $\exp(-\infty) = 0$). The
+        attention matrix becomes lower-triangular. This is the <strong>causal mask</strong>
+        used in GPT and all autoregressive Transformers.
+      </div>
+
+      <!-- ── Section 7: Attention as soft retrieval ─────────────────────── -->
+      <div class="section-head" id="attention-as-retrieval">Attention as soft retrieval</div>
+
+      <div class="prose">
+        A useful mental model: attention is a <strong>differentiable soft dictionary lookup</strong>.
+        A hard dictionary takes a key and returns exactly one value:
+        $\text{lookup}(q, \{k_i \to v_i\}) = v_j$ where $j = \arg\max_i \text{score}(q, k_i)$.
+        Attention relaxes the hard argmax to a soft weighted average:
+        $$\text{softlookup}(q, \{k_i \to v_i\}) = \sum_i \underbrace{\text{softmax}(\text{score}(q, k_i))}_{\text{soft weight}} \cdot v_i$$
+        This is end-to-end differentiable: gradients flow through the softmax weights and
+        the score function back into the query, key, and value projections. The model
+        learns what to look for (Q), what to match against (K), and what to retrieve (V)
+        jointly from the training signal.
+      </div>
+
+      <div class="prose">
+        This framing helps clarify the roles:
+        <ul style="padding-left:1.4em; margin-top:8px;">
+          <li style="margin-bottom:6px;"><strong>Query</strong>: "I'm looking for X" — determined by the current position's context</li>
+          <li style="margin-bottom:6px;"><strong>Key</strong>: "I contain X" — determines whether this position should be selected</li>
+          <li><strong>Value</strong>: "Here is what I know" — the actual information transferred if selected</li>
+        </ul>
+      </div>
+
+      <div class="prose">
+        In a Transformer language model processing "Paris is the capital of France. It
+        is beautiful," the token "It" issues a query. The positions corresponding to
+        "Paris" and "France" have keys that are a strong match (cities, proper nouns).
+        Their values — encoding the semantics of Paris and France — get high weight in
+        the output of attention at "It", giving the model the referent needed to correctly
+        predict what comes next.
+      </div>
+
+      <!-- ── Worked examples ──────────────────────────────────────────── -->
+      <div class="section-head" id="examples">Worked examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Scaled dot-product attention by hand</strong></div>
+        <div class="example-problem">
+          <p>A sequence of 3 tokens. Each token has dimension $d_{\text{model}} = 4$.
+          After Q/K/V projection ($d_k = d_v = 2$), the matrices are:</p>
+          $$Q = \begin{bmatrix}1 & 0 \\ 0 & 1 \\ 1 & 1\end{bmatrix}, \quad K = \begin{bmatrix}1 & 0 \\ 0 & 1 \\ 1 & 0\end{bmatrix}, \quad V = \begin{bmatrix}1 & 0 \\ 0 & 1 \\ 0.5 & 0.5\end{bmatrix}$$
+          Compute the attention output for position 1 (the first row of $Q$).
+        </div>
+        <div class="example-body">
+          <p><strong>Step 1 — Scores.</strong> For $\mathbf{q}_1 = [1, 0]^\top$, compute
+          dot product with each key and scale by $\sqrt{d_k} = \sqrt{2}$:</p>
+          $$e_{11} = \frac{\mathbf{q}_1 \cdot \mathbf{k}_1}{\sqrt{2}} = \frac{1 \cdot 1 + 0 \cdot 0}{\sqrt{2}} = \frac{1}{\sqrt{2}} \approx 0.707$$
+          $$e_{12} = \frac{1 \cdot 0 + 0 \cdot 1}{\sqrt{2}} = 0$$
+          $$e_{13} = \frac{1 \cdot 1 + 0 \cdot 0}{\sqrt{2}} = \frac{1}{\sqrt{2}} \approx 0.707$$
+
+          <p><strong>Step 2 — Softmax.</strong></p>
+          $$\alpha_{11} = \frac{e^{0.707}}{e^{0.707} + e^0 + e^{0.707}} = \frac{2.028}{2.028 + 1 + 2.028} = \frac{2.028}{5.056} \approx 0.401$$
+          $$\alpha_{12} = \frac{1}{5.056} \approx 0.198 \qquad \alpha_{13} \approx 0.401$$
+
+          <p><strong>Step 3 — Weighted sum.</strong></p>
+          $$\text{output}_1 = 0.401 \cdot [1, 0]^\top + 0.198 \cdot [0, 1]^\top + 0.401 \cdot [0.5, 0.5]^\top$$
+          $$= [0.401, 0] + [0, 0.198] + [0.201, 0.201] = [0.602, 0.399]$$
+
+          <p>Position 1 attends equally to positions 1 and 3 (both have $k_1 = 1, k_2 = 0$,
+          which matches the query $q_1 = 1, q_2 = 0$), and less to position 2 (whose key
+          is orthogonal to the query).</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — The $\sqrt{d_k}$ scaling: why it matters</strong></div>
+        <div class="example-problem">
+          <p>Let $d_k = 64$. Query and key vectors are drawn from $\mathcal{N}(0, 1)$.
+          Show what happens to the softmax distribution with and without the $\sqrt{d_k}$ scaling,
+          and explain why this causes a training problem.</p>
+        </div>
+        <div class="example-body">
+          <p>For two random vectors $\mathbf{q}, \mathbf{k} \in \mathbb{R}^{64}$ with
+          $\mathbf{q}_i, \mathbf{k}_i \sim \mathcal{N}(0,1)$, the dot product is:
+          $$\mathbf{q} \cdot \mathbf{k} = \sum_{i=1}^{64} q_i k_i$$
+          Each term $q_i k_i$ has mean 0 and variance 1. By CLT, the dot product has
+          mean 0 and variance $d_k = 64$, so standard deviation $\sqrt{64} = 8$.</p>
+
+          <p><strong>Without scaling:</strong> If there are $n = 4$ keys with dot products
+          $[8, -2, 1, -7]$ (typical scale for $d_k = 64$), the softmax is:
+          $$\alpha = \text{softmax}([8, -2, 1, -7]) \approx [0.9997, 0.0002, 0.0001, 0.000]$$
+          Essentially a one-hot distribution — the maximum score dominates completely.</p>
+
+          <p><strong>With scaling by $\sqrt{64} = 8$:</strong> Scaled scores are $[1, -0.25, 0.125, -0.875]$, and the softmax is:
+          $$\alpha = \text{softmax}([1, -0.25, 0.125, -0.875]) \approx [0.467, 0.132, 0.194, 0.071]$$
+          A much softer distribution — gradient flows to all positions.</p>
+
+          <p><strong>Why it matters:</strong> The softmax gradient is $\alpha_i(1 - \alpha_i)$
+          for position $i$. When $\alpha_i \approx 1$ (near one-hot), the gradient is
+          $\approx 1 \cdot 0 = 0$ — the model receives essentially no gradient signal
+          to update its query/key projections. With scaling, the softmax is softer, gradients
+          are non-negligible, and the model can learn.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Causal masking</strong></div>
+        <div class="example-problem">
+          <p>A language model is generating the sequence "cats eat fish." (3 tokens, 0-indexed:
+          0=cats, 1=eat, 2=fish). Write the attention score matrix before and after applying
+          the causal mask, and explain the structure.</p>
+        </div>
+        <div class="example-body">
+          <p>Suppose the (scaled, pre-softmax) dot-product scores are:
+          $$E = \begin{bmatrix} e_{00} & e_{01} & e_{02} \\ e_{10} & e_{11} & e_{12} \\ e_{20} & e_{21} & e_{22} \end{bmatrix}$$
+          where $e_{ij}$ is the score of query $i$ against key $j$.</p>
+
+          <p><strong>Causal mask:</strong> position $i$ must not attend to positions $j > i$ (future). Set those entries to $-\infty$:
+          $$E_{\text{masked}} = \begin{bmatrix} e_{00} & -\infty & -\infty \\ e_{10} & e_{11} & -\infty \\ e_{20} & e_{21} & e_{22} \end{bmatrix}$$
+          After softmax (where $\text{softmax}(-\infty) = 0$), the attention weights are:
+          $$A = \begin{bmatrix} 1 & 0 & 0 \\ \alpha_{10} & \alpha_{11} & 0 \\ \alpha_{20} & \alpha_{21} & \alpha_{22} \end{bmatrix}$$
+          <ul style="margin-top:8px;">
+            <li>"cats" (row 0) attends only to itself — no context yet.</li>
+            <li>"eat" (row 1) attends to "cats" and "eat" — knows the subject.</li>
+            <li>"fish" (row 2) attends to "cats", "eat", and "fish" — full left context.</li>
+          </ul></p>
+
+          <p>This lower-triangular structure ensures that when predicting token $t$, the model only uses information from tokens $0, \ldots, t-1$ — preventing future information from leaking into the prediction. This is how GPT-style models are trained: the causal mask lets the model be trained on all positions simultaneously (in parallel) while still enforcing autoregressive generation order.</p>
+        </div>
+      </div>
+
+      <!-- ── Food for thought ────────────────────────────────────────────── -->
+      <div class="section-head" id="food-for-thought">Food for thought</div>
+
+      <ul class="fft-list">
+        <li class="fft-item">
+          Attention is differentiable because softmax is differentiable. Suppose instead
+          you used a hard argmax: select only the single highest-scoring key and set its
+          weight to 1 (all others to 0). Why can't this be trained with gradient descent?
+          What would be lost even if you could?
+          <div class="fft-answer">
+            Argmax is a piecewise constant function — its gradient is zero almost everywhere
+            (flat regions) with undefined discontinuities at the boundaries. Gradient descent
+            requires gradients to flow back through the attention mechanism to update the
+            query, key, and value projections. With argmax, the loss depends discontinuously
+            on the score function — a small change in Q or K that changes which position
+            is selected produces a discrete jump in the output (and loss), but no gradient
+            signal about the direction of improvement.
+            Even if this could somehow be optimized (e.g., via reinforcement learning or
+            straight-through estimators), something important would be lost: the soft
+            weighted average provides graceful blending when multiple positions are
+            relevant. Consider coreference resolution: "Paris is beautiful. It sparkles."
+            — both "Paris" and "city" (if present) might be relevant referents for "It."
+            Hard attention forces a binary choice; soft attention can weight both.
+            This nuanced, partial attribution is part of what makes soft attention powerful.
+            Hard attention is sometimes used in specific architectures (e.g., image captioning
+            variants) with REINFORCE, but it is harder to train and less expressive.
+          </div>
+        </li>
+        <li class="fft-item">
+          In the Q/K/V framework, $\mathbf{q}_i = W^Q \mathbf{x}_i$. The same input
+          $\mathbf{x}_i$ generates the query, key, and value for position $i$. Why is
+          it better to have three separate projections ($W^Q, W^K, W^V$) rather than
+          using $\mathbf{x}_i$ directly as all three?
+          <div class="fft-answer">
+            The three roles of a position are conceptually distinct and need not be aligned
+            in the same space. As the "query issuer," position $i$ is asking: what information
+            do I need? This is about the current token's need in context. As the "key holder,"
+            position $i$ is advertising: I contain this type of information, compatible with
+            queries of this form. As the "value provider," position $i$ is saying: here is
+            my actual content to be retrieved. These three aspects should be learned
+            independently. For example, a function word like "the" might have a rich query
+            (looking for the noun it modifies) and a rich key (marking definiteness, which
+            other tokens may need to know), but a relatively uninformative value (function
+            words don't carry much semantic content). Separate projections allow this.
+            Using $\mathbf{x}_i$ directly for all three conflates these roles: the feature
+            of $\mathbf{x}_i$ that makes it a good query recipient might interfere with the
+            features that make it a good key. The projections also allow dimension changes
+            ($d_k \neq d_{\text{model}}$), enabling a lower-dimensional comparison space
+            (computing attention scores) while keeping a high-dimensional value space
+            (what gets retrieved). This is the dimension-reduction trick of multi-head attention.
+          </div>
+        </li>
+        <li class="fft-item">
+          Self-attention computes all pairwise token interactions in $O(n^2)$ time and memory.
+          For a 1,000-token document, this is 1 million pairs. Some efficient attention variants
+          try to achieve $O(n \log n)$ or even $O(n)$ complexity. What approximation must
+          such variants make, and what is the fundamental tradeoff?
+          <div class="fft-answer">
+            Full $O(n^2)$ attention computes the exact score between every query-key pair and
+            retrieves an exactly weighted sum of all values. To go below $O(n^2)$, you must
+            approximate — either by restricting which pairs are computed (sparse attention)
+            or by approximating the softmax with a kernel function (linear attention).
+            Sparse attention (e.g., Longformer, BigBird) allows each position to attend only
+            to its local window of $w$ neighbors plus a few "global" tokens (CLS token,
+            first sentence). This achieves $O(nw)$ complexity, where $w \ll n$. The tradeoff:
+            long-range attention is explicitly constrained — two tokens more than $w$ positions
+            apart can only interact through multiple layers. Some information that full attention
+            would capture in one step now requires $\lceil d/w \rceil$ layers to propagate,
+            where $d$ is the separation distance.
+            Linear attention (e.g., Performer, RWKV) approximates the softmax kernel
+            $\exp(\mathbf{q} \cdot \mathbf{k}) \approx \phi(\mathbf{q}) \cdot \phi(\mathbf{k})$
+            for a feature map $\phi$. This allows the KV product to be computed incrementally
+            in $O(nd^2)$ instead of $O(n^2 d)$. The tradeoff: the approximation quality
+            degrades for very sharp attention distributions (when one position dominates),
+            and the expressive power of the full softmax is reduced.
+            Both approaches sacrifice some expressiveness for scalability. In practice,
+            for sequences up to ~4,000 tokens, full attention with flash attention (memory
+            efficiency, not $O(n^2)$ avoidance) is standard; sparse/linear variants are
+            needed for 10,000+ token contexts.
+          </div>
+        </li>
+      </ul>
+
+      <!-- ── Common pitfalls ─────────────────────────────────────────────── -->
+      <div class="section-head" id="pitfalls">Common pitfalls</div>
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:14px;">
+          <strong>Confusing cross-attention and self-attention.</strong>
+          Self-attention: Q, K, V all come from the same sequence. Cross-attention:
+          Q comes from one sequence (e.g., decoder), K and V come from another
+          (e.g., encoder outputs). In a full encoder-decoder Transformer, both are used:
+          the encoder uses self-attention; the decoder uses causal self-attention (to
+          attend to previously generated tokens) AND cross-attention (to attend to
+          the encoded source). Confusing these leads to incorrect masking or incorrect
+          input routing.
+        </li>
+        <li style="margin-bottom:14px;">
+          <strong>Omitting the $\sqrt{d_k}$ scaling.</strong>
+          Implementing attention as $\text{softmax}(QK^\top) V$ without dividing by
+          $\sqrt{d_k}$ produces very peaky attention distributions for large $d_k$,
+          causing near-zero gradients. If training loss fails to decrease or attention
+          weights are collapsed to one-hot, this is the first thing to check.
+        </li>
+        <li style="margin-bottom:14px;">
+          <strong>Incorrect causal mask placement.</strong>
+          The causal mask must be applied to the pre-softmax scores (before the
+          softmax), not to the post-softmax weights. Applying it post-softmax
+          (zeroing out future attention weights after the fact) leaves future-position
+          information in the numerator of the other softmax terms — the distribution
+          over valid positions will not sum to 1. Always set $e_{ij} = -\infty$ for
+          $j > i$, then compute softmax.
+        </li>
+        <li>
+          <strong>Treating attention weights as interpretable feature importances.</strong>
+          Attention weights are widely used as explanations ("the model attended to X
+          to produce Y"). Jain &amp; Wallace (2019) and others show that attention weights
+          are not faithful explanations of model predictions: alternative distributions
+          can produce identical outputs, and high attention weight does not imply high
+          gradient importance. Attention weights are one component of a computation that
+          involves the values — a position with high attention weight but a near-zero
+          value vector contributes little to the output. Use gradient-based attribution
+          methods (GradCAM, integrated gradients) for interpretability, not raw attention
+          weights.
+        </li>
+      </ul>
+
+      <!-- ── Connects to ─────────────────────────────────────────────────── -->
+      <div class="section-head" id="connects-to">Connects to</div>
+
+      <div class="prose">
+        <strong>The Transformer (Lesson 6)</strong> — the Transformer is built by
+        stacking self-attention layers, replacing all recurrence. Multi-head attention
+        runs $h$ parallel attention heads, each with its own Q/K/V projections,
+        allowing different heads to attend to different aspects (syntactic, semantic,
+        positional). The lesson also introduces positional encodings (attention has no
+        inherent sense of order), feed-forward sublayers, and layer normalisation.
+      </div>
+      <div class="prose">
+        <strong>LSTMs &amp; GRUs (Lesson 4)</strong> — Bahdanau attention was introduced
+        on top of an LSTM encoder-decoder. The motivation — bypass the fixed-vector
+        bottleneck — comes directly from the seq2seq architecture built on LSTMs.
+        Attention and LSTMs co-existed until the Transformer paper showed that attention
+        alone (without recurrence) was sufficient and superior.
+      </div>
+      <div class="prose">
+        <strong>BERT &amp; GPT (Lesson 7)</strong> — the Q/K/V self-attention mechanism
+        derived here is the core operation in both BERT (bidirectional self-attention,
+        masked language modelling) and GPT (causal self-attention, autoregressive language
+        modelling). Understanding this lesson is prerequisite for understanding both models.
+      </div>
+
+      <div class="lesson-nav">
+        <a href="lstms.html" class="lesson-nav-btn">← 4 · LSTMs &amp; GRUs</a>
+        <a href="transformer.html" class="lesson-nav-btn">6 · The Transformer →</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+
+</body>
+</html>

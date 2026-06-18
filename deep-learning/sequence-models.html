@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sequence Models & RNNs — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false}
+        ],
+        throwOnError: false
+      });
+    });
+  </script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Prerequisites</div>
+        <a href="../supervised/backpropagation.html" class="nav-item">SL9 · Backpropagation</a>
+        <a href="deep-networks.html" class="nav-item">DL1 · Deep Networks</a>
+      </div>
+
+      <div id="cluster-nav" data-cluster="deep-learning" data-current="sequence-models.html"></div>
+
+      <hr class="sidebar-rule">
+
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#sequence-problems" class="nav-item">Sequence problems</a>
+        <a href="#language-model" class="nav-item">The language model</a>
+        <a href="#rnn" class="nav-item">The recurrent neural network</a>
+        <a href="#bptt" class="nav-item">Backprop through time</a>
+        <a href="#vanishing-time" class="nav-item">Vanishing gradients through time</a>
+        <a href="#seq2seq" class="nav-item">Sequence-to-sequence</a>
+        <a href="#the-bottleneck" class="nav-item">The fixed-vector bottleneck</a>
+        <a href="#examples" class="nav-item">Worked examples</a>
+        <a href="#food-for-thought" class="nav-item">Food for thought</a>
+        <a href="#pitfalls" class="nav-item">Common pitfalls</a>
+        <a href="#connects-to" class="nav-item">Connects to</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Deep Learning</a>
+        <span class="sep">›</span>
+        <span>3 · Sequence Models &amp; RNNs</span>
+      </div>
+
+      <div class="lesson-title">3 · Sequence Models &amp; RNNs</div>
+      <div class="lesson-meta">Sequences · Language Modelling · Recurrence · BPTT · Vanishing Gradients Through Time · Seq2Seq</div>
+
+      <div class="prose">
+        Language, audio, time series, DNA — many of the most important data modalities
+        are sequences. A feedforward network processes a fixed-size input in one shot;
+        it cannot naturally handle a sentence whose length varies from 3 to 300 words,
+        nor can it capture the fact that the word at position 50 depends on the word at
+        position 1. Recurrent neural networks address this by maintaining a
+        <em>hidden state</em> that accumulates information as the sequence is processed
+        one step at a time. The recurrence is elegant but conceals a deep problem: the
+        same vanishing-gradient issue that plagued very deep feedforward networks, now
+        unrolled across hundreds or thousands of time steps. This lesson builds the RNN
+        from scratch, derives backpropagation through time, and identifies precisely why
+        long-range dependencies are hard to learn — setting up the motivation for LSTMs
+        (Lesson 4) and attention (Lesson 5), which are both solutions to this problem.
+      </div>
+
+      <!-- ── Section 1: Sequence problems ──────────────────────────────── -->
+      <div class="section-head" id="sequence-problems">Sequence problems</div>
+
+      <div class="prose">
+        A <strong>sequence</strong> is an ordered list of elements
+        $\mathbf{x}_1, \mathbf{x}_2, \ldots, \mathbf{x}_T$ where order matters.
+        Key properties:
+      </div>
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:8px;"><strong>Variable length</strong>: sequences have
+          different lengths $T$ for different examples. A feedforward network with fixed
+          input size cannot handle this natively.</li>
+        <li style="margin-bottom:8px;"><strong>Temporal dependencies</strong>: the output
+          at time $t$ may depend on inputs at much earlier times. In language, subject-verb
+          agreement spans arbitrary distances.</li>
+        <li><strong>Shared structure across time</strong>: the rules of language are the
+          same at position 1 and position 100. Whatever we learn about word order at
+          one point in a sentence should apply at other points.</li>
+      </ul>
+
+      <div class="prose">
+        Sequence tasks come in several forms:
+      </div>
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:8px;"><strong>Many-to-one</strong>: read a sequence,
+          output a single value. Sentiment classification, document classification.</li>
+        <li style="margin-bottom:8px;"><strong>One-to-many</strong>: read a single input,
+          generate a sequence. Image captioning.</li>
+        <li style="margin-bottom:8px;"><strong>Many-to-many (same length)</strong>: at
+          every step, read an input and produce an output. Part-of-speech tagging, named
+          entity recognition.</li>
+        <li><strong>Many-to-many (different lengths)</strong>: read an input sequence,
+          produce an output sequence of different length. Machine translation,
+          summarisation. This is the sequence-to-sequence (seq2seq) setting.</li>
+      </ul>
+
+      <!-- ── Section 2: The language model ─────────────────────────────── -->
+      <div class="section-head" id="language-model">The language model</div>
+
+      <div class="prose">
+        The canonical sequential prediction task: <strong>language modelling</strong>.
+        Given a sequence of tokens (words, subwords, characters), predict the next one.
+        Formally, model the joint probability of a sequence by factoring it
+        autoregressively:
+        $$p(x_1, x_2, \ldots, x_T) = \prod_{t=1}^T p(x_t \mid x_1, \ldots, x_{t-1}) = \prod_{t=1}^T p(x_t \mid x_{<t})$$
+        This factorisation is exact by the chain rule of probability — it is not an
+        approximation. A language model is any model for $p(x_t \mid x_{<t})$.
+        Training objective: minimise the negative log-likelihood
+        $-\frac{1}{T}\sum_{t=1}^T \log p(x_t \mid x_{<t})$, which is the per-token
+        cross-entropy (also called <em>perplexity</em> when exponentiated:
+        $\text{PPL} = e^{-\frac{1}{T}\sum \log p}$).
+      </div>
+
+      <div class="prose">
+        Language modelling is important beyond text prediction. It is the pretraining
+        objective for GPT and the decoder-side objective for the Transformer. Any
+        sequence with discrete symbols can be modelled this way — code, music, molecules,
+        protein sequences.
+      </div>
+
+      <!-- ── Section 3: The recurrent neural network ────────────────────── -->
+      <div class="section-head" id="rnn">The recurrent neural network</div>
+
+      <div class="prose">
+        The <strong>recurrent neural network (RNN)</strong> processes a sequence by
+        maintaining a <strong>hidden state</strong> $\mathbf{h}_t \in \mathbb{R}^d$
+        that is updated at each step:
+        $$\mathbf{h}_t = \tanh(W_h \mathbf{h}_{t-1} + W_x \mathbf{x}_t + \mathbf{b}_h)$$
+        $$\hat{\mathbf{y}}_t = \text{softmax}(W_y \mathbf{h}_t + \mathbf{b}_y)$$
+        Here $W_h \in \mathbb{R}^{d \times d}$ is the recurrent weight matrix,
+        $W_x \in \mathbb{R}^{d \times n}$ maps the input to hidden state, and
+        $W_y \in \mathbb{R}^{K \times d}$ maps hidden state to output logits.
+        The initial hidden state $\mathbf{h}_0$ is typically all zeros.
+      </div>
+
+      <div class="prose">
+        The key property: $W_h$, $W_x$, $W_y$, and the biases are the <em>same at
+        every time step</em>. This is parameter sharing across time, exactly analogous
+        to CNN weight sharing across space. The RNN learns a single set of weights that
+        describe how to update the hidden state — those weights are applied at every step
+        of every sequence.
+      </div>
+
+      <div class="prose">
+        <strong>The hidden state as memory.</strong> At each step, $\mathbf{h}_t$ is
+        computed from the previous hidden state $\mathbf{h}_{t-1}$ and the current input
+        $\mathbf{x}_t$. The hidden state is a fixed-size summary of everything the model
+        has seen up to time $t$. For language modelling, $\mathbf{h}_t$ encodes the
+        context of the sentence so far; $W_y \mathbf{h}_t$ then predicts the next word.
+      </div>
+
+      <div class="prose">
+        <strong>Unrolling through time.</strong> The RNN can be visualized by
+        "unrolling": writing out one copy of the network for each time step, with the
+        hidden state connecting adjacent copies:
+        $$\mathbf{x}_1 \to \mathbf{h}_1 \to \mathbf{h}_2 \to \cdots \to \mathbf{h}_T$$
+        Unrolled, the RNN looks exactly like a very deep feedforward network — one layer
+        per time step — except that all layers share the same weights.
+      </div>
+
+      <!-- ── Section 4: Backprop through time ────────────────────────────── -->
+      <div class="section-head" id="bptt">Backpropagation through time</div>
+
+      <div class="prose">
+        Training uses <strong>backpropagation through time (BPTT)</strong>: unroll the
+        RNN for $T$ steps, treat the result as a deep feedforward network, and apply
+        standard backpropagation.
+      </div>
+
+      <div class="prose">
+        The total loss is the sum of per-step losses:
+        $$\mathcal{L} = \sum_{t=1}^T \mathcal{L}_t(\hat{\mathbf{y}}_t, \mathbf{y}_t)$$
+        The gradient with respect to $W_h$ must account for every time step at which
+        $W_h$ was used:
+        $$\frac{\partial \mathcal{L}}{\partial W_h} = \sum_{t=1}^T \frac{\partial \mathcal{L}_t}{\partial W_h}$$
+        Each term $\frac{\partial \mathcal{L}_t}{\partial W_h}$ traces the gradient back
+        through all hidden states from step $t$ back to step 1:
+        $$\frac{\partial \mathcal{L}_t}{\partial W_h} = \sum_{k=1}^t \frac{\partial \mathcal{L}_t}{\partial \mathbf{h}_t} \left(\prod_{j=k+1}^{t} \frac{\partial \mathbf{h}_j}{\partial \mathbf{h}_{j-1}}\right) \frac{\partial \mathbf{h}_k}{\partial W_h}$$
+        The product $\prod_{j=k+1}^{t} \frac{\partial \mathbf{h}_j}{\partial \mathbf{h}_{j-1}}$
+        is the chain of Jacobians from step $t$ back to step $k$ — a product of
+        $(t-k)$ matrices, each of which is $W_h^\top \cdot \text{diag}(\tanh'(\mathbf{z}_j))$
+        where $\mathbf{z}_j = W_h \mathbf{h}_{j-1} + W_x \mathbf{x}_j$.
+      </div>
+
+      <div class="prose">
+        <strong>Truncated BPTT</strong>: in practice, BPTT over the full sequence length
+        $T$ is too slow and memory-intensive for long sequences. Instead, truncate
+        the backpropagation after $k$ steps: accumulate the forward pass over $T$ steps
+        but only backpropagate through the last $k$ steps. This introduces bias (gradients
+        from more than $k$ steps ago are never computed) but is computationally tractable.
+        Typical $k$: 35–50 for language modelling. The hidden state is still propagated
+        forward across the truncation boundary — only gradients are cut.
+      </div>
+
+      <!-- ── Section 5: Vanishing gradients through time ──────────────── -->
+      <div class="section-head" id="vanishing-time">Vanishing gradients through time</div>
+
+      <div class="prose">
+        The product of Jacobians $\prod_{j=k+1}^{t} \frac{\partial \mathbf{h}_j}{\partial \mathbf{h}_{j-1}}$
+        is the same vanishing-gradient problem from deep feedforward networks, now
+        playing out across time steps instead of layers. Each Jacobian is approximately
+        $W_h^\top \cdot \text{diag}(\tanh'(\mathbf{z}_j))$. Since $|\tanh'(z)| \leq 1$
+        always, and $\tanh'$ is close to 0 for large $|z|$, the product typically shrinks
+        exponentially with the gap $t - k$.
+      </div>
+
+      <div class="proof-box">
+        <div class="proof-header">Analysis — gradient decay over time</div>
+        <div class="proof-body">
+          <p>Let $\lambda$ be the largest singular value of $W_h$ (the spectral norm), and $\bar{\sigma}' = \max_z |\tanh'(z)| = 1$. Then:
+          $$\left\|\prod_{j=k+1}^{t} \frac{\partial \mathbf{h}_j}{\partial \mathbf{h}_{j-1}}\right\| \leq (\lambda \cdot \bar{\sigma}')^{t-k} = \lambda^{t-k}$$
+          If $\lambda < 1$ (which is typical after training — large $W_h$ causes exploding gradients, so weight decay or gradient clipping pushes $\lambda$ down), the gradient decays exponentially in $t - k$.</p>
+          <p>For $\lambda = 0.9$ and a gap of $t - k = 50$ steps: $0.9^{50} \approx 0.005$ — the gradient at step $k$ from a loss at step $t$ is 200× smaller than the gradient at step $t-1$. For a gap of 100 steps: $0.9^{100} \approx 2.7 \times 10^{-5}$.</p>
+          <p>This means vanilla RNNs effectively have a memory horizon of roughly $1/(1-\lambda)$ steps. For $\lambda = 0.9$, that's about 10 steps. For $\lambda = 0.99$, it's about 100 steps. Capturing very long-range dependencies requires either $\lambda$ very close to 1 (which risks exploding gradients when $\lambda > 1$) or a fundamentally different architecture.</p>
+        </div>
+      </div>
+
+      <div class="prose">
+        <strong>Exploding gradients</strong> occur when $\lambda > 1$: the product grows
+        exponentially. The fix is <strong>gradient clipping</strong>: if
+        $\|\nabla_\theta \mathcal{L}\| > \text{threshold}$, scale the gradient down to
+        the threshold. Gradient clipping is standard for all RNN training and is
+        particularly important for long sequences. It was the primary tool for training
+        LSTMs before batch normalisation and other techniques were introduced.
+      </div>
+
+      <!-- ── Section 6: Sequence-to-sequence ───────────────────────────── -->
+      <div class="section-head" id="seq2seq">Sequence-to-sequence models</div>
+
+      <div class="prose">
+        Machine translation maps a source sentence $\mathbf{x}_1, \ldots, \mathbf{x}_S$
+        to a target sentence $\mathbf{y}_1, \ldots, \mathbf{y}_T$ where $S \neq T$ in
+        general. The key idea of the <strong>seq2seq model</strong> (Sutskever, Vinyals
+        &amp; Le 2014): use two RNNs — an <strong>encoder</strong> and a <strong>decoder</strong>.
+      </div>
+
+      <div class="prose">
+        <strong>Encoder</strong>: reads the source sequence and compresses it into a
+        fixed-length context vector $\mathbf{c} = \mathbf{h}_S^{\text{enc}}$ (the final
+        hidden state):
+        $$\mathbf{h}_t^{\text{enc}} = f_{\text{enc}}(\mathbf{h}_{t-1}^{\text{enc}}, \mathbf{x}_t)$$
+      </div>
+
+      <div class="prose">
+        <strong>Decoder</strong>: initialised with $\mathbf{h}_0^{\text{dec}} = \mathbf{c}$,
+        generates the target sequence one token at a time. At each step it takes the
+        previously generated token as input:
+        $$\mathbf{h}_t^{\text{dec}} = f_{\text{dec}}(\mathbf{h}_{t-1}^{\text{dec}}, \mathbf{y}_{t-1}, \mathbf{c})$$
+        $$p(\mathbf{y}_t \mid \mathbf{y}_{<t}, \mathbf{x}) = \text{softmax}(W_o \mathbf{h}_t^{\text{dec}})$$
+      </div>
+
+      <div class="prose">
+        Training: teacher forcing — feed the ground-truth target $\mathbf{y}_{t-1}$ at
+        each decoder step rather than the model's own prediction. This stabilises training
+        but creates a train-test mismatch (at test time the model feeds its own predictions).
+        Scheduled sampling addresses this by gradually replacing teacher-forced inputs
+        with model predictions.
+      </div>
+
+      <!-- ── Section 7: The fixed-vector bottleneck ─────────────────────── -->
+      <div class="section-head" id="the-bottleneck">The fixed-vector bottleneck</div>
+
+      <div class="prose">
+        The seq2seq model compresses the entire source sentence into a single fixed-size
+        vector $\mathbf{c}$. For a sentence of 20 words this may be fine, but for longer
+        sentences (50+ words), the encoder must cram too much information into the context
+        vector. Empirically: seq2seq translation quality degrades sharply for sentences
+        longer than ~20 words.
+      </div>
+
+      <div class="prose">
+        The fundamental limitation: the context vector has a fixed dimension regardless
+        of input length. More information must fit into the same number of bits. This is
+        analogous to compressing a book into a single paragraph — some information is
+        inevitably lost.
+      </div>
+
+      <div class="callout">
+        <strong>This bottleneck motivates attention.</strong> Instead of compressing the
+        entire source into one vector, the decoder at each step could <em>look back</em>
+        at all encoder hidden states and selectively attend to the most relevant ones.
+        This is the key idea of the attention mechanism (Lesson 5), introduced by Bahdanau
+        et al. (2015). It makes the context vector dynamic — a weighted sum of all encoder
+        states, recomputed at each decoder step. It also dramatically improves translation
+        quality on long sentences and eventually led — via self-attention — to the
+        Transformer, which eliminates recurrence entirely.
+      </div>
+
+      <!-- ── Worked examples ──────────────────────────────────────────── -->
+      <div class="section-head" id="examples">Worked examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — RNN forward pass</strong></div>
+        <div class="example-problem">
+          <p>A single-layer RNN with hidden size $d = 2$, input size $n = 1$.
+          $W_h = \begin{bmatrix}0.5 & 0.1 \\ 0.2 & 0.8\end{bmatrix}$,
+          $W_x = \begin{bmatrix}0.3 \\ 0.4\end{bmatrix}$, biases zero.
+          Input sequence: $x_1 = 1$, $x_2 = 0$, $x_3 = -1$.
+          Initial hidden state $\mathbf{h}_0 = [0, 0]^\top$.
+          Compute $\mathbf{h}_1$, $\mathbf{h}_2$, $\mathbf{h}_3$.</p>
+        </div>
+        <div class="example-body">
+          <p><strong>Step 1</strong> ($x_1 = 1$):
+          $$\mathbf{z}_1 = W_h \mathbf{h}_0 + W_x x_1 = \begin{bmatrix}0\\0\end{bmatrix} + \begin{bmatrix}0.3\\0.4\end{bmatrix} = \begin{bmatrix}0.3\\0.4\end{bmatrix}$$
+          $$\mathbf{h}_1 = \tanh(\mathbf{z}_1) = \begin{bmatrix}\tanh(0.3)\\\tanh(0.4)\end{bmatrix} \approx \begin{bmatrix}0.291\\0.380\end{bmatrix}$$</p>
+          <p><strong>Step 2</strong> ($x_2 = 0$):
+          $$\mathbf{z}_2 = W_h \mathbf{h}_1 = \begin{bmatrix}0.5 & 0.1 \\ 0.2 & 0.8\end{bmatrix}\begin{bmatrix}0.291\\0.380\end{bmatrix} = \begin{bmatrix}0.184\\0.362\end{bmatrix}$$
+          $$\mathbf{h}_2 = \tanh(\mathbf{z}_2) \approx \begin{bmatrix}0.182\\0.349\end{bmatrix}$$</p>
+          <p><strong>Step 3</strong> ($x_3 = -1$):
+          $$\mathbf{z}_3 = W_h \mathbf{h}_2 + W_x (-1) \approx \begin{bmatrix}0.5(0.182)+0.1(0.349)\\0.2(0.182)+0.8(0.349)\end{bmatrix} - \begin{bmatrix}0.3\\0.4\end{bmatrix} = \begin{bmatrix}0.126\\0.316\end{bmatrix} - \begin{bmatrix}0.3\\0.4\end{bmatrix} = \begin{bmatrix}-0.174\\-0.084\end{bmatrix}$$
+          $$\mathbf{h}_3 = \tanh(\mathbf{z}_3) \approx \begin{bmatrix}-0.172\\-0.084\end{bmatrix}$$</p>
+          <p>The hidden state encodes a summary of the sequence seen so far. The final $\mathbf{h}_3$ is negative in both components, reflecting that the last input was $-1$. Earlier inputs (1, 0) have had their influence attenuated by the recurrence.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — BPTT gradient for a single step</strong></div>
+        <div class="example-problem">
+          <p>An RNN of length $T = 3$ has a loss only at the last step: $\mathcal{L} = \mathcal{L}_3$.
+          Compute $\frac{\partial \mathcal{L}_3}{\partial \mathbf{h}_1}$ in terms of the intermediate Jacobians
+          $J_t = \frac{\partial \mathbf{h}_t}{\partial \mathbf{h}_{t-1}}$.</p>
+        </div>
+        <div class="example-body">
+          <p>By chain rule:
+          $$\frac{\partial \mathcal{L}_3}{\partial \mathbf{h}_1} = \frac{\partial \mathcal{L}_3}{\partial \mathbf{h}_3} \cdot \frac{\partial \mathbf{h}_3}{\partial \mathbf{h}_2} \cdot \frac{\partial \mathbf{h}_2}{\partial \mathbf{h}_1} = \frac{\partial \mathcal{L}_3}{\partial \mathbf{h}_3} \cdot J_3 \cdot J_2$$
+          This is a product of two Jacobians. Each $J_t = W_h^\top \cdot \text{diag}(\tanh'(\mathbf{z}_t))$ where $\mathbf{z}_t$ is the pre-activation at step $t$.
+          </p>
+          <p>For a sequence of length $T$, the gradient from the final loss to the first hidden state involves a product of $T-1$ Jacobians. If $T = 100$, we multiply 99 matrices together. If each matrix has spectral norm $< 1$, this product shrinks exponentially — the first hidden state gets an exponentially small gradient from the final loss.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Perplexity</strong></div>
+        <div class="example-problem">
+          <p>A language model assigns the following log-probabilities to a 4-token sentence:
+          $\log p(x_1) = -2.3$, $\log p(x_2 \mid x_1) = -1.6$,
+          $\log p(x_3 \mid x_{1:2}) = -3.0$, $\log p(x_4 \mid x_{1:3}) = -1.1$.
+          Compute the perplexity of this sentence.</p>
+        </div>
+        <div class="example-body">
+          <p>Average negative log-likelihood per token:
+          $$\text{NLL} = -\frac{1}{4}(-2.3 - 1.6 - 3.0 - 1.1) = -\frac{-8.0}{4} = 2.0 \text{ nats}$$
+          Perplexity:
+          $$\text{PPL} = e^{2.0} \approx 7.39$$</p>
+          <p>Interpretation: this model is roughly as uncertain as a uniform distribution over 7.4 equally likely next tokens at each step. A perfect model would have PPL = 1 (always assigns probability 1 to the correct next token). A uniform distribution over a vocabulary of $V$ tokens has PPL = $V$. State-of-the-art language models achieve single-digit perplexity on standard benchmarks (Penn Treebank) — effectively ruling out the vast majority of the vocabulary at each step.</p>
+        </div>
+      </div>
+
+      <!-- ── Food for thought ────────────────────────────────────────────── -->
+      <div class="section-head" id="food-for-thought">Food for thought</div>
+
+      <ul class="fft-list">
+        <li class="fft-item">
+          An RNN processes tokens sequentially — step $t$ must wait for step $t-1$ to complete.
+          The Transformer (Lesson 6) processes all tokens in parallel. Why does this matter
+          beyond just speed?
+          <div class="fft-answer">
+            Sequential processing is both a computational and a learning constraint.
+            Computationally, sequential RNNs cannot be parallelised across the sequence
+            dimension — a sequence of length 1,000 requires 1,000 sequential steps
+            regardless of hardware. The Transformer computes all positions simultaneously,
+            making it amenable to GPU/TPU parallelism. The learning implication is subtler:
+            in an RNN, information from position 1 must travel through 999 hidden-state
+            updates to influence the output at position 1,000. Each update is a potential
+            information bottleneck. In the Transformer, any position can directly attend
+            to any other position in a single step — the "path length" between any two
+            positions is 1, not proportional to their distance. This makes learning
+            long-range dependencies qualitatively easier. Vaswani et al. (2017) explicitly
+            highlight "path length between long-range dependencies" as the key advantage
+            of attention over recurrence.
+          </div>
+        </li>
+        <li class="fft-item">
+          RNNs share weights across time; CNNs share weights across space. Both are forms of
+          parameter sharing motivated by an invariance assumption. What is the invariance
+          assumption in each case, and is it always valid?
+          <div class="fft-answer">
+            CNNs assume translation invariance in space: a cat-detector filter at pixel (10, 20)
+            should be the same as at pixel (100, 200). This is approximately valid for natural
+            images (same objects can appear anywhere) but breaks for structured data where position
+            is meaningful (e.g. a fixed-format document where the top-left always contains a date).
+            RNNs assume time-stationarity: the same update rule $\mathbf{h}_t = f(\mathbf{h}_{t-1}, \mathbf{x}_t)$
+            applies at every step. This assumes the relationship between consecutive steps is the
+            same at step 2 and step 200. For natural language, this is approximately valid
+            (the grammar rules are the same at the start and end of a sentence) but can fail for
+            structured temporal data where different phases have different dynamics
+            (e.g. a financial time series that behaves differently in bull vs. bear markets).
+            In both cases, the weight-sharing inductive bias is a form of regularization — it
+            reduces variance at the cost of some bias when the invariance assumption is wrong.
+          </div>
+        </li>
+        <li class="fft-item">
+          The gradient clipping rule is: if $\|\mathbf{g}\| > c$, replace $\mathbf{g}$ with
+          $c \cdot \mathbf{g} / \|\mathbf{g}\|$. This clips the gradient's norm but preserves
+          its direction. Why preserve direction and not just cap each component independently?
+          <div class="fft-answer">
+            Component-wise clipping (capping each $g_i$ independently at $\pm c$) changes
+            the gradient direction — some components are scaled more than others, so the
+            resulting vector points in a different direction in parameter space. Norm-clipping
+            scales all components by the same factor, keeping the update in the same direction
+            as the original gradient. The direction is what matters for optimization: it
+            determines which parameters increase and which decrease. Changing the direction
+            introduces bias toward a distorted descent direction. Norm-clipping retains the
+            correct descent direction while only reducing the step size, which is a more
+            principled intervention. The tradeoff: norm-clipping is sensitive to the threshold
+            $c$ — too small and valid gradients are always clipped; too large and explosive
+            gradients still cause instability. Standard values are 1.0–5.0 for RNNs and 1.0
+            for Transformers.
+          </div>
+        </li>
+      </ul>
+
+      <!-- ── Common pitfalls ─────────────────────────────────────────────── -->
+      <div class="section-head" id="pitfalls">Common pitfalls</div>
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:14px;">
+          <strong>Not detaching hidden states across truncated BPTT segments.</strong>
+          In PyTorch, the hidden state tensor carries gradient history. If you pass the
+          hidden state from one BPTT segment to the next without calling
+          <code>.detach()</code>, gradients accumulate across segments, consuming
+          memory proportional to the entire sequence length. Detach the hidden state
+          at segment boundaries: <code>h = h.detach()</code>.
+        </li>
+        <li style="margin-bottom:14px;">
+          <strong>Using teacher forcing at test time.</strong>
+          Teacher forcing feeds ground-truth tokens to the decoder during training.
+          At test time, ground truth is unavailable — the model feeds its own predictions.
+          Forgetting to switch to auto-regressive generation at test time produces
+          incorrect outputs and may cause the model to fail completely on long sequences.
+        </li>
+        <li style="margin-bottom:14px;">
+          <strong>Using tanh in deep or very long RNNs without gradient clipping.</strong>
+          Tanh saturates and contributes to vanishing gradients; without clipping, the
+          recurrent weight matrix can also produce exploding gradients. Apply gradient
+          norm clipping (threshold 1.0–5.0) whenever training any RNN.
+        </li>
+        <li>
+          <strong>Evaluating language model quality only on perplexity.</strong>
+          Low perplexity means the model assigns high probability to the test set, but
+          perplexity is not the same as text quality. A model can have low perplexity
+          (by hedging over many likely tokens) while generating repetitive, incoherent
+          text. Human evaluation or downstream task performance (e.g. BLEU for translation,
+          accuracy on a classification task) is more diagnostic.
+        </li>
+      </ul>
+
+      <!-- ── Connects to ─────────────────────────────────────────────────── -->
+      <div class="section-head" id="connects-to">Connects to</div>
+
+      <div class="prose">
+        <strong>LSTMs &amp; GRUs (Lesson 4)</strong> — the vanilla RNN's vanishing gradient
+        problem is solved by the LSTM cell (Hochreiter &amp; Schmidhuber 1997), which uses
+        gates to selectively update and preserve the hidden state. The LSTM is the direct
+        predecessor to the attention mechanism.
+      </div>
+      <div class="prose">
+        <strong>Attention Mechanisms (Lesson 5)</strong> — the fixed-vector bottleneck
+        in seq2seq is the direct motivation for attention. Bahdanau et al. (2015) replaced
+        the single context vector with a weighted sum of all encoder hidden states, computed
+        dynamically at each decoder step. This was the conceptual bridge to the Transformer.
+      </div>
+      <div class="prose">
+        <strong>The Transformer (Lesson 6)</strong> — the Transformer discards recurrence
+        entirely, replacing it with self-attention. Every position attends directly to
+        every other position, eliminating the sequential dependency and the distance-scaled
+        vanishing gradient. The language modelling objective (predict next token given context)
+        is also the Transformer's training objective.
+      </div>
+
+      <div class="lesson-nav">
+        <a href="cnns.html" class="lesson-nav-btn">← 2 · CNNs</a>
+        <a href="lstms.html" class="lesson-nav-btn">4 · LSTMs &amp; GRUs →</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+
+</body>
+</html>

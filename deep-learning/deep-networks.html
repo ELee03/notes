@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deep Networks & Residual Connections — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false}
+        ],
+        throwOnError: false
+      });
+    });
+  </script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Prerequisites</div>
+        <a href="../supervised/neural-networks.html" class="nav-item">SL8 · Neural Networks</a>
+        <a href="../supervised/backpropagation.html" class="nav-item">SL9 · Backpropagation</a>
+      </div>
+
+      <div id="cluster-nav" data-cluster="deep-learning" data-current="deep-networks.html"></div>
+
+      <hr class="sidebar-rule">
+
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#why-depth" class="nav-item">Why depth matters</a>
+        <a href="#depth-problem" class="nav-item">The depth problem</a>
+        <a href="#residual" class="nav-item">Residual connections</a>
+        <a href="#resnet" class="nav-item">The ResNet architecture</a>
+        <a href="#batchnorm-residual" class="nav-item">Batch norm + residuals</a>
+        <a href="#identity-shortcut" class="nav-item">The identity shortcut</a>
+        <a href="#depth-vs-width" class="nav-item">Depth vs width revisited</a>
+        <a href="#examples" class="nav-item">Worked examples</a>
+        <a href="#food-for-thought" class="nav-item">Food for thought</a>
+        <a href="#pitfalls" class="nav-item">Common pitfalls</a>
+        <a href="#connects-to" class="nav-item">Connects to</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Deep Learning</a>
+        <span class="sep">›</span>
+        <span>1 · Deep Networks &amp; Residual Connections</span>
+      </div>
+
+      <div class="lesson-title">1 · Deep Networks &amp; Residual Connections</div>
+      <div class="lesson-meta">Depth · Skip Connections · ResNets · Pre-activation · Depth vs Width</div>
+
+      <div class="prose">
+        The surprising empirical finding of modern deep learning: more layers consistently
+        helps, to a degree that was not expected from theory. A 152-layer network (ResNet-152)
+        outperforms a 34-layer network on image classification — but naively stacking 152 layers
+        without architectural innovation produces a <em>worse</em> model than 34 layers.
+        The culprit is vanishing gradients, compounded by a subtler problem: the
+        <em>degradation problem</em>, where adding layers to an already-good network makes
+        it worse even on the training set. This lesson explains why depth helps, why it
+        breaks without the right architecture, and the single idea that fixed it:
+        the residual connection.
+      </div>
+
+      <!-- ── Section 1: Why depth matters ─────────────────────────────── -->
+      <div class="section-head" id="why-depth">Why depth matters</div>
+
+      <div class="prose">
+        From Supervised Learning L8, we know that a deep network can express functions
+        that a shallow network of equivalent parameter count cannot. The formal result
+        (Montufar et al. 2014): a deep ReLU network with $L$ layers and $n$ neurons per
+        layer can partition the input space into $O\!\left((n/d)^{(L-1)d} \cdot n^d\right)$
+        linear regions, growing exponentially with depth. A shallow network with the same
+        parameter count has only polynomially many.
+      </div>
+
+      <div class="prose">
+        The empirical picture matches. On ImageNet (1.2 million images, 1000 classes),
+        the progression from AlexNet (8 layers, 2012) → VGG-16 (16 layers, 2014) →
+        GoogLeNet (22 layers, 2014) → ResNet-152 (152 layers, 2015) shows monotonically
+        improving top-5 accuracy: 16.4% → 7.3% → 6.7% → 3.57% error. Depth alone does
+        not explain all of this improvement (architecture choices matter too), but the
+        correlation with depth is real.
+      </div>
+
+      <div class="prose">
+        Intuitively, depth enables a <strong>compositional hierarchy of representations</strong>.
+        In image recognition, this hierarchy is remarkably consistent: early layers learn
+        edge detectors (oriented filters responding to boundaries), middle layers combine
+        these into textures and parts (eye detectors, wheel detectors), and deep layers
+        combine parts into objects (face detectors, car detectors). This hierarchy mirrors
+        the structure of the visual world — objects are made of parts, parts are made of
+        textures, textures are made of edges. A shallow network must learn this hierarchy
+        in one step; a deep network can build it up gradually.
+      </div>
+
+      <!-- ── Section 2: The depth problem ─────────────────────────────── -->
+      <div class="section-head" id="depth-problem">The depth problem: degradation</div>
+
+      <div class="prose">
+        If depth always helps, just stack more layers. The problem: adding layers to a
+        working network makes it worse — even on the training set.
+      </div>
+
+      <div class="prose">
+        This is not overfitting (which hurts the validation set while training loss stays
+        low). This is <strong>underfitting</strong>: a 56-layer plain network has higher
+        <em>training</em> error than a 20-layer plain network on CIFAR-10. The extra layers
+        are not learning anything useful; they are actively hurting.
+      </div>
+
+      <div class="prose">
+        <strong>Why does this happen?</strong> Consider what a deeper network should be
+        able to do: at minimum, it could set the extra layers to the identity function
+        ($\mathbf{h}^{(\ell+1)} = \mathbf{h}^{(\ell)}$) and match the shallower network.
+        In principle, deeper is at least as good. But in practice, learning the identity
+        function is hard for a stack of nonlinear layers. Gradient descent on a deep
+        network has trouble finding the identity solution, so extra layers end up learning
+        something subtly wrong.
+      </div>
+
+      <div class="prose">
+        There are two compounding issues:
+      </div>
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:10px;"><strong>Vanishing gradients</strong> (Lesson SL9):
+          gradient signal shrinks exponentially as it backpropagates through many layers.
+          Early layers in a very deep plain network receive near-zero gradient and barely
+          learn.</li>
+        <li><strong>Optimization difficulty</strong>: the loss landscape of a deep
+          plain network has many flat regions (saddle points, plateaus) that confuse
+          gradient descent. The deeper the network, the worse the landscape.</li>
+      </ul>
+
+      <!-- ── Section 3: Residual connections ───────────────────────────── -->
+      <div class="section-head" id="residual">Residual connections</div>
+
+      <div class="prose">
+        He et al. (2015) introduced one of the most influential ideas in deep learning:
+        the <strong>residual connection</strong>, also called a <strong>skip connection</strong>.
+        The insight: instead of asking a layer to learn $\mathbf{h}^{(\ell+1)} = F(\mathbf{h}^{(\ell)})$,
+        ask it to learn the <em>residual</em>:
+        $$\mathbf{h}^{(\ell+1)} = F(\mathbf{h}^{(\ell)}) + \mathbf{h}^{(\ell)}$$
+        Here $F$ is the "residual function" — a few stacked layers — and $\mathbf{h}^{(\ell)}$
+        is added directly to the output via a shortcut connection that bypasses those layers.
+      </div>
+
+      <div class="prose">
+        <strong>Why this solves the degradation problem.</strong>
+        If the optimal transformation at this block is approximately the identity, then
+        $F$ only needs to learn $F(\mathbf{h}) \approx \mathbf{0}$ — pushing the residual
+        toward zero is much easier than learning an exact identity mapping through
+        nonlinear layers. The skip connection provides a default identity behaviour;
+        the layers only need to learn the correction.
+      </div>
+
+      <div class="prose">
+        <strong>Why this solves vanishing gradients.</strong>
+        The gradient of the loss with respect to $\mathbf{h}^{(\ell)}$ is:
+        $$\frac{\partial \mathcal{L}}{\partial \mathbf{h}^{(\ell)}} = \frac{\partial \mathcal{L}}{\partial \mathbf{h}^{(\ell+1)}} \cdot \left(\frac{\partial F}{\partial \mathbf{h}^{(\ell)}} + I\right)$$
+        The $+I$ term — the identity from the skip connection — means that even if
+        $\frac{\partial F}{\partial \mathbf{h}^{(\ell)}}$ vanishes completely, the gradient
+        still flows back unchanged through the skip path. Gradients can travel from the
+        output all the way to the first layer without passing through a single nonlinearity
+        via the skip paths. This is the <em>gradient highway</em>.
+      </div>
+
+      <!-- ── Section 4: The ResNet architecture ────────────────────────── -->
+      <div class="section-head" id="resnet">The ResNet architecture</div>
+
+      <div class="prose">
+        <strong>Basic residual block</strong> (for moderate-depth networks):
+      </div>
+
+      <div class="prose" style="font-family: var(--mono); background: #f0f0ec; padding: 14px 18px; border-radius: 4px; font-size: 0.88em;">
+        Input $\mathbf{h}$<br>
+        → Conv(3×3) → BN → ReLU<br>
+        → Conv(3×3) → BN<br>
+        → + $\mathbf{h}$ (skip connection)<br>
+        → ReLU<br>
+        Output
+      </div>
+
+      <div class="prose">
+        <strong>Bottleneck residual block</strong> (for very deep networks, ResNet-50/101/152):
+        reduces computation by using a 1×1 conv to reduce channels, a 3×3 conv in the
+        smaller space, then a 1×1 conv to restore channel count. This reduces parameter
+        count while maintaining depth.
+      </div>
+
+      <div class="prose">
+        <strong>Projection shortcuts</strong>: when the skip connection must change
+        dimensions (e.g. when the number of channels doubles between blocks), the shortcut
+        uses a 1×1 convolution (optionally with stride 2 to downsample) to match the
+        output dimension. This 1×1 projection is also learned.
+      </div>
+
+      <div class="prose">
+        <strong>Depth of standard ResNets:</strong>
+      </div>
+
+      <table class="prose" style="border-collapse:collapse; width:100%; margin-bottom:1em;">
+        <thead>
+          <tr style="border-bottom: 2px solid #c0ccd8;">
+            <th style="text-align:left; padding:6px 12px;">Model</th>
+            <th style="text-align:right; padding:6px 12px;">Layers</th>
+            <th style="text-align:right; padding:6px 12px;">Params</th>
+            <th style="text-align:right; padding:6px 12px;">Top-5 error (ImageNet)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom: 1px solid #dde4ea;">
+            <td style="padding:6px 12px;">ResNet-18</td>
+            <td style="text-align:right; padding:6px 12px;">18</td>
+            <td style="text-align:right; padding:6px 12px;">11M</td>
+            <td style="text-align:right; padding:6px 12px;">—</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #dde4ea;">
+            <td style="padding:6px 12px;">ResNet-34</td>
+            <td style="text-align:right; padding:6px 12px;">34</td>
+            <td style="text-align:right; padding:6px 12px;">21M</td>
+            <td style="text-align:right; padding:6px 12px;">7.5%</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #dde4ea;">
+            <td style="padding:6px 12px;">ResNet-50</td>
+            <td style="text-align:right; padding:6px 12px;">50</td>
+            <td style="text-align:right; padding:6px 12px;">25M</td>
+            <td style="text-align:right; padding:6px 12px;">5.25%</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #dde4ea;">
+            <td style="padding:6px 12px;">ResNet-101</td>
+            <td style="text-align:right; padding:6px 12px;">101</td>
+            <td style="text-align:right; padding:6px 12px;">44M</td>
+            <td style="text-align:right; padding:6px 12px;">4.60%</td>
+          </tr>
+          <tr>
+            <td style="padding:6px 12px;">ResNet-152</td>
+            <td style="text-align:right; padding:6px 12px;">152</td>
+            <td style="text-align:right; padding:6px 12px;">60M</td>
+            <td style="text-align:right; padding:6px 12px;">3.57%</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- ── Section 5: Batch norm + residuals ─────────────────────────── -->
+      <div class="section-head" id="batchnorm-residual">Batch norm and residuals together</div>
+
+      <div class="prose">
+        Batch normalisation and residual connections are the two core ingredients of
+        modern deep architectures. They interact importantly: the placement of BN
+        relative to the residual addition and activation matters.
+      </div>
+
+      <div class="prose">
+        <strong>Original ResNet (post-activation):</strong>
+        Conv → BN → ReLU → Conv → BN → Add → ReLU.
+        The addition happens before the final ReLU, so the skip path passes through
+        a ReLU before being added to the next block's input.
+      </div>
+
+      <div class="prose">
+        <strong>Pre-activation ResNet</strong> (He et al. 2016 v2):
+        BN → ReLU → Conv → BN → ReLU → Conv → Add.
+        The skip connection is now a clean identity: it is added before any normalization
+        or activation in the next block. This means gradients flow through the skip path
+        with no nonlinearities at all. Pre-activation ResNets generally train better and
+        generalize better, especially at 1000+ layers. The Transformer architecture
+        (Lesson 6) uses pre-layer-norm, which is the sequence-model analogue.
+      </div>
+
+      <!-- ── Section 6: The identity shortcut ──────────────────────────── -->
+      <div class="section-head" id="identity-shortcut">Why the identity shortcut is deep</div>
+
+      <div class="prose">
+        A full ResNet-152 has a clean path from input to output that passes through
+        <em>zero</em> residual blocks — just the skip connections stacked. This path
+        has no nonlinearities, no BN, just additions. Through this path:
+        $$\mathbf{h}^{(\ell)} = \mathbf{h}^{(0)} + \sum_{k=1}^\ell F_k(\mathbf{h}^{(k-1)})$$
+        (approximately, ignoring projection shortcuts). This additive structure means:
+      </div>
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:8px;">The network is closer to an ensemble of many shorter networks
+          than a single deep one — any path from input to output defines a subnetwork, and
+          the output averages them.</li>
+        <li style="margin-bottom:8px;">Gradients from the output reach every layer directly,
+          not through $L$ multiplicative factors. The gradient of the loss with respect
+          to $\mathbf{h}^{(0)}$ has a term that is exactly the output gradient — depth
+          does not attenuate it.</li>
+        <li>The network is robust to removing individual layers at test time — each residual
+          block can be bypassed via its skip path.</li>
+      </ul>
+
+      <!-- ── Section 7: Depth vs width revisited ───────────────────────── -->
+      <div class="section-head" id="depth-vs-width">Depth vs width revisited</div>
+
+      <div class="prose">
+        With residual connections solving the training problem, is more depth always better?
+        The answer is more nuanced:
+      </div>
+
+      <div class="prose">
+        <strong>Wide ResNets</strong> (Zagoruyko &amp; Komodakis 2016): a ResNet-28 with
+        $k = 10\times$ the number of channels per layer ("WideResNet-28-10") outperforms
+        ResNet-1000 with the same parameter count. Wider but shallower can be more
+        parameter-efficient for a given depth budget. The reason: more channels per layer
+        means more parallel feature detectors at each level of the hierarchy.
+      </div>
+
+      <div class="prose">
+        <strong>EfficientNet</strong> (Tan &amp; Le 2019) systematically studied the
+        tradeoff by jointly scaling depth, width, and input resolution with a compound
+        coefficient $\phi$:
+        $$\text{depth} \propto \alpha^\phi, \quad \text{width} \propto \beta^\phi, \quad \text{resolution} \propto \gamma^\phi$$
+        subject to $\alpha \cdot \beta^2 \cdot \gamma^2 \approx 2$ (constant FLOP budget
+        per $\phi$). The jointly scaled EfficientNet-B7 achieves state-of-the-art
+        ImageNet accuracy with significantly fewer parameters than prior models. The
+        practical lesson: depth, width, and resolution are all independently valuable,
+        and the optimal network scales all three together.
+      </div>
+
+      <div class="prose">
+        For Transformers (the subject of Lesson 6), depth is the dominant scaling axis.
+        GPT-3 is a 96-layer Transformer; increasing depth improves language modelling
+        roughly according to scaling laws (Kaplan et al. 2020). Residual connections
+        (the Transformer uses them around every sub-layer) are what makes this depth possible.
+      </div>
+
+      <!-- ── Worked examples ──────────────────────────────────────────── -->
+      <div class="section-head" id="examples">Worked examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Gradient flow through a residual block</strong></div>
+        <div class="example-problem">
+          <p>A residual block computes $\mathbf{y} = F(\mathbf{x}) + \mathbf{x}$. Suppose
+          $\frac{\partial \mathcal{L}}{\partial \mathbf{y}} = \boldsymbol{\delta}$. Compute
+          $\frac{\partial \mathcal{L}}{\partial \mathbf{x}}$ and compare it to the gradient
+          in a plain (non-residual) layer with the same $F$.</p>
+        </div>
+        <div class="example-body">
+          <p>By the chain rule:
+          $$\frac{\partial \mathcal{L}}{\partial \mathbf{x}} = \frac{\partial \mathcal{L}}{\partial \mathbf{y}} \cdot \frac{\partial \mathbf{y}}{\partial \mathbf{x}} = \boldsymbol{\delta} \cdot \left(\frac{\partial F}{\partial \mathbf{x}} + I\right) = \boldsymbol{\delta}\frac{\partial F}{\partial \mathbf{x}} + \boldsymbol{\delta}$$</p>
+          <p>The gradient has two terms: the residual path gradient $\boldsymbol{\delta}\frac{\partial F}{\partial \mathbf{x}}$ and the skip-path gradient $\boldsymbol{\delta}$.
+          For a plain layer $\mathbf{y} = F(\mathbf{x})$, the gradient is just $\boldsymbol{\delta}\frac{\partial F}{\partial \mathbf{x}}$.
+          </p>
+          <p>If $F$ is a deep stack of layers and the gradient $\frac{\partial F}{\partial \mathbf{x}}$ is small (vanishing gradients), the residual block still passes $\boldsymbol{\delta}$ back unchanged. The plain layer would pass near-zero gradient. This is the quantitative statement of why residuals fix vanishing gradients: the skip path contributes an additive term to the gradient that is independent of the residual function's Jacobian.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — The degradation problem, numerically</strong></div>
+        <div class="example-problem">
+          <p>ResNet authors (He et al. 2015) observed: on CIFAR-10, a 56-layer plain network
+          has 7.72% training error, while a 20-layer plain network has 6.54% training error.
+          This is the degradation problem. Explain why deeper ≠ better without residuals,
+          and what property of the residual block is supposed to fix this.</p>
+        </div>
+        <div class="example-body">
+          <p>The expected behaviour: a 56-layer network can always implement the 20-layer
+          solution by setting the extra 36 layers to the identity. So its optimal training
+          error should be ≤ 6.54%. The fact that it achieves 7.72% means gradient descent
+          is failing to find this solution.
+          </p>
+          <p>The residual block reframes what those extra 36 layers need to learn. In a
+          plain network, each extra layer must learn the identity mapping
+          $F(\mathbf{x}) = \mathbf{x}$ through a stack of nonlinear operations — it's possible
+          in principle but hard for gradient descent to find. In a residual block, the
+          same extra layers need to learn $F(\mathbf{x}) = \mathbf{0}$ (the zero residual),
+          which is trivially achieved by initializing weights near zero. This asymmetry
+          in difficulty — identity is hard for plain networks, zero is easy for residual
+          networks — is why the residual formulation is better, not just architecturally
+          motivated.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Pre-activation vs post-activation placement</strong></div>
+        <div class="example-problem">
+          <p>Original ResNet: $\mathbf{y} = \text{ReLU}(F(\mathbf{x}) + \mathbf{x})$
+          where $F = \text{BN} \to \text{ReLU} \to \text{Conv} \to \text{BN} \to \text{Conv}$.
+          Pre-activation ResNet: $\mathbf{y} = F'(\mathbf{x}) + \mathbf{x}$
+          where $F' = \text{BN} \to \text{ReLU} \to \text{Conv} \to \text{BN} \to \text{ReLU} \to \text{Conv}$.
+          Which architecture gives a cleaner identity skip path, and why?</p>
+        </div>
+        <div class="example-body">
+          <p>In the original formulation, the ReLU after the addition modifies the skip
+          path — the identity shortcut is not purely additive because the output of
+          $\mathbf{h}^{(\ell)}$ passes through a ReLU before becoming the input of block
+          $\ell+1$. Specifically, the skip contribution to block $\ell+1$'s input is
+          $\text{ReLU}(F(\mathbf{h}^{(\ell-1)}) + \mathbf{h}^{(\ell-1)})$, not $\mathbf{h}^{(\ell-1)}$.
+          Negative activations are zeroed.</p>
+          <p>In the pre-activation formulation, the addition $\mathbf{y} = F'(\mathbf{x}) + \mathbf{x}$
+          is <em>the final operation</em>. The output of each block is exactly the
+          sum of the skip path and the residual path, with no nonlinearity applied after
+          the addition. The skip path $\mathbf{x}$ is passed forward completely unchanged.
+          When you unroll many blocks:
+          $$\mathbf{h}^{(L)} = \mathbf{h}^{(0)} + \sum_{\ell=1}^L F'_\ell(\mathbf{h}^{(\ell-1)})$$
+          and $\frac{\partial \mathbf{h}^{(L)}}{\partial \mathbf{h}^{(0)}} = I + \sum \frac{\partial F'_\ell}{\partial \mathbf{h}^{(0)}}$,
+          guaranteeing that the identity Jacobian is always present regardless of the residual functions.</p>
+        </div>
+      </div>
+
+      <!-- ── Food for thought ────────────────────────────────────────────── -->
+      <div class="section-head" id="food-for-thought">Food for thought</div>
+
+      <ul class="fft-list">
+        <li class="fft-item">
+          A residual network with $L$ blocks can be viewed as an implicit ensemble of
+          $2^L$ subnetworks (each residual block is either included or bypassed via its
+          skip connection). What does this imply about what happens if you drop a random
+          layer during inference — and does this match the empirical finding?
+          <div class="fft-answer">
+            Veit et al. (2016) showed empirically that removing a random residual block
+            from a trained ResNet during inference barely changes accuracy, while removing
+            a random layer from a plain VGG collapses performance. The ensemble interpretation
+            explains why: each forward pass computes a sum over contributions from all
+            $2^L$ subnetworks (through the possible combinations of skip vs. residual
+            paths). Removing one block eliminates half the subnetworks (all those that
+            included that block) but the other half remain. The ensemble is robust to
+            partial membership. This insight led to the technique of <em>stochastic depth</em>
+            (Huang et al. 2016): randomly drop entire residual blocks during training (with
+            some probability), forcing each subnetwork to be independently capable. This is
+            dropout at the block level rather than neuron level, and it regularizes deep
+            networks very effectively.
+          </div>
+        </li>
+        <li class="fft-item">
+          The Transformer uses residual connections around every sub-layer and layer normalisation.
+          Why layer norm rather than batch norm in the Transformer? Couldn't batch norm work just
+          as well?
+          <div class="fft-answer">
+            Batch normalisation normalises over the batch dimension — the statistics ($\mu$,
+            $\sigma^2$) are computed across the batch of examples. This works well for CNNs
+            processing fixed-size images in fixed-size batches, where every batch element
+            is processed identically. For Transformers handling variable-length sequences,
+            the issue is twofold: (1) different positions in the sequence have different
+            statistical properties (the first token distribution ≠ the last token distribution),
+            so batch statistics over positions are not meaningful; (2) inference often involves
+            a single sequence (batch size 1), where batch norm's statistics are undefined.
+            Layer normalisation normalises across the feature dimension for each position
+            independently, so it works regardless of batch size or sequence length. The
+            normalised value at position $t$ depends only on the features of that position,
+            not on any other example in the batch.
+          </div>
+        </li>
+        <li class="fft-item">
+          If residual connections solve vanishing gradients and the degradation problem,
+          why don't we just use 10,000-layer ResNets for everything? Is there a practical
+          ceiling?
+          <div class="fft-answer">
+            Yes — several ceilings. (1) <em>Compute</em>: a 10,000-layer network requires
+            10,000 sequential matrix multiplications in the forward pass. Modern hardware
+            (GPUs, TPUs) thrives on parallelism within a layer, but sequential depth cannot
+            be parallelised — each layer waits for the previous one. Training a 10,000-layer
+            ResNet would be ~60× slower than ResNet-152 even at the same parameter count.
+            (2) <em>Memory</em>: the backward pass must store all 10,000 layers' activations
+            simultaneously, which exhausts GPU memory quickly (gradient checkpointing helps
+            at $\sqrt{L}$ memory cost). (3) <em>Diminishing returns</em>: the scaling law
+            for depth is sublinear — doubling depth provides far less than double improvement.
+            The 2020s paradigm for scaling was not depth alone but joint scaling
+            (width × depth × data) per Kaplan et al. A 100-billion-parameter model like
+            GPT-3 uses 96 layers, not 10,000 — the depth was bounded by latency and memory,
+            not by optimisation difficulty.
+          </div>
+        </li>
+      </ul>
+
+      <!-- ── Common pitfalls ─────────────────────────────────────────────── -->
+      <div class="section-head" id="pitfalls">Common pitfalls</div>
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:14px;">
+          <strong>Applying residual connections with dimension mismatch.</strong>
+          If the skip path $\mathbf{x}$ and the residual $F(\mathbf{x})$ have different
+          shapes (different number of channels, different spatial resolution), the addition
+          is undefined. The fix is a projection shortcut: a 1×1 convolution (optionally
+          with stride) on the skip path to match dimensions. Forgetting this causes a
+          silent shape error that only surfaces at runtime.
+        </li>
+        <li style="margin-bottom:14px;">
+          <strong>Confusing residual connections with the Transformer's cross-attention.</strong>
+          Residual connections in the Transformer (around each sub-layer) serve the same
+          role as in ResNets: gradient highway and identity initialisation. The skip here
+          is the sub-layer's input added to its output. Cross-attention (the decoder
+          attending to the encoder) is a different mechanism entirely — it is not a skip
+          connection but a learned routing of information between two sequences.
+        </li>
+        <li style="margin-bottom:14px;">
+          <strong>Placing the activation after the residual addition.</strong>
+          This is the original ResNet formulation and is fine for moderate depth. For
+          very deep networks (100+ layers), pre-activation (BN and ReLU before the
+          convolution, addition last) gives a cleaner gradient highway. If training a
+          very deep network and gradient flow is a concern, prefer pre-activation.
+        </li>
+        <li>
+          <strong>Treating residuals as a free lunch.</strong>
+          Residual connections are not a substitute for careful hyperparameter tuning.
+          A ResNet trained with too large a learning rate, no warmup, or badly initialized
+          projection shortcuts will still fail. The residual formulation makes optimisation
+          easier, not guaranteed. The training recipe from Supervised Learning L10 still
+          applies: warmup, proper LR, normalisation, He initialisation.
+        </li>
+      </ul>
+
+      <!-- ── Connects to ─────────────────────────────────────────────────── -->
+      <div class="section-head" id="connects-to">Connects to</div>
+
+      <div class="prose">
+        <strong>The Transformer (Lesson 6)</strong> — every Transformer block uses
+        a residual connection around the attention sub-layer and around the feedforward
+        sub-layer. The pre-norm Transformer (the modern standard) is exactly the
+        pre-activation ResNet pattern transposed to sequences: norm → sub-layer → add.
+        The 96-layer GPT-3 is trainable because of residual connections, not despite
+        them.
+      </div>
+      <div class="prose">
+        <strong>CNNs (Lesson 2)</strong> — ResNets are CNNs. The residual block wraps
+        convolutional layers. Understanding the convolution operation (Lesson 2) is
+        necessary to understand ResNet block implementation in detail, though the
+        skip-connection logic is architecture-agnostic.
+      </div>
+      <div class="prose">
+        <strong>Optimization (planned cluster)</strong> — the loss landscape of a
+        residual network is provably better conditioned than a plain network of the
+        same depth. Li et al. (2018) showed that residual connections literally smooth
+        the loss landscape — the Hessian eigenvalues are smaller — which is why
+        gradient descent finds better minima.
+      </div>
+
+      <div class="lesson-nav">
+        <a href="index.html" class="lesson-nav-btn">← Deep Learning index</a>
+        <a href="cnns.html" class="lesson-nav-btn">2 · CNNs →</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+
+</body>
+</html>

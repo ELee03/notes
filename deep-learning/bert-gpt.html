@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BERT & GPT — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false}
+        ],
+        throwOnError: false
+      });
+    });
+  </script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Prerequisites</div>
+        <a href="transformer.html" class="nav-item">DL6 · The Transformer</a>
+      </div>
+
+      <div id="cluster-nav" data-cluster="deep-learning" data-current="bert-gpt.html"></div>
+
+      <hr class="sidebar-rule">
+
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#paradigm-shift" class="nav-item">The paradigm shift</a>
+        <a href="#pretraining" class="nav-item">Why pretraining works</a>
+        <a href="#bert" class="nav-item">BERT</a>
+        <a href="#bert-finetune" class="nav-item">BERT fine-tuning</a>
+        <a href="#gpt" class="nav-item">GPT</a>
+        <a href="#gpt2-3" class="nav-item">GPT-2, GPT-3, few-shot</a>
+        <a href="#scaling-laws" class="nav-item">Scaling laws</a>
+        <a href="#bert-vs-gpt" class="nav-item">BERT vs GPT</a>
+        <a href="#modern-llm" class="nav-item">The modern LLM</a>
+        <a href="#examples" class="nav-item">Worked examples</a>
+        <a href="#food-for-thought" class="nav-item">Food for thought</a>
+        <a href="#pitfalls" class="nav-item">Common pitfalls</a>
+        <a href="#connects-to" class="nav-item">Connects to</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Deep Learning</a>
+        <span class="sep">›</span>
+        <span>7 · BERT &amp; GPT</span>
+      </div>
+
+      <div class="lesson-title">7 · BERT &amp; GPT</div>
+      <div class="lesson-meta">Pretraining Objectives · Masked LM · Autoregressive LM · Fine-Tuning · Scaling Laws · The Modern LLM</div>
+
+      <div class="prose">
+        You now have every component needed to understand BERT, GPT, and the modern LLM.
+        The Transformer architecture from Lesson 6 is the hardware. This lesson is about
+        the <em>software</em>: how do you train it, what objective do you use, and what
+        does it learn? The answer that changed the field: pretrain on vast amounts of text
+        with a self-supervised objective, then fine-tune for each downstream task.
+        BERT (Devlin et al. 2018) and GPT (Radford et al. 2018) are the two canonical
+        instantiations of this idea, each with a different pretraining objective and
+        different downstream applications. GPT-2, GPT-3, and all subsequent language
+        models are scaling and refinement of the GPT approach. This lesson explains
+        both models, their differences, and the scaling laws that predict when making
+        the model bigger is worth the compute.
+      </div>
+
+      <!-- ── Section 1: The paradigm shift ──────────────────────────────── -->
+      <div class="section-head" id="paradigm-shift">The paradigm shift: pretrain → fine-tune</div>
+
+      <div class="prose">
+        Before 2018, the dominant NLP paradigm was: train a separate model from scratch
+        for each task (sentiment analysis, named entity recognition, question answering,
+        etc.). Models shared word embeddings (Word2Vec, GloVe) but the network weights
+        above the embedding layer were task-specific. This had two problems:
+      </div>
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:8px;"><strong>Labeled data bottleneck.</strong> Every new task requires labeled examples.
+          Creating 10,000 labeled examples for each of 100 NLP tasks is expensive, slow,
+          and inconsistent across tasks.</li>
+        <li><strong>Limited transfer.</strong> Word2Vec embeddings are context-free —
+          the same vector for "bank" whether it means a river bank or a financial institution.
+          They capture surface-level word similarity but not the rich contextualised meaning
+          that arises from sentence structure.</li>
+      </ul>
+
+      <div class="prose">
+        The <strong>pretrain-then-fine-tune paradigm</strong> addresses both:
+      </div>
+
+      <ol class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:8px;"><strong>Pretrain</strong> a large Transformer on a
+          massive unlabeled corpus using a self-supervised objective. The model learns
+          rich contextualised representations of language — no labels required.</li>
+        <li><strong>Fine-tune</strong> the pretrained model on a small labeled dataset
+          for the target task, updating all weights (or just adding a small task-specific
+          head). The pretrained features transfer well, so the model needs far fewer
+          labeled examples than training from scratch.</li>
+      </ol>
+
+      <div class="prose">
+        This paradigm shift is sometimes called the "ImageNet moment" of NLP — analogous
+        to how ImageNet pretraining enabled strong transfer for computer vision tasks.
+      </div>
+
+      <!-- ── Section 2: Why pretraining works ───────────────────────────── -->
+      <div class="section-head" id="pretraining">Why pretraining works</div>
+
+      <div class="prose">
+        The intuition: to predict the next word or fill in a masked word, the model must
+        understand grammar, context, facts, and reasoning. "The cat sat on the ___" is
+        easy. "The treaty was ratified by the ___" requires knowing that treaties are
+        ratified by legislatures or governments. "The neurotransmitter that inhibits
+        cortical excitation is ___" requires domain knowledge. All of this is implicit in
+        predicting what word comes next in natural text.
+      </div>
+
+      <div class="prose">
+        More formally: a language model trained on large text corpora is implicitly learning
+        a compressed model of the world. The training signal $p(x_t \mid x_{<t})$ forces
+        the model to maintain, in its hidden states, whatever information is necessary to
+        predict the next token. This includes syntax (word order, agreement), semantics
+        (word meaning, coreference), pragmatics (discourse structure), and world knowledge
+        (facts and relationships). The Transformer's architecture — with its large $d_{\text{model}}$,
+        many heads, and deep stack — has the capacity to encode all of this.
+      </div>
+
+      <div class="callout">
+        <strong>The self-supervised signal is unlimited.</strong> Language modelling
+        requires no human annotation — any raw text is training data. The English Wikipedia
+        (3.5B words), BookCorpus (11K books), Common Crawl (petabytes of web text),
+        GitHub, arXiv, Stack Exchange — all of these are automatically training data.
+        BERT used BooksCorpus + Wikipedia (3.3B words). GPT-3 was trained on 300B tokens
+        from Common Crawl, WebText2, Books, and Wikipedia. This scale of data is what
+        makes the pretrained representations so rich.
+      </div>
+
+      <!-- ── Section 3: BERT ─────────────────────────────────────────────── -->
+      <div class="section-head" id="bert">BERT: Bidirectional Encoder Representations from Transformers</div>
+
+      <div class="prose">
+        Devlin, Chang, Lee, and Toutanova (2018). BERT is a Transformer <strong>encoder</strong>
+        (no decoder). It processes the full input sequence with bidirectional self-attention —
+        every token attends to every other token. It uses two pretraining objectives:
+      </div>
+
+      <div class="proof-box">
+        <div class="proof-header">BERT pretraining — Masked Language Modelling (MLM)</div>
+        <div class="proof-body">
+          <p>Given a sentence, randomly mask 15% of tokens. Of the selected tokens:</p>
+          <ul>
+            <li>80% are replaced with a special [MASK] token</li>
+            <li>10% are replaced with a random token from the vocabulary</li>
+            <li>10% are kept unchanged</li>
+          </ul>
+          <p>The model must predict the original token at each masked position.
+          Training objective: cross-entropy loss over the masked positions:
+          $$\mathcal{L}_{\text{MLM}} = -\sum_{i \in \text{masked}} \log p(x_i \mid x_{\setminus i})$$
+          where $x_{\setminus i}$ denotes the full sequence with position $i$ masked out.</p>
+
+          <p><strong>Why 80/10/10 and not just 100% masking?</strong>
+          If all selected tokens were always replaced with [MASK], the model would learn
+          to ignore them (since [MASK] never appears at fine-tuning time). The 10% random
+          replacement forces the model to maintain good representations for all tokens, not
+          just those that happen to be masked. The 10% unchanged forces the model to carry
+          contextual representations even for observed tokens, not just fill-in blanks.</p>
+
+          <p><strong>Bidirectionality is the key advantage.</strong> Because BERT uses an
+          encoder (no causal mask), predicting the masked token can use context from both
+          left and right. The model sees "the cat sat on the [MASK] mat" and can use both
+          "the cat sat on the" (left) and "mat" (right) to predict "black/warm/floor" etc.
+          This is richer than GPT's left-to-right prediction, where only left context is available.</p>
+        </div>
+      </div>
+
+      <div class="proof-box">
+        <div class="proof-header">BERT pretraining — Next Sentence Prediction (NSP)</div>
+        <div class="proof-body">
+          <p>The input to BERT is a pair of sentences: [CLS] Sentence A [SEP] Sentence B [SEP].
+          50% of the time, Sentence B is the actual next sentence after Sentence A in the corpus;
+          50% of the time, it is a random sentence from the corpus.</p>
+          <p>BERT predicts (from the [CLS] token's representation) whether Sentence B follows
+          Sentence A:
+          $$p(\text{IsNext} \mid [\text{CLS}] \text{ representation}) = \text{sigmoid}(W_{\text{NSP}} \mathbf{h}_{[\text{CLS}]})$$
+          Training objective: binary cross-entropy.</p>
+          <p><strong>Note:</strong> Subsequent work (Liu et al. 2019, RoBERTa) found that NSP
+          provides little benefit and can even hurt performance. BERT was actually slightly
+          improved by removing NSP entirely and training only with MLM. The lesson: clever-seeming
+          auxiliary objectives don't always help. MLM alone is sufficient.</p>
+        </div>
+      </div>
+
+      <div class="prose">
+        <strong>BERT architecture.</strong> Two sizes were released:
+      </div>
+
+      <div style="overflow-x:auto;margin:16px 0;">
+        <table style="width:100%;border-collapse:collapse;font-size:0.875rem;">
+          <tr style="background:#e8f0f5;color:#1a2840;">
+            <th style="padding:8px 12px;text-align:left;border:1px solid #c4d4df;">Config</th>
+            <th style="padding:8px 12px;text-align:left;border:1px solid #c4d4df;">Layers</th>
+            <th style="padding:8px 12px;text-align:left;border:1px solid #c4d4df;">$d_{\text{model}}$</th>
+            <th style="padding:8px 12px;text-align:left;border:1px solid #c4d4df;">Heads</th>
+            <th style="padding:8px 12px;text-align:left;border:1px solid #c4d4df;">Parameters</th>
+          </tr>
+          <tr>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">BERT-Base</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">12</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">768</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">12</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">110M</td>
+          </tr>
+          <tr style="background:#f9fafb;">
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">BERT-Large</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">24</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">1024</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">16</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">340M</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="prose">
+        BERT uses WordPiece tokenisation (vocabulary size 30,522), learned positional
+        embeddings (not sinusoidal), and was trained on 16 TPUs for 4 days (Base) or
+        64 TPUs for 4 days (Large). Maximum sequence length: 512 tokens.
+      </div>
+
+      <!-- ── Section 4: BERT fine-tuning ─────────────────────────────────── -->
+      <div class="section-head" id="bert-finetune">BERT fine-tuning</div>
+
+      <div class="prose">
+        BERT fine-tuning adds a small task-specific head on top of the pretrained model
+        and trains the full system (pretrained weights + head) on the labeled task data.
+        The same pretrained BERT handles every downstream task — only the head changes:
+      </div>
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:10px;"><strong>Sentence classification</strong> (sentiment, entailment):
+          input the sentence as [CLS] sentence [SEP], take the [CLS] token's output
+          representation, and pass it through a linear classifier:
+          $p(\text{class}) = \text{softmax}(W_c \mathbf{h}_{[\text{CLS}]})$.
+          Train on labeled examples.</li>
+        <li style="margin-bottom:10px;"><strong>Token classification</strong> (NER, POS tagging):
+          take the output representation of every non-special token and pass it through
+          a linear classifier per token: $p(\text{tag}_i) = \text{softmax}(W_t \mathbf{h}_i)$.</li>
+        <li style="margin-bottom:10px;"><strong>Question answering</strong> (SQuAD-style):
+          input [CLS] question [SEP] passage [SEP], predict the start and end span in the
+          passage. Two linear layers predict $p(\text{start}_i) = \text{softmax}(W_s \mathbf{h}_i)$
+          and $p(\text{end}_i) = \text{softmax}(W_e \mathbf{h}_i)$ over all passage positions.</li>
+        <li><strong>Sentence pair tasks</strong> (NLI, semantic similarity): input
+          [CLS] sentence A [SEP] sentence B [SEP], use [CLS] representation for classification.</li>
+      </ul>
+
+      <div class="prose">
+        BERT set state of the art on 11 NLP benchmarks when released. On GLUE (General
+        Language Understanding Evaluation), BERT-Large improved the previous best score
+        by 7 absolute points. On SQuAD 2.0 (reading comprehension), it exceeded human
+        performance.
+      </div>
+
+      <!-- ── Section 5: GPT ──────────────────────────────────────────────── -->
+      <div class="section-head" id="gpt">GPT: Generative Pre-trained Transformer</div>
+
+      <div class="prose">
+        Radford, Narasimhan, Salimans, and Sutskever (OpenAI, 2018). GPT is a Transformer
+        <strong>decoder stack</strong> — causal (left-to-right) self-attention only, no
+        encoder, no cross-attention. It is pretrained with the standard language modelling
+        objective:
+        $$\mathcal{L}_{\text{LM}} = -\sum_{t} \log p(x_t \mid x_1, \ldots, x_{t-1}; \theta)$$
+        This is exactly the objective from Lesson 3's language modelling section, computed
+        efficiently over all positions simultaneously using the causal mask.
+      </div>
+
+      <div class="prose">
+        <strong>GPT architecture (2018):</strong> 12 layers, $d_{\text{model}} = 768$,
+        12 heads, BPE tokenisation (40,000 tokens), 117M parameters. Trained on BooksCorpus
+        (800M words). GPT fine-tunes on downstream tasks in a similar way to BERT, but
+        the head design differs because GPT generates — it takes the last token's
+        representation and predicts the next token, so classification tasks are framed
+        as: append a delimiter and classification token, generate that token, and use
+        its representation for the label.
+      </div>
+
+      <!-- ── Section 6: GPT-2, GPT-3, few-shot ──────────────────────────── -->
+      <div class="section-head" id="gpt2-3">GPT-2, GPT-3, and few-shot learning</div>
+
+      <div class="prose">
+        <strong>GPT-2 (Radford et al. 2019)</strong>: 1.5B parameters (10× GPT-1),
+        trained on WebText (40GB of text scraped from Reddit links with $\geq 3$ upvotes).
+        Key architectural changes: pre-layer normalisation, weight initialisation scaled
+        by $1/\sqrt{N}$ for residual layers.
+        The key finding: GPT-2 produces convincing, coherent paragraphs that were difficult
+        to distinguish from human writing. OpenAI delayed release due to misuse concerns.
+        Importantly, GPT-2 showed that language model performance continued to improve with
+        scale — there was no sign of diminishing returns at 1.5B parameters.
+      </div>
+
+      <div class="prose">
+        <strong>GPT-3 (Brown et al. 2020)</strong>: 175B parameters. Trained on 300B tokens
+        from Common Crawl (filtered), WebText2, Books1, Books2, and English Wikipedia.
+        GPT-3 introduced two conceptual advances beyond scale:
+      </div>
+
+      <div class="prose">
+        <strong>In-context learning / few-shot prompting.</strong> GPT-3 demonstrated that
+        a pretrained language model can perform new tasks without any gradient updates
+        (no fine-tuning) — just by providing examples in the prompt. The three regimes:
+      </div>
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:10px;"><strong>Zero-shot:</strong> describe the task in
+          natural language and ask the model to complete it. "Translate English to French:
+          cheese → " The model has never been trained on this exact prompt format but has
+          seen enough translations to complete it.</li>
+        <li style="margin-bottom:10px;"><strong>One-shot:</strong> provide one example
+          before the query. "Translate: sea otter → loutre de mer. cheese → "</li>
+        <li><strong>Few-shot:</strong> provide $k$ examples (typically 10–100). The model
+          "learns" from the examples in context without any weight updates. GPT-3 with
+          few-shot prompting matched or exceeded fine-tuned BERT on many benchmarks.</li>
+      </ul>
+
+      <div class="prose">
+        In-context learning is striking because it implies the model is performing a kind
+        of learning purely through its forward pass — reading the examples, extracting a
+        pattern, and applying it to new inputs. Mechanistically, this appears to be a form
+        of implicit gradient descent computed by the attention layers (Akyürek et al. 2022,
+        Dai et al. 2022), though this is still an active research area.
+      </div>
+
+      <!-- ── Section 7: Scaling laws ─────────────────────────────────────── -->
+      <div class="section-head" id="scaling-laws">Scaling laws</div>
+
+      <div class="prose">
+        Kaplan, McCandlish, Henighan et al. (OpenAI, 2020) established quantitative
+        relationships between model performance and scale:
+        $$\mathcal{L}(N) \propto N^{-\alpha_N} \qquad \text{(fixed compute budget, optimal tokens)}$$
+        where $\mathcal{L}$ is the language modelling loss (cross-entropy in nats) and $N$
+        is the number of model parameters. The exponent $\alpha_N \approx 0.076$ — a power
+        law in the number of parameters.
+      </div>
+
+      <div class="proof-box">
+        <div class="proof-header">The Chinchilla scaling law (Hoffmann et al. 2022)</div>
+        <div class="proof-body">
+          <p>Given a fixed compute budget $C$ (FLOPs), the optimal model size $N^*$ and
+          training token count $D^*$ satisfy:
+          $$N^* \approx \left(\frac{C}{6}\right)^{1/2} \qquad D^* = \frac{C}{6 N^*}$$
+          This means $N^* \propto C^{0.5}$ and $D^* \propto C^{0.5}$ — model size and data
+          size should scale equally with compute.</p>
+          <p>The factor of 6 comes from the fact that one forward pass through an $N$-parameter
+          Transformer takes approximately $6N$ FLOPs per token (2N for forward, 4N for backward).</p>
+          <p><strong>The key insight</strong>: Kaplan et al. (2020) had recommended scaling
+          model size more aggressively than data. Hoffman et al. (2022) showed this was wrong —
+          for a fixed compute budget, you should train a smaller model on more data rather than a
+          larger model on less data. A 70B parameter model trained on 1.4 trillion tokens
+          (Chinchilla) matched or outperformed a 280B model (Gopher) trained on 300B tokens,
+          at roughly equal compute cost. This shifted industry practice: LLaMA-1 (65B),
+          LLaMA-2 (70B), Mistral (7B trained on 1T+ tokens) all follow Chinchilla-optimal
+          or over-trained recipes.</p>
+          <p>Over-training (training well past the Chinchilla-optimal token count for a given
+          model size) is common in practice because inference is cheap relative to training:
+          a smaller model trained on more data has lower inference cost for the same capability,
+          which matters when the model is deployed to millions of users.</p>
+        </div>
+      </div>
+
+      <!-- ── Section 8: BERT vs GPT ──────────────────────────────────────── -->
+      <div class="section-head" id="bert-vs-gpt">BERT vs GPT: the fundamental difference</div>
+
+      <div style="overflow-x:auto;margin:16px 0;">
+        <table style="width:100%;border-collapse:collapse;font-size:0.875rem;">
+          <tr style="background:#e8f0f5;color:#1a2840;">
+            <th style="padding:8px 12px;text-align:left;border:1px solid #c4d4df;"></th>
+            <th style="padding:8px 12px;text-align:left;border:1px solid #c4d4df;">BERT</th>
+            <th style="padding:8px 12px;text-align:left;border:1px solid #c4d4df;">GPT</th>
+          </tr>
+          <tr>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;"><strong>Architecture</strong></td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">Encoder only (bidirectional)</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">Decoder only (causal)</td>
+          </tr>
+          <tr style="background:#f9fafb;">
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;"><strong>Pretraining objective</strong></td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">Masked LM (predict masked tokens)</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">Autoregressive LM (predict next token)</td>
+          </tr>
+          <tr>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;"><strong>Context</strong></td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">Full bidirectional</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">Left-to-right only</td>
+          </tr>
+          <tr style="background:#f9fafb;">
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;"><strong>Primary use</strong></td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">Understanding tasks (classification, NER, QA)</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">Generation tasks (language modelling, dialogue, code)</td>
+          </tr>
+          <tr>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;"><strong>Downstream</strong></td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">Fine-tune with task head</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">Fine-tune, or few-shot / zero-shot prompting</td>
+          </tr>
+          <tr style="background:#f9fafb;">
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;"><strong>Scales to?</strong></td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">~350M (diminishing returns in practice)</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">175B+ (GPT-3), emergent capabilities at scale</td>
+          </tr>
+          <tr>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;"><strong>Descendants</strong></td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">RoBERTa, ALBERT, DistilBERT, XLNet, DeBERTa</td>
+            <td style="padding:8px 12px;border:1px solid #e0e6ea;">GPT-2/3/4, LLaMA, Mistral, Claude, Gemini</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="prose">
+        <strong>Why did the GPT line win at scale?</strong> The masked LM objective is more
+        sample-efficient per token: if you mask 15% of tokens, the model only gets a
+        training signal for 15% of positions per sequence. The autoregressive objective
+        provides a signal for every position. At large scale, this matters. Additionally,
+        generation is inherently a more flexible capability: a model that can generate
+        arbitrary text can, with the right prompting, perform classification, extraction,
+        translation, and reasoning as special cases. BERT cannot generate.
+      </div>
+
+      <!-- ── Section 9: The modern LLM ─────────────────────────────────────── -->
+      <div class="section-head" id="modern-llm">The modern LLM: beyond GPT-3</div>
+
+      <div class="prose">
+        GPT-3 demonstrated that scaling pretrained language models produced remarkable
+        results. The field then added three further developments to build the modern
+        "assistant" LLM:
+      </div>
+
+      <div class="prose">
+        <strong>1. Instruction fine-tuning (InstructGPT, 2022).</strong> GPT-3 was a raw
+        language model — it predicted text continuations, not responses to instructions.
+        To make it follow instructions, OpenAI fine-tuned it on a curated dataset of
+        human-written (prompt, response) pairs. This supervised fine-tuning (SFT)
+        taught the model the instruction-following format.
+      </div>
+
+      <div class="prose">
+        <strong>2. RLHF — Reinforcement Learning from Human Feedback.</strong> After SFT,
+        the model was further aligned with human preferences via RLHF:
+        <ol style="padding-left:1.4em; margin-top:8px;">
+          <li style="margin-bottom:8px;">Sample multiple responses for each prompt from the SFT model.</li>
+          <li style="margin-bottom:8px;">Have human raters rank the responses by quality. Build a
+            <em>reward model</em> — a neural network trained to predict human preference scores
+            from (prompt, response) pairs.</li>
+          <li>Fine-tune the language model using PPO (proximal policy optimisation) to maximise
+            the reward model's score, with a KL-divergence penalty against the SFT model to
+            prevent reward hacking ("KL control").</li>
+        </ol>
+        This produced InstructGPT, which raters preferred 100:1 over the base GPT-3 for
+        instruction-following tasks, despite being 100× smaller in parameter count.
+      </div>
+
+      <div class="prose">
+        <strong>3. Constitutional AI and RLAIF (Claude, 2022).</strong> Anthropic's approach
+        (Bai et al. 2022) replaced human preference labels with AI-generated preference labels
+        and a "constitution" — a set of principles the model should follow. The model critiques
+        and revises its own outputs against the constitution, generating a synthetic preference
+        dataset that is then used for RLHF without requiring millions of human labels.
+      </div>
+
+      <div class="prose">
+        <strong>The result.</strong> The modern LLM (ChatGPT, Claude, Gemini, LLaMA+instruction)
+        is a GPT-style autoregressive Transformer with:
+        <ul style="padding-left:1.4em; margin-top:8px;">
+          <li>Pretraining on trillions of tokens (the foundation)</li>
+          <li>Supervised fine-tuning on instruction data (the format)</li>
+          <li>RLHF/RLAIF with a reward model (the alignment)</li>
+          <li>Additional modifications: GQA (grouped query attention for inference efficiency),
+            RoPE positional encodings, SwiGLU activation, RMSNorm — each a refinement of the
+            base Transformer, none conceptually departing from the core Q/K/V architecture.</li>
+        </ul>
+      </div>
+
+      <!-- ── Worked examples ──────────────────────────────────────────── -->
+      <div class="section-head" id="examples">Worked examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — MLM training signal calculation</strong></div>
+        <div class="example-problem">
+          <p>Consider training BERT-Base (110M parameters) with sequences of length 128 tokens,
+          batch size 256, and masking rate 15%. How many masked token predictions does BERT
+          process per training step, and how does this compare to GPT with the same batch/sequence?</p>
+        </div>
+        <div class="example-body">
+          <p><strong>BERT MLM:</strong>
+          Tokens per batch: $256 \times 128 = 32{,}768$ total tokens.
+          Masked tokens: $32{,}768 \times 0.15 = 4{,}915$ masked positions.
+          Training signal: 4,915 cross-entropy predictions per step.</p>
+
+          <p><strong>GPT autoregressive LM:</strong>
+          Same batch: $256 \times 128 = 32{,}768$ tokens.
+          Training signal: 32,768 next-token predictions per step (every position contributes a loss term, subject to the causal mask).</p>
+
+          <p><strong>Ratio:</strong> GPT gets $32{,}768 / 4{,}915 \approx 6.7\times$ as many gradient signal contributions per step for the same batch. The MLM masking rate of 15% means BERT is "wasting" ~85% of its token compute from a gradient signal perspective. This inefficiency is one reason the autoregressive objective scales better — every token is a training example, not just the masked ones.</p>
+
+          <p>Note: BERT advocates argue that masked prediction is harder per example (bidirectional context means the task is more about filling semantic gaps than next-token prediction), so raw count isn't the full story. But at the scale of trillions of tokens, the autoregressive signal advantage dominates.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Chinchilla compute allocation</strong></div>
+        <div class="example-problem">
+          <p>You have a compute budget of $C = 6 \times 10^{22}$ FLOPs (roughly the budget for a
+          70B-parameter LLaMA-2 run). According to the Chinchilla rule, what is the optimal model
+          size and token count? How does this compare to GPT-3's 175B / 300B token training?</p>
+        </div>
+        <div class="example-body">
+          <p>Chinchilla optimal: $N^* = \sqrt{C/6}$, $D^* = \sqrt{C/6}$ tokens (i.e. $N^* = D^*$).</p>
+          $$N^* = D^* = \sqrt{\frac{6 \times 10^{22}}{6}} = \sqrt{10^{22}} = 10^{11} = 100\text{B}$$
+          <p>So at this compute budget, optimal is ~100B parameters trained on ~100B tokens.</p>
+
+          <p>GPT-3 used $C \approx 3.14 \times 10^{23}$ FLOPs for 175B parameters on 300B tokens.
+          By Chinchilla: $N^* = D^* \approx \sqrt{3.14 \times 10^{23} / 6} = \sqrt{5.2 \times 10^{22}} \approx 72\text{B}$.
+          GPT-3 was therefore overscaled in parameters and undertrained in tokens — a model of ~72B parameters trained on ~720B tokens would have used the same compute and achieved better performance.</p>
+
+          <p>This is exactly what Chinchilla (70B, 1.4T tokens) demonstrated empirically: it matched or beat GPT-3 (175B, 300B tokens) at about equal compute cost. The industry shifted from "train the biggest model on the data we have" to "train a compute-optimal model on as many tokens as possible."</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Fine-tuning BERT for binary sentiment</strong></div>
+        <div class="example-problem">
+          <p>Describe every step from raw text to fine-tuned prediction for a binary sentiment
+          classifier using BERT-Base. What changes during fine-tuning vs. what is frozen?</p>
+        </div>
+        <div class="example-body">
+          <p><strong>Step 1 — Tokenise.</strong> "This film is excellent!" → WordPiece tokens:
+          [CLS], "This", "film", "is", "excellent", "!", [SEP]. Map to token IDs.</p>
+
+          <p><strong>Step 2 — Embed.</strong> Token ID lookup → $d_{\text{model}} = 768$-dimensional
+          embeddings. Add segment embeddings (all Segment A) and learned positional embeddings.
+          Result: $7 \times 768$ matrix.</p>
+
+          <p><strong>Step 3 — Forward through 12 encoder blocks.</strong> All 12 bidirectional
+          self-attention blocks process the sequence. Output: $7 \times 768$ contextualised
+          representations.</p>
+
+          <p><strong>Step 4 — Classification head.</strong> Extract the [CLS] token representation:
+          $\mathbf{h}_{[\text{CLS}]} \in \mathbb{R}^{768}$. Pass through:
+          $$\hat{y} = \text{softmax}(W_c \mathbf{h}_{[\text{CLS}]} + \mathbf{b}_c)$$
+          where $W_c \in \mathbb{R}^{2 \times 768}$ (2 classes). This head has only $2 \times 768 + 2 = 1538$ parameters, added fresh (not pretrained).</p>
+
+          <p><strong>Fine-tuning:</strong> All 110M BERT parameters + 1,538 head parameters are
+          updated via gradient descent on the labeled sentiment dataset. Typical hyperparameters:
+          learning rate $2 \times 10^{-5}$ (much smaller than pretraining), 3–4 epochs, batch
+          size 32. The small LR is essential — aggressive updates would destroy the pretrained
+          features (catastrophic forgetting).</p>
+
+          <p><strong>Inference:</strong> Forward pass through the full system, take argmax of
+          $\hat{y}$. For SST-2 (Stanford Sentiment Treebank), BERT-Base achieves 93.5% accuracy
+          vs. prior state of the art of 91.3%.</p>
+        </div>
+      </div>
+
+      <!-- ── Food for thought ────────────────────────────────────────────── -->
+      <div class="section-head" id="food-for-thought">Food for thought</div>
+
+      <ul class="fft-list">
+        <li class="fft-item">
+          In-context learning (few-shot prompting) allows GPT-3 to perform new tasks
+          without any gradient updates. Yet classical learning theory says you can't learn
+          from a handful of examples without massive overfitting. What's different here?
+          <div class="fft-answer">
+            In-context learning does not involve gradient descent on the few examples — the
+            weights stay fixed. What's happening is that the model, trained on 300B tokens
+            of text, has already encountered countless "task specifications" in the form of
+            instructional passages, worked examples, and question-answer sequences in the
+            training corpus. The few-shot examples in the prompt are not training examples
+            in the classical sense — they are context that activates relevant prior knowledge
+            embedded in the weights from pretraining.
+            More precisely: the pretraining objective (next token prediction) over a corpus
+            that includes code, tutorials, papers, Q&A websites, and structured text forces
+            the model to implicitly learn meta-level relationships ("if I see a sequence of
+            (input, output) pairs, the pattern is X, and the next input will have output Y").
+            This is learning to learn — or "implicit in-context learning" — baked into the
+            model by the diversity of pretraining data.
+            Classical overfitting assumes the hypothesis class is fit to the examples.
+            In-context learning retrieves from a fixed hypothesis class (the frozen weights);
+            the "fitting" is done by selecting the right activation pattern, not by updating
+            weights. Akyürek et al. (2022) showed formally that linear self-attention with the
+            right weight initialisation implements gradient descent in the forward pass —
+            suggesting that in-context learning may literally be gradient descent, implemented
+            by the attention computation.
+          </div>
+        </li>
+        <li class="fft-item">
+          The reward model in RLHF is trained to predict human preference rankings. It is
+          then used to provide a gradient signal to fine-tune the language model. What could
+          go wrong with this approach, and what mitigation does the KL penalty provide?
+          <div class="fft-answer">
+            The fundamental problem is reward hacking: the language model, optimised by PPO
+            to maximise the reward model's score, will find ways to score highly that don't
+            correspond to genuinely good outputs. The reward model is itself a neural network
+            trained on finite human comparisons — it is an approximation of human preference,
+            not a perfect oracle. Any approximation has failure modes.
+            Examples of reward hacking: generating very long outputs (if human annotators
+            rated longer outputs higher in the comparison data); using flattery ("That's a
+            great question!"); repeating phrases that appeared in high-scoring training examples;
+            generating confident-sounding but false information (sycophancy). At the extreme,
+            the LM might learn to "jailbreak" the reward model by producing adversarial inputs
+            that score high on the reward model without actually being good responses.
+            The KL penalty $\mathbb{E}_{x \sim \text{LM}}[\log \pi_\theta(x) - \log \pi_{\text{SFT}}(x)]$
+            penalises the fine-tuned policy $\pi_\theta$ for diverging too far from the SFT
+            model $\pi_{\text{SFT}}$. This prevents the model from deviating wildly from the
+            distribution where the reward model has meaningful gradients, limiting how
+            aggressively it can exploit reward model errors. The KL weight is a hyperparameter
+            that balances alignment gain (large KL allowed = more reward model optimisation)
+            against distribution collapse risk (small KL allowed = stay close to SFT but limit
+            alignment). Getting this balance right is an active research problem.
+          </div>
+        </li>
+        <li class="fft-item">
+          The original Transformer (Lesson 6) had both encoder and decoder. BERT uses only
+          the encoder; GPT uses only the decoder. T5 (Raffel et al. 2020) uses both again,
+          framing every NLP task as text-to-text. What does the full encoder-decoder design
+          buy you that encoder-only and decoder-only models can't do as naturally?
+          <div class="fft-answer">
+            The full encoder-decoder design provides natural structural separation between
+            "reading the input" (encoder) and "generating the output" (decoder).
+            For tasks where the input and output are in different domains or different lengths
+            — translation, summarisation, question answering with a generated answer, code
+            generation from a specification — this separation is genuinely useful. The encoder
+            can build a rich bidirectional representation of the full input without any causal
+            constraint; the decoder can attend to this representation freely via cross-attention
+            at every step.
+            Encoder-only (BERT) can't generate by construction. Decoder-only (GPT) can handle
+            everything as "generate the continuation of this prompt," but for tasks where the
+            input and output have different distributions (e.g., summarisation: input is a news
+            article, output is a brief summary), mixing them into one causal sequence forces the
+            model to treat the summary token distribution as just another continuation of the
+            article — the model must somehow switch modes at the right boundary.
+            T5's finding: framing everything as text-to-text worked well with an encoder-decoder,
+            reaching competitive performance across diverse tasks with a unified architecture
+            and training recipe. The practical reason encoder-decoder models are less common at
+            large scale (>10B) is inference cost: the encoder must run once per input, and the
+            decoder runs autoregressively — the total cost is similar to decoder-only, but
+            engineering and serving is more complex. Decoder-only models (GPT-style) are simpler
+            to serve and scale.
+          </div>
+        </li>
+      </ul>
+
+      <!-- ── Common pitfalls ─────────────────────────────────────────────── -->
+      <div class="section-head" id="pitfalls">Common pitfalls</div>
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:14px;">
+          <strong>Using too high a learning rate for BERT fine-tuning.</strong>
+          BERT fine-tuning is sensitive to the learning rate. Values above $5 \times 10^{-5}$
+          commonly cause divergence on small datasets (catastrophic forgetting of pretrained
+          features). Standard range: $1 \times 10^{-5}$ to $5 \times 10^{-5}$. Use linear
+          warmup for the first 6–10% of steps and linear decay to zero.
+        </li>
+        <li style="margin-bottom:14px;">
+          <strong>Treating perplexity as the final evaluation metric for LLMs.</strong>
+          Perplexity measures how well the model predicts held-out tokens — it is a training
+          proxy, not a task metric. A model with lower perplexity can be worse at downstream
+          tasks if it is trained on a different distribution or with a different tokenisation.
+          Always evaluate on task-relevant benchmarks (MMLU, HellaSwag, HumanEval for code,
+          etc.) rather than perplexity alone.
+        </li>
+        <li style="margin-bottom:14px;">
+          <strong>Confusing "emergent" capabilities with unpredictable ones.</strong>
+          The widely cited "emergent capabilities" paper (Wei et al. 2022) showed that many
+          capabilities appear to jump discontinuously at certain scales. Schaeffer et al. (2023)
+          showed that most of this appearance of emergence is an artifact of non-linear
+          evaluation metrics: when you plot accuracy on a log-linear scale, a smoothly
+          improving probability can look like a sudden jump when thresholded to binary correct/incorrect.
+          LLM capabilities improve smoothly with scale in probability space; "emergence" is
+          largely a measurement artifact. Don't over-interpret discontinuous jumps in benchmark
+          scores as qualitative phase transitions.
+        </li>
+        <li>
+          <strong>Assuming RLHF produces a "truthful" model.</strong>
+          RLHF optimises for human preference ratings. Human raters often prefer confident,
+          fluent, detailed answers — even when they are wrong. This can make RLHF models more
+          sycophantic (agree with the user, sound confident) without making them more accurate.
+          Helpfulness and honesty are not the same reward signal. Constitutional AI and RLAIF
+          partially address this by explicitly penalising dishonest outputs in the constitution,
+          but the fundamental tension between "what sounds good to raters" and "what is true"
+          remains an open problem.
+        </li>
+      </ul>
+
+      <!-- ── Connects to ─────────────────────────────────────────────────── -->
+      <div class="section-head" id="connects-to">Connects to</div>
+
+      <div class="prose">
+        <strong>The Transformer (Lesson 6)</strong> — BERT and GPT are both direct
+        instantiations of the Transformer architecture, using the encoder-only and
+        decoder-only subsets respectively. Everything in this lesson builds directly
+        on the multi-head attention, positional encoding, and residual block structure
+        from Lesson 6.
+      </div>
+      <div class="prose">
+        <strong>Probabilistic Perspectives (SL11)</strong> — the pretraining objective
+        (cross-entropy / negative log-likelihood) was derived there from the perspective
+        of maximum likelihood estimation over categorical distributions. Language modelling
+        is MLE over a Categorical noise model with $V$-way outputs.
+      </div>
+      <div class="prose">
+        <strong>Reinforcement Learning (RL cluster)</strong> — RLHF uses PPO (proximal
+        policy optimisation), a policy gradient method from the RL cluster. The language
+        model is the policy; the reward model is the reward function; the prompt is the
+        state; the generated token is the action. RL9 (Policy Gradient Methods) covers
+        the gradient estimator used in RLHF.
+      </div>
+      <div class="prose">
+        <strong>Training at Scale (DL8, planned)</strong> — the lessons learned from
+        scaling BERT and GPT feed directly into the next lesson, which covers mixed
+        precision training, gradient checkpointing, distributed training strategies
+        (data parallel, pipeline parallel, tensor parallel), and how to actually train
+        a model at this scale.
+      </div>
+
+      <div class="lesson-nav">
+        <a href="transformer.html" class="lesson-nav-btn">← 6 · The Transformer</a>
+        <span class="lesson-nav-btn" style="opacity:0.4;cursor:default;">8 · Training at Scale (planned)</span>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+
+</body>
+</html>

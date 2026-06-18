@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deep Learning — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div id="cluster-nav" data-cluster="deep-learning" data-current="index.html"></div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <span>Deep Learning</span>
+      </div>
+
+      <div class="lesson-title">Deep Learning</div>
+      <div class="lesson-meta">Residual Networks · CNNs · RNNs · LSTMs · Attention · Transformers · BERT & GPT</div>
+
+      <div class="prose">
+        Deep learning is the study of neural networks with many layers — and the architectural
+        innovations that make those networks trainable, expressive, and general. This cluster
+        begins where the Supervised Learning cluster ends: with the basic neural network and
+        backpropagation. It then introduces the key architectural ideas — residual connections,
+        convolution, recurrence, and attention — that underpin every major model in use today.
+        The culminating lesson is the Transformer, the architecture behind GPT, BERT, LLaMA,
+        and virtually every large language model in existence.
+      </div>
+
+      <div class="prose">
+        <strong>Prerequisites:</strong> Supervised Learning L8–L11 (neural networks, backpropagation,
+        training, probabilistic perspectives). In particular: the forward pass, gradient computation,
+        softmax, cross-entropy, and Adam are assumed.
+      </div>
+
+      <div id="lesson-table"></div>
+
+      <div class="section-head">References</div>
+      <ul class="book-list" id="cluster-refs"></ul>
+
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+<script src="../books-render.js"></script>
+<script>
+  renderLessonTable({ navPath: 'nav.json', containerId: 'lesson-table' });
+  renderBooks({ containerId: 'cluster-refs', clusterId: 'deep-learning', jsonPath: '../books.json' });
+</script>
+
+</body>
+</html>

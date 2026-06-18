@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Convolutional Neural Networks — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false}
+        ],
+        throwOnError: false
+      });
+    });
+  </script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Prerequisites</div>
+        <a href="../supervised/neural-networks.html" class="nav-item">SL8 · Neural Networks</a>
+        <a href="deep-networks.html" class="nav-item">DL1 · Deep Networks &amp; Residuals</a>
+      </div>
+
+      <div id="cluster-nav" data-cluster="deep-learning" data-current="cnns.html"></div>
+
+      <hr class="sidebar-rule">
+
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#problem" class="nav-item">The locality problem</a>
+        <a href="#convolution" class="nav-item">The convolution operation</a>
+        <a href="#weight-sharing" class="nav-item">Weight sharing</a>
+        <a href="#pooling" class="nav-item">Pooling</a>
+        <a href="#receptive-field" class="nav-item">Receptive fields</a>
+        <a href="#architectures" class="nav-item">Classic architectures</a>
+        <a href="#what-cnns-learn" class="nav-item">What CNNs actually learn</a>
+        <a href="#examples" class="nav-item">Worked examples</a>
+        <a href="#food-for-thought" class="nav-item">Food for thought</a>
+        <a href="#pitfalls" class="nav-item">Common pitfalls</a>
+        <a href="#connects-to" class="nav-item">Connects to</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Deep Learning</a>
+        <span class="sep">›</span>
+        <span>2 · Convolutional Neural Networks</span>
+      </div>
+
+      <div class="lesson-title">2 · Convolutional Neural Networks</div>
+      <div class="lesson-meta">Convolution · Pooling · Weight Sharing · Translation Invariance · Classic Architectures · What CNNs Learn</div>
+
+      <div class="prose">
+        A fully connected network applied to a 224×224 RGB image treats the image as a
+        vector of 150,528 numbers and connects every input pixel to every neuron in the
+        first layer. This is wrong in two ways: it ignores the spatial structure of images
+        (nearby pixels are correlated in a way distant pixels aren't), and it requires an
+        enormous number of parameters (150,528 × 1,000 neurons = 150 million weights for
+        one layer alone). Convolutional neural networks fix both problems with one idea:
+        learn a small filter and slide it across the image. The same filter detects the
+        same feature (an edge, a curve) everywhere it appears, regardless of position.
+        This is weight sharing, and it is the architectural principle that made large-scale
+        image recognition tractable.
+      </div>
+
+      <!-- ── Section 1: The locality problem ──────────────────────────── -->
+      <div class="section-head" id="problem">The locality problem with fully connected layers</div>
+
+      <div class="prose">
+        Consider a fully connected layer applied to an $H \times W$ image. There are
+        $H \times W$ input pixels and $n$ neurons in the first hidden layer, giving
+        $n \cdot H \cdot W$ weights. For $H = W = 224$ and $n = 1024$: about 51 million
+        weights — for the first layer alone. This is parameter-inefficient, and it also
+        ignores known structure in the data.
+      </div>
+
+      <div class="prose">
+        The structure being ignored: <strong>locality</strong> and <strong>translation
+        invariance</strong>. A feature like "there is a vertical edge here" can be detected
+        by looking at a small neighbourhood of pixels — you don't need to see the whole image.
+        And the same feature occurs in many positions — the filter for "vertical edge" should
+        be the same at pixel $(10, 20)$ and at pixel $(100, 50)$. These two priors — local
+        connectivity and translation invariance — are the inductive biases encoded by
+        convolution.
+      </div>
+
+      <!-- ── Section 2: The convolution operation ───────────────────────── -->
+      <div class="section-head" id="convolution">The convolution operation</div>
+
+      <div class="prose">
+        A <strong>convolutional layer</strong> applies a set of learned filters (kernels)
+        to its input. A single filter $\mathbf{w} \in \mathbb{R}^{k \times k}$ applied to
+        a single-channel input $\mathbf{X} \in \mathbb{R}^{H \times W}$ produces an output
+        feature map $\mathbf{Z} \in \mathbb{R}^{H' \times W'}$ where:
+        $$Z_{ij} = \sum_{p=0}^{k-1} \sum_{q=0}^{k-1} w_{pq} \cdot X_{(i \cdot s + p)(j \cdot s + q)} + b$$
+        Here $s$ is the <strong>stride</strong> (how many pixels the filter moves each step)
+        and $b$ is a bias term. This is technically a cross-correlation, not a convolution
+        (which would flip the filter), but the distinction doesn't matter since the filter
+        is learned — "convolution" is the universal term in deep learning.
+      </div>
+
+      <div class="prose">
+        <strong>Key parameters:</strong>
+      </div>
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:8px;"><strong>Kernel size $k$</strong>: the spatial extent
+          of the filter. Common: $k=3$ (captures local $3\times3$ patches), $k=5$, $k=7$
+          (initial layer in AlexNet and ResNets). Larger kernels see more context but cost
+          more; $k=1$ (pointwise convolution) mixes channels without spatial interaction.</li>
+        <li style="margin-bottom:8px;"><strong>Stride $s$</strong>: step size. $s=1$
+          outputs a feature map nearly the same size as the input; $s=2$ halves it spatially.
+          Strided convolutions replace pooling for downsampling in modern architectures.</li>
+        <li style="margin-bottom:8px;"><strong>Padding $p$</strong>: zeros appended around
+          the input border. "Same" padding ($p=(k-1)/2$ for $s=1$) keeps the output spatial
+          size equal to the input. "Valid" padding ($p=0$) shrinks it by $k-1$.</li>
+        <li><strong>Output size formula</strong>: $H' = \lfloor(H - k + 2p)/s\rfloor + 1$,
+          and similarly for $W'$.</li>
+      </ul>
+
+      <div class="prose">
+        <strong>Multi-channel convolution.</strong> A real image has $C_\text{in}$ input
+        channels (e.g. 3 for RGB). A filter is then $\mathbf{w} \in \mathbb{R}^{k \times k \times C_\text{in}}$
+        and produces a single output channel by summing across input channels. Using
+        $C_\text{out}$ such filters produces $C_\text{out}$ output feature maps, stacked
+        into $\mathbf{Z} \in \mathbb{R}^{H' \times W' \times C_\text{out}}$. The total
+        parameter count for one convolutional layer is $k^2 \cdot C_\text{in} \cdot C_\text{out} + C_\text{out}$
+        (filters plus biases) — independent of the spatial dimensions $H$ and $W$.
+      </div>
+
+      <!-- ── Section 3: Weight sharing ─────────────────────────────────── -->
+      <div class="section-head" id="weight-sharing">Weight sharing and translation equivariance</div>
+
+      <div class="prose">
+        The crucial property: the same filter weights $\mathbf{w}$ are used at every
+        spatial position. A filter trained to detect "horizontal edge" will detect that
+        edge everywhere in the image, not just at the position it was trained on. This is
+        <strong>parameter sharing</strong>: instead of $H \cdot W$ separate sets of weights
+        per channel, there is one set.
+      </div>
+
+      <div class="prose">
+        The mathematical property this encodes: <strong>translation equivariance</strong>.
+        If the input is translated by $(\Delta i, \Delta j)$, the output feature map is
+        translated by the same amount (accounting for stride):
+        $$\text{conv}(\text{translate}(\mathbf{X})) = \text{translate}(\text{conv}(\mathbf{X}))$$
+        Moving a feature in the input moves its activation in the output — the CNN detects
+        it wherever it occurs.
+      </div>
+
+      <div class="prose">
+        Note the distinction: translation <em>equivariance</em> (the output moves when the
+        input moves) vs. translation <em>invariance</em> (the output stays the same when
+        the input moves). Convolution gives equivariance; pooling gives invariance.
+        For classification, we want invariance to position (a cat is a cat wherever it
+        appears); for detection, we want equivariance (we need to know where the cat is).
+      </div>
+
+      <!-- ── Section 4: Pooling ─────────────────────────────────────────── -->
+      <div class="section-head" id="pooling">Pooling</div>
+
+      <div class="prose">
+        <strong>Pooling layers</strong> reduce the spatial resolution of feature maps,
+        increasing translation invariance and reducing computational cost for downstream layers.
+      </div>
+
+      <div class="prose">
+        <strong>Max pooling</strong> takes the maximum value in each $k \times k$ region:
+        $$Z_{ij} = \max_{0 \le p,q < k} X_{(i \cdot s + p)(j \cdot s + q)}$$
+        A $2\times2$ max pool with stride 2 halves spatial dimensions.
+        Max pooling selects the strongest activation — detecting whether a feature
+        is present anywhere in the pooling region.
+      </div>
+
+      <div class="prose">
+        <strong>Average pooling</strong> computes the mean instead of the max.
+        Global average pooling (GAP) reduces the entire $H \times W$ feature map to
+        a single value per channel, producing a $1 \times 1 \times C$ output.
+        ResNets use global average pooling before the final classification layer,
+        replacing the large fully connected layers of older architectures.
+      </div>
+
+      <div class="prose">
+        Modern trend: <strong>strided convolutions replace pooling</strong>. A
+        $3\times3$ conv with stride 2 downsamples by the same factor as $2\times2$
+        max pool but is learned rather than fixed. EfficientNet, modern ViTs, and
+        most post-2016 architectures use strided convolutions rather than pooling layers.
+      </div>
+
+      <!-- ── Section 5: Receptive fields ───────────────────────────────── -->
+      <div class="section-head" id="receptive-field">Receptive fields and depth</div>
+
+      <div class="prose">
+        The <strong>receptive field</strong> of a neuron in layer $\ell$ is the region
+        of the input image that influences its activation. A single $3 \times 3$
+        convolutional layer has receptive field $3 \times 3$. Stacking two such layers:
+        the second layer's neuron sees the $3 \times 3$ output of the first, which itself
+        saw a $3 \times 3$ region, giving an effective receptive field of $5 \times 5$.
+        After $L$ layers of $3 \times 3$ convolutions, the receptive field is
+        $(2L+1) \times (2L+1)$.
+      </div>
+
+      <div class="prose">
+        This is the quantitative case for depth in CNNs: a deep stack of small
+        ($3 \times 3$) filters achieves a large receptive field with fewer parameters
+        than a single large filter. Two $3 \times 3$ convolutions have $2 \times 9C^2$
+        parameters and a $5 \times 5$ effective receptive field; one $5 \times 5$
+        convolution has $25C^2$ parameters for the same field size. VGG-16 (Simonyan
+        &amp; Zisserman 2014) established $3 \times 3$ convolutions throughout as the
+        standard, replacing earlier architectures that used larger kernels.
+      </div>
+
+      <div class="prose">
+        <strong>Dilated (atrous) convolutions</strong> insert gaps between kernel
+        elements, exponentially expanding the receptive field without additional
+        parameters: a $3 \times 3$ conv with dilation rate 2 has the effective footprint
+        of a $5 \times 5$ conv. Stacking dilated convolutions with rates 1, 2, 4, 8
+        achieves exponentially growing receptive fields in $O(\log n)$ layers —
+        the principle used in WaveNet for audio generation and later in semantic
+        segmentation networks.
+      </div>
+
+      <!-- ── Section 6: Classic architectures ──────────────────────────── -->
+      <div class="section-head" id="architectures">Classic architectures</div>
+
+      <div class="prose">
+        The progression of CNN architectures tells the history of deep learning as
+        an empirical science:
+      </div>
+
+      <div class="prose">
+        <strong>LeNet-5</strong> (LeCun et al. 1998): the first successful deep CNN,
+        for handwritten digit recognition. Two conv layers (5×5 filters), two pooling
+        layers (average), two fully connected layers. 60,000 parameters. Deployed
+        commercially to read checks. Introduced the conv → pool → FC architecture pattern.
+      </div>
+
+      <div class="prose">
+        <strong>AlexNet</strong> (Krizhevsky, Sutskever, Hinton 2012): won ImageNet 2012
+        by a large margin (15.3% vs 26.2% error for the second place). 5 conv layers,
+        3 FC layers, 60M parameters. Key innovations: ReLU activations (first large-scale
+        use), dropout (first large-scale use), training on two GPUs, data augmentation
+        (random crops, horizontal flips). Launched the modern deep learning era.
+      </div>
+
+      <div class="prose">
+        <strong>VGG</strong> (Simonyan &amp; Zisserman 2014): showed that depth is the
+        key factor. Used only $3 \times 3$ convolutions throughout, demonstrating that
+        many small filters outperform few large filters. VGG-16 (16 weight layers) and
+        VGG-19 became standard feature extractors. Very clean architecture; 138M parameters
+        (too large by modern standards). Established the design principle: always $3 \times 3$.
+      </div>
+
+      <div class="prose">
+        <strong>GoogLeNet / Inception</strong> (Szegedy et al. 2014): introduced the
+        <em>inception module</em> — parallel convolutions at multiple scales ($1 \times 1$,
+        $3 \times 3$, $5 \times 5$) within a single layer, concatenated along the channel
+        dimension. Also introduced $1 \times 1$ convolutions as "bottleneck" channel
+        reducers. Achieved competitive accuracy with 4M parameters (vs. 60M for AlexNet).
+      </div>
+
+      <div class="prose">
+        <strong>ResNet</strong> (He et al. 2015): covered in Lesson 1. Introduced residual
+        connections, enabling 50–152+ layer networks. Won ImageNet 2015. Residual blocks
+        are now the standard building block for deep CNNs.
+      </div>
+
+      <div class="prose">
+        <strong>EfficientNet</strong> (Tan &amp; Le 2019): compound scaling of depth,
+        width, and resolution. EfficientNet-B7 achieves 84.4% ImageNet top-1 accuracy
+        with 66M parameters — better than ResNet-152 (78.3%) with the same parameter count.
+        The architecture used depthwise separable convolutions throughout.
+      </div>
+
+      <!-- ── Section 7: What CNNs actually learn ────────────────────────── -->
+      <div class="section-head" id="what-cnns-learn">What CNNs actually learn</div>
+
+      <div class="prose">
+        Zeiler &amp; Fergus (2013) introduced deconvolution-based visualisation, projecting
+        each neuron's activation back to pixel space. The results were striking and matched
+        the hierarchical representation hypothesis:
+      </div>
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:8px;"><strong>Layer 1:</strong> oriented edge detectors
+          and colour blobs — filters that look like Gabor wavelets. These are nearly
+          identical across different CNNs trained on different datasets. The first layer
+          learns universal low-level features.</li>
+        <li style="margin-bottom:8px;"><strong>Layer 2:</strong> combinations of edges
+          into corners, curves, textures.</li>
+        <li style="margin-bottom:8px;"><strong>Layer 3:</strong> textures, repeated
+          patterns, simple geometric shapes.</li>
+        <li style="margin-bottom:8px;"><strong>Layer 4:</strong> class-specific features —
+          dog faces, wheels, text. Activation maximization shows neurons that respond
+          maximally to specific object parts.</li>
+        <li><strong>Layer 5:</strong> complete objects and scenes. The final layer before
+          the classifier contains a sparse, interpretable representation of object identity.</li>
+      </ul>
+
+      <div class="prose">
+        This hierarchy suggests that CNN feature learning is not arbitrary — the hierarchical
+        structure imposed by the architecture matches the hierarchical structure of visual scenes,
+        and gradient descent reliably finds it. Transfer learning exploits this: a CNN pretrained
+        on ImageNet has learned general visual features in layers 1–4; fine-tuning only the last
+        layer on a new small dataset often outperforms training from scratch.
+      </div>
+
+      <!-- ── Worked examples ──────────────────────────────────────────── -->
+      <div class="section-head" id="examples">Worked examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — Parameter count: FC vs CNN</strong></div>
+        <div class="example-problem">
+          <p>Compare parameter counts for processing a $32\times32$ RGB input (CIFAR-10)
+          in the first layer using: (a) a fully connected layer with 256 neurons, and
+          (b) a convolutional layer with 32 filters of size $3 \times 3$.</p>
+        </div>
+        <div class="example-body">
+          <p><strong>(a) Fully connected:</strong> input size $= 32 \times 32 \times 3 = 3072$. Each of the 256 neurons has 3072 weights + 1 bias:
+          $$\text{params} = 256 \times (3072 + 1) = 786{,}688$$</p>
+          <p><strong>(b) Convolutional:</strong> each filter is $3 \times 3 \times 3 = 27$ weights + 1 bias. With 32 filters:
+          $$\text{params} = 32 \times (27 + 1) = 896$$</p>
+          <p>The CNN layer has $\mathbf{896 / 786{,}688 \approx 0.11\%}$ as many parameters as the FC layer, while still producing 32 feature maps of size $32 \times 32$ (with "same" padding) — more spatial information than the FC layer's 256 scalars.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Output size calculation</strong></div>
+        <div class="example-problem">
+          <p>A $224 \times 224$ input passes through: Conv(64 filters, $7 \times 7$, stride 2, same padding) → MaxPool($3 \times 3$, stride 2) → Conv(128 filters, $3 \times 3$, stride 1, same padding). What is the output spatial size and number of channels at each step?</p>
+        </div>
+        <div class="example-body">
+          <p><strong>After Conv1:</strong> "same" padding + stride 2 gives output size $\lceil 224/2 \rceil = 112$. Channels: 64. Shape: $112 \times 112 \times 64$.</p>
+          <p><strong>After MaxPool:</strong> $H' = \lfloor(112 - 3)/2\rfloor + 1 = 56$. Shape: $56 \times 56 \times 64$.</p>
+          <p><strong>After Conv2:</strong> "same" padding + stride 1 keeps spatial size. Shape: $56 \times 56 \times 128$.</p>
+          <p>This is the exact progression at the beginning of ResNet-50. The 7×7 stride-2 conv followed by a 3×3 stride-2 maxpool quickly reduces 224×224 to 56×56, cutting computation for the deeper (more expensive) residual blocks by 16×.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — Receptive field growth</strong></div>
+        <div class="example-problem">
+          <p>A network has 5 convolutional layers, each $3 \times 3$ with stride 1.
+          What is the receptive field of a neuron in the final layer? Compare to one
+          $11 \times 11$ layer (as in AlexNet's first layer).</p>
+        </div>
+        <div class="example-body">
+          <p>Each $3 \times 3$ layer adds 2 pixels to the receptive field in each direction. Starting from 1 (single pixel):
+          $$\text{After 1 layer: } 3 \times 3$$
+          $$\text{After 2 layers: } 5 \times 5$$
+          $$\text{After 3 layers: } 7 \times 7$$
+          $$\text{After 4 layers: } 9 \times 9$$
+          $$\text{After 5 layers: } 11 \times 11$$</p>
+          <p>Five $3 \times 3$ layers achieve the same receptive field as one $11 \times 11$ layer. Parameter counts:
+          <ul style="margin:6px 0; padding-left:1.2em;">
+            <li>Five $3\times3$ layers with $C$ channels each: $5 \times 3^2 \times C^2 = 45C^2$</li>
+            <li>One $11\times11$ layer with $C$ channels: $11^2 \times C^2 = 121C^2$</li>
+          </ul>
+          The deep stack uses $45/121 \approx 37\%$ as many parameters. And since each $3\times3$ layer includes a nonlinearity, the stack of 5 layers is also more expressive — it can approximate non-linear functions of its receptive field that the single large layer cannot. This is the fundamental advantage of depth + small filters over shallow + large filters.</p>
+        </div>
+      </div>
+
+      <!-- ── Food for thought ────────────────────────────────────────────── -->
+      <div class="section-head" id="food-for-thought">Food for thought</div>
+
+      <ul class="fft-list">
+        <li class="fft-item">
+          CNNs encode the inductive bias that images have local, translation-invariant features.
+          The Transformer (Lesson 6) uses no such inductive bias — it treats image patches as
+          tokens and uses global attention from the start. Yet Vision Transformers (ViTs) match
+          or exceed CNNs on large datasets. What does this tell us about inductive biases in
+          deep learning?
+          <div class="fft-answer">
+            Inductive biases are a prior over functions — they help with limited data by
+            restricting the hypothesis space. CNNs are strongly biased toward local,
+            translation-invariant functions, which is a good prior for natural images.
+            With enough data, the prior matters less: the model can learn the right structure
+            from data without being constrained to it. ViTs need large datasets (JFT-300M
+            or ImageNet-21k pretraining) to match CNNs trained on ImageNet-1k from scratch.
+            With ImageNet-1k alone, CNNs win — the locality prior is helpful when data is
+            limited. With sufficient data, ViTs win — they can learn attention patterns that
+            are <em>more flexible</em> than translation-invariance, capturing long-range
+            dependencies across the image. This is a general principle: inductive biases
+            are regularizers. They help with small data and become unnecessary constraints
+            with large data. The right level of bias depends on your data regime.
+          </div>
+        </li>
+        <li class="fft-item">
+          The $1 \times 1$ convolution seems trivial: it's just a weighted sum of channels at
+          each position with no spatial mixing. Why is it useful?
+          <div class="fft-answer">
+            A $1 \times 1$ conv with $C_\text{out}$ filters is equivalent to applying a
+            shared linear transformation $\mathbb{R}^{C_\text{in}} \to \mathbb{R}^{C_\text{out}}$
+            at every spatial position independently. This is exactly a fully connected
+            layer applied pointwise. Uses: (1) <em>Channel mixing</em>: combining information
+            across channels without mixing spatial locations. (2) <em>Bottleneck</em>:
+            reducing $C_\text{in}$ to a smaller $C_\text{out}$ before a $3 \times 3$ conv
+            reduces computation quadratically (used in ResNet bottleneck blocks and inception
+            modules). (3) <em>Increasing channels</em>: expanding $C_\text{in}$ to $C_\text{out} > C_\text{in}$
+            to give the next layer more features to work with. (4) <em>The connection to
+            Transformers</em>: the feedforward sublayer in each Transformer block is
+            exactly two $1 \times 1$ convolutions in sequence (with ReLU/GELU in between) —
+            it mixes features across the embedding dimension at each sequence position
+            independently. This is why the Transformer FFN sublayer is sometimes called
+            a "position-wise feedforward network."
+          </div>
+        </li>
+        <li class="fft-item">
+          CNNs are equivariant to translation but not to rotation or scale. A CNN trained on
+          upright dogs will struggle with upside-down dogs. How do practitioners deal with this?
+          <div class="fft-answer">
+            Several strategies: (1) <em>Data augmentation</em>: include rotated, flipped,
+            scaled, and colour-jittered versions of training images. The network learns
+            approximate invariance from examples rather than architecture. Random horizontal
+            flips, random crops, and colour jitter are standard for ImageNet training.
+            (2) <em>Spatial Transformer Networks</em> (Jaderberg et al. 2015): a learned
+            module that predicts a spatial transformation (affine: translation, rotation,
+            scale, shear) and warps the feature map before the main network. This learns
+            to canonicalize orientation, giving approximate invariance to whatever
+            transformation appears in the training data. (3) <em>Pooling over orientations</em>:
+            some architectures explicitly apply the same conv at multiple rotations and max-pool
+            over the results (group-equivariant CNNs, Cohen &amp; Welling 2016). These embed
+            rotational symmetry into the architecture rather than learning it from data.
+          </div>
+        </li>
+      </ul>
+
+      <!-- ── Common pitfalls ─────────────────────────────────────────────── -->
+      <div class="section-head" id="pitfalls">Common pitfalls</div>
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:14px;">
+          <strong>Forgetting to account for padding when computing output sizes.</strong>
+          "Same" padding keeps spatial size constant for stride 1; "valid" (no padding)
+          shrinks the output. When building a network with skip connections, shapes must
+          match exactly — a size mismatch silently produces incorrect results or a
+          runtime error. Always compute output sizes by hand or with a shape-tracking
+          tool before training.
+        </li>
+        <li style="margin-bottom:14px;">
+          <strong>Using large kernels in deep networks.</strong>
+          Large filters ($7 \times 7$, $11 \times 11$) are suitable at the very first
+          layer (where the input has high resolution and you want a large initial receptive
+          field) but wasteful in deeper layers. In deeper layers, use $3 \times 3$ kernels —
+          the receptive field grows naturally with depth, and small filters are
+          parameter-efficient.
+        </li>
+        <li style="margin-bottom:14px;">
+          <strong>Using max pooling for the final spatial reduction in modern architectures.</strong>
+          AlexNet and VGG used large FC layers after the conv stack, requiring a fixed
+          spatial resolution. Modern networks use global average pooling (GAP) before the
+          classification layer, reducing the $H \times W \times C$ feature map to $C$
+          scalars. GAP is parameter-free, reduces overfitting (no large FC layer), and
+          allows the network to accept variable-size inputs.
+        </li>
+        <li>
+          <strong>Not using data augmentation.</strong>
+          CNNs without data augmentation overfit aggressively on moderate datasets.
+          At minimum: random horizontal flips, random crops, and colour jitter for
+          image classification. The network's inductive bias (translation equivariance)
+          only covers horizontal/vertical translation, not rotation, scale, or colour
+          variation — those must be covered by augmentation.
+        </li>
+      </ul>
+
+      <!-- ── Connects to ─────────────────────────────────────────────────── -->
+      <div class="section-head" id="connects-to">Connects to</div>
+
+      <div class="prose">
+        <strong>The Transformer (Lesson 6)</strong> — Vision Transformers (ViTs) apply
+        a Transformer to image patches, treating each patch as a token. The feedforward
+        sublayer in each Transformer block is a $1\times1$ conv (position-wise MLP).
+        The relationship between CNNs and Transformers is not adversarial — many modern
+        architectures (Swin Transformer, ConvNeXt) blend both.
+      </div>
+      <div class="prose">
+        <strong>Signals &amp; Systems (planned)</strong> — convolution is a classical
+        signal-processing operation. The CNN filter is the discrete convolution kernel;
+        training it is finding the optimal filter for the task. The connection between
+        CNNs and the Fourier transform (convolution in spatial domain = multiplication
+        in frequency domain) explains why CNNs naturally learn frequency-selective filters.
+      </div>
+
+      <div class="lesson-nav">
+        <a href="deep-networks.html" class="lesson-nav-btn">← 1 · Deep Networks</a>
+        <a href="sequence-models.html" class="lesson-nav-btn">3 · Sequence Models →</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+
+</body>
+</html>

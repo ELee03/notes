@@ -1,0 +1,71 @@
+{
+  "sections": [
+    {
+      "label": "Foundations",
+      "items": [
+        {
+          "href": "deep-networks.html",
+          "text": "1 · Deep Networks & Residual Connections",
+          "topics": "Depth · skip connections · ResNets · batch norm revisited · width vs depth"
+        },
+        {
+          "href": "cnns.html",
+          "text": "2 · Convolutional Neural Networks",
+          "topics": "Convolution · pooling · weight sharing · translation invariance · classic architectures"
+        }
+      ]
+    },
+    {
+      "label": "Sequence Modelling",
+      "items": [
+        {
+          "href": "sequence-models.html",
+          "text": "3 · Sequence Models & RNNs",
+          "topics": "Sequences · language modelling · recurrence · BPTT · vanishing gradients in time"
+        },
+        {
+          "href": "lstms.html",
+          "text": "4 · LSTMs & GRUs",
+          "topics": "Gates · cell state · gradient highways · GRU · bidirectional RNNs"
+        }
+      ]
+    },
+    {
+      "label": "Attention & Transformers",
+      "items": [
+        {
+          "href": "attention.html",
+          "text": "5 · Attention Mechanisms",
+          "topics": "Seq2seq · alignment problem · Bahdanau attention · Q/K/V framework · self-attention"
+        },
+        {
+          "href": "transformer.html",
+          "text": "6 · The Transformer",
+          "topics": "Scaled dot-product attention · multi-head attention · positional encoding · encoder-decoder · masked attention"
+        },
+        {
+          "href": "bert-gpt.html",
+          "text": "7 · BERT & GPT",
+          "topics": "Pretraining objectives · masked LM · autoregressive LM · fine-tuning · scaling laws · the modern LLM"
+        }
+      ]
+    },
+    {
+      "label": "Advanced Topics",
+      "items": [
+        {
+          "href": "training-scale.html",
+          "text": "8 · Training at Scale",
+          "topics": "Mixed precision · gradient checkpointing · distributed training · scaling laws · RLHF",
+          "planned": true
+        },
+        {
+          "href": "generative-models.html",
+          "text": "9 · Generative Models",
+          "topics": "VAEs · GANs · diffusion models · score matching · DDPM · classifier-free guidance",
+          "planned": true
+        }
+      ]
+    }
+  ]
+}

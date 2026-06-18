@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LSTMs & GRUs — Field Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false}
+        ],
+        throwOnError: false
+      });
+    });
+  </script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="../index.html" class="topbar-brand">Field <span class="accent">Notes</span></a>
+    <span class="topbar-sep">·</span>
+    <a href="../references.html" class="topbar-link">Library</a>
+    <span class="topbar-sep">·</span>
+    <a href="https://elee03.github.io" class="topbar-back">elee03.github.io ↗</a>
+  </div>
+</div>
+
+<div class="site-wrap">
+  <div class="page-body">
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Prerequisites</div>
+        <a href="sequence-models.html" class="nav-item">DL3 · Sequence Models &amp; RNNs</a>
+      </div>
+
+      <div id="cluster-nav" data-cluster="deep-learning" data-current="lstms.html"></div>
+
+      <hr class="sidebar-rule">
+
+      <div class="nav-section">
+        <div class="nav-label">On this page</div>
+        <a href="#the-problem" class="nav-item">The vanishing gradient problem</a>
+        <a href="#lstm-cell" class="nav-item">The LSTM cell</a>
+        <a href="#gates" class="nav-item">The four gates</a>
+        <a href="#gradient-highway" class="nav-item">Gradient highways in LSTMs</a>
+        <a href="#gru" class="nav-item">The GRU</a>
+        <a href="#bidirectional" class="nav-item">Bidirectional RNNs</a>
+        <a href="#stacked" class="nav-item">Deep (stacked) RNNs</a>
+        <a href="#examples" class="nav-item">Worked examples</a>
+        <a href="#food-for-thought" class="nav-item">Food for thought</a>
+        <a href="#pitfalls" class="nav-item">Common pitfalls</a>
+        <a href="#connects-to" class="nav-item">Connects to</a>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <div class="breadcrumb">
+        <a href="../index.html">Field Notes</a>
+        <span class="sep">›</span>
+        <a href="index.html">Deep Learning</a>
+        <span class="sep">›</span>
+        <span>4 · LSTMs &amp; GRUs</span>
+      </div>
+
+      <div class="lesson-title">4 · LSTMs &amp; GRUs</div>
+      <div class="lesson-meta">Gates · Cell State · Gradient Highways · GRU · Bidirectional RNNs</div>
+
+      <div class="prose">
+        The vanilla RNN's fatal flaw — exponentially decaying gradients through time —
+        was solved in 1997 by Hochreiter and Schmidhuber with the
+        <strong>Long Short-Term Memory (LSTM)</strong> network. The key insight is
+        structural: replace the single hidden state with two separate streams of
+        information — a <em>cell state</em> that carries long-range information with
+        near-zero gradient decay, and a <em>hidden state</em> that acts as the working
+        memory updated at each step. The cell state flows through the network via
+        addition (not multiplication by a weight matrix), creating an unobstructed
+        gradient highway analogous to residual connections in deep feedforward networks.
+        The LSTM was the dominant sequence architecture from the late 1990s through the
+        mid 2010s, achieving state of the art on machine translation, speech recognition,
+        and language modelling. The GRU (Cho et al. 2014) is a streamlined variant with
+        fewer parameters that performs comparably on most tasks. Both were eventually
+        superseded by the Transformer — but understanding them is essential for
+        understanding why attention works and what problems it was designed to solve.
+      </div>
+
+      <!-- ── Section 1: The problem ─────────────────────────────────────── -->
+      <div class="section-head" id="the-problem">The vanishing gradient problem, revisited</div>
+
+      <div class="prose">
+        Recall from Lesson 3: the RNN gradient from loss at step $T$ to hidden state
+        at step $k$ involves the product
+        $$\prod_{j=k+1}^{T} \frac{\partial \mathbf{h}_j}{\partial \mathbf{h}_{j-1}} = \prod_{j=k+1}^{T} W_h^\top \cdot \text{diag}(\tanh'(\mathbf{z}_j))$$
+        Each factor contains $W_h^\top$ (a weight matrix) multiplied elementwise by
+        the derivative of tanh (which is $\leq 1$ everywhere, and close to 0 for
+        large pre-activations). The product of $T - k$ such matrices typically
+        shrinks exponentially in the gap $T - k$.
+      </div>
+
+      <div class="prose">
+        This is not just a gradient computation issue — it is a representation learning
+        issue. The hidden state $\mathbf{h}_t$ is a <em>lossy compression</em> of the
+        entire history: at every step, information is overwritten by the new input via
+        $\mathbf{h}_t = \tanh(W_h \mathbf{h}_{t-1} + W_x \mathbf{x}_t + \mathbf{b})$.
+        The "mixing" of old and new at every step means distant information is gradually
+        diluted. A sentence beginning with "The cat that the dog that the man bought
+        was eating" requires remembering "cat" across 10 tokens to match the subsequent
+        verb — impossible for a standard RNN.
+      </div>
+
+      <div class="prose">
+        The LSTM solves this with two ideas:
+        <ol style="padding-left:1.4em; margin-top:8px;">
+          <li style="margin-bottom:8px;"><strong>Additive cell state update.</strong>
+            Instead of multiplying by a weight matrix at each step, information is
+            <em>added</em> to a cell state. Addition passes gradients unchanged;
+            multiplication by a small number does not.</li>
+          <li><strong>Learnable gating.</strong> Three sigmoid gates control what
+            information flows in, out, and what is deleted. The network learns when
+            to remember and when to forget, rather than always blending old and new at
+            a fixed rate.</li>
+        </ol>
+      </div>
+
+      <!-- ── Section 2: The LSTM cell ─────────────────────────────────────── -->
+      <div class="section-head" id="lstm-cell">The LSTM cell</div>
+
+      <div class="prose">
+        The LSTM maintains two states: the <strong>cell state</strong>
+        $\mathbf{c}_t \in \mathbb{R}^d$ (long-term memory) and the
+        <strong>hidden state</strong> $\mathbf{h}_t \in \mathbb{R}^d$ (short-term
+        / working memory). Given input $\mathbf{x}_t$ and the previous states
+        $(\mathbf{h}_{t-1}, \mathbf{c}_{t-1})$, the LSTM update is:
+      </div>
+
+      <div class="proof-box">
+        <div class="proof-header">LSTM equations</div>
+        <div class="proof-body">
+          <p>First, concatenate the previous hidden state and current input:
+          $\mathbf{z} = [\mathbf{h}_{t-1}; \mathbf{x}_t] \in \mathbb{R}^{d + n}$.</p>
+          <p>Compute the four gate vectors:</p>
+          $$\mathbf{f}_t = \sigma(W_f \mathbf{z} + \mathbf{b}_f) \qquad \text{(forget gate)}$$
+          $$\mathbf{i}_t = \sigma(W_i \mathbf{z} + \mathbf{b}_i) \qquad \text{(input gate)}$$
+          $$\mathbf{o}_t = \sigma(W_o \mathbf{z} + \mathbf{b}_o) \qquad \text{(output gate)}$$
+          $$\tilde{\mathbf{c}}_t = \tanh(W_c \mathbf{z} + \mathbf{b}_c) \qquad \text{(cell candidate)}$$
+          <p>Update cell state (the critical additive step):</p>
+          $$\mathbf{c}_t = \mathbf{f}_t \odot \mathbf{c}_{t-1} + \mathbf{i}_t \odot \tilde{\mathbf{c}}_t$$
+          <p>Compute hidden state:</p>
+          $$\mathbf{h}_t = \mathbf{o}_t \odot \tanh(\mathbf{c}_t)$$
+          <p>Here $\odot$ denotes elementwise (Hadamard) product, $\sigma$ is the sigmoid function, and $W_f, W_i, W_o, W_c \in \mathbb{R}^{d \times (d+n)}$ are learnable weight matrices.</p>
+        </div>
+      </div>
+
+      <div class="prose">
+        The total parameter count: $4 \cdot d \cdot (d + n) + 4d$ (four weight matrices,
+        four bias vectors). For a typical LSTM with $d = 512$ and $n = 256$:
+        $4 \times 512 \times 768 + 4 \times 512 = 1,574,912 \approx 1.6\text{M}$ parameters
+        per layer, much more than a vanilla RNN with $d^2 + dn + d = 395,776 \approx 0.4\text{M}$.
+      </div>
+
+      <!-- ── Section 3: The four gates ─────────────────────────────────────── -->
+      <div class="section-head" id="gates">The four gates</div>
+
+      <div class="prose">
+        Each gate is a vector of values in $(0, 1)$ (sigmoid output), acting as a
+        continuous soft mask. The gates are not designed by hand — their behavior
+        is learned from data.
+      </div>
+
+      <div class="prose">
+        <strong>Forget gate $\mathbf{f}_t$.</strong> Controls what fraction of each
+        cell state dimension to retain. $f_{t,j} \approx 1$: keep dimension $j$ of
+        the cell state. $f_{t,j} \approx 0$: erase dimension $j$.
+        $$\mathbf{c}_t = \underbrace{\mathbf{f}_t \odot \mathbf{c}_{t-1}}_{\text{old info scaled}} + \ldots$$
+        Crucially, if all forget gates are set to 1 ($\mathbf{f}_t = \mathbf{1}$),
+        the cell state carries through unchanged — zero gradient decay from this step.
+      </div>
+
+      <div class="prose">
+        <strong>Input gate $\mathbf{i}_t$.</strong> Controls which dimensions of the
+        new candidate $\tilde{\mathbf{c}}_t$ to write into the cell state.
+        $i_{t,j} \approx 1$: write dimension $j$ of the candidate.
+        $i_{t,j} \approx 0$: ignore the candidate.
+      </div>
+
+      <div class="prose">
+        <strong>Cell candidate $\tilde{\mathbf{c}}_t$.</strong> The proposed new content,
+        computed via tanh (outputs in $(-1, 1)$, i.e., actual values, not probabilities).
+        The input gate decides how much of this candidate actually gets written.
+      </div>
+
+      <div class="prose">
+        <strong>Output gate $\mathbf{o}_t$.</strong> Controls how much of the cell state
+        is exposed as the hidden state $\mathbf{h}_t$. The cell state can contain
+        information that should not yet influence the output. The output gate "reads out"
+        only the relevant parts:
+        $$\mathbf{h}_t = \mathbf{o}_t \odot \tanh(\mathbf{c}_t)$$
+        The tanh squashes the cell state to $(-1, 1)$ before the output gate; the output
+        gate then selects which dimensions to expose.
+      </div>
+
+      <div class="callout">
+        <strong>Intuition: cell state as a conveyor belt.</strong> Think of $\mathbf{c}_t$
+        as a conveyor belt running the length of the sequence. At each step, the forget
+        gate can erase items from the belt, the input gate can add new items, and the
+        output gate decides which items from the belt are visible to the output.
+        The key insight: the belt itself moves via addition ($+$ in the cell update),
+        not via a repeated weight multiplication. This means gradients flow backward
+        along the belt almost unchanged.
+      </div>
+
+      <!-- ── Section 4: Gradient highways ─────────────────────────────────── -->
+      <div class="section-head" id="gradient-highway">Gradient highways in LSTMs</div>
+
+      <div class="proof-box">
+        <div class="proof-header">Why the cell state prevents vanishing gradients</div>
+        <div class="proof-body">
+          <p>The cell state update is $\mathbf{c}_t = \mathbf{f}_t \odot \mathbf{c}_{t-1} + \mathbf{i}_t \odot \tilde{\mathbf{c}}_t$.
+          The gradient of $\mathcal{L}$ with respect to $\mathbf{c}_{t-1}$ is:</p>
+          $$\frac{\partial \mathcal{L}}{\partial \mathbf{c}_{t-1}} = \frac{\partial \mathcal{L}}{\partial \mathbf{c}_t} \cdot \frac{\partial \mathbf{c}_t}{\partial \mathbf{c}_{t-1}} = \frac{\partial \mathcal{L}}{\partial \mathbf{c}_t} \odot \mathbf{f}_t$$
+          <p>This is elementwise multiplication by $\mathbf{f}_t$ — a diagonal Jacobian, not a full weight-matrix multiplication. For the cell state gradient to flow back across $k$ steps:</p>
+          $$\frac{\partial \mathcal{L}}{\partial \mathbf{c}_{T-k}} = \frac{\partial \mathcal{L}}{\partial \mathbf{c}_T} \odot \prod_{j=T-k+1}^{T} \mathbf{f}_j$$
+          <p>Compare with the vanilla RNN: $\prod_{j} W_h^\top \cdot \text{diag}(\tanh')$ — a product of full matrices. For the LSTM cell state, the product is $\prod_{j} \mathbf{f}_j$ — an elementwise product of vectors between 0 and 1.</p>
+          <p>If the forget gates are near 1 (which the network learns when it needs to remember), this product is near 1 — the gradient flows unimpeded. The LSTM can learn to open the "gradient highway" for dimensions it needs to remember and close it for dimensions it wants to forget. This is the self-controlled gradient flow that makes long-range learning possible.</p>
+          <p>This is precisely analogous to residual connections: $\mathbf{y} = F(\mathbf{x}) + \mathbf{x}$ gives $\frac{\partial \mathcal{L}}{\partial \mathbf{x}} = \frac{\partial \mathcal{L}}{\partial \mathbf{y}}(J_F + I)$, so the identity path ensures the gradient is never less than $\frac{\partial \mathcal{L}}{\partial \mathbf{y}}$. The LSTM cell state is the temporal analogue of the residual stream.</p>
+        </div>
+      </div>
+
+      <div class="prose">
+        In practice, LSTMs are trained with the <strong>forget gate bias initialised
+        to 1</strong> (Jozefowicz et al. 2015). Initialising to 1 makes the forget
+        gate start near $\sigma(1) \approx 0.73$ — biased toward remembering, which
+        stabilises early training. Without this, the network must first learn to open
+        the gradient highway before it can learn long-range dependencies, leading to
+        slower convergence.
+      </div>
+
+      <!-- ── Section 5: GRU ─────────────────────────────────────────────── -->
+      <div class="section-head" id="gru">The Gated Recurrent Unit (GRU)</div>
+
+      <div class="prose">
+        The <strong>GRU</strong> (Cho et al. 2014) is a simplified gated RNN that merges
+        the cell state and hidden state into a single hidden state $\mathbf{h}_t$, using
+        two gates instead of three:
+      </div>
+
+      <div class="proof-box">
+        <div class="proof-header">GRU equations</div>
+        <div class="proof-body">
+          $$\mathbf{z}_t = \sigma(W_z [\mathbf{h}_{t-1}; \mathbf{x}_t] + \mathbf{b}_z) \qquad \text{(update gate)}$$
+          $$\mathbf{r}_t = \sigma(W_r [\mathbf{h}_{t-1}; \mathbf{x}_t] + \mathbf{b}_r) \qquad \text{(reset gate)}$$
+          $$\tilde{\mathbf{h}}_t = \tanh(W_h [\mathbf{r}_t \odot \mathbf{h}_{t-1}; \mathbf{x}_t] + \mathbf{b}_h) \qquad \text{(candidate hidden)}$$
+          $$\mathbf{h}_t = (1 - \mathbf{z}_t) \odot \mathbf{h}_{t-1} + \mathbf{z}_t \odot \tilde{\mathbf{h}}_t \qquad \text{(hidden update)}$$
+        </div>
+      </div>
+
+      <div class="prose">
+        <strong>Update gate $\mathbf{z}_t$</strong>: controls the interpolation between
+        the old hidden state and the new candidate. When $z_{t,j} \approx 0$, dimension
+        $j$ carries the old hidden state forward unchanged (like forget + skip).
+        When $z_{t,j} \approx 1$, it adopts the new candidate.
+      </div>
+
+      <div class="prose">
+        <strong>Reset gate $\mathbf{r}_t$</strong>: controls how much of the previous
+        hidden state to use in computing the candidate. When $r_{t,j} \approx 0$,
+        the candidate $\tilde{\mathbf{h}}_t$ is computed almost purely from the current
+        input — effectively resetting the memory for that dimension.
+      </div>
+
+      <div class="prose">
+        <strong>GRU vs LSTM</strong>: The GRU has $3 \cdot d \cdot (d + n) + 3d$
+        parameters (vs $4d(d+n) + 4d$ for LSTM) — 25% fewer. Empirically they
+        perform similarly on most tasks, with LSTM tending to win on problems requiring
+        very precise long-range memory and GRU winning slightly on smaller datasets
+        where its reduced capacity is a benefit (less overfitting). In practice, the
+        Transformer has largely superseded both for NLP tasks.
+      </div>
+
+      <!-- ── Section 6: Bidirectional RNNs ──────────────────────────────── -->
+      <div class="section-head" id="bidirectional">Bidirectional RNNs</div>
+
+      <div class="prose">
+        A standard RNN processes left-to-right: at step $t$, only $\mathbf{x}_1, \ldots, \mathbf{x}_t$
+        have been seen. For many tasks (part-of-speech tagging, named entity recognition),
+        the correct label for token $t$ depends on both the left context and the right context:
+        "bank" in "the river bank" vs "the bank account" requires seeing both sides.
+      </div>
+
+      <div class="prose">
+        A <strong>bidirectional RNN (biRNN)</strong> processes the sequence in both
+        directions simultaneously and concatenates the hidden states:
+        $$\overrightarrow{\mathbf{h}}_t = \text{RNN}_\rightarrow(\mathbf{x}_1, \ldots, \mathbf{x}_t) \qquad \text{(left-to-right)}$$
+        $$\overleftarrow{\mathbf{h}}_t = \text{RNN}_\leftarrow(\mathbf{x}_T, \ldots, \mathbf{x}_t) \qquad \text{(right-to-left)}$$
+        $$\mathbf{h}_t^{\text{bi}} = [\overrightarrow{\mathbf{h}}_t; \overleftarrow{\mathbf{h}}_t] \in \mathbb{R}^{2d}$$
+        The two RNNs are independent (different weights); each sees only its
+        directional context at step $t$.
+      </div>
+
+      <div class="prose">
+        <strong>Limitation</strong>: bidirectional RNNs require the full sequence to
+        be available before processing can begin. This makes them unsuitable for
+        autoregressive generation (you cannot know the future when generating token $t$).
+        BiLSTMs are used extensively for sequence labelling (encoding); unidirectional
+        LSTMs for generation (decoding). BERT uses bidirectional attention (the
+        Transformer analogue of biRNN) for encoding; GPT uses unidirectional (causal)
+        attention for generation.
+      </div>
+
+      <!-- ── Section 7: Stacked RNNs ──────────────────────────────────────── -->
+      <div class="section-head" id="stacked">Deep (stacked) RNNs</div>
+
+      <div class="prose">
+        A <strong>stacked (multi-layer) RNN</strong> feeds the hidden states of one
+        RNN as the inputs to the next:
+        $$\mathbf{h}_t^{(l)} = f\left(\mathbf{h}_{t-1}^{(l)}, \mathbf{h}_t^{(l-1)}\right)$$
+        The input to layer $l$ at step $t$ is the hidden state of layer $l-1$ at the
+        same step. Typically 2–4 layers are used; beyond 4 layers, training becomes
+        unstable and the gains diminish. The first layer processes raw inputs;
+        subsequent layers process increasingly abstract representations.
+      </div>
+
+      <div class="prose">
+        Stacking is the depth dimension of RNNs; it is orthogonal to the sequence
+        dimension. A 2-layer LSTM with hidden size 512 has
+        $2 \times 4 \times 512 \times (512 + n) + 2 \times 4 \times 512$ parameters
+        — depth does not cause vanishing gradients in the depth direction as long as
+        the gating in each LSTM cell works correctly.
+      </div>
+
+      <!-- ── Worked examples ──────────────────────────────────────────── -->
+      <div class="section-head" id="examples">Worked examples</div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 1 — LSTM forward pass (one step)</strong></div>
+        <div class="example-problem">
+          <p>LSTM with $d = 2$, $n = 1$. Previous state: $\mathbf{h}_0 = [0, 0]^\top$,
+          $\mathbf{c}_0 = [0, 0]^\top$. Input $x_1 = 1.0$.
+          Weight matrices (all $2 \times 3$) and biases chosen for illustration:</p>
+          <ul style="margin-top:8px;">
+            <li>$W_f = \begin{bmatrix}0.1 & 0.2 & 0.3 \\ 0.4 & 0.5 & 0.6\end{bmatrix}$, $\mathbf{b}_f = [0, 0]^\top$</li>
+            <li>$W_i = \begin{bmatrix}0.7 & 0.8 & 0.9 \\ 0.1 & 0.2 & 0.3\end{bmatrix}$, $\mathbf{b}_i = [0, 0]^\top$</li>
+            <li>$W_o = \begin{bmatrix}0.5 & 0.5 & 0.5 \\ 0.5 & 0.5 & 0.5\end{bmatrix}$, $\mathbf{b}_o = [0, 0]^\top$</li>
+            <li>$W_c = \begin{bmatrix}0.3 & 0.1 & 0.4 \\ 0.1 & 0.5 & 0.9\end{bmatrix}$, $\mathbf{b}_c = [0, 0]^\top$</li>
+          </ul>
+        </div>
+        <div class="example-body">
+          <p>Concatenated input: $\mathbf{z} = [\mathbf{h}_0; x_1] = [0, 0, 1]^\top$.</p>
+
+          <p><strong>Forget gate:</strong>
+          $W_f \mathbf{z} = [0.1(0)+0.2(0)+0.3(1), 0.4(0)+0.5(0)+0.6(1)]^\top = [0.3, 0.6]^\top$
+          $\mathbf{f}_1 = \sigma([0.3, 0.6]^\top) = [0.574, 0.646]^\top$</p>
+
+          <p><strong>Input gate:</strong>
+          $W_i \mathbf{z} = [0.9, 0.3]^\top$
+          $\mathbf{i}_1 = \sigma([0.9, 0.3]^\top) = [0.711, 0.574]^\top$</p>
+
+          <p><strong>Output gate:</strong>
+          $W_o \mathbf{z} = [0.5, 0.5]^\top$
+          $\mathbf{o}_1 = \sigma([0.5, 0.5]^\top) = [0.622, 0.622]^\top$</p>
+
+          <p><strong>Cell candidate:</strong>
+          $W_c \mathbf{z} = [0.4, 0.9]^\top$
+          $\tilde{\mathbf{c}}_1 = \tanh([0.4, 0.9]^\top) = [0.380, 0.716]^\top$</p>
+
+          <p><strong>Cell state:</strong>
+          $\mathbf{c}_1 = \mathbf{f}_1 \odot \mathbf{c}_0 + \mathbf{i}_1 \odot \tilde{\mathbf{c}}_1
+          = [0.574, 0.646]^\top \odot [0,0]^\top + [0.711, 0.574]^\top \odot [0.380, 0.716]^\top
+          = [0, 0]^\top + [0.270, 0.411]^\top = [0.270, 0.411]^\top$</p>
+
+          <p><strong>Hidden state:</strong>
+          $\mathbf{h}_1 = \mathbf{o}_1 \odot \tanh(\mathbf{c}_1) = [0.622, 0.622]^\top \odot \tanh([0.270, 0.411]^\top)
+          = [0.622, 0.622]^\top \odot [0.263, 0.389]^\top = [0.164, 0.242]^\top$</p>
+
+          <p>Since $\mathbf{c}_0 = \mathbf{0}$, the forget gate had no effect here — the cell state is entirely determined by the input gate. For subsequent steps with non-zero $\mathbf{c}_{t-1}$, the forget gate controls how much of the old cell state persists.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 2 — Long-range memory with open forget gate</strong></div>
+        <div class="example-problem">
+          <p>Consider a 1-dimensional LSTM ($d = n = 1$). At step 1, the cell state is set to $c_1 = 5.0$.
+          Steps 2 through 9 have forget gates $f_t = 0.95$ and input gates $i_t = 0.0$.
+          What is $c_{10}$? How does this compare to what a vanilla RNN would do?</p>
+        </div>
+        <div class="example-body">
+          <p>LSTM cell state after 9 steps of $f = 0.95$, $i = 0$:
+          $$c_{10} = 0.95^9 \cdot c_1 = 0.95^9 \cdot 5.0 \approx 0.630 \cdot 5.0 = 3.15$$
+          Still 63% of the original value after 9 steps. For $f = 0.99$: $0.99^9 \approx 0.914$ — 91% retained.</p>
+
+          <p>A vanilla RNN's hidden state after the same 9 steps of pure recurrence (no new input):
+          $h_{10} = w_h^9 \cdot \tanh(w_h \cdot h_0)$ — involves both the repeated nonlinearity and the repeated weight. For $|w_h| < 1$, this decays geometrically. But unlike the LSTM, there's no explicit "remember" mechanism: every step transforms the hidden state through tanh and the weight, and any activation near the saturation region of tanh kills the gradient.</p>
+
+          <p>The LSTM's cell state is preserved much more faithfully because the update is purely additive (multiplicative only by the forget gate value, which can be held near 1). The gradient of $c_{10}$ with respect to $c_1$ is $\prod_{t=2}^{10} f_t = 0.95^9 \approx 0.63$, not a product of sigmoid-attenuated weight matrices.</p>
+        </div>
+      </div>
+
+      <div class="example-box">
+        <div class="example-header"><strong>Example 3 — GRU as an interpolating filter</strong></div>
+        <div class="example-problem">
+          <p>Show that the GRU's hidden update equation $\mathbf{h}_t = (1 - \mathbf{z}_t) \odot \mathbf{h}_{t-1} + \mathbf{z}_t \odot \tilde{\mathbf{h}}_t$ is equivalent to a learned low-pass / high-pass filter, and identify the two extreme cases.</p>
+        </div>
+        <div class="example-body">
+          <p>The update gate $\mathbf{z}_t \in (0, 1)^d$ determines the mixing:
+          <ul style="margin-top:8px;">
+            <li>$\mathbf{z}_t \approx \mathbf{0}$: $\mathbf{h}_t \approx \mathbf{h}_{t-1}$ — the hidden state is copied forward unchanged (perfect memory, no update). This is like a <strong>low-pass filter</strong>: ignore the current input, preserve the old state. Useful for "filler" tokens that should not update the memory.</li>
+            <li>$\mathbf{z}_t \approx \mathbf{1}$: $\mathbf{h}_t \approx \tilde{\mathbf{h}}_t$ — the hidden state is replaced entirely by the new candidate (no memory of the past). This is like a <strong>high-pass filter</strong>: discard the old state, use only the current input. Useful at sentence boundaries or when starting a new topic.</li>
+          </ul></p>
+          <p>This per-dimension interpolation is exactly what makes GRUs powerful: different dimensions of the hidden state can have different "memory timescales." A dimension with $z_{t,j} \approx 0$ accumulates information over many steps (long timescale); a dimension with $z_{t,j} \approx 1$ reacts instantly (short timescale). This gives the GRU a form of multi-timescale memory without explicit separate states.</p>
+        </div>
+      </div>
+
+      <!-- ── Food for thought ────────────────────────────────────────────── -->
+      <div class="section-head" id="food-for-thought">Food for thought</div>
+
+      <ul class="fft-list">
+        <li class="fft-item">
+          The forget gate was not in the original LSTM (Hochreiter &amp; Schmidhuber 1997).
+          It was added by Gers, Schmidhuber &amp; Cummins in 2000. The original LSTM had
+          only input and output gates. Why might a forget gate be necessary, and what
+          would happen without it?
+          <div class="fft-answer">
+            Without a forget gate, the cell state update is $\mathbf{c}_t = \mathbf{c}_{t-1} + \mathbf{i}_t \odot \tilde{\mathbf{c}}_t$ — the cell state can only grow (or stay the same if the input gate is closed). Over a long sequence, the cell state would accumulate an unbounded amount of information, which at minimum causes numerical instability (growing activations leading to tanh saturation) and at worst makes it impossible for the network to "clear" memory that is no longer needed. Consider a language model processing many sentences separated by periods: after each period, the network should reset its context-specific memory to start fresh for the next sentence. The forget gate allows this. Without it, the network must use the output gate to suppress the accumulated cell state rather than removing it, which is a weaker mechanism. The forget gate gives the network an explicit "erase" operation, which is a qualitative capability improvement.
+          </div>
+        </li>
+        <li class="fft-item">
+          LSTM and GRU both have gate activations that are sigmas (output in $(0,1)$).
+          Why not use hard binary gates (step function: 0 or 1)? What would that break?
+          <div class="fft-answer">
+            Hard binary gates (step functions) are not differentiable: the derivative is zero everywhere except at the threshold, where it is undefined. This means gradients cannot flow through the gate — backpropagation would fail to update the gate weights. The whole point of soft gating with sigmoid is to provide a differentiable approximation to binary gating: the sigmoid is smooth, so gradients flow through it, and the network can learn to push gate values toward 0 or 1 through gradient descent. Additionally, soft gating enables partial updates: a gate value of 0.6 means "60% of this information passes through," which allows gradient-informed fine-grained tuning. Hard gates would create a discrete optimization problem (NP-hard in general); soft gates make it a continuous problem solvable with gradient methods. This is the same reason we use sigmoid/softmax for classification instead of argmax — differentiability is the essential property.
+          </div>
+        </li>
+        <li class="fft-item">
+          LSTMs solved vanishing gradients in time, just as ResNets solved vanishing gradients in depth. Both use the same mathematical trick (additive identity path). The Transformer eliminates recurrence entirely. Has the gradient-through-time problem truly been "solved" for the Transformer, or does it just manifest differently?
+          <div class="fft-answer">
+            In the Transformer, there is no temporal recurrence — each position directly attends to every other position in a single layer. The "gradient path length" from any output to any input is always at most 2 * num_layers, regardless of sequence length. This eliminates distance-proportional gradient decay. However, depth-wise vanishing gradients still exist: a deep Transformer (e.g., 96 layers) has the same depth-direction vanishing gradient problem as any deep feedforward network, addressed with residual connections and layer normalization after each sublayer. Additionally, a new issue arises: the softmax in attention can become "sharp" during training, assigning near-zero attention to most positions and near-one to a few. This sharpening concentrates gradient flow through only a few attention paths, effectively creating information bottlenecks. This is addressed by techniques like attention dropout, using multiple heads, and careful initialization. So: the sequence-length gradient problem is genuinely solved by direct attention; the depth gradient problem is handled by residuals and LayerNorm; a new attention-specific problem (sharp attention distributions) is a partial replacement.
+          </div>
+        </li>
+      </ul>
+
+      <!-- ── Common pitfalls ─────────────────────────────────────────────── -->
+      <div class="section-head" id="pitfalls">Common pitfalls</div>
+
+      <ul class="prose" style="padding-left:1.4em;">
+        <li style="margin-bottom:14px;">
+          <strong>Forgetting to initialise forget gate biases to 1.</strong>
+          The default bias initialisation (zeros) gives $f_t \approx \sigma(0) = 0.5$,
+          meaning half the cell state is discarded at every step from the start.
+          This slows convergence significantly. Set <code>bias_ih[d:2d] = 1.0</code>
+          (PyTorch) or equivalent to initialise the forget gate pre-activation to 1.
+        </li>
+        <li style="margin-bottom:14px;">
+          <strong>Using a bidirectional LSTM where only unidirectional is valid.</strong>
+          BiLSTMs see both past and future at every step. This is illegal for any
+          generative or autoregressive task (language modelling, text generation,
+          online speech recognition) — it constitutes a data leakage. Use BiLSTMs
+          only for tasks where the full input sequence is available at inference time
+          (sequence labelling, classification, encoding in seq2seq).
+        </li>
+        <li style="margin-bottom:14px;">
+          <strong>Applying layer normalisation inside the LSTM gate computations.</strong>
+          LSTMs have a precise mathematical structure — the sigmoid gates output values in
+          $(0,1)$ that are then used as multiplicative masks. Inserting layer norm inside
+          the recurrence (on the gate pre-activations) can distort this structure and
+          requires careful tuning. If normalisation is needed, consider layer norm applied
+          to the cell state or hidden state outputs, or use a Transformer instead.
+        </li>
+        <li>
+          <strong>Using LSTMs for long sequences (> 500 tokens) in 2024.</strong>
+          LSTMs still struggle with very long-range dependencies: even with forget gates
+          near 1, the cell state must carry all information through a bottleneck of
+          fixed dimension. For documents, long-context reasoning, or tasks where
+          dependencies span thousands of tokens, use a Transformer with extended
+          context length. LSTMs retain a niche for streaming/online inference where
+          latency and memory per step are critical, or for edge devices where
+          Transformer inference is too expensive.
+        </li>
+      </ul>
+
+      <!-- ── Connects to ─────────────────────────────────────────────────── -->
+      <div class="section-head" id="connects-to">Connects to</div>
+
+      <div class="prose">
+        <strong>Attention Mechanisms (Lesson 5)</strong> — LSTMs with seq2seq use a
+        fixed encoder context vector that bottlenecks information. Bahdanau attention
+        solves this by replacing the fixed vector with a dynamic weighted sum of all
+        encoder LSTM hidden states. The Q/K/V framework generalises attention to any
+        pairs of sequences, eventually leading to self-attention.
+      </div>
+      <div class="prose">
+        <strong>The Transformer (Lesson 6)</strong> — the Transformer replaces LSTM
+        layers entirely with self-attention layers. Key design choices (layer norm,
+        residual connections, feed-forward sublayers) are motivated by the lessons
+        learned from training deep LSTMs. The LSTM's forget/input/output gates
+        can be seen as a per-position attention over the cell state — the Transformer
+        generalises this to attention over all positions.
+      </div>
+      <div class="prose">
+        <strong>Deep Networks &amp; Residual Connections (Lesson 1)</strong> — the LSTM
+        cell state's additive update is the temporal analogue of the residual stream.
+        Both create gradient highways; the difference is that the LSTM's highway is
+        gated (controlled by the forget gate) while the residual stream always flows.
+      </div>
+
+      <div class="lesson-nav">
+        <a href="sequence-models.html" class="lesson-nav-btn">← 3 · Sequence Models &amp; RNNs</a>
+        <a href="attention.html" class="lesson-nav-btn">5 · Attention Mechanisms →</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <span>elee03.github.io/notes</span>
+  <span>Est. MMXXVI</span>
+</footer>
+
+<script src="../notes-nav.js"></script>
+<script src="../notes-components.js"></script>
+
+</body>
+</html>
