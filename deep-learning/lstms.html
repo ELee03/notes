@@ -220,6 +220,97 @@
         along the belt almost unchanged.
       </div>
 
+      <figure style="margin:28px 0 8px;">
+        <svg viewBox="0 0 640 250" xmlns="http://www.w3.org/2000/svg"
+             style="width:100%;max-width:700px;display:block;margin:0 auto;font-family:'IBM Plex Sans',sans-serif;">
+          <defs>
+            <marker id="lstm-arr" markerWidth="7" markerHeight="6" refX="5" refY="3" orient="auto">
+              <polygon points="0 0,7 3,0 6" fill="#1a2840"/>
+            </marker>
+            <marker id="lstm-arr-r" markerWidth="7" markerHeight="6" refX="5" refY="3" orient="auto">
+              <polygon points="0 0,7 3,0 6" fill="#c0392b"/>
+            </marker>
+            <marker id="lstm-arr-am" markerWidth="7" markerHeight="6" refX="5" refY="3" orient="auto">
+              <polygon points="0 0,7 3,0 6" fill="#c17c2e"/>
+            </marker>
+          </defs>
+          <rect width="640" height="250" fill="#f7f7f4" rx="8"/>
+
+          <!-- ── CELL STATE HIGHWAY (top, y=72) ── -->
+          <text x="16" y="65" font-size="11" fill="#1a2840" font-family="'IBM Plex Mono',monospace">c_{t-1}</text>
+          <!-- c_{t-1} → ⊗(forget) -->
+          <line x1="14" y1="72" x2="82" y2="72" stroke="#1a2840" stroke-width="2" marker-end="url(#lstm-arr)"/>
+          <!-- ⊗ forget circle -->
+          <circle cx="100" cy="72" r="14" fill="#fef0ef" stroke="#c0392b" stroke-width="2"/>
+          <text x="100" y="78" text-anchor="middle" font-size="16" fill="#c0392b">×</text>
+          <!-- ⊗ → ⊕ -->
+          <line x1="114" y1="72" x2="278" y2="72" stroke="#1a2840" stroke-width="2" marker-end="url(#lstm-arr)"/>
+          <!-- ⊕ add circle -->
+          <circle cx="296" cy="72" r="14" fill="#fdf7f0" stroke="#c17c2e" stroke-width="2"/>
+          <text x="296" y="78" text-anchor="middle" font-size="16" fill="#c17c2e">+</text>
+          <!-- ⊕ → c_t -->
+          <line x1="310" y1="72" x2="440" y2="72" stroke="#1a2840" stroke-width="2" marker-end="url(#lstm-arr)"/>
+          <text x="448" y="65" font-size="11" fill="#1a2840" font-family="'IBM Plex Mono',monospace">c_t</text>
+          <!-- c_t → tanh box -->
+          <line x1="448" y1="72" x2="476" y2="72" stroke="#1a2840" stroke-width="2"/>
+          <rect x="476" y="56" width="42" height="32" rx="5" fill="#3a6a8a" fill-opacity="0.12" stroke="#3a6a8a" stroke-width="1.5"/>
+          <text x="497" y="77" text-anchor="middle" font-size="11" fill="#3a6a8a">tanh</text>
+          <!-- tanh → ⊗(output gate) -->
+          <line x1="518" y1="72" x2="554" y2="72" stroke="#1a2840" stroke-width="2" marker-end="url(#lstm-arr)"/>
+          <!-- ⊗ output circle -->
+          <circle cx="572" cy="72" r="14" fill="#fdf7f0" stroke="#c17c2e" stroke-width="2"/>
+          <text x="572" y="78" text-anchor="middle" font-size="16" fill="#c17c2e">×</text>
+          <!-- → h_t -->
+          <line x1="586" y1="72" x2="618" y2="72" stroke="#c17c2e" stroke-width="2" marker-end="url(#lstm-arr-am)"/>
+          <text x="626" y="65" font-size="11" fill="#c17c2e" font-family="'IBM Plex Mono',monospace">h_t</text>
+
+          <!-- ── GATE LABELS on highway ── -->
+          <text x="100" y="44" text-anchor="middle" font-size="10" fill="#c0392b">f_t ⊙</text>
+          <text x="296" y="44" text-anchor="middle" font-size="10" fill="#c17c2e">i_t ⊙ c̃_t</text>
+          <text x="572" y="44" text-anchor="middle" font-size="10" fill="#c17c2e">o_t ⊙</text>
+
+          <!-- ── GATE COMPUTATION BOXES (middle row, y=150-185) ── -->
+          <!-- Forget gate (red) -->
+          <rect x="38" y="148" width="125" height="38" rx="6" fill="#c0392b" fill-opacity="0.1" stroke="#c0392b" stroke-width="1.5"/>
+          <text x="100" y="162" text-anchor="middle" font-size="11" fill="#c0392b" font-weight="600">forget gate f_t</text>
+          <text x="100" y="178" text-anchor="middle" font-size="10.5" fill="#c0392b">f = σ(W_f [h_{t-1}, x_t])</text>
+          <!-- arrow from forget box to ⊗ on highway -->
+          <line x1="100" y1="148" x2="100" y2="88" stroke="#c0392b" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#lstm-arr-r)"/>
+
+          <!-- Input gate + candidate (blue/slate) -->
+          <rect x="188" y="148" width="210" height="38" rx="6" fill="#2776c1" fill-opacity="0.1" stroke="#2776c1" stroke-width="1.5"/>
+          <text x="293" y="162" text-anchor="middle" font-size="11" fill="#2776c1" font-weight="600">input gate i_t &amp; candidate c̃_t</text>
+          <text x="293" y="178" text-anchor="middle" font-size="10.5" fill="#2776c1">i = σ(W_i[…])   c̃ = tanh(W_c[…])</text>
+          <!-- arrow from input box to ⊕ on highway -->
+          <line x1="296" y1="148" x2="296" y2="88" stroke="#2776c1" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#lstm-arr)"/>
+
+          <!-- Output gate (amber) -->
+          <rect x="510" y="148" width="118" height="38" rx="6" fill="#c17c2e" fill-opacity="0.1" stroke="#c17c2e" stroke-width="1.5"/>
+          <text x="569" y="162" text-anchor="middle" font-size="11" fill="#c17c2e" font-weight="600">output gate o_t</text>
+          <text x="569" y="178" text-anchor="middle" font-size="10.5" fill="#c17c2e">o = σ(W_o [h_{t-1}, x_t])</text>
+          <!-- arrow from output box to ⊗ on highway -->
+          <line x1="572" y1="148" x2="572" y2="88" stroke="#c17c2e" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#lstm-arr-am)"/>
+
+          <!-- ── JOINT INPUT [h_{t-1}, x_t] ── -->
+          <line x1="18" y1="220" x2="618" y2="220" stroke="#9aabb8" stroke-width="1" stroke-dasharray="4,3"/>
+          <text x="322" y="240" text-anchor="middle" font-size="11" fill="#9aabb8" font-style="italic">[h_{t-1}, x_t] — shared input to all gates</text>
+          <!-- vertical feeds from input bus to gate boxes -->
+          <line x1="100" y1="218" x2="100" y2="188" stroke="#9aabb8" stroke-width="1" marker-end="url(#lstm-arr)"/>
+          <line x1="296" y1="218" x2="296" y2="188" stroke="#9aabb8" stroke-width="1" marker-end="url(#lstm-arr)"/>
+          <line x1="572" y1="218" x2="572" y2="188" stroke="#9aabb8" stroke-width="1" marker-end="url(#lstm-arr)"/>
+
+          <!-- h_{t-1} entering from left -->
+          <text x="10" y="215" font-size="10" fill="#9aabb8" font-family="'IBM Plex Mono',monospace">h_{t-1}</text>
+          <!-- x_t entering from below center -->
+          <text x="290" y="248" text-anchor="middle" font-size="10" fill="#9aabb8" font-family="'IBM Plex Mono',monospace">x_t ↑</text>
+        </svg>
+        <figcaption style="text-align:center;font-size:0.82rem;color:#9aabb8;margin-top:6px;">
+          LSTM information flow. The cell state $\mathbf{c}_t$ (top highway) propagates
+          via addition — not matrix multiplication — providing the gradient highway.
+          Three learned gates control what is erased (f_t), written (i_t, c̃_t), and read (o_t).
+        </figcaption>
+      </figure>
+
       <!-- ── Section 4: Gradient highways ─────────────────────────────────── -->
       <div class="section-head" id="gradient-highway">Gradient highways in LSTMs</div>
 

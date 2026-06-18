@@ -129,6 +129,76 @@
       </div>
 
       <!-- ── Section 3: Bagging ─────────────────────────────────────────── -->
+      <figure style="margin:28px 0 8px;">
+        <svg viewBox="0 0 510 202" xmlns="http://www.w3.org/2000/svg"
+             style="width:100%;max-width:600px;display:block;margin:0 auto;font-family:'IBM Plex Sans',sans-serif;">
+          <defs>
+            <marker id="ens-arr" markerWidth="7" markerHeight="6" refX="5" refY="3" orient="auto">
+              <polygon points="0 0,7 3,0 6" fill="#1a2840"/>
+            </marker>
+          </defs>
+          <rect width="510" height="202" fill="#f7f7f4" rx="8"/>
+          <!-- Phase labels -->
+          <text x="148" y="14" text-anchor="middle" font-size="9" fill="#9aabb8" letter-spacing="0.3">BOOTSTRAP</text>
+          <text x="240" y="14" text-anchor="middle" font-size="9" fill="#9aabb8" letter-spacing="0.3">TRAIN</text>
+          <text x="360" y="14" text-anchor="middle" font-size="9" fill="#9aabb8" letter-spacing="0.3">AGGREGATE</text>
+          <!-- Dataset D -->
+          <rect x="10" y="68" width="78" height="66" rx="8" fill="#dbe8f0" stroke="#3a6a8a" stroke-width="1.8"/>
+          <text x="49" y="94" text-anchor="middle" font-size="15" fill="#1a2840" font-weight="700" font-style="italic">D</text>
+          <text x="49" y="110" text-anchor="middle" font-size="9.5" fill="#3a6a8a">n training</text>
+          <text x="49" y="124" text-anchor="middle" font-size="9.5" fill="#3a6a8a">examples</text>
+          <!-- Bootstrap samples D1 D2 D3 -->
+          <rect x="108" y="22" width="80" height="38" rx="6" fill="#dbe8f0" stroke="#3a6a8a" stroke-width="1.3" stroke-dasharray="4,2"/>
+          <text x="148" y="37" text-anchor="middle" font-size="11" fill="#1a2840">D<tspan font-size="8" dy="2">1</tspan></text>
+          <text x="148" y="52" text-anchor="middle" font-size="8.5" fill="#3a6a8a">w. replacement</text>
+          <rect x="108" y="82" width="80" height="38" rx="6" fill="#dbe8f0" stroke="#3a6a8a" stroke-width="1.3" stroke-dasharray="4,2"/>
+          <text x="148" y="97" text-anchor="middle" font-size="11" fill="#1a2840">D<tspan font-size="8" dy="2">2</tspan></text>
+          <text x="148" y="112" text-anchor="middle" font-size="8.5" fill="#3a6a8a">w. replacement</text>
+          <rect x="108" y="142" width="80" height="38" rx="6" fill="#dbe8f0" stroke="#3a6a8a" stroke-width="1.3" stroke-dasharray="4,2"/>
+          <text x="148" y="157" text-anchor="middle" font-size="11" fill="#1a2840">D<tspan font-size="8" dy="2">3</tspan></text>
+          <text x="148" y="172" text-anchor="middle" font-size="8.5" fill="#3a6a8a">w. replacement</text>
+          <!-- Fan-out arrows D → Di -->
+          <line x1="88" y1="95" x2="106" y2="41" stroke="#1a2840" stroke-width="1.3" marker-end="url(#ens-arr)"/>
+          <line x1="88" y1="101" x2="106" y2="101" stroke="#1a2840" stroke-width="1.3" marker-end="url(#ens-arr)"/>
+          <line x1="88" y1="107" x2="106" y2="161" stroke="#1a2840" stroke-width="1.3" marker-end="url(#ens-arr)"/>
+          <!-- Learner boxes h1 h2 h3 -->
+          <rect x="202" y="22" width="72" height="38" rx="6" fill="#f1f4ed" stroke="#27ae60" stroke-width="1.4"/>
+          <text x="238" y="38" text-anchor="middle" font-size="11" fill="#1a2840">h<tspan font-size="8" dy="2">1</tspan></text>
+          <text x="238" y="53" text-anchor="middle" font-size="8.5" fill="#27ae60">learner</text>
+          <rect x="202" y="82" width="72" height="38" rx="6" fill="#f1f4ed" stroke="#27ae60" stroke-width="1.4"/>
+          <text x="238" y="98" text-anchor="middle" font-size="11" fill="#1a2840">h<tspan font-size="8" dy="2">2</tspan></text>
+          <text x="238" y="113" text-anchor="middle" font-size="8.5" fill="#27ae60">learner</text>
+          <rect x="202" y="142" width="72" height="38" rx="6" fill="#f1f4ed" stroke="#27ae60" stroke-width="1.4"/>
+          <text x="238" y="158" text-anchor="middle" font-size="11" fill="#1a2840">h<tspan font-size="8" dy="2">3</tspan></text>
+          <text x="238" y="173" text-anchor="middle" font-size="8.5" fill="#27ae60">learner</text>
+          <!-- Di → hi arrows -->
+          <line x1="188" y1="41" x2="200" y2="41" stroke="#1a2840" stroke-width="1.3" marker-end="url(#ens-arr)"/>
+          <line x1="188" y1="101" x2="200" y2="101" stroke="#1a2840" stroke-width="1.3" marker-end="url(#ens-arr)"/>
+          <line x1="188" y1="161" x2="200" y2="161" stroke="#1a2840" stroke-width="1.3" marker-end="url(#ens-arr)"/>
+          <!-- Aggregate box -->
+          <rect x="290" y="62" width="132" height="78" rx="8" fill="#fdf5ea" stroke="#c17c2e" stroke-width="1.8"/>
+          <text x="356" y="84" text-anchor="middle" font-size="11" fill="#1a2840" font-weight="600">Aggregate</text>
+          <text x="356" y="100" text-anchor="middle" font-size="10" fill="#c17c2e">majority vote</text>
+          <text x="356" y="115" text-anchor="middle" font-size="10" fill="#c17c2e">(classif.) or mean</text>
+          <text x="356" y="131" text-anchor="middle" font-size="8.5" fill="#9aabb8">(regress.)</text>
+          <!-- Fan-in arrows hi → aggregate -->
+          <line x1="274" y1="41" x2="288" y2="74" stroke="#1a2840" stroke-width="1.3" marker-end="url(#ens-arr)"/>
+          <line x1="274" y1="101" x2="288" y2="101" stroke="#1a2840" stroke-width="1.3" marker-end="url(#ens-arr)"/>
+          <line x1="274" y1="161" x2="288" y2="128" stroke="#1a2840" stroke-width="1.3" marker-end="url(#ens-arr)"/>
+          <!-- Output ŷ -->
+          <circle cx="462" cy="101" r="26" fill="#e8f4ec" stroke="#27ae60" stroke-width="1.8"/>
+          <text x="462" y="97" text-anchor="middle" font-size="14" fill="#27ae60" font-weight="700" font-style="italic">ŷ</text>
+          <text x="462" y="113" text-anchor="middle" font-size="9" fill="#27ae60">ensemble</text>
+          <!-- Aggregate → ŷ -->
+          <line x1="422" y1="101" x2="434" y2="101" stroke="#1a2840" stroke-width="1.5" marker-end="url(#ens-arr)"/>
+        </svg>
+        <figcaption style="text-align:center;font-size:0.82rem;color:#9aabb8;margin-top:6px;">
+          Bagging: each bootstrap sample D<sub>i</sub> is drawn by sampling n examples with replacement
+          from D (≈63% unique). A separate learner hᵢ trains on each; their predictions are combined
+          by majority vote (classification) or mean (regression). Diverse, uncorrelated errors cancel.
+        </figcaption>
+      </figure>
+
       <div class="section-head" id="bagging">Bagging (Bootstrap Aggregating)</div>
 
       <div class="prose">

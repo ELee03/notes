@@ -134,6 +134,78 @@
       </div>
 
       <!-- ── Section 3: Discretisation ──────────────────────────────────── -->
+      <figure style="margin:28px 0 8px;">
+        <svg viewBox="0 0 560 188" xmlns="http://www.w3.org/2000/svg"
+             style="width:100%;max-width:620px;display:block;margin:0 auto;font-family:'IBM Plex Sans',sans-serif;">
+          <defs>
+            <marker id="ssm-arr" markerWidth="7" markerHeight="6" refX="5" refY="3" orient="auto">
+              <polygon points="0 0,7 3,0 6" fill="#1a2840"/>
+            </marker>
+            <marker id="ssm-arr-a" markerWidth="7" markerHeight="6" refX="5" refY="3" orient="auto">
+              <polygon points="0 0,7 3,0 6" fill="#c0392b"/>
+            </marker>
+          </defs>
+          <rect width="560" height="188" fill="#f7f7f4" rx="8"/>
+          <!-- u(t) input -->
+          <text x="20" y="90" font-size="12" fill="#1a2840" font-weight="600" font-style="italic">u(t)</text>
+          <!-- Arrow u → B -->
+          <line x1="44" y1="86" x2="68" y2="86" stroke="#1a2840" stroke-width="1.5" marker-end="url(#ssm-arr)"/>
+          <!-- B gain box -->
+          <rect x="70" y="72" width="44" height="28" rx="6" fill="#dbe8f0" stroke="#3a6a8a" stroke-width="1.6"/>
+          <text x="92" y="91" text-anchor="middle" font-size="13" fill="#1a2840" font-weight="700" font-style="italic">B</text>
+          <!-- Arrow B → summer -->
+          <line x1="114" y1="86" x2="140" y2="86" stroke="#1a2840" stroke-width="1.5" marker-end="url(#ssm-arr)"/>
+          <!-- Summation circle ⊕ -->
+          <circle cx="156" cy="86" r="16" fill="#f7f7f4" stroke="#1a2840" stroke-width="1.6"/>
+          <text x="156" y="91" text-anchor="middle" font-size="14" fill="#1a2840">+</text>
+          <!-- Arrow ⊕ → integrator -->
+          <line x1="172" y1="86" x2="200" y2="86" stroke="#1a2840" stroke-width="1.5" marker-end="url(#ssm-arr)"/>
+          <!-- h'(t) label above wire -->
+          <text x="186" y="76" text-anchor="middle" font-size="9" fill="#9aabb8" font-style="italic">h′(t)</text>
+          <!-- Integrator box -->
+          <rect x="202" y="68" width="60" height="36" rx="6" fill="#eaf0f4" stroke="#3a6a8a" stroke-width="1.6"/>
+          <text x="232" y="84" text-anchor="middle" font-size="11" fill="#1a2840" font-weight="600">1/s</text>
+          <text x="232" y="97" text-anchor="middle" font-size="9" fill="#3a6a8a">integrate</text>
+          <!-- Arrow integrator → junction -->
+          <line x1="262" y1="86" x2="318" y2="86" stroke="#1a2840" stroke-width="1.5" marker-end="url(#ssm-arr)"/>
+          <!-- h(t) label above wire -->
+          <text x="290" y="76" text-anchor="middle" font-size="10" fill="#1a2840" font-style="italic" font-weight="600">h(t)</text>
+          <!-- Junction dot -->
+          <circle cx="320" cy="86" r="4" fill="#1a2840"/>
+          <!-- Arrow junction → C -->
+          <line x1="324" y1="86" x2="358" y2="86" stroke="#1a2840" stroke-width="1.5" marker-end="url(#ssm-arr)"/>
+          <!-- C gain box -->
+          <rect x="360" y="72" width="44" height="28" rx="6" fill="#dbe8f0" stroke="#3a6a8a" stroke-width="1.6"/>
+          <text x="382" y="91" text-anchor="middle" font-size="13" fill="#1a2840" font-weight="700" font-style="italic">C</text>
+          <!-- Arrow C → y(t) -->
+          <line x1="404" y1="86" x2="438" y2="86" stroke="#1a2840" stroke-width="1.5" marker-end="url(#ssm-arr)"/>
+          <!-- y(t) output -->
+          <text x="444" y="90" font-size="12" fill="#1a2840" font-weight="600" font-style="italic">y(t)</text>
+          <!-- Feedback path: junction → down → left → A box → up → summer bottom -->
+          <line x1="320" y1="90" x2="320" y2="150" stroke="#c0392b" stroke-width="1.4"/>
+          <line x1="320" y1="150" x2="220" y2="150" stroke="#c0392b" stroke-width="1.4" marker-end="url(#ssm-arr-a)"/>
+          <!-- A gain box on feedback path -->
+          <rect x="220" y="136" width="44" height="28" rx="6" fill="#f9ddd9" stroke="#c0392b" stroke-width="1.6"/>
+          <text x="242" y="155" text-anchor="middle" font-size="13" fill="#c0392b" font-weight="700" font-style="italic">A</text>
+          <line x1="220" y1="150" x2="156" y2="150" stroke="#c0392b" stroke-width="1.4"/>
+          <line x1="156" y1="150" x2="156" y2="102" stroke="#c0392b" stroke-width="1.4" marker-end="url(#ssm-arr-a)"/>
+          <!-- State equations at bottom -->
+          <text x="280" y="172" text-anchor="middle" font-size="10" fill="#1a2840" font-style="italic">h′(t) = Ah(t) + Bu(t)</text>
+          <text x="430" y="172" text-anchor="middle" font-size="10" fill="#1a2840" font-style="italic">y(t) = Ch(t)</text>
+          <text x="350" y="172" text-anchor="middle" font-size="10" fill="#9aabb8">·</text>
+          <!-- Legend -->
+          <line x1="468" y1="72" x2="490" y2="72" stroke="#1a2840" stroke-width="1.4"/>
+          <text x="495" y="76" font-size="8.5" fill="#9aabb8">fwd</text>
+          <line x1="468" y1="86" x2="490" y2="86" stroke="#c0392b" stroke-width="1.4"/>
+          <text x="495" y="90" font-size="8.5" fill="#c0392b">feedback</text>
+        </svg>
+        <figcaption style="text-align:center;font-size:0.82rem;color:#9aabb8;margin-top:6px;">
+          SSM block diagram (D = 0). Input u(t) is scaled by B, added to the A-feedback term,
+          then integrated to give state h(t). Output y(t) = Ch(t). The integrator 1/s converts
+          h′(t) → h(t); the A matrix (red feedback loop) makes the system's memory selective.
+        </figcaption>
+      </figure>
+
       <div class="section-head" id="discretisation">Discretisation</div>
 
       <div class="proof-box">

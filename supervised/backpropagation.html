@@ -142,6 +142,69 @@
       </div>
 
       <!-- ── Section 3: The chain rule ─────────────────────────────────── -->
+      <figure style="margin:28px 0 8px;">
+        <svg viewBox="0 0 540 255" xmlns="http://www.w3.org/2000/svg"
+             style="width:100%;max-width:600px;display:block;margin:0 auto;font-family:'IBM Plex Sans',sans-serif;">
+          <defs>
+            <marker id="bp-fwd" markerWidth="7" markerHeight="6" refX="5" refY="3" orient="auto">
+              <polygon points="0 0,7 3,0 6" fill="#1a2840"/>
+            </marker>
+          </defs>
+          <rect width="540" height="255" fill="#f7f7f4" rx="8"/>
+          <!-- Legend -->
+          <line x1="300" y1="20" x2="328" y2="20" stroke="#1a2840" stroke-width="1.5" marker-end="url(#bp-fwd)"/>
+          <text x="332" y="24" font-size="9.5" fill="#1a2840">forward value</text>
+          <rect x="428" y="12" width="10" height="10" fill="#fde8e8" stroke="#c0392b" stroke-width="1"/>
+          <text x="442" y="24" font-size="9.5" fill="#c0392b">gradient (backward)</text>
+          <!-- Input: a=3 -->
+          <circle cx="65" cy="68" r="24" fill="#dbe8f0" stroke="#3a6a8a" stroke-width="1.8"/>
+          <text x="65" y="63" text-anchor="middle" font-size="10" fill="#3a6a8a" font-style="italic">a</text>
+          <text x="65" y="78" text-anchor="middle" font-size="12" fill="#1a2840" font-weight="700">3</text>
+          <rect x="26" y="99" width="78" height="18" rx="4" fill="#fde8e8" stroke="#c0392b" stroke-width="1"/>
+          <text x="65" y="112" text-anchor="middle" font-size="9.5" fill="#c0392b">∂f/∂a = 4</text>
+          <!-- Input: b=2 -->
+          <circle cx="65" cy="152" r="24" fill="#dbe8f0" stroke="#3a6a8a" stroke-width="1.8"/>
+          <text x="65" y="147" text-anchor="middle" font-size="10" fill="#3a6a8a" font-style="italic">b</text>
+          <text x="65" y="162" text-anchor="middle" font-size="12" fill="#1a2840" font-weight="700">2</text>
+          <rect x="26" y="183" width="78" height="18" rx="4" fill="#fde8e8" stroke="#c0392b" stroke-width="1"/>
+          <text x="65" y="196" text-anchor="middle" font-size="9.5" fill="#c0392b">∂f/∂b = 4</text>
+          <!-- Input: c=4 -->
+          <circle cx="65" cy="228" r="24" fill="#dbe8f0" stroke="#3a6a8a" stroke-width="1.8"/>
+          <text x="65" y="223" text-anchor="middle" font-size="10" fill="#3a6a8a" font-style="italic">c</text>
+          <text x="65" y="238" text-anchor="middle" font-size="12" fill="#1a2840" font-weight="700">4</text>
+          <!-- Addition gate -->
+          <rect x="196" y="85" width="52" height="45" rx="7" fill="#eaf0f4" stroke="#3a6a8a" stroke-width="1.8"/>
+          <text x="222" y="104" text-anchor="middle" font-size="17" fill="#1a2840" font-weight="700">+</text>
+          <text x="222" y="120" text-anchor="middle" font-size="9" fill="#3a6a8a">sum = 5</text>
+          <!-- Multiply gate -->
+          <rect x="362" y="140" width="52" height="45" rx="7" fill="#eaf0f4" stroke="#3a6a8a" stroke-width="1.8"/>
+          <text x="388" y="159" text-anchor="middle" font-size="17" fill="#1a2840" font-weight="700">×</text>
+          <text x="388" y="175" text-anchor="middle" font-size="9" fill="#3a6a8a">f = 20</text>
+          <!-- Forward edges -->
+          <line x1="89" y1="62" x2="194" y2="98" stroke="#1a2840" stroke-width="1.4" marker-end="url(#bp-fwd)"/>
+          <line x1="89" y1="144" x2="194" y2="115" stroke="#1a2840" stroke-width="1.4" marker-end="url(#bp-fwd)"/>
+          <line x1="248" y1="107" x2="360" y2="152" stroke="#1a2840" stroke-width="1.4" marker-end="url(#bp-fwd)"/>
+          <line x1="89" y1="224" x2="360" y2="167" stroke="#1a2840" stroke-width="1.4" marker-end="url(#bp-fwd)"/>
+          <line x1="414" y1="162" x2="448" y2="162" stroke="#1a2840" stroke-width="1.4" marker-end="url(#bp-fwd)"/>
+          <!-- Output -->
+          <text x="468" y="158" font-size="12" fill="#1a2840" font-weight="700">f = 20</text>
+          <rect x="450" y="168" width="78" height="18" rx="4" fill="#fde8e8" stroke="#c0392b" stroke-width="1"/>
+          <text x="489" y="181" text-anchor="middle" font-size="9.5" fill="#c0392b">grad = 1</text>
+          <!-- Gradient annotations on edges -->
+          <text x="301" y="123" text-anchor="middle" font-size="9" fill="#c0392b">upstream · c = 4</text>
+          <text x="220" y="205" text-anchor="middle" font-size="9" fill="#c0392b">upstream · sum = 5</text>
+          <!-- c gradient annotation -->
+          <rect x="26" y="209" width="78" height="18" rx="4" fill="#fde8e8" stroke="#c0392b" stroke-width="1"/>
+          <text x="65" y="222" text-anchor="middle" font-size="9.5" fill="#c0392b">∂f/∂c = 5</text>
+        </svg>
+        <figcaption style="text-align:center;font-size:0.82rem;color:#9aabb8;margin-top:6px;">
+          Computation graph for f = (a+b)×c with a=3, b=2, c=4 → f=20. The chain rule
+          decomposes gradients at each gate: the × gate sends ∂f/∂sum = c = 4 backward to
+          the + gate, and the + gate passes this unchanged to both a and b. The full
+          gradient ∂f/∂c = sum = 5 comes directly from the × gate.
+        </figcaption>
+      </figure>
+
       <div class="section-head" id="chain-rule">The chain rule, precisely</div>
 
       <div class="prose">

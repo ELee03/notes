@@ -133,6 +133,52 @@
       </div>
 
       <!-- ── Section 2: Why pretraining works ───────────────────────────── -->
+      <figure style="margin:28px 0 8px;">
+        <svg viewBox="0 0 580 162" xmlns="http://www.w3.org/2000/svg"
+             style="width:100%;max-width:640px;display:block;margin:0 auto;font-family:'IBM Plex Sans',sans-serif;">
+          <defs>
+            <marker id="bg-arr" markerWidth="7" markerHeight="6" refX="5" refY="3" orient="auto">
+              <polygon points="0 0,7 3,0 6" fill="#1a2840"/>
+            </marker>
+          </defs>
+          <rect width="580" height="162" fill="#f7f7f4" rx="8"/>
+          <!-- Stage labels -->
+          <text x="115" y="17" text-anchor="middle" font-size="10.5" fill="#3a6a8a" font-weight="700" letter-spacing="0.5">STAGE 1: PRE-TRAINING</text>
+          <text x="430" y="17" text-anchor="middle" font-size="10.5" fill="#c17c2e" font-weight="700" letter-spacing="0.5">STAGE 2: FINE-TUNING</text>
+          <!-- Pre-training panel -->
+          <rect x="10" y="25" width="210" height="130" rx="8" fill="#f0f5f9" stroke="#3a6a8a" stroke-width="1.5" stroke-dasharray="5,3"/>
+          <text x="115" y="48" text-anchor="middle" font-size="11.5" fill="#1a2840" font-weight="600">Billions of unlabeled tokens</text>
+          <text x="115" y="64" text-anchor="middle" font-size="10" fill="#9aabb8">web, books, code, ...</text>
+          <line x1="60" y1="74" x2="170" y2="74" stroke="#9aabb8" stroke-width="0.8"/>
+          <text x="115" y="88" text-anchor="middle" font-size="10.5" fill="#1a2840">Objective: predict missing /</text>
+          <text x="115" y="102" text-anchor="middle" font-size="10.5" fill="#1a2840">next token (MLM or CLM)</text>
+          <!-- W* result box inside pre-training panel -->
+          <rect x="62" y="117" width="106" height="28" rx="6" fill="#fdf5ea" stroke="#c17c2e" stroke-width="1.6"/>
+          <text x="115" y="127" text-anchor="middle" font-size="10" fill="#c17c2e">pretrained weights</text>
+          <text x="115" y="139" text-anchor="middle" font-size="11.5" fill="#c17c2e" font-weight="700">W*</text>
+          <!-- Transfer arrow -->
+          <line x1="220" y1="90" x2="310" y2="90" stroke="#1a2840" stroke-width="1.6" marker-end="url(#bg-arr)"/>
+          <text x="265" y="83" text-anchor="middle" font-size="10" fill="#c17c2e" font-weight="600">W* →</text>
+          <text x="265" y="105" text-anchor="middle" font-size="9" fill="#9aabb8">transfer</text>
+          <!-- Fine-tuning panel -->
+          <rect x="312" y="25" width="258" height="130" rx="8" fill="#fdf8f1" stroke="#c17c2e" stroke-width="1.5" stroke-dasharray="5,3"/>
+          <text x="441" y="48" text-anchor="middle" font-size="11.5" fill="#1a2840" font-weight="600">Initialize with W*</text>
+          <text x="441" y="64" text-anchor="middle" font-size="10" fill="#9aabb8">+ small labeled dataset (100s–100k)</text>
+          <line x1="360" y1="74" x2="522" y2="74" stroke="#9aabb8" stroke-width="0.8"/>
+          <text x="441" y="88" text-anchor="middle" font-size="10.5" fill="#1a2840">Add task-specific head;</text>
+          <text x="441" y="102" text-anchor="middle" font-size="10.5" fill="#1a2840">minimize task loss (CE, MSE, ...)</text>
+          <!-- Task model result box -->
+          <rect x="358" y="117" width="166" height="28" rx="6" fill="#e8f4ec" stroke="#27ae60" stroke-width="1.6"/>
+          <text x="441" y="127" text-anchor="middle" font-size="10" fill="#27ae60">fine-tuned model</text>
+          <text x="441" y="139" text-anchor="middle" font-size="10.5" fill="#27ae60" font-weight="700">classify / QA / NER / ...</text>
+        </svg>
+        <figcaption style="text-align:center;font-size:0.82rem;color:#9aabb8;margin-top:6px;">
+          The pretrain → fine-tune paradigm. Stage 1 trains on massive unlabeled corpora to learn W*
+          (general representations). Stage 2 initializes from W* and trains on a small labeled
+          dataset for a specific task — requiring orders of magnitude less data than training from scratch.
+        </figcaption>
+      </figure>
+
       <div class="section-head" id="pretraining">Why pretraining works</div>
 
       <div class="prose">

@@ -160,6 +160,74 @@
           gradient descent. The deeper the network, the worse the landscape.</li>
       </ul>
 
+      <figure style="margin:28px 0 8px;">
+        <svg viewBox="0 0 640 290" xmlns="http://www.w3.org/2000/svg"
+             style="width:100%;max-width:680px;display:block;margin:0 auto;font-family:'IBM Plex Sans',sans-serif;">
+          <defs>
+            <marker id="dn-arr" markerWidth="7" markerHeight="6" refX="5" refY="3" orient="auto">
+              <polygon points="0 0,7 3,0 6" fill="#1a2840"/>
+            </marker>
+            <marker id="dn-am" markerWidth="7" markerHeight="6" refX="5" refY="3" orient="auto">
+              <polygon points="0 0,7 3,0 6" fill="#c17c2e"/>
+            </marker>
+          </defs>
+          <rect width="640" height="290" fill="#f7f7f4" rx="8"/>
+          <!-- divider -->
+          <line x1="320" y1="16" x2="320" y2="274" stroke="#dde3e8" stroke-width="1" stroke-dasharray="4,3"/>
+
+          <!-- ─── LEFT: Plain Network ─── -->
+          <text x="155" y="24" text-anchor="middle" font-size="15" font-family="'IBM Plex Mono',monospace" fill="#1a2840" font-weight="600">x</text>
+          <line x1="155" y1="30" x2="155" y2="48" stroke="#1a2840" stroke-width="1.5" marker-end="url(#dn-arr)"/>
+          <rect x="65" y="51" width="180" height="40" rx="6" fill="#3a6a8a" fill-opacity="0.13" stroke="#3a6a8a" stroke-width="1.5"/>
+          <text x="155" y="67" text-anchor="middle" font-size="11" fill="#1a2840">Conv · BN · ReLU</text>
+          <text x="155" y="82" text-anchor="middle" font-size="10.5" fill="#3a6a8a" font-family="'IBM Plex Mono',monospace">W⁽¹⁾</text>
+          <line x1="155" y1="93" x2="155" y2="113" stroke="#1a2840" stroke-width="1.5" marker-end="url(#dn-arr)"/>
+          <rect x="65" y="116" width="180" height="40" rx="6" fill="#3a6a8a" fill-opacity="0.13" stroke="#3a6a8a" stroke-width="1.5"/>
+          <text x="155" y="132" text-anchor="middle" font-size="11" fill="#1a2840">Conv · BN · ReLU</text>
+          <text x="155" y="147" text-anchor="middle" font-size="10.5" fill="#3a6a8a" font-family="'IBM Plex Mono',monospace">W⁽²⁾</text>
+          <line x1="155" y1="158" x2="155" y2="178" stroke="#1a2840" stroke-width="1.5" marker-end="url(#dn-arr)"/>
+          <text x="155" y="197" text-anchor="middle" font-size="13" font-family="'IBM Plex Mono',monospace" fill="#1a2840">H(x) = F(x)</text>
+          <text x="155" y="268" text-anchor="middle" font-size="12" fill="#555">Plain Network</text>
+
+          <!-- ─── RIGHT: Residual Block ─── -->
+          <text x="487" y="24" text-anchor="middle" font-size="15" font-family="'IBM Plex Mono',monospace" fill="#1a2840" font-weight="600">x</text>
+          <!-- skip connection (amber): right → down → left to (+) -->
+          <polyline points="487,18 594,18 594,192" fill="none" stroke="#c17c2e" stroke-width="2"/>
+          <line x1="594" y1="192" x2="512" y2="192" stroke="#c17c2e" stroke-width="2" marker-end="url(#dn-am)"/>
+          <!-- main path -->
+          <line x1="487" y1="30" x2="487" y2="48" stroke="#1a2840" stroke-width="1.5" marker-end="url(#dn-arr)"/>
+          <rect x="397" y="51" width="180" height="40" rx="6" fill="#3a6a8a" fill-opacity="0.13" stroke="#3a6a8a" stroke-width="1.5"/>
+          <text x="487" y="67" text-anchor="middle" font-size="11" fill="#1a2840">Conv · BN · ReLU</text>
+          <text x="487" y="82" text-anchor="middle" font-size="10.5" fill="#3a6a8a" font-family="'IBM Plex Mono',monospace">W⁽¹⁾</text>
+          <line x1="487" y1="93" x2="487" y2="113" stroke="#1a2840" stroke-width="1.5" marker-end="url(#dn-arr)"/>
+          <rect x="397" y="116" width="180" height="40" rx="6" fill="#3a6a8a" fill-opacity="0.13" stroke="#3a6a8a" stroke-width="1.5"/>
+          <text x="487" y="136" text-anchor="middle" font-size="11" fill="#1a2840">Conv · BN</text>
+          <text x="487" y="150" text-anchor="middle" font-size="10.5" fill="#3a6a8a" font-family="'IBM Plex Mono',monospace">W⁽²⁾</text>
+          <line x1="487" y1="158" x2="487" y2="176" stroke="#1a2840" stroke-width="1.5" marker-end="url(#dn-arr)"/>
+          <!-- (+) circle -->
+          <circle cx="487" cy="192" r="15" fill="#fdf7f0" stroke="#c17c2e" stroke-width="2"/>
+          <text x="487" y="198" text-anchor="middle" font-size="17" fill="#c17c2e">+</text>
+          <!-- ReLU after add -->
+          <line x1="487" y1="208" x2="487" y2="224" stroke="#1a2840" stroke-width="1.5" marker-end="url(#dn-arr)"/>
+          <rect x="427" y="227" width="120" height="32" rx="6" fill="#c17c2e" fill-opacity="0.1" stroke="#c17c2e" stroke-width="1.5"/>
+          <text x="487" y="248" text-anchor="middle" font-size="11" fill="#1a2840">ReLU</text>
+          <line x1="487" y1="261" x2="487" y2="276" stroke="#1a2840" stroke-width="1.5" marker-end="url(#dn-arr)"/>
+          <text x="487" y="236" text-anchor="start" font-size="0" fill="none"/>
+          <!-- output label -->
+          <text x="487" y="290" text-anchor="middle" font-size="0" fill="none"/>
+          <text x="598" y="106" text-anchor="start" font-size="10" fill="#c17c2e">identity</text>
+          <text x="598" y="119" text-anchor="start" font-size="10" fill="#c17c2e">shortcut</text>
+          <text x="487" y="268" text-anchor="middle" font-size="12" fill="#555">Residual Block</text>
+          <text x="487" y="200" text-anchor="middle" font-size="0" fill="none"/>
+        </svg>
+        <figcaption style="text-align:center;font-size:0.82rem;color:#9aabb8;margin-top:6px;">
+          <strong>Left:</strong> plain stacked layers — gradient must flow through every
+          multiplication. <strong>Right:</strong> residual block — the skip connection provides a
+          gradient highway (∂𝓛/∂x = ∂𝓛/∂H · (∂F/∂x + 1)), so early layers always receive a
+          signal even when ∂F/∂x ≈ 0.
+        </figcaption>
+      </figure>
+
       <!-- ── Section 3: Residual connections ───────────────────────────── -->
       <div class="section-head" id="residual">Residual connections</div>
 

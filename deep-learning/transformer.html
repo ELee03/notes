@@ -204,6 +204,98 @@
         </table>
       </div>
 
+      <figure style="margin:28px 0 8px;">
+        <svg viewBox="0 0 650 360" xmlns="http://www.w3.org/2000/svg"
+             style="width:100%;max-width:720px;display:block;margin:0 auto;font-family:'IBM Plex Sans',sans-serif;">
+          <defs>
+            <marker id="tf-arr" markerWidth="7" markerHeight="6" refX="5" refY="3" orient="auto">
+              <polygon points="0 0,7 3,0 6" fill="#1a2840"/>
+            </marker>
+            <marker id="tf-arr-am" markerWidth="7" markerHeight="6" refX="5" refY="3" orient="auto">
+              <polygon points="0 0,7 3,0 6" fill="#c17c2e"/>
+            </marker>
+          </defs>
+          <rect width="650" height="360" fill="#f7f7f4" rx="8"/>
+
+          <!-- ── ENCODER (left, blue) ── -->
+          <!-- dashed N× block border -->
+          <rect x="32" y="65" width="253" height="210" rx="6" fill="none" stroke="#3a6a8a" stroke-width="1.5" stroke-dasharray="5,3"/>
+          <text x="272" y="80" text-anchor="end" font-size="10.5" fill="#3a6a8a" font-style="italic">× N</text>
+          <!-- sub-layers (top = output, bottom = input) -->
+          <rect x="44" y="78" width="229" height="22" rx="4" fill="#dbe8f0" stroke="#3a6a8a" stroke-width="1"/>
+          <text x="158" y="93" text-anchor="middle" font-size="10.5" fill="#1a2840">Add &amp; Norm</text>
+          <rect x="44" y="102" width="229" height="42" rx="4" fill="#b8d4e8" stroke="#3a6a8a" stroke-width="1.2"/>
+          <text x="158" y="128" text-anchor="middle" font-size="11" fill="#1a2840" font-weight="500">Feed-Forward</text>
+          <rect x="44" y="146" width="229" height="22" rx="4" fill="#dbe8f0" stroke="#3a6a8a" stroke-width="1"/>
+          <text x="158" y="161" text-anchor="middle" font-size="10.5" fill="#1a2840">Add &amp; Norm</text>
+          <rect x="44" y="170" width="229" height="48" rx="4" fill="#b8d4e8" stroke="#3a6a8a" stroke-width="1.2"/>
+          <text x="158" y="196" text-anchor="middle" font-size="11" fill="#1a2840" font-weight="500">Multi-Head</text>
+          <text x="158" y="210" text-anchor="middle" font-size="11" fill="#1a2840" font-weight="500">Self-Attention</text>
+          <!-- vertical flow arrows inside encoder -->
+          <line x1="158" y1="100" x2="158" y2="102" stroke="#3a6a8a" stroke-width="1"/>
+          <line x1="158" y1="144" x2="158" y2="146" stroke="#3a6a8a" stroke-width="1"/>
+          <line x1="158" y1="168" x2="158" y2="170" stroke="#3a6a8a" stroke-width="1"/>
+          <!-- encoder input: arrow up from embed box -->
+          <rect x="32" y="285" width="253" height="26" rx="5" fill="#e8f2f8" stroke="#3a6a8a" stroke-width="1.2"/>
+          <text x="158" y="302" text-anchor="middle" font-size="11" fill="#1a2840">Embed + Pos. Encoding</text>
+          <line x1="158" y1="283" x2="158" y2="277" stroke="#3a6a8a" stroke-width="1.5" marker-end="url(#tf-arr)"/>
+          <line x1="158" y1="277" x2="158" y2="220" stroke="#3a6a8a" stroke-width="1.5" marker-end="url(#tf-arr)"/>
+          <text x="158" y="345" text-anchor="middle" font-size="11.5" fill="#555">Source tokens</text>
+          <line x1="158" y1="311" x2="158" y2="337" stroke="#9aabb8" stroke-width="1" stroke-dasharray="3,2"/>
+          <!-- encoder output arrow up -->
+          <line x1="158" y1="63" x2="158" y2="46" stroke="#3a6a8a" stroke-width="1.5" marker-end="url(#tf-arr)"/>
+          <text x="158" y="42" text-anchor="middle" font-size="10.5" fill="#3a6a8a">encoder output</text>
+
+          <!-- K, V cross-attention connection (goes right-around outside) -->
+          <polyline points="158,38 158,22 634,22 634,170 607,170"
+            fill="none" stroke="#c17c2e" stroke-width="1.8" stroke-dasharray="5,3" marker-end="url(#tf-arr-am)"/>
+          <text x="396" y="17" text-anchor="middle" font-size="10.5" fill="#c17c2e" font-style="italic">K, V (encoder memory)</text>
+
+          <!-- ── DECODER (right, amber) ── -->
+          <!-- dashed N× block border -->
+          <rect x="356" y="52" width="249" height="225" rx="6" fill="none" stroke="#c17c2e" stroke-width="1.5" stroke-dasharray="5,3"/>
+          <text x="592" y="67" text-anchor="end" font-size="10.5" fill="#c17c2e" font-style="italic">× N</text>
+          <!-- sub-layers (top=output, bottom=input) -->
+          <rect x="368" y="65" width="225" height="22" rx="4" fill="#f5e8d4" stroke="#c17c2e" stroke-width="1"/>
+          <text x="480" y="80" text-anchor="middle" font-size="10.5" fill="#1a2840">Add &amp; Norm</text>
+          <rect x="368" y="89" width="225" height="40" rx="4" fill="#edd9b8" stroke="#c17c2e" stroke-width="1.2"/>
+          <text x="480" y="114" text-anchor="middle" font-size="11" fill="#1a2840" font-weight="500">Feed-Forward</text>
+          <rect x="368" y="131" width="225" height="22" rx="4" fill="#f5e8d4" stroke="#c17c2e" stroke-width="1"/>
+          <text x="480" y="146" text-anchor="middle" font-size="10.5" fill="#1a2840">Add &amp; Norm</text>
+          <rect x="368" y="155" width="225" height="42" rx="4" fill="#edd9b8" stroke="#c17c2e" stroke-width="1.2"/>
+          <text x="480" y="178" text-anchor="middle" font-size="11" fill="#1a2840" font-weight="500">Cross-Attention</text>
+          <text x="480" y="192" text-anchor="middle" font-size="9.5" fill="#c17c2e">(attends to encoder)</text>
+          <rect x="368" y="199" width="225" height="22" rx="4" fill="#f5e8d4" stroke="#c17c2e" stroke-width="1"/>
+          <text x="480" y="214" text-anchor="middle" font-size="10.5" fill="#1a2840">Add &amp; Norm</text>
+          <rect x="368" y="223" width="225" height="42" rx="4" fill="#edd9b8" stroke="#c17c2e" stroke-width="1.2"/>
+          <text x="480" y="247" text-anchor="middle" font-size="11" fill="#1a2840" font-weight="500">Masked Self-Attention</text>
+          <text x="480" y="260" text-anchor="middle" font-size="9.5" fill="#c17c2e">(causal)</text>
+          <!-- vertical flow arrows inside decoder -->
+          <line x1="480" y1="87" x2="480" y2="89" stroke="#c17c2e" stroke-width="1"/>
+          <line x1="480" y1="129" x2="480" y2="131" stroke="#c17c2e" stroke-width="1"/>
+          <line x1="480" y1="153" x2="480" y2="155" stroke="#c17c2e" stroke-width="1"/>
+          <line x1="480" y1="197" x2="480" y2="199" stroke="#c17c2e" stroke-width="1"/>
+          <line x1="480" y1="221" x2="480" y2="223" stroke="#c17c2e" stroke-width="1"/>
+          <!-- decoder input: arrow up from embed box -->
+          <rect x="356" y="285" width="249" height="26" rx="5" fill="#fdf4e8" stroke="#c17c2e" stroke-width="1.2"/>
+          <text x="480" y="302" text-anchor="middle" font-size="11" fill="#1a2840">Embed + Pos. Encoding</text>
+          <line x1="480" y1="283" x2="480" y2="277" stroke="#c17c2e" stroke-width="1.5" marker-end="url(#tf-arr-am)"/>
+          <line x1="480" y1="277" x2="480" y2="267" stroke="#c17c2e" stroke-width="1.5" marker-end="url(#tf-arr-am)"/>
+          <text x="480" y="345" text-anchor="middle" font-size="11.5" fill="#555">Target tokens (shifted)</text>
+          <line x1="480" y1="311" x2="480" y2="337" stroke="#9aabb8" stroke-width="1" stroke-dasharray="3,2"/>
+          <!-- decoder output: Linear + Softmax above -->
+          <line x1="480" y1="50" x2="480" y2="36" stroke="#c17c2e" stroke-width="1.5" marker-end="url(#tf-arr-am)"/>
+          <rect x="393" y="18" width="174" height="17" rx="4" fill="#fdf4e8" stroke="#c17c2e" stroke-width="1.2"/>
+          <text x="480" y="31" text-anchor="middle" font-size="10.5" fill="#c17c2e" font-weight="600">Linear + Softmax → token</text>
+        </svg>
+        <figcaption style="text-align:center;font-size:0.82rem;color:#9aabb8;margin-top:6px;">
+          Transformer architecture. The <strong>encoder</strong> (blue) reads all source tokens in parallel.
+          The <strong>decoder</strong> (amber) generates the target autoregressively, attending to both
+          its own causal context (masked self-attention) and the encoder output (cross-attention).
+          Both blocks are stacked $N$ times (×N, dashed borders).
+        </figcaption>
+      </figure>
+
       <!-- ── Section 3: Scaled dot-product attention ─────────────────────── -->
       <div class="section-head" id="sdpa">Scaled dot-product attention</div>
 

@@ -106,6 +106,53 @@
       </div>
 
       <!-- ── Section 2: Impurity measures ──────────────────────────────── -->
+      <figure style="margin:28px 0 8px;">
+        <svg viewBox="0 0 560 240" xmlns="http://www.w3.org/2000/svg"
+             style="width:100%;max-width:600px;display:block;margin:0 auto;font-family:'IBM Plex Sans',sans-serif;">
+          <defs>
+            <marker id="dt-arr" markerWidth="7" markerHeight="6" refX="5" refY="3" orient="auto">
+              <polygon points="0 0,7 3,0 6" fill="#1a2840"/>
+            </marker>
+          </defs>
+          <rect width="560" height="240" fill="#f7f7f4" rx="8"/>
+          <!-- Root node -->
+          <rect x="180" y="18" width="200" height="44" rx="8" fill="#dbe8f0" stroke="#3a6a8a" stroke-width="1.8"/>
+          <text x="280" y="36" text-anchor="middle" font-size="11.5" fill="#1a2840" font-weight="600">Income &gt; $50k?</text>
+          <text x="280" y="52" text-anchor="middle" font-size="10" fill="#3a6a8a">root split</text>
+          <!-- Root → left (Yes) -->
+          <line x1="240" y1="63" x2="150" y2="108" stroke="#1a2840" stroke-width="1.5" marker-end="url(#dt-arr)"/>
+          <text x="176" y="88" text-anchor="middle" font-size="10.5" fill="#27ae60" font-weight="600">Yes</text>
+          <!-- Root → right (No) -->
+          <line x1="320" y1="63" x2="410" y2="108" stroke="#1a2840" stroke-width="1.5" marker-end="url(#dt-arr)"/>
+          <text x="384" y="88" text-anchor="middle" font-size="10.5" fill="#c0392b" font-weight="600">No</text>
+          <!-- Left internal node -->
+          <rect x="50" y="110" width="200" height="44" rx="8" fill="#dbe8f0" stroke="#3a6a8a" stroke-width="1.8"/>
+          <text x="150" y="128" text-anchor="middle" font-size="11.5" fill="#1a2840" font-weight="600">Debt ratio &lt; 30%?</text>
+          <text x="150" y="144" text-anchor="middle" font-size="10" fill="#3a6a8a">second split</text>
+          <!-- Right leaf: Deny -->
+          <rect x="360" y="110" width="125" height="44" rx="8" fill="#f9ddd9" stroke="#c0392b" stroke-width="1.8"/>
+          <text x="422" y="130" text-anchor="middle" font-size="12" fill="#c0392b" font-weight="700">Deny</text>
+          <text x="422" y="146" text-anchor="middle" font-size="9.5" fill="#c0392b">leaf node</text>
+          <!-- Left → Approve (Yes) -->
+          <line x1="110" y1="155" x2="78" y2="196" stroke="#1a2840" stroke-width="1.5" marker-end="url(#dt-arr)"/>
+          <text x="72" y="178" text-anchor="middle" font-size="10.5" fill="#27ae60" font-weight="600">Yes</text>
+          <!-- Left → Deny (No) -->
+          <line x1="190" y1="155" x2="228" y2="196" stroke="#1a2840" stroke-width="1.5" marker-end="url(#dt-arr)"/>
+          <text x="233" y="178" text-anchor="middle" font-size="10.5" fill="#c0392b" font-weight="600">No</text>
+          <!-- Leaf: Approve -->
+          <rect x="28" y="198" width="105" height="36" rx="8" fill="#d5f0e0" stroke="#27ae60" stroke-width="1.8"/>
+          <text x="80" y="221" text-anchor="middle" font-size="12" fill="#27ae60" font-weight="700">Approve</text>
+          <!-- Leaf: Deny -->
+          <rect x="175" y="198" width="105" height="36" rx="8" fill="#f9ddd9" stroke="#c0392b" stroke-width="1.8"/>
+          <text x="228" y="221" text-anchor="middle" font-size="12" fill="#c0392b" font-weight="700">Deny</text>
+        </svg>
+        <figcaption style="text-align:center;font-size:0.82rem;color:#9aabb8;margin-top:6px;">
+          A depth-2 classification tree for loan default prediction. Each internal node applies
+          one binary threshold on one feature; the tree partitions the feature space into 3
+          rectangular regions. Impurity measures (below) tell us which split to make at each node.
+        </figcaption>
+      </figure>
+
       <div class="section-head" id="impurity">Impurity measures</div>
 
       <div class="prose">

@@ -176,6 +176,40 @@
       </div>
 
       <!-- ── Section 4: Regularisation as priors ───────────────────────── -->
+      <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+      <div class="widget-card" style="margin:28px 0 12px;">
+        <div class="widget-title">Bayesian update: prior × likelihood → posterior</div>
+        <div id="bayes-update" style="height:300px;"></div>
+      </div>
+      <script>
+      (function() {
+        const theta = Array.from({length: 200}, (_, i) => -3 + i * 9 / 199);
+        const gauss = (x, mu, sig) => Math.exp(-0.5 * ((x - mu) / sig) ** 2);
+        const prior = theta.map(t => gauss(t, 0, 1));       // N(0,1) prior on θ
+        const lik   = theta.map(t => gauss(t, 2.5, 0.5));   // likelihood from 5 obs, x̄=2.5
+        const post  = theta.map(t => gauss(t, 2.08, 0.41)); // posterior: Bayesian update
+        const norm  = arr => { const m = Math.max(...arr); return arr.map(v => v / m); };
+        Plotly.newPlot('bayes-update', [
+          { x: theta, y: norm(prior), name: 'Prior  p(θ) = N(0, 1)',
+            mode: 'lines', line: {color: '#9aabb8', width: 2, dash: 'dash'},
+            fill: 'tozeroy', fillcolor: 'rgba(154,171,184,0.10)' },
+          { x: theta, y: norm(lik), name: 'Likelihood  p(D|θ), data x̄=2.5',
+            mode: 'lines', line: {color: '#c17c2e', width: 2},
+            fill: 'tozeroy', fillcolor: 'rgba(193,124,46,0.10)' },
+          { x: theta, y: norm(post), name: 'Posterior  p(θ|D) = N(2.08, 0.41)',
+            mode: 'lines', line: {color: '#2776c1', width: 2.5},
+            fill: 'tozeroy', fillcolor: 'rgba(39,118,193,0.12)' }
+        ], {
+          xaxis: { title: 'Parameter θ', gridcolor: '#e8e8e4', zeroline: true, zerolinecolor: '#c8c8c4' },
+          yaxis: { title: 'Density (normalised)', gridcolor: '#e8e8e4', range: [0, 1.08] },
+          paper_bgcolor: '#f7f7f4', plot_bgcolor: '#f7f7f4',
+          legend: { x: 0.02, y: 0.98, bgcolor: 'rgba(247,247,244,0.85)', font: {size: 11} },
+          margin: { t: 10, l: 54, r: 16, b: 44 },
+          font: { family: 'IBM Plex Sans, sans-serif', size: 12, color: '#1a2840' }
+        }, { responsive: true, displayModeBar: false });
+      })();
+      </script>
+
       <div class="section-head" id="regularization-priors">Regularisation as priors</div>
 
       <div class="proof-box">
