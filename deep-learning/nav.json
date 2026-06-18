@@ -5,12 +5,12 @@
       "items": [
         {
           "href": "deep-networks.html",
-          "text": "1 · Deep Networks & Residual Connections",
+          "text": "Deep Networks &amp; Residual Connections",
           "topics": "Depth · skip connections · ResNets · batch norm revisited · width vs depth"
         },
         {
           "href": "cnns.html",
-          "text": "2 · Convolutional Neural Networks",
+          "text": "Convolutional Neural Networks",
           "topics": "Convolution · pooling · weight sharing · translation invariance · classic architectures"
         }
       ]
@@ -20,32 +20,32 @@
       "items": [
         {
           "href": "sequence-models.html",
-          "text": "3 · Sequence Models & RNNs",
+          "text": "Sequence Models &amp; RNNs",
           "topics": "Sequences · language modelling · recurrence · BPTT · vanishing gradients in time"
         },
         {
           "href": "lstms.html",
-          "text": "4 · LSTMs & GRUs",
+          "text": "LSTMs &amp; GRUs",
           "topics": "Gates · cell state · gradient highways · GRU · bidirectional RNNs"
         }
       ]
     },
     {
-      "label": "Attention & Transformers",
+      "label": "Attention &amp; Transformers",
       "items": [
         {
           "href": "attention.html",
-          "text": "5 · Attention Mechanisms",
+          "text": "Attention Mechanisms",
           "topics": "Seq2seq · alignment problem · Bahdanau attention · Q/K/V framework · self-attention"
         },
         {
           "href": "transformer.html",
-          "text": "6 · The Transformer",
+          "text": "The Transformer",
           "topics": "Scaled dot-product attention · multi-head attention · positional encoding · encoder-decoder · masked attention"
         },
         {
           "href": "bert-gpt.html",
-          "text": "7 · BERT & GPT",
+          "text": "BERT &amp; GPT",
           "topics": "Pretraining objectives · masked LM · autoregressive LM · fine-tuning · scaling laws · the modern LLM"
         }
       ]
@@ -55,22 +55,22 @@
       "items": [
         {
           "href": "training-scale.html",
-          "text": "8 · Training at Scale",
+          "text": "Training at Scale",
           "topics": "Mixed precision · gradient checkpointing · distributed training · scaling laws · RLHF"
         },
         {
           "href": "generative-models.html",
-          "text": "9 · Generative Models",
+          "text": "Generative Models",
           "topics": "VAEs · GANs · diffusion models · score matching · DDPM · classifier-free guidance"
         },
         {
           "href": "state-space-models.html",
-          "text": "10 · State Space Models",
+          "text": "State Space Models",
           "topics": "Classical SSM · HiPPO · S4 · Mamba selective scan · parallel scan · SSM–Transformer duality"
         },
         {
           "href": "normalizing-flows.html",
-          "text": "11 · Normalizing Flows",
+          "text": "Normalizing Flows",
           "topics": "Change of variables · coupling layers · NICE · RealNVP · GLOW · autoregressive flows · flow matching"
         }
       ]

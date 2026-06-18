@@ -5,22 +5,22 @@
       "items": [
         {
           "href": "learning-problem.html",
-          "text": "1 · The Learning Problem",
+          "text": "The Learning Problem",
           "topics": "Supervised learning · hypothesis spaces · empirical risk · true risk · ERM · generalization · bias-variance preview · no free lunch"
         },
         {
           "href": "linear-regression.html",
-          "text": "2 · Linear Regression",
+          "text": "Linear Regression",
           "topics": "Least squares · normal equation · gradient descent · polynomial features · ridge regression · geometry of regression"
         },
         {
           "href": "classification.html",
-          "text": "3 · Classification &amp; Logistic Regression",
+          "text": "Classification &amp; Logistic Regression",
           "topics": "Decision boundaries · sigmoid · cross-entropy loss · gradient descent for classification · softmax · evaluation metrics"
         },
         {
           "href": "generalization.html",
-          "text": "4 · Generalization &amp; Regularization",
+          "text": "Generalization &amp; Regularization",
           "topics": "Bias-variance decomposition · cross-validation · L1/L2 regularization · learning curves · model selection"
         }
       ]
@@ -30,17 +30,17 @@
       "items": [
         {
           "href": "svm.html",
-          "text": "5 · Support Vector Machines",
+          "text": "Support Vector Machines",
           "topics": "Maximum margin · support vectors · dual problem · kernel trick · soft margin · RBF and polynomial kernels"
         },
         {
           "href": "decision-trees.html",
-          "text": "6 · Decision Trees",
+          "text": "Decision Trees",
           "topics": "Information gain · entropy · Gini impurity · CART algorithm · pruning · regression trees"
         },
         {
           "href": "ensembles.html",
-          "text": "7 · Ensemble Methods",
+          "text": "Ensemble Methods",
           "topics": "Bagging · random forests · AdaBoost · gradient boosting · XGBoost · variance reduction"
         }
       ]
@@ -50,22 +50,22 @@
       "items": [
         {
           "href": "neural-networks.html",
-          "text": "8 · Neural Networks",
+          "text": "Neural Networks",
           "topics": "Perceptron · multi-layer networks · activation functions · universal approximation theorem · forward pass"
         },
         {
           "href": "backpropagation.html",
-          "text": "9 · Backpropagation",
+          "text": "Backpropagation",
           "topics": "Computation graphs · chain rule · automatic differentiation · gradient flow · vanishing gradients · weight initialisation"
         },
         {
           "href": "training.html",
-          "text": "10 · Training Neural Networks",
+          "text": "Training Neural Networks",
           "topics": "SGD · momentum · Adam · batch normalisation · dropout · learning rate schedules · early stopping"
         },
         {
           "href": "probabilistic.html",
-          "text": "11 · Probabilistic Perspectives",
+          "text": "Probabilistic Perspectives",
           "topics": "Maximum likelihood · MAP estimation · Bayesian view · generative vs discriminative · Naive Bayes"
         }
       ]
